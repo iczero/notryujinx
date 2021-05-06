@@ -1,6 +1,11 @@
-﻿namespace Ryujinx.Common.Configuration.Hid
+﻿using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
+using NotImplementedException = System.NotImplementedException;
+
+namespace Ryujinx.Common.Configuration.Hid
 {
-    public class InputConfig
+    public class InputConfig:  INotifyPropertyChanged
     {
         /// <summary>
         /// The current version of the input file format
@@ -25,5 +30,13 @@
         ///  Player's Index for the controller
         /// </summary>
         public PlayerIndex PlayerIndex { get; set; }
+
+        public virtual object CreateCopy() { return new InputConfig(); }
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }

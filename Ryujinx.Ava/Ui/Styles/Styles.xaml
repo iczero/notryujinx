@@ -1,0 +1,119 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:sys="clr-namespace:System;assembly=netstandard"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <StackPanel Spacing="5">
+                <TextBlock Text="Code Font Family" />
+                <Grid RowDefinitions="*,Auto">
+                    <Menu Width="100" Grid.Row="1">
+                        <MenuItem Header="File">
+                            <MenuItem Header="Test 1" />
+                            <MenuItem Header="Test 2" />
+                            <MenuItem Header="Test 3">
+                                <MenuItem.Icon>
+                                    <CheckBox Margin="0" IsChecked="{Binding Checkbox, Mode=TwoWay}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </MenuItem>
+                    </Menu>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Name="btnAdd" Content="Add" HorizontalAlignment="Right" />
+                        <Button Name="btnRem" Content="Add" HorizontalAlignment="Right" />
+                        <TextBox Width="100" VerticalAlignment="Center" />
+                        <CheckBox> Test CHeck</CheckBox>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
+    </Design.PreviewWith>
+    <Style Selector="Button">
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="8" />
+        <Setter Property="MinHeight" Value="25" />
+        <Setter Property="Margin" Value="5 5" />
+        <Setter Property="Foreground" Value="{DynamicResource ThemeButtonForegroundColor}" />
+        <Setter Property="Background" Value="{DynamicResource HighlightBrush}" />
+    </Style>
+    <Style Selector="Button ContentPresenter">
+        <Setter Property="CornerRadius" Value="5" />
+    </Style>
+    <Style Selector="Button:pressed">
+        <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundColor}" />
+    </Style>
+    <Style Selector="DataGridColumnHeader">
+        <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="SeparatorBrush" Value="{DynamicResource ThemeForegroundLowBrush}" />
+        <Setter Property="Padding" Value="5" />
+        <Setter Property="Background" Value="{DynamicResource ThemeCardColor}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Grid ColumnDefinitions="*,Auto"
+                      Background="{TemplateBinding Background}">
+
+                    <Grid ColumnDefinitions="*,Auto"
+                          HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                          VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                          Margin="{TemplateBinding Padding}">
+                        <ContentPresenter Content="{TemplateBinding Content}" />
+
+                        <Path Name="SortIcon"
+                              Grid.Column="1"
+                              Fill="{TemplateBinding Foreground}"
+                              HorizontalAlignment="Left"
+                              VerticalAlignment="Center"
+                              Stretch="Uniform"
+                              Width="8"
+                              Margin="4,0,0,0"
+                              Data="F1 M -5.215,6.099L 5.215,6.099L 0,0L -5.215,6.099 Z " />
+
+                    </Grid>
+
+                    <Rectangle Name="VerticalSeparator"
+                               Grid.Column="1" Width="1"
+                               VerticalAlignment="Stretch"
+                               Fill="{TemplateBinding SeparatorBrush}"
+                               IsVisible="{TemplateBinding AreSeparatorsVisible}" />
+
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+    <Style Selector="CheckBox">
+        <Setter Property="Margin" Value="0,10,0,10" />
+        <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+    <Style Selector="MenuItem">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="6 0" />
+    </Style>
+    <Style Selector="DataGridRow:selected /template/ Rectangle#BackgroundRectangle">
+        <Setter Property="Fill" Value="{DynamicResource DataGridSelectionBackgroundBrush}" />
+    </Style>
+    <Styles.Resources>
+        <SolidColorBrush x:Key="DataGridSelectionBackgroundBrush" Color="{DynamicResource DataGridSelectionColor}"></SolidColorBrush>
+        <Thickness x:Key="PageMargin">40 0 40 0</Thickness>
+        <Thickness x:Key="Margin">0 5 0 5</Thickness>
+        <Color x:Key="ThemeAccentColor">#C9149BD4</Color>
+        <Color x:Key="ThemeAccentColor2">#C900C3E3</Color>
+        <Color x:Key="ThemeAccentColor3">#8000C3E3</Color>
+        <Color x:Key="ThemeAccentColor4">#3300C3E3</Color>
+        <Color x:Key="HighlightColor">#FF00C3E3</Color>
+        <Color x:Key="DataGridSelectionColor">#FFe60012</Color>
+        <Color x:Key="HighlightHoverColor">#3D1E1E</Color>
+        <Color x:Key="ThemeForegroundLowColor">#FFBCBCBC</Color>
+        <Color x:Key="ThemeControlHighlightLowBrush">#3D1E1E</Color>
+        <Color x:Key="ThemeControlMidColor">#EE404040</Color>
+        <Color x:Key="ThemeControlHighlightHighColor">#EE404040</Color>
+        <Color x:Key="ThemeBackgroundColor">#FF212121</Color>
+        <Color x:Key="ThemeButtonForegroundColor">#FF212121</Color>
+        <sys:Double x:Key="ScrollBarThickness">15</sys:Double>
+        <sys:Double x:Key="FontSizeSmall">11</sys:Double>
+        <sys:Double x:Key="FontSizeNormal">13</sys:Double>
+        <sys:Double x:Key="FontSizeLarge">17</sys:Double>
+    </Styles.Resources>
+    <Style Selector="TextBlock.code" />
+</Styles>
