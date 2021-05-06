@@ -1,0 +1,373 @@
+<window:StyleableWindow xmlns="https://github.com/avaloniaui"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
+                        xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
+                        xmlns:viewModels="clr-namespace:Ryujinx.Ava.Ui.ViewModels"
+                        Width="800"
+                        x:Class="Ryujinx.Ava.Ui.Windows.SettingsWindow"
+                        Title="Ryujinx - Settings">
+    <Design.DataContext>
+        <viewModels:SettingsViewModel />
+    </Design.DataContext>
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <TabItem Header="General">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
+                              VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="10" Spacing="10">
+                        <TextBlock FontWeight="Bold" Text="General" />
+                        <StackPanel Orientation="Vertical">
+                            <CheckBox IsChecked="{Binding EnableDiscordIntegration}">
+                                <TextBlock Text="Enable Discord Rich Presence" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding CheckUpdatesOnStart}">
+                                <TextBlock Text="Check for Updates on Launch" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding ShowConfirmExit}">
+                                <TextBlock Text="Show &quot;Confirm Exit&quot; Dialog" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding HideCursorOnIdle}">
+                                <TextBlock Text="Hide Cursor on Idle" />
+                            </CheckBox>
+                        </StackPanel>
+                        <Separator />
+                        <TextBlock FontWeight="Bold" Text="Game Directories" />
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
+                            <ListBox Margin="0,10" MinHeight="300" Name="GameList" Items="{Binding GameDirectories}" />
+                            <Grid HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Margin="0" VerticalAlignment="Stretch" Name="PathBox" />
+                                <Button Margin="5,0" MinWidth="90" Grid.Column="1" Name="AddButton"
+                                        Click="AddButton_OnClick">
+                                    <TextBlock HorizontalAlignment="Center" Text="Add" />
+                                </Button>
+                                <Button Margin="5,0" MinWidth="90" Grid.Column="2" Name="RemoveButton"
+                                        Click="RemoveButton_OnClick">
+                                    <TextBlock HorizontalAlignment="Center" Text="Remove" />
+                                </Button>
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Input">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
+                              VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                    <StackPanel Orientation="Vertical" Margin="10">
+                        <StackPanel Orientation="Horizontal" Spacing="20">
+                            <CheckBox IsChecked="{Binding EnableDockedMode}">
+                                <TextBlock Text="Enable Docked Mode" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding EnableKeyboard}">
+                                <TextBlock Text="Direct Keyboard Access" />
+                            </CheckBox>
+                        </StackPanel>
+                        <Separator Height="10" />
+                        <Grid Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center"
+                              ColumnDefinitions="*,*,*" RowDefinitions="*,*,*">
+                            <StackPanel Margin="40" Grid.Column="0" Grid.Row="0" VerticalAlignment="Stretch"
+                                        Spacing="30"
+                                        HorizontalAlignment="Stretch" MinWidth="100" MinHeight="100">
+                                <TextBlock Text="Player 1" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Button VerticalAlignment="Center" HorizontalAlignment="Center" Tag="Player1"
+                                        Click="Button_OnClick">
+                                    <TextBlock Text="Configure" />
+                                </Button>
+                            </StackPanel>
+                            <StackPanel Margin="40" Grid.Column="1" Grid.Row="0" VerticalAlignment="Stretch"
+                                        Spacing="30"
+                                        HorizontalAlignment="Stretch" MinWidth="100" MinHeight="100">
+                                <TextBlock Text="Player 2" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Button VerticalAlignment="Center" HorizontalAlignment="Center" Tag="Player2"
+                                        Click="Button_OnClick">
+                                    <TextBlock Text="Configure" />
+                                </Button>
+                            </StackPanel>
+                            <StackPanel Margin="40" Grid.Column="2" Grid.Row="0" VerticalAlignment="Stretch"
+                                        Spacing="30"
+                                        HorizontalAlignment="Stretch" MinWidth="100" MinHeight="100">
+                                <TextBlock Text="Player 3" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Button VerticalAlignment="Center" HorizontalAlignment="Center" Tag="Player3"
+                                        Click="Button_OnClick">
+                                    <TextBlock Text="Configure" />
+                                </Button>
+                            </StackPanel>
+                            <StackPanel Margin="40" Grid.Column="0" Grid.Row="1" VerticalAlignment="Stretch"
+                                        Spacing="30"
+                                        HorizontalAlignment="Stretch" MinWidth="100" MinHeight="100">
+                                <TextBlock Text="Player 4" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Button VerticalAlignment="Center" HorizontalAlignment="Center" Tag="Player4"
+                                        Click="Button_OnClick">
+                                    <TextBlock Text="Configure" />
+                                </Button>
+                            </StackPanel>
+                            <StackPanel Margin="40" Grid.Column="1" Grid.Row="1" VerticalAlignment="Stretch"
+                                        Spacing="30"
+                                        HorizontalAlignment="Stretch" MinWidth="100" MinHeight="100">
+                                <TextBlock Text="Player 5" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Button VerticalAlignment="Center" HorizontalAlignment="Center" Tag="Player5"
+                                        Click="Button_OnClick">
+                                    <TextBlock Text="Configure" />
+                                </Button>
+                            </StackPanel>
+                            <StackPanel Margin="40" Grid.Column="2" Grid.Row="1" VerticalAlignment="Stretch"
+                                        Spacing="30"
+                                        HorizontalAlignment="Stretch" MinWidth="100" MinHeight="100">
+                                <TextBlock Text="Player 6" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Button VerticalAlignment="Center" HorizontalAlignment="Center" Tag="Player6"
+                                        Click="Button_OnClick">
+                                    <TextBlock Text="Configure" />
+                                </Button>
+                            </StackPanel>
+                            <StackPanel Margin="40" Grid.Column="0" Grid.Row="2" VerticalAlignment="Stretch"
+                                        Spacing="30"
+                                        HorizontalAlignment="Stretch" MinWidth="100" MinHeight="100">
+                                <TextBlock Text="Player 7" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Button VerticalAlignment="Center" HorizontalAlignment="Center" Tag="Player7"
+                                        Click="Button_OnClick">
+                                    <TextBlock Text="Configure" />
+                                </Button>
+                            </StackPanel>
+                            <StackPanel Margin="40" Grid.Column="1" Grid.Row="2" VerticalAlignment="Stretch"
+                                        Spacing="30"
+                                        HorizontalAlignment="Stretch" MinWidth="100" MinHeight="100">
+                                <TextBlock Text="Player 8" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Button VerticalAlignment="Center" HorizontalAlignment="Center" Tag="Player8"
+                                        Click="Button_OnClick">
+                                    <TextBlock Text="Configure" />
+                                </Button>
+                            </StackPanel>
+                            <StackPanel Margin="40" Grid.Column="2" Grid.Row="2" VerticalAlignment="Stretch"
+                                        Spacing="30"
+                                        HorizontalAlignment="Stretch" MinWidth="100" MinHeight="100">
+                                <TextBlock Text="Handheld" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Button VerticalAlignment="Center" HorizontalAlignment="Center" Tag="Handheld"
+                                        Click="Button_OnClick">
+                                    <TextBlock Text="Configure" />
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="System">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
+                              VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="10" Spacing="10">
+                        <TextBlock FontWeight="Bold" Text="Core" />
+                        <StackPanel Orientation="Vertical">
+                            <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
+                                <TextBlock Text="System Region:" VerticalAlignment="Center" />
+                                <ComboBox SelectedIndex="{Binding Region}">
+                                    <ComboBoxItem>Japan</ComboBoxItem>
+                                    <ComboBoxItem>USA</ComboBoxItem>
+                                    <ComboBoxItem>Europe</ComboBoxItem>
+                                    <ComboBoxItem>Australia</ComboBoxItem>
+                                    <ComboBoxItem>China</ComboBoxItem>
+                                    <ComboBoxItem>Korea</ComboBoxItem>
+                                    <ComboBoxItem>Taiwan</ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
+                                <TextBlock Text="System Language:" VerticalAlignment="Center" />
+                                <ComboBox SelectedIndex="{Binding Language}">
+                                    <ComboBoxItem>Japanese</ComboBoxItem>
+                                    <ComboBoxItem>American English</ComboBoxItem>
+                                    <ComboBoxItem>French</ComboBoxItem>
+                                    <ComboBoxItem>German</ComboBoxItem>
+                                    <ComboBoxItem>Italian</ComboBoxItem>
+                                    <ComboBoxItem>Spanish</ComboBoxItem>
+                                    <ComboBoxItem>Chinese</ComboBoxItem>
+                                    <ComboBoxItem>Korean</ComboBoxItem>
+                                    <ComboBoxItem>Dutch</ComboBoxItem>
+                                    <ComboBoxItem>Portuguese</ComboBoxItem>
+                                    <ComboBoxItem>Russian</ComboBoxItem>
+                                    <ComboBoxItem>Taiwanese</ComboBoxItem>
+                                    <ComboBoxItem>British English</ComboBoxItem>
+                                    <ComboBoxItem>Canadian French</ComboBoxItem>
+                                    <ComboBoxItem>Latin American Spanish</ComboBoxItem>
+                                    <ComboBoxItem>Simplified Chinese</ComboBoxItem>
+                                    <ComboBoxItem>Traditional Chinese</ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
+                                <TextBlock Text="System TimeZone:" VerticalAlignment="Center" />
+                                <AutoCompleteBox MinWidth="250" FilterMode="Contains"
+                                                 TextChanged="TimeZoneBox_OnTextChanged"
+                                                 Text="{Binding Path=TimeZone, Mode=OneWay}" Name="TimeZoneBox"
+                                                 Items="{Binding TimeZones}"
+                                                 ValueMemberBinding="{Binding TzMultiBinding}"
+                                                 SelectionChanged="TimeZoneBox_OnSelectionChanged" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
+                                <TextBlock Text="System Time" VerticalAlignment="Center" />
+                                <DatePicker VerticalAlignment="Center" SelectedDate="{Binding DateOffset}" />
+                                <TimePicker VerticalAlignment="Center" ClockIdentifier="24HourClock"
+                                            SelectedTime="{Binding TimeOffset}" />
+                            </StackPanel>
+                            <CheckBox IsChecked="{Binding EnableVsync}">
+                                <TextBlock Text="Enable VSync" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding EnablePptc}">
+                                <TextBlock Text="Enable PPTC (Profiled Persistent Translation Cache)" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding EnableFsIntegrityChecks}">
+                                <TextBlock Text="Enable FS Integrity Checks" />
+                            </CheckBox>
+                            <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
+                                <TextBlock Text="Audio Backend:" VerticalAlignment="Center" />
+                                <ComboBox SelectedIndex="{Binding AudioBackend}">
+                                    <ComboBoxItem>Dummy</ComboBoxItem>
+                                    <ComboBoxItem IsEnabled="{Binding IsOpenAlEnabled}">OpenAL</ComboBoxItem>
+                                    <ComboBoxItem IsEnabled="{Binding IsSoundIoEnabled}">SoundIO</ComboBoxItem>
+                                    <ComboBoxItem IsEnabled="{Binding IsSDL2Enabled}">SDL2</ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
+                        </StackPanel>
+                        <Separator />
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontWeight="Bold" Text="Hacks" />
+                            <TextBlock Text=" - These many cause instabilities" />
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
+                            <CheckBox IsChecked="{Binding ExpandDramSize}">
+                                <TextBlock Text="Expand DRAM size to 6GB" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding IgnoreMissingServices}">
+                                <TextBlock Text="Ignore Missing Services" />
+                            </CheckBox>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Graphics">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
+                              VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="10" Spacing="10">
+                        <TextBlock FontWeight="Bold" Text="Enhancements" />
+                        <CheckBox IsChecked="{Binding EnableShaderCache}">
+                            <TextBlock Text="Enable Shader Cache" />
+                        </CheckBox>
+                        <StackPanel Orientation="Vertical">
+                            <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
+                                <TextBlock Text="Anisotropic Filtering:" VerticalAlignment="Center" />
+                                <ComboBox SelectedIndex="{Binding MaxAnisotropy}">
+                                    <ComboBoxItem>Auto</ComboBoxItem>
+                                    <ComboBoxItem>2x</ComboBoxItem>
+                                    <ComboBoxItem>4x</ComboBoxItem>
+                                    <ComboBoxItem>8x</ComboBoxItem>
+                                    <ComboBoxItem>16x</ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
+                                <TextBlock Text="Resolution Scale:" VerticalAlignment="Center" />
+                                <ComboBox SelectedIndex="{Binding ResolutionScale}">
+                                    <ComboBoxItem>Custom (Not recommended)</ComboBoxItem>
+                                    <ComboBoxItem>Native (720p/1080p)</ComboBoxItem>
+                                    <ComboBoxItem>2x (1440p/2160p)</ComboBoxItem>
+                                    <ComboBoxItem>3x (2160p/3240p)</ComboBoxItem>
+                                    <ComboBoxItem>4x (2880p/4320p)</ComboBoxItem>
+                                </ComboBox>
+                                <NumericUpDown Increment="0.01" Minimum="0.01" Maximum="100"
+                                               IsVisible="{Binding IsResolutionScaleActive}"
+                                               Value="{Binding CustomResolutionScale}" MinWidth="100" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
+                                <TextBlock Text="Aspect Ratio:" VerticalAlignment="Center" />
+                                <ComboBox SelectedIndex="{Binding AspectRatio}">
+                                    <ComboBoxItem>4:3</ComboBoxItem>
+                                    <ComboBoxItem>16:9</ComboBoxItem>
+                                    <ComboBoxItem>16:10</ComboBoxItem>
+                                    <ComboBoxItem>21:9</ComboBoxItem>
+                                    <ComboBoxItem>32:9</ComboBoxItem>
+                                    <ComboBoxItem>Stretch to Fit Window</ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
+                        </StackPanel>
+                        <Separator />
+                        <TextBlock FontWeight="Bold" Text="Developer Options" />
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
+                            <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
+                                <TextBlock Text="Graphics Shader Dump Path:" VerticalAlignment="Center" />
+                                <TextBox Text="{Binding ShaderDumpPath}" MinWidth="350" />
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Logging">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
+                              VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="10" Spacing="10">
+                        <TextBlock FontWeight="Bold" Text="Logging" />
+                        <StackPanel Orientation="Vertical">
+                            <CheckBox IsChecked="{Binding EnableFileLog}">
+                                <TextBlock Text="Enable Logging to File" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding EnableStub}">
+                                <TextBlock Text="Enable Stub Logs" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding EnableInfo}">
+                                <TextBlock Text="Enable Info Logs" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding EnableWarn}">
+                                <TextBlock Text="Enable Warning Logs" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding EnableError}">
+                                <TextBlock Text="Enable Error Logs" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding EnableGuest}">
+                                <TextBlock Text="Enable Guest Logs" />
+                            </CheckBox>
+                            <CheckBox IsChecked="{Binding EnableFsAccessLog}">
+                                <TextBlock Text="Enable Fs Access Logs" />
+                            </CheckBox>
+                            <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
+                                <TextBlock Text="Fs Global Access Log Mode:" VerticalAlignment="Center" />
+                                <NumericUpDown Maximum="3" Minimum="0" Increment="1"
+                                               Value="{Binding FsGlobalAccessLogMode}" />
+                            </StackPanel>
+                        </StackPanel>
+                        <Separator />
+                        <TextBlock FontWeight="Bold" Text="Developer Options (WARNING:  Will reduce performance)" />
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
+                            <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
+                                <TextBlock Text="OpenGL Log Level:" VerticalAlignment="Center" />
+                                <ComboBox SelectedIndex="{Binding OpenglDebugLevel}">
+                                    <ComboBoxItem>None</ComboBoxItem>
+                                    <ComboBoxItem>Error</ComboBoxItem>
+                                    <ComboBoxItem>Slowdowns</ComboBoxItem>
+                                    <ComboBoxItem>All</ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
+                            <CheckBox IsChecked="{Binding EnableDebug}">
+                                <TextBlock Text="Enable Debug Logs" />
+                            </CheckBox>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+        <StackPanel Margin="10" Grid.Row="1" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button Name="SaveButton" Click="SaveButton_Clicked">
+                <TextBlock Text="Save" />
+            </Button>
+            <Button Name="CloseButton" Click="CloseButton_Clicked">
+                <TextBlock Text="Close" />
+            </Button>
+            <Button  Name="ApplyButton" Click="ApplyButton_Clicked">
+                <TextBlock Text="Apply" />
+            </Button>
+        </StackPanel>
+    </Grid>
+</window:StyleableWindow>
