@@ -62,10 +62,6 @@ namespace Ryujinx.Ava.Ui.Windows
 #if DEBUG
             this.AttachDevTools();
 #endif
-            Stream? stream = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream("Ryujinx.Ava.Ui.Resources.Logo_Ryujinx.png");
-            Icon = new WindowIcon(stream);
-
             IObservable<Size> resizeObserverable = this.GetObservable(ClientSizeProperty);
 
             resizeObserverable.Subscribe(Resized);

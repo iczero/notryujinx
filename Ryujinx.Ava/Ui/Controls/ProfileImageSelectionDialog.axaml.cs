@@ -11,7 +11,7 @@ using Image = SixLabors.ImageSharp.Image;
 
 namespace Ryujinx.Ava.Ui.Controls
 {
-    public class ProfileImageSelectionDialog : Window
+    public class ProfileImageSelectionDialog : StyleableWindow
     {
         private readonly ContentManager _contentManager;
 

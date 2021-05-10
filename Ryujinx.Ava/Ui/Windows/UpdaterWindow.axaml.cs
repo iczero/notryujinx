@@ -28,10 +28,6 @@ namespace Ryujinx.Ava.Ui.Windows
             this.AttachDevTools();
 #endif
             Title = "Ryujinx Updater";
-
-            Stream? stream = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream("Ryujinx.Ava.Ui.Resources.Logo_Ryujinx.png");
-            Icon = new WindowIcon(stream);
         }
 
         public UpdaterWindow(MainWindow mainWindow, Version newVersion, string buildUrl) : this()

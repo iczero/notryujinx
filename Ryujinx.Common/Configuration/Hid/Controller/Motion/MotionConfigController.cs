@@ -6,11 +6,8 @@ using NotImplementedException = System.NotImplementedException;
 
 namespace Ryujinx.Common.Configuration.Hid.Controller.Motion
 {
-    public class MotionConfigController : INotifyPropertyChanged
+    public class MotionConfigController
     {
-        [JsonIgnore]
-        private double _gyroDeadzone;
-
         public MotionInputBackendType MotionBackend { get; set; }
 
         /// <summary>
@@ -21,25 +18,11 @@ namespace Ryujinx.Common.Configuration.Hid.Controller.Motion
         /// <summary>
         /// Gyro Deadzone
         /// </summary>
-        public double GyroDeadzone
-        {
-            get => _gyroDeadzone; set
-            {
-                _gyroDeadzone = Math.Round(value, 3);
-                OnPropertyChanged();
-            }
-        }
+        public double GyroDeadzone { get; set;}
 
         /// <summary>
         /// Enable Motion Controls
         /// </summary>
         public bool EnableMotion { get; set; }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
     }
 }

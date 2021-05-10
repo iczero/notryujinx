@@ -30,8 +30,7 @@ namespace Ryujinx.Common.Configuration.Hid
         ///  Player's Index for the controller
         /// </summary>
         public PlayerIndex PlayerIndex { get; set; }
-
-        public virtual object CreateCopy() { return new InputConfig(); }
+        
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
