@@ -39,9 +39,12 @@ namespace Ryujinx.Ava.Ui.ViewModels
             {
                 _selectedProfile = value;
 
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(SelectedProfile));
+                OnPropertyChanged(nameof(IsSelectedProfileDeletable));
             }
         }
+
+        public bool IsSelectedProfileDeletable => _selectedProfile != null && _selectedProfile.UserId != AccountManager.DefaultUserId;
 
         public void Dispose()
         {
@@ -51,10 +54,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
         {
             Profiles.Clear();
 
-            IOrderedEnumerable<HLE.HOS.Services.Account.Acc.UserProfile> profiles = _owner.AccountManager.GetAllUsers()
-                .OrderByDescending(x => x.AccountState == AccountState.Open);
+            var profiles = _owner.AccountManager.GetAllUsers().OrderByDescending(x => x.AccountState == AccountState.Open);
 
-            foreach (HLE.HOS.Services.Account.Acc.UserProfile profile in profiles)
+            foreach (var profile in profiles)
             {
                 Profiles.Add(new UserProfile(profile));
             }
@@ -96,8 +98,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public async void AddUser()
         {
-            _tempUserName = await AvaDialog.CreateInputDialog("Choose the Profile Name", "Please Enter a Profile Name",
-                $"(Max Length : {MaxProfileNameLength})", _owner, MaxProfileNameLength);
+            var dlgTitle = Localizer.Instance[LocalizationStringKeys.InputDialogAddNewProfileTitle];
+            var dlgMainText = Localizer.Instance[LocalizationStringKeys.InputDialogAddNewProfileHeader];
+            var dlgSubText = string.Format(Localizer.Instance[LocalizationStringKeys.InputDialogAddNewProfileSubtext], MaxProfileNameLength);
+
+            _tempUserName = await AvaDialog.CreateInputDialog(dlgTitle, dlgMainText, dlgSubText, _owner, MaxProfileNameLength);
 
             if (!string.IsNullOrWhiteSpace(_tempUserName))
             {
@@ -111,6 +116,14 @@ namespace Ryujinx.Ava.Ui.ViewModels
         {
             if (_selectedProfile != null)
             {
+                var lastUserId = _owner.AccountManager.LastOpenedUser.UserId;
+
+                if (_selectedProfile.UserId == lastUserId)
+                {
+                    // If we are deleting the currently open profile, then we must open something else before deleting.
+                    _owner.AccountManager.OpenUser(Profiles.First(x => x.UserId != lastUserId).UserId);
+                }
+
                 _owner.AccountManager.DeleteUser(_selectedProfile.UserId);
             }
 
