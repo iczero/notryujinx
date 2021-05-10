@@ -23,7 +23,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Spacing="10" Margin="10">
-            <TextBlock Text="Input Device" VerticalAlignment="Center" />
+            <TextBlock Text="{local:Localize ControllerSettingsInputDevice}" VerticalAlignment="Center" />
             <ComboBox MinWidth="150" MaxWidth="200" Name="DeviceBox" SelectedIndex="{Binding Device}" Items="{Binding Devices}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
@@ -32,9 +32,9 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
             <Button Command="{Binding LoadDevices}" VerticalAlignment="Center">
-                <TextBlock VerticalAlignment="Center" Text="Refresh" />
+                <TextBlock VerticalAlignment="Center" Text="{local:Localize ControllerSettingsRefresh}" />
             </Button>
-            <TextBlock Text="Controller Type" VerticalAlignment="Center" />
+            <TextBlock Text="{local:Localize ControllerSettingsControllerType}" VerticalAlignment="Center" />
             <ComboBox SelectedIndex="{Binding Controller}" Items="{Binding ControllerTypes}" Margin="0,0,10,0">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
@@ -42,7 +42,7 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
-            <TextBlock Text="Profile" VerticalAlignment="Center" />
+            <TextBlock Text="{local:Localize ControllerSettingsProfile}" VerticalAlignment="Center" />
             <ComboBox Name="ProfileBox" SelectedIndex="{Binding Profile}" Items="{Binding Profiles}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
@@ -51,20 +51,20 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
             <Button Command="{Binding LoadProfile}">
-                <TextBlock Text="Load" />
+                <TextBlock Text="{local:Localize ControllerSettingsLoad}" />
             </Button>
             <Button Command="{Binding AddProfile}">
-                <TextBlock Text="Add" />
+                <TextBlock Text="{local:Localize ControllerSettingsAdd}" />
             </Button>
             <Button Command="{Binding RemoveProfile}">
-                <TextBlock Text="Remove" />
+                <TextBlock Text="{local:Localize ControllerSettingsRemove}" />
             </Button>
         </StackPanel>
         <ScrollViewer IsVisible="{Binding ShowSettings}" Name="View" Grid.Row="1">
             <StackPanel HorizontalAlignment="Stretch" Spacing="20" Orientation="Horizontal">
                 <StackPanel Orientation="Vertical" Spacing="30">
                     <StackPanel Orientation="Vertical" Spacing="10">
-                        <TextBlock HorizontalAlignment="Center" Text="Buttons" />
+                        <TextBlock HorizontalAlignment="Center" Text="{local:Localize ControllerSettingsButtons}" />
                         <Grid Grid.HorizontalAlignment="Center">
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
@@ -79,37 +79,37 @@
                                 <ColumnDefinition Width="10"/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="A" VerticalAlignment="Center" TextAlignment="Center"
+                            <TextBlock Text="{local:Localize ControllerSettingsButtonA}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="40" />
                             <ToggleButton Grid.Row="0" Grid.Column="2" MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch" Margin="5">
                                 <TextBlock TextAlignment="Center"
                                            Text="{Binding InputConfig.RightJoycon.ButtonA, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
-                            <TextBlock Grid.Row="1" Grid.Column="0"  Text="B" VerticalAlignment="Center" TextAlignment="Center"
+                            <TextBlock Grid.Row="1" Grid.Column="0"  Text="{local:Localize ControllerSettingsButtonB}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="40" />
                             <ToggleButton Grid.Row="1" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch" Margin="5">
                                 <TextBlock TextAlignment="Center"
                                            Text="{Binding InputConfig.RightJoycon.ButtonB, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
-                            <TextBlock Grid.Row="2" Grid.Column="0"  Text="X" VerticalAlignment="Center" TextAlignment="Center"
+                            <TextBlock Grid.Row="2" Grid.Column="0"  Text="{local:Localize ControllerSettingsButtonX}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="40" />
                             <ToggleButton Grid.Row="2" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch" Margin="5">
                                 <TextBlock TextAlignment="Center"
                                            Text="{Binding InputConfig.RightJoycon.ButtonX, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
-                            <TextBlock Grid.Row="3" Grid.Column="0"  Text="Y" VerticalAlignment="Center" TextAlignment="Center"
+                            <TextBlock Grid.Row="3" Grid.Column="0"  Text="{local:Localize ControllerSettingsButtonY}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="40" />
                             <ToggleButton Grid.Row="3" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch" Margin="5">
                                 <TextBlock TextAlignment="Center"
                                            Text="{Binding InputConfig.RightJoycon.ButtonY, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
-                            <TextBlock Grid.Row="4" Grid.Column="0"  Text="+" VerticalAlignment="Center" TextAlignment="Center"
+                            <TextBlock Grid.Row="4" Grid.Column="0"  Text="{local:Localize ControllerSettingsButtonPlus}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="40" />
                             <ToggleButton Grid.Row="4" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch" Margin="5">
                                 <TextBlock TextAlignment="Center"
                                            Text="{Binding InputConfig.RightJoycon.ButtonPlus, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
-                            <TextBlock Grid.Row="5" Grid.Column="0"  Text="_" VerticalAlignment="Center" TextAlignment="Center"
+                            <TextBlock Grid.Row="5" Grid.Column="0"  Text="{local:Localize ControllerSettingsButtonMinus}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="40" />
                             <ToggleButton Grid.Row="5" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch" Margin="5">
                                 <TextBlock TextAlignment="Center"
@@ -118,7 +118,7 @@
                         </Grid>
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Spacing="10">
-                        <TextBlock HorizontalAlignment="Center" Text="Directional Pad" />
+                        <TextBlock HorizontalAlignment="Center" Text="{local:Localize ControllerSettingsDPad}" />
                         <Grid Grid.HorizontalAlignment="Center">
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
@@ -131,25 +131,25 @@
                                 <ColumnDefinition Width="10"/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="DPad Up" VerticalAlignment="Center" TextAlignment="Center"
+                            <TextBlock Text="{local:Localize ControllerSettingsDPadUp}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="100" />
                             <ToggleButton Grid.Row="0" Grid.Column="2" MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch" Margin="5">
                                 <TextBlock TextAlignment="Center"
                                            Text="{Binding InputConfig.LeftJoycon.DpadUp, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
-                            <TextBlock Grid.Row="1" Grid.Column="0"  Text="DPad Down" VerticalAlignment="Center" TextAlignment="Center"
+                            <TextBlock Grid.Row="1" Grid.Column="0"  Text="{local:Localize ControllerSettingsDPadDown}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="100" />
                             <ToggleButton Grid.Row="1" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch" Margin="5">
                                 <TextBlock TextAlignment="Center"
                                            Text="{Binding InputConfig.LeftJoycon.DpadDown, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
-                            <TextBlock Grid.Row="2" Grid.Column="0"  Text="DPad Left" VerticalAlignment="Center" TextAlignment="Center"
+                            <TextBlock Grid.Row="2" Grid.Column="0"  Text="{local:Localize ControllerSettingsDPadLeft}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="100" />
                             <ToggleButton Grid.Row="2" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch" Margin="5">
                                 <TextBlock TextAlignment="Center"
                                            Text="{Binding InputConfig.LeftJoycon.DpadLeft, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
-                            <TextBlock Grid.Row="3" Grid.Column="0"  Text="DPad Right" VerticalAlignment="Center" TextAlignment="Center"
+                            <TextBlock Grid.Row="3" Grid.Column="0"  Text="{local:Localize ControllerSettingsDPadRight}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="100" />
                             <ToggleButton Grid.Row="3" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch" Margin="5">
                                 <TextBlock TextAlignment="Center"
@@ -160,10 +160,10 @@
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Spacing="20" Margin="20,0,0,0">
                     <StackPanel Orientation="Vertical" Spacing="10">
-                        <TextBlock HorizontalAlignment="Center" Text="Left Stick" />
+                        <TextBlock HorizontalAlignment="Center" Text="{local:Localize ControllerSettingsLStick}" />
                         <StackPanel IsVisible="{Binding IsKeyboard}" Spacing="10">
                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                                <TextBlock Text="LStick Button" VerticalAlignment="Center" TextAlignment="Center"
+                                <TextBlock Text="{local:Localize ControllerSettingsLStickButton}" VerticalAlignment="Center" TextAlignment="Center"
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
@@ -171,7 +171,7 @@
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                                <TextBlock Text="LStick Up" VerticalAlignment="Center" TextAlignment="Center"
+                                <TextBlock Text="{local:Localize ControllerSettingsLStickUp}" VerticalAlignment="Center" TextAlignment="Center"
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
@@ -179,7 +179,7 @@
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                                <TextBlock Text="LStick Down" VerticalAlignment="Center" TextAlignment="Center"
+                                <TextBlock Text="{local:Localize ControllerSettingsLStickDown}" VerticalAlignment="Center" TextAlignment="Center"
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
@@ -187,7 +187,7 @@
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                                <TextBlock Text="LStick Left" VerticalAlignment="Center" TextAlignment="Center"
+                                <TextBlock Text="{local:Localize ControllerSettingsLStickLeft}" VerticalAlignment="Center" TextAlignment="Center"
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
@@ -195,7 +195,7 @@
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                                <TextBlock Text="LStick Right" VerticalAlignment="Center" TextAlignment="Center"
+                                <TextBlock Text="{local:Localize ControllerSettingsLStickRight}" VerticalAlignment="Center" TextAlignment="Center"
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
@@ -205,7 +205,7 @@
                         </StackPanel>
                         <StackPanel IsVisible="{Binding IsController}" Spacing="10">
                             <StackPanel HorizontalAlignment="Stretch" Orientation="Horizontal">
-                                <TextBlock Text="LStick Button" VerticalAlignment="Center" TextAlignment="Left"
+                                <TextBlock Text="{local:Localize ControllerSettingsLStickButton}" VerticalAlignment="Center" TextAlignment="Left"
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
@@ -213,7 +213,7 @@
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Stretch" Spacing="5" Orientation="Horizontal">
-                                <TextBlock Text="LStick" VerticalAlignment="Center" TextAlignment="Left"
+                                <TextBlock Text="{local:Localize ControllerSettingsLStickStick}" VerticalAlignment="Center" TextAlignment="Left"
                                            HorizontalAlignment="Center" />
                                 <ToggleButton Tag="stick" MinWidth="50" MinHeight="30" VerticalAlignment="Center">
                                     <TextBlock TextAlignment="Center"
@@ -221,25 +221,25 @@
                                 </ToggleButton>
                                 <StackPanel>
                                     <CheckBox IsChecked="{Binding InputConfig.LeftJoyconStick.InvertStickX}">
-                                        <TextBlock Text="Invert Stick X" />
+                                        <TextBlock Text="{local:Localize ControllerSettingsLStickInvertXAxis}" />
                                     </CheckBox>
                                     <CheckBox IsChecked="{Binding InputConfig.LeftJoyconStick.InvertStickY}">
-                                        <TextBlock Text="Invert Stick Y" />
+                                        <TextBlock Text="{local:Localize ControllerSettingsLStickInvertYAxis}" />
                                     </CheckBox>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
                         <StackPanel IsVisible="{Binding IsController}" Spacing="0">
-                            <TextBlock Text="Deadzone Left" />
+                            <TextBlock Text="{local:Localize ControllerSettingsLStickDeadzone}" />
                             <Slider Maximum="1" Minimum="0" Value="{Binding InputConfig.DeadzoneLeft, Mode=TwoWay}" />
                             <TextBlock Text="{Binding InputConfig.DeadzoneLeft}" />
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Spacing="10">
-                        <TextBlock HorizontalAlignment="Center" Text="Right Stick" />
+                        <TextBlock HorizontalAlignment="Center" Text="{local:Localize ControllerSettingsRStick}" />
                         <StackPanel IsVisible="{Binding IsKeyboard}" Spacing="10">
                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                                <TextBlock Text="RStick Button" VerticalAlignment="Center" TextAlignment="Center"
+                                <TextBlock Text="{local:Localize ControllerSettingsRStickButton}" VerticalAlignment="Center" TextAlignment="Center"
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
@@ -247,7 +247,7 @@
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                                <TextBlock Text="RStick Up" VerticalAlignment="Center" TextAlignment="Center"
+                                <TextBlock Text="{local:Localize ControllerSettingsRStickUp}" VerticalAlignment="Center" TextAlignment="Center"
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
@@ -255,7 +255,7 @@
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                                <TextBlock Text="RStick Down" VerticalAlignment="Center" TextAlignment="Center"
+                                <TextBlock Text="{local:Localize ControllerSettingsRStickDown}" VerticalAlignment="Center" TextAlignment="Center"
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
@@ -263,7 +263,7 @@
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                                <TextBlock Text="RStick Left" VerticalAlignment="Center" TextAlignment="Center"
+                                <TextBlock Text="{local:Localize ControllerSettingsRStickLeft}" VerticalAlignment="Center" TextAlignment="Center"
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
@@ -271,7 +271,7 @@
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                                <TextBlock Text="RStick Right" VerticalAlignment="Center" TextAlignment="Center"
+                                <TextBlock Text="{local:Localize ControllerSettingsRStickRight}" VerticalAlignment="Center" TextAlignment="Center"
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
@@ -281,7 +281,7 @@
                         </StackPanel>
                         <StackPanel IsVisible="{Binding IsController}" Spacing="10">
                             <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                                <TextBlock Text="RStick Button" VerticalAlignment="Center" TextAlignment="Center"
+                                <TextBlock Text="{local:Localize ControllerSettingsRStickButton}" VerticalAlignment="Center" TextAlignment="Center"
                                            HorizontalAlignment="Left" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
@@ -289,7 +289,7 @@
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Spacing="5" Orientation="Horizontal">
-                                <TextBlock Text="RStick" VerticalAlignment="Center" TextAlignment="Center"
+                                <TextBlock Text="{local:Localize ControllerSettingsRStickStick}" VerticalAlignment="Center" TextAlignment="Center"
                                            HorizontalAlignment="Left" />
                                 <ToggleButton Tag="stick" MinWidth="70" MinHeight="30" VerticalAlignment="Center">
                                     <TextBlock TextAlignment="Center"
@@ -297,16 +297,16 @@
                                 </ToggleButton>
                                 <StackPanel>
                                     <CheckBox IsChecked="{Binding InputConfig.RightJoyconStick.InvertStickX}">
-                                        <TextBlock Text="Invert Stick X" />
+                                        <TextBlock Text="{local:Localize ControllerSettingsRStickInvertXAxis}" />
                                     </CheckBox>
                                     <CheckBox IsChecked="{Binding InputConfig.RightJoyconStick.InvertStickY}">
-                                        <TextBlock Text="Invert Stick Y" />
+                                        <TextBlock Text="{local:Localize ControllerSettingsRStickInvertYAxis}" />
                                     </CheckBox>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
                         <StackPanel IsVisible="{Binding IsController}" Spacing="0">
-                            <TextBlock Text="Deadzone Right" />
+                            <TextBlock Text="{local:Localize ControllerSettingsRStickDeadzone}" />
                             <Slider Maximum="1" Minimum="0" Value="{Binding InputConfig.DeadzoneRight, Mode=TwoWay}" />
                             <TextBlock Text="{Binding InputConfig.DeadzoneRight}" />
                         </StackPanel>
@@ -314,7 +314,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Vertical" Spacing="30">
                     <StackPanel Orientation="Vertical" Spacing="10">
-                        <TextBlock HorizontalAlignment="Center" Text="Triggers" />
+                        <TextBlock HorizontalAlignment="Center" Text="{local:Localize ControllerSettingsTriggers}" />
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
@@ -327,25 +327,25 @@
                                 <ColumnDefinition Width="10"/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Text="L" VerticalAlignment="Center" TextAlignment="Center"
+                            <TextBlock Text="{local:Localize ControllerSettingsTriggerL}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="100"/>
                             <ToggleButton Grid.Row="0" Grid.Column="2" MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch"  Margin="5" >
                                 <TextBlock TextAlignment="Center"
                                            Text="{Binding InputConfig.LeftJoycon.ButtonL, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
-                            <TextBlock Grid.Row="1" Grid.Column="0"  Text="R" VerticalAlignment="Center" TextAlignment="Center"
+                            <TextBlock Grid.Row="1" Grid.Column="0"  Text="{local:Localize ControllerSettingsTriggerR}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="100" />
                             <ToggleButton Grid.Row="1" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch"  Margin="5" >
                                 <TextBlock TextAlignment="Center"
                                            Text="{Binding InputConfig.RightJoycon.ButtonR, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
-                            <TextBlock Grid.Row="2" Grid.Column="0"  Text="ZL" VerticalAlignment="Center" TextAlignment="Center"
+                            <TextBlock Grid.Row="2" Grid.Column="0"  Text="{local:Localize ControllerSettingsTriggerZL}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="100" />
                             <ToggleButton Grid.Row="2" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch"  Margin="5" >
                                 <TextBlock TextAlignment="Center"
                                            Text="{Binding InputConfig.LeftJoycon.ButtonZl, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
-                            <TextBlock Grid.Row="3" Grid.Column="0"  Text="ZR" VerticalAlignment="Center" TextAlignment="Center"
+                            <TextBlock Grid.Row="3" Grid.Column="0"  Text="{local:Localize ControllerSettingsTriggerZR}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="100" />
                             <ToggleButton Grid.Row="3" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch"  Margin="5" >
                                 <TextBlock TextAlignment="Center"
@@ -354,7 +354,7 @@
                         </Grid>
                         <StackPanel Spacing="10" IsVisible="{Binding IsLeft}">
                             <StackPanel HorizontalAlignment="Center" Spacing="10" Orientation="Horizontal">
-                                <TextBlock Text="Left SL" VerticalAlignment="Center" TextAlignment="Center"
+                                <TextBlock Text="{local:Localize ControllerSettingsLeftSL}" VerticalAlignment="Center" TextAlignment="Center"
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
@@ -362,7 +362,7 @@
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Spacing="10" Orientation="Horizontal">
-                                <TextBlock Text="Left SR" VerticalAlignment="Center" TextAlignment="Center"
+                                <TextBlock Text="{local:Localize ControllerSettingsLeftSR}" VerticalAlignment="Center" TextAlignment="Center"
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
@@ -372,7 +372,7 @@
                         </StackPanel>
                         <StackPanel Spacing="10" IsVisible="{Binding IsRight}">
                             <StackPanel HorizontalAlignment="Center" Spacing="10" Orientation="Horizontal">
-                                <TextBlock Text="Right SL" VerticalAlignment="Center" TextAlignment="Center"
+                                <TextBlock Text="{local:Localize ControllerSettingsRightSL}" VerticalAlignment="Center" TextAlignment="Center"
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
@@ -380,7 +380,7 @@
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Spacing="10" Orientation="Horizontal">
-                                <TextBlock Text="Right SR" VerticalAlignment="Center" TextAlignment="Center"
+                                <TextBlock Text="{local:Localize ControllerSettingsRightSR}" VerticalAlignment="Center" TextAlignment="Center"
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
@@ -389,50 +389,50 @@
                             </StackPanel>
                         </StackPanel>
                         <StackPanel IsVisible="{Binding IsController}" Spacing="0">
-                            <TextBlock Text="Trigger Threshold" />
+                            <TextBlock Text="{local:Localize ControllerSettingsTriggerThreshold}" />
                             <Slider Maximum="1" Minimum="0" Value="{Binding InputConfig.TriggerThreshold, Mode=TwoWay}" />
                             <TextBlock Text="{Binding InputConfig.TriggerThreshold}" />
                         </StackPanel>
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Spacing="10" IsVisible="{Binding IsController}">
-                        <TextBlock HorizontalAlignment="Center" Text="Motion" />
+                        <TextBlock HorizontalAlignment="Center" Text="{local:Localize ControllerSettingsMotion}" />
                         <CheckBox IsChecked="{Binding InputConfig.Motion.EnableMotion}">
-                            <TextBlock Text="Enable Motion Controls" />
+                            <TextBlock Text="{local:Localize ControllerSettingsMotionEnableMotionControls}" />
                         </CheckBox>
                         <CheckBox IsChecked="{Binding IsCemuHookMotionController}">
-                            <TextBlock Text="Use CemuHook compatible motion" />
+                            <TextBlock Text="{local:Localize ControllerSettingsMotionUseCemuhookCompatibleMotion}" />
                         </CheckBox>
                         <StackPanel Spacing="10" IsVisible="{Binding IsCemuHookMotionController}">
                             <StackPanel Orientation="Horizontal" Spacing="20">
-                                <TextBlock Text="Controller Slot" VerticalAlignment="Center" />
+                                <TextBlock Text="{local:Localize ControllerSettingsMotionControllerSlot}" VerticalAlignment="Center" />
                                 <NumericUpDown Increment="1" Minimum="0" Maximum="4"
                                                Value="{Binding InputConfig.Motion.Slot}" />
                             </StackPanel>
                             <CheckBox IsChecked="{Binding InputConfig.Motion.MirrorInput}">
-                                <TextBlock Text="Mirror Input" />
+                                <TextBlock Text="{local:Localize ControllerSettingsMotionMirrorInput}" />
                             </CheckBox>
                             <StackPanel Orientation="Horizontal" Spacing="20">
-                                <TextBlock Text="Right JoyCon Slot" VerticalAlignment="Center" />
+                                <TextBlock Text="{local:Localize ControllerSettingsMotionRightJoyConSlot}" VerticalAlignment="Center" />
                                 <NumericUpDown Value="{Binding InputConfig.Motion.AltSlot}" Increment="1" Minimum="0"
                                                Maximum="4" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="20">
-                                <TextBlock Text="Server Host" VerticalAlignment="Center" />
+                                <TextBlock Text="{local:Localize ControllerSettingsMotionServerHost}" VerticalAlignment="Center" />
                                 <TextBox Text="{Binding InputConfig.Motion.DsuServerHost}" MinWidth="200" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="20">
-                                <TextBlock Text="Server Port" VerticalAlignment="Center" />
+                                <TextBlock Text="{local:Localize ControllerSettingsMotionServerPort}" VerticalAlignment="Center" />
                                 <NumericUpDown Value="{Binding InputConfig.Motion.DsuServerPort}" Increment="1"
                                                Minimum="0" Maximum="36656" />
                             </StackPanel>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Spacing="20">
-                            <TextBlock Text="Gyro Sensitivity %" VerticalAlignment="Center" />
+                            <TextBlock Text="{local:Localize ControllerSettingsMotionGyroSensitivity}" VerticalAlignment="Center" />
                             <NumericUpDown Value="{Binding InputConfig.Motion.Sensitivity}" Increment="1" Minimum="0"
                                            Maximum="100" />
                         </StackPanel>
                         <StackPanel Spacing="0">
-                            <TextBlock Text="Gyro Deadzone" />
+                            <TextBlock Text="{local:Localize ControllerSettingsMotionGyroDeadzone}" />
                             <Slider Maximum="100" Minimum="0"
                                     Value="{Binding InputConfig.Motion.GyroDeadzone, Mode=TwoWay}" />
                             <TextBlock Text="{Binding InputConfig.Motion.GyroDeadzone}" />
@@ -447,10 +447,10 @@
         </ScrollViewer>
         <StackPanel Margin="10" Grid.Row="2" HorizontalAlignment="Right" Orientation="Horizontal">
             <Button Margin="5" Name="SaveButton" Command="{Binding Save}">
-                <TextBlock Text="Save" />
+                <TextBlock Text="{local:Localize ControllerSettingsSave}" />
             </Button>
             <Button Margin="5" Name="CloseButton" Command="{Binding Close}">
-                <TextBlock Text="Close" />
+                <TextBlock Text="{local:Localize ControllerSettingsClose}" />
             </Button>
         </StackPanel>
     </Grid>

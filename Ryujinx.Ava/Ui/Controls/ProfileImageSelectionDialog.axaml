@@ -3,10 +3,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
+        xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
         x:Class="Ryujinx.Ava.Ui.Controls.ProfileImageSelectionDialog"
         SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterOwner"
-        Title="Profile Image Selection">
+        Title="{window:Localize ProfileImageSelectionTitle}"
+        CanResize="false">
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,10,5, 5">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -14,17 +16,17 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock FontWeight="Bold" FontSize="18" HorizontalAlignment="Center">Choose a profile Image</TextBlock>
+        <TextBlock FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" Text="{window:Localize ProfileImageSelectionHeader}" />
         <TextBlock FontWeight="Bold" Grid.Row="1" Margin="10" MaxWidth="400" TextWrapping="Wrap"
-                   HorizontalAlignment="Center" TextAlignment="Center">
-            You may import a custom profile image, or select an avatar from system firmware
-        </TextBlock>
+                   HorizontalAlignment="Center" TextAlignment="Center" Text="{window:Localize ProfileImageSelectionNote}" />
         <StackPanel Margin="5,0" Spacing="10" Grid.Row="3" HorizontalAlignment="Center"
                     Orientation="Horizontal">
-            <Button Name="Import" Click="Import_OnClick" Width="200">Import Image File</Button>
+            <Button Name="Import" Click="Import_OnClick" Width="200">
+                <TextBlock Text="{window:Localize ProfileImageSelectionImportImage}" />
+            </Button>
             <Button Name="SelectFirmwareImage" IsEnabled="{Binding FirmwareFound}" Click="SelectFirmwareImage_OnClick"
                     Width="200">
-                Select Firmware Avatar
+                <TextBlock Text="{window:Localize ProfileImageSelectionSelectAvatar}" />
             </Button>
         </StackPanel>
     </Grid>

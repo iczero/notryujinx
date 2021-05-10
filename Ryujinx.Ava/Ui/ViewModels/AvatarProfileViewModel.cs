@@ -12,6 +12,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.IO;
@@ -70,15 +71,23 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
         }
 
-        public byte[] SelectedImage { get; set; }
+        public byte[] SelectedImage { get; private set; }
 
         public void ReloadImages()
         {
             Images.Clear();
 
-            foreach (KeyValuePair<string, byte[]> image in AvatarDict)
+            int index = 0;
+            int selectedIndex = _selectedIndex;
+
+            foreach (var image in AvatarDict)
             {
-                _images.Add(image.Key, ProcessImage(image.Value));
+                var data = ProcessImage(image.Value);
+                _images.Add(image.Key, data);
+                if (index++ == selectedIndex)
+                {
+                    SelectedImage = data;
+                }
             }
         }
 
@@ -161,10 +170,10 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 byte[] input = new byte[stream.Length - stream.Position];
                 stream.Read(input, 0, input.Length);
 
-                long inputOffset = 0;
+                uint inputOffset = 0;
 
                 byte[] output = new byte[decodedLength];
-                long outputOffset = 0;
+                uint outputOffset = 0;
 
                 ushort mask = 0;
                 byte header = 0;
@@ -177,7 +186,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                         mask = 0x80;
                     }
 
-                    if ((header & mask) > 0)
+                    if ((header & mask) != 0)
                     {
                         if (outputOffset == output.Length)
                         {
@@ -191,18 +200,31 @@ namespace Ryujinx.Ava.Ui.ViewModels
                         byte byte1 = input[inputOffset++];
                         byte byte2 = input[inputOffset++];
 
-                        int dist = ((byte1 & 0xF) << 8) | byte2;
-                        int position = (int)outputOffset - (dist + 1);
+                        uint dist = (uint)((byte1 & 0xF) << 8) | byte2;
+                        uint position = outputOffset - (dist + 1);
 
-                        int length = byte1 >> 4;
+                        uint length = (uint)byte1 >> 4;
                         if (length == 0)
                         {
-                            length = input[inputOffset++] + 0x12;
+                            length = (uint)input[inputOffset++] + 0x12;
                         }
                         else
                         {
                             length += 2;
                         }
+
+                        uint gap = outputOffset - position;
+                        uint nonOverlappingLength = length;
+
+                        if (nonOverlappingLength > gap)
+                        {
+                            nonOverlappingLength = gap;
+                        }
+
+                        Buffer.BlockCopy(output, (int)position, output, (int)outputOffset, (int)nonOverlappingLength);
+                        outputOffset += nonOverlappingLength;
+                        position += nonOverlappingLength;
+                        length -= nonOverlappingLength;
 
                         while (length-- > 0)
                         {
