@@ -11,7 +11,7 @@ using System;
 
 namespace Ryujinx.Ava.Ui.Windows
 {
-    public class AvatarWindow : Window
+    public class AvatarWindow : StyleableWindow
     {
         public AvatarWindow(ContentManager contentManager)
         {

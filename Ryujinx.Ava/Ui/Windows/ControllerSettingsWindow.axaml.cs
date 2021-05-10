@@ -6,6 +6,7 @@ using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using Ryujinx.Ava.Ui.Models;
 using Ryujinx.Ava.Ui.ViewModels;
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Configuration.Hid.Controller;
@@ -18,6 +19,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Key = Ryujinx.Input.Key;
+using StickInputId = Ryujinx.Input.StickInputId;
 
 namespace Ryujinx.Ava.Ui.Windows
 {
@@ -228,7 +230,7 @@ namespace Ryujinx.Ava.Ui.Windows
             else if (selected.StartsWith("controller"))
             {
                 assigner = new GamepadButtonAssigner(ViewModel.SelectedGamepad,
-                    (ViewModel.InputConfig as StandardControllerInputConfig).TriggerThreshold, forStick);
+                    (ViewModel.InputConfig as InputConfiguration<GamepadButtonInputId, StickInputId>).TriggerThreshold, forStick);
             }
             else
             {
