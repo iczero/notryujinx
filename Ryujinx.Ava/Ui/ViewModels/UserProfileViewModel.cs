@@ -61,7 +61,17 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 Profiles.Add(new UserProfile(profile));
             }
 
-            SelectedProfile = Profiles.First(x => x.UserId == _owner.AccountManager.LastOpenedUser.UserId);
+            SelectedProfile = Profiles.FirstOrDefault(x => x.UserId == _owner.AccountManager.LastOpenedUser.UserId);
+
+            if (SelectedProfile == null)
+            {
+                SelectedProfile = Profiles.First();
+
+                if (SelectedProfile != null)
+                {
+                    _owner.AccountManager.OpenUser(_selectedProfile.UserId);
+                }
+            }
         }
 
         public async void ChooseProfileImage()

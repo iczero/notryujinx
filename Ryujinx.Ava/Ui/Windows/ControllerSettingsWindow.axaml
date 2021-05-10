@@ -83,37 +83,37 @@
                                        HorizontalAlignment="Center" MinWidth="40" />
                             <ToggleButton Grid.Row="0" Grid.Column="2" MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch" Margin="5">
                                 <TextBlock TextAlignment="Center"
-                                           Text="{Binding InputConfig.RightJoycon.ButtonA, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                           Text="{Binding InputConfig.ButtonA, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
                             <TextBlock Grid.Row="1" Grid.Column="0"  Text="{local:Localize ControllerSettingsButtonB}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="40" />
                             <ToggleButton Grid.Row="1" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch" Margin="5">
                                 <TextBlock TextAlignment="Center"
-                                           Text="{Binding InputConfig.RightJoycon.ButtonB, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                           Text="{Binding InputConfig.ButtonB, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
                             <TextBlock Grid.Row="2" Grid.Column="0"  Text="{local:Localize ControllerSettingsButtonX}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="40" />
                             <ToggleButton Grid.Row="2" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch" Margin="5">
                                 <TextBlock TextAlignment="Center"
-                                           Text="{Binding InputConfig.RightJoycon.ButtonX, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                           Text="{Binding InputConfig.ButtonX, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
                             <TextBlock Grid.Row="3" Grid.Column="0"  Text="{local:Localize ControllerSettingsButtonY}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="40" />
                             <ToggleButton Grid.Row="3" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch" Margin="5">
                                 <TextBlock TextAlignment="Center"
-                                           Text="{Binding InputConfig.RightJoycon.ButtonY, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                           Text="{Binding InputConfig.ButtonY, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
                             <TextBlock Grid.Row="4" Grid.Column="0"  Text="{local:Localize ControllerSettingsButtonPlus}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="40" />
                             <ToggleButton Grid.Row="4" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch" Margin="5">
                                 <TextBlock TextAlignment="Center"
-                                           Text="{Binding InputConfig.RightJoycon.ButtonPlus, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                           Text="{Binding InputConfig.ButtonPlus, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
                             <TextBlock Grid.Row="5" Grid.Column="0"  Text="{local:Localize ControllerSettingsButtonMinus}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="40" />
                             <ToggleButton Grid.Row="5" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch" Margin="5">
                                 <TextBlock TextAlignment="Center"
-                                           Text="{Binding InputConfig.LeftJoycon.ButtonMinus, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                           Text="{Binding InputConfig.ButtonMinus, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
                         </Grid>
                     </StackPanel>
@@ -135,25 +135,25 @@
                                        HorizontalAlignment="Center" MinWidth="100" />
                             <ToggleButton Grid.Row="0" Grid.Column="2" MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch" Margin="5">
                                 <TextBlock TextAlignment="Center"
-                                           Text="{Binding InputConfig.LeftJoycon.DpadUp, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                           Text="{Binding InputConfig.DpadUp, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
                             <TextBlock Grid.Row="1" Grid.Column="0"  Text="{local:Localize ControllerSettingsDPadDown}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="100" />
                             <ToggleButton Grid.Row="1" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch" Margin="5">
                                 <TextBlock TextAlignment="Center"
-                                           Text="{Binding InputConfig.LeftJoycon.DpadDown, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                           Text="{Binding InputConfig.DpadDown, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
                             <TextBlock Grid.Row="2" Grid.Column="0"  Text="{local:Localize ControllerSettingsDPadLeft}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="100" />
                             <ToggleButton Grid.Row="2" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch" Margin="5">
                                 <TextBlock TextAlignment="Center"
-                                           Text="{Binding InputConfig.LeftJoycon.DpadLeft, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                           Text="{Binding InputConfig.DpadLeft, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
                             <TextBlock Grid.Row="3" Grid.Column="0"  Text="{local:Localize ControllerSettingsDPadRight}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="100" />
                             <ToggleButton Grid.Row="3" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch" Margin="5">
                                 <TextBlock TextAlignment="Center"
-                                           Text="{Binding InputConfig.LeftJoycon.DpadRight, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                           Text="{Binding InputConfig.DpadRight, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
                         </Grid>
                     </StackPanel>
@@ -167,7 +167,7 @@
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
-                                               Text="{Binding InputConfig.LeftJoyconStick.StickButton, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                               Text="{Binding InputConfig.LeftKeyboardStickButton, Mode=TwoWay, Converter={StaticResource Key}}" />
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
@@ -175,7 +175,7 @@
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
-                                               Text="{Binding InputConfig.LeftJoyconStick.StickUp, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                               Text="{Binding InputConfig.LeftStickUp, Mode=TwoWay, Converter={StaticResource Key}}" />
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
@@ -183,7 +183,7 @@
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
-                                               Text="{Binding InputConfig.LeftJoyconStick.StickDown, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                               Text="{Binding InputConfig.LeftStickDown, Mode=TwoWay, Converter={StaticResource Key}}" />
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
@@ -191,7 +191,7 @@
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
-                                               Text="{Binding InputConfig.LeftJoyconStick.StickLeft, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                               Text="{Binding InputConfig.LeftStickLeft, Mode=TwoWay, Converter={StaticResource Key}}" />
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
@@ -199,7 +199,7 @@
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
-                                               Text="{Binding InputConfig.LeftJoyconStick.StickRight, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                               Text="{Binding InputConfig.LeftStickRight, Mode=TwoWay, Converter={StaticResource Key}}" />
                                 </ToggleButton>
                             </StackPanel>
                         </StackPanel>
@@ -209,7 +209,7 @@
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
-                                               Text="{Binding InputConfig.LeftJoyconStick.StickButton, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                               Text="{Binding InputConfig.LeftControllerStickButton, Mode=TwoWay, Converter={StaticResource Key}}" />
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Stretch" Spacing="5" Orientation="Horizontal">
@@ -217,13 +217,13 @@
                                            HorizontalAlignment="Center" />
                                 <ToggleButton Tag="stick" MinWidth="50" MinHeight="30" VerticalAlignment="Center">
                                     <TextBlock TextAlignment="Center"
-                                               Text="{Binding InputConfig.LeftJoyconStick.Joystick, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                               Text="{Binding InputConfig.LeftJoystick, Mode=TwoWay, Converter={StaticResource Key}}" />
                                 </ToggleButton>
                                 <StackPanel>
-                                    <CheckBox IsChecked="{Binding InputConfig.LeftJoyconStick.InvertStickX}">
+                                    <CheckBox IsChecked="{Binding InputConfig.LeftInvertStickX}">
                                         <TextBlock Text="{local:Localize ControllerSettingsLStickInvertXAxis}" />
                                     </CheckBox>
-                                    <CheckBox IsChecked="{Binding InputConfig.LeftJoyconStick.InvertStickY}">
+                                    <CheckBox IsChecked="{Binding InputConfig.LeftInvertStickY}">
                                         <TextBlock Text="{local:Localize ControllerSettingsLStickInvertYAxis}" />
                                     </CheckBox>
                                 </StackPanel>
@@ -243,7 +243,7 @@
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
-                                               Text="{Binding InputConfig.RightJoyconStick.StickButton, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                               Text="{Binding InputConfig.RightKeyboardStickButton, Mode=TwoWay, Converter={StaticResource Key}}" />
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
@@ -251,7 +251,7 @@
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
-                                               Text="{Binding InputConfig.RightJoyconStick.StickUp, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                               Text="{Binding InputConfig.RightStickUp, Mode=TwoWay, Converter={StaticResource Key}}" />
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
@@ -259,7 +259,7 @@
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
-                                               Text="{Binding InputConfig.RightJoyconStick.StickDown, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                               Text="{Binding InputConfig.RightStickDown, Mode=TwoWay, Converter={StaticResource Key}}" />
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
@@ -267,7 +267,7 @@
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
-                                               Text="{Binding InputConfig.RightJoyconStick.StickLeft, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                               Text="{Binding InputConfig.RightStickLeft, Mode=TwoWay, Converter={StaticResource Key}}" />
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
@@ -275,7 +275,7 @@
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
-                                               Text="{Binding InputConfig.RightJoyconStick.StickRight, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                               Text="{Binding InputConfig.RightStickRight, Mode=TwoWay, Converter={StaticResource Key}}" />
                                 </ToggleButton>
                             </StackPanel>
                         </StackPanel>
@@ -285,7 +285,7 @@
                                            HorizontalAlignment="Left" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
-                                               Text="{Binding InputConfig.RightJoyconStick.StickButton, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                               Text="{Binding InputConfig.RightControllerStickButton, Mode=TwoWay, Converter={StaticResource Key}}" />
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Spacing="5" Orientation="Horizontal">
@@ -293,13 +293,13 @@
                                            HorizontalAlignment="Left" />
                                 <ToggleButton Tag="stick" MinWidth="70" MinHeight="30" VerticalAlignment="Center">
                                     <TextBlock TextAlignment="Center"
-                                               Text="{Binding InputConfig.RightJoyconStick.Joystick, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                               Text="{Binding InputConfig.RightJoystick, Mode=TwoWay, Converter={StaticResource Key}}" />
                                 </ToggleButton>
                                 <StackPanel>
-                                    <CheckBox IsChecked="{Binding InputConfig.RightJoyconStick.InvertStickX}">
+                                    <CheckBox IsChecked="{Binding InputConfig.RightInvertStickX}">
                                         <TextBlock Text="{local:Localize ControllerSettingsRStickInvertXAxis}" />
                                     </CheckBox>
-                                    <CheckBox IsChecked="{Binding InputConfig.RightJoyconStick.InvertStickY}">
+                                    <CheckBox IsChecked="{Binding InputConfig.RightInvertStickY}">
                                         <TextBlock Text="{local:Localize ControllerSettingsRStickInvertYAxis}" />
                                     </CheckBox>
                                 </StackPanel>
@@ -331,25 +331,25 @@
                                        HorizontalAlignment="Center" MinWidth="100"/>
                             <ToggleButton Grid.Row="0" Grid.Column="2" MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch"  Margin="5" >
                                 <TextBlock TextAlignment="Center"
-                                           Text="{Binding InputConfig.LeftJoycon.ButtonL, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                           Text="{Binding InputConfig.ButtonL, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
                             <TextBlock Grid.Row="1" Grid.Column="0"  Text="{local:Localize ControllerSettingsTriggerR}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="100" />
                             <ToggleButton Grid.Row="1" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch"  Margin="5" >
                                 <TextBlock TextAlignment="Center"
-                                           Text="{Binding InputConfig.RightJoycon.ButtonR, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                           Text="{Binding InputConfig.ButtonR, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
                             <TextBlock Grid.Row="2" Grid.Column="0"  Text="{local:Localize ControllerSettingsTriggerZL}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="100" />
                             <ToggleButton Grid.Row="2" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch"  Margin="5" >
                                 <TextBlock TextAlignment="Center"
-                                           Text="{Binding InputConfig.LeftJoycon.ButtonZl, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                           Text="{Binding InputConfig.ButtonZl, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
                             <TextBlock Grid.Row="3" Grid.Column="0"  Text="{local:Localize ControllerSettingsTriggerZR}" VerticalAlignment="Center" TextAlignment="Center"
                                        HorizontalAlignment="Center" MinWidth="100" />
                             <ToggleButton Grid.Row="3" Grid.Column="2"  MinWidth="70" MinHeight="30" HorizontalAlignment="Stretch"  Margin="5" >
                                 <TextBlock TextAlignment="Center"
-                                           Text="{Binding InputConfig.RightJoycon.ButtonZr, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                           Text="{Binding InputConfig.ButtonZr, Mode=TwoWay, Converter={StaticResource Key}}" />
                             </ToggleButton>
                         </Grid>
                         <StackPanel Spacing="10" IsVisible="{Binding IsLeft}">
@@ -358,7 +358,7 @@
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
-                                               Text="{Binding InputConfig.LeftJoycon.ButtonSl, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                               Text="{Binding InputConfig.LeftButtonSl, Mode=TwoWay, Converter={StaticResource Key}}" />
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Spacing="10" Orientation="Horizontal">
@@ -366,7 +366,7 @@
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
-                                               Text="{Binding InputConfig.LeftJoycon.ButtonSr, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                               Text="{Binding InputConfig.LeftButtonSr, Mode=TwoWay, Converter={StaticResource Key}}" />
                                 </ToggleButton>
                             </StackPanel>
                         </StackPanel>
@@ -376,7 +376,7 @@
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
-                                               Text="{Binding InputConfig.RightJoycon.ButtonSl, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                               Text="{Binding InputConfig.RightButtonSl, Mode=TwoWay, Converter={StaticResource Key}}" />
                                 </ToggleButton>
                             </StackPanel>
                             <StackPanel HorizontalAlignment="Center" Spacing="10" Orientation="Horizontal">
@@ -384,7 +384,7 @@
                                            HorizontalAlignment="Center" MinWidth="100" />
                                 <ToggleButton MinWidth="70" MinHeight="30">
                                     <TextBlock TextAlignment="Center"
-                                               Text="{Binding InputConfig.RightJoycon.ButtonSr, Mode=TwoWay, Converter={StaticResource Key}}" />
+                                               Text="{Binding InputConfig.RightButtonSr, Mode=TwoWay, Converter={StaticResource Key}}" />
                                 </ToggleButton>
                             </StackPanel>
                         </StackPanel>
@@ -396,7 +396,7 @@
                     </StackPanel>
                     <StackPanel Orientation="Vertical" Spacing="10" IsVisible="{Binding IsController}">
                         <TextBlock HorizontalAlignment="Center" Text="{local:Localize ControllerSettingsMotion}" />
-                        <CheckBox IsChecked="{Binding InputConfig.Motion.EnableMotion}">
+                        <CheckBox IsChecked="{Binding InputConfig.EnableMotion}">
                             <TextBlock Text="{local:Localize ControllerSettingsMotionEnableMotionControls}" />
                         </CheckBox>
                         <CheckBox IsChecked="{Binding IsCemuHookMotionController}">
@@ -406,36 +406,36 @@
                             <StackPanel Orientation="Horizontal" Spacing="20">
                                 <TextBlock Text="{local:Localize ControllerSettingsMotionControllerSlot}" VerticalAlignment="Center" />
                                 <NumericUpDown Increment="1" Minimum="0" Maximum="4"
-                                               Value="{Binding InputConfig.Motion.Slot}" />
+                                               Value="{Binding InputConfig.Slot}" />
                             </StackPanel>
-                            <CheckBox IsChecked="{Binding InputConfig.Motion.MirrorInput}">
+                            <CheckBox IsChecked="{Binding InputConfig.MirrorInput}">
                                 <TextBlock Text="{local:Localize ControllerSettingsMotionMirrorInput}" />
                             </CheckBox>
                             <StackPanel Orientation="Horizontal" Spacing="20">
                                 <TextBlock Text="{local:Localize ControllerSettingsMotionRightJoyConSlot}" VerticalAlignment="Center" />
-                                <NumericUpDown Value="{Binding InputConfig.Motion.AltSlot}" Increment="1" Minimum="0"
+                                <NumericUpDown Value="{Binding InputConfig.AltSlot}" Increment="1" Minimum="0"
                                                Maximum="4" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="20">
                                 <TextBlock Text="{local:Localize ControllerSettingsMotionServerHost}" VerticalAlignment="Center" />
-                                <TextBox Text="{Binding InputConfig.Motion.DsuServerHost}" MinWidth="200" />
+                                <TextBox Text="{Binding InputConfig.DsuServerHost}" MinWidth="200" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="20">
                                 <TextBlock Text="{local:Localize ControllerSettingsMotionServerPort}" VerticalAlignment="Center" />
-                                <NumericUpDown Value="{Binding InputConfig.Motion.DsuServerPort}" Increment="1"
+                                <NumericUpDown Value="{Binding InputConfig.DsuServerPort}" Increment="1"
                                                Minimum="0" Maximum="36656" />
                             </StackPanel>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Spacing="20">
                             <TextBlock Text="{local:Localize ControllerSettingsMotionGyroSensitivity}" VerticalAlignment="Center" />
-                            <NumericUpDown Value="{Binding InputConfig.Motion.Sensitivity}" Increment="1" Minimum="0"
+                            <NumericUpDown Value="{Binding InputConfig.Sensitivity}" Increment="1" Minimum="0"
                                            Maximum="100" />
                         </StackPanel>
                         <StackPanel Spacing="0">
                             <TextBlock Text="{local:Localize ControllerSettingsMotionGyroDeadzone}" />
                             <Slider Maximum="100" Minimum="0"
-                                    Value="{Binding InputConfig.Motion.GyroDeadzone, Mode=TwoWay}" />
-                            <TextBlock Text="{Binding InputConfig.Motion.GyroDeadzone}" />
+                                    Value="{Binding InputConfig.GyroDeadzone, Mode=TwoWay}" />
+                            <TextBlock Text="{Binding InputConfig.GyroDeadzone}" />
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>

@@ -4,6 +4,8 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Platform;
 using Avalonia.Styling;
 using System;
+using System.IO;
+using System.Reflection;
 
 namespace Ryujinx.Ava.Ui.Windows
 {
@@ -34,6 +36,10 @@ namespace Ryujinx.Ava.Ui.Windows
                 });
 
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            
+            Stream? stream = Assembly.GetExecutingAssembly()
+                .GetManifestResourceStream("Ryujinx.Ava.Ui.Resources.Logo_Ryujinx.png");
+            Icon = new WindowIcon(stream);
         }
 
         Type IStyleable.StyleKey => typeof(Window);
