@@ -3,11 +3,12 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using MessageBoxSlim.Avalonia;
+using Ryujinx.Ava.Ui.Windows;
 using System;
 
 namespace Ryujinx.Ava.Ui.Controls
 {
-    public class InputDialog : Window
+    public class InputDialog : StyleableWindow
     {
         public string Message { get; set; }
         public string Input { get; set; }

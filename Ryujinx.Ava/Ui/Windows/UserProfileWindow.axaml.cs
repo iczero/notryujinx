@@ -11,7 +11,7 @@ using UserProfile = Ryujinx.Ava.Ui.Models.UserProfile;
 
 namespace Ryujinx.Ava.Ui.Windows
 {
-    public class UserProfileWindow : Window
+    public class UserProfileWindow : StyleableWindow
     {
         private TextBox _nameBox;
 
