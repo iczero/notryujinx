@@ -128,15 +128,15 @@
                 </MenuItem>
                 <Separator />
                 <MenuItem Header="{local:Localize MenuBarOptionsSettings}" Command="{Binding OpenSettings}" />
-                <MenuItem Header="Manage User Profiles" Command="{Binding ManageProfiles}" />
+                <MenuItem Header="{local:Localize MenuBarOptionsManageUserProfiles}" Command="{Binding ManageProfiles}" />
             </MenuItem>
-            <MenuItem Header="Actions" IsEnabled="{Binding IsGameRunning}">
+            <MenuItem Header="{local:Localize MenuBarActions}" IsEnabled="{Binding IsGameRunning}">
                 <MenuItem IsEnabled="{Binding IsGameRunning}" Header="{local:Localize MenuBarOptionsStopEmulation}"
                           Click="StopEmulation_Click" />
                 <MenuItem Command="{Binding SimulateWakeUpMessage}"
                           Header="{local:Localize MenuBarOptionsSimulateWakeUpMessage}" />
                 <Separator />
-                <MenuItem Header="Scan An Amiibo" Command="{Binding OpenAmiiboWindow}"
+                <MenuItem Header="{local:Localize MenuBarActionsScanAmiibo}" Command="{Binding OpenAmiiboWindow}"
                           IsEnabled="{Binding IsAmiiboRequested}" Name="ScanAmiiboMenuItem"
                           AttachedToVisualTree="ScanAmiiboMenuItem_AttachedToVisualTree" />
             </MenuItem>

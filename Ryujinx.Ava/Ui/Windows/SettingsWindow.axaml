@@ -17,27 +17,27 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-            <TabItem Header="General">
+            <TabItem Header="{window:Localize SettingsTabGeneral}">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
                               VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="10" Spacing="10">
-                        <TextBlock FontWeight="Bold" Text="General" />
+                        <TextBlock FontWeight="Bold" Text="{window:Localize SettingsTabGeneralGeneral}" />
                         <StackPanel Orientation="Vertical">
                             <CheckBox IsChecked="{Binding EnableDiscordIntegration}">
-                                <TextBlock Text="Enable Discord Rich Presence" />
+                                <TextBlock Text="{window:Localize SettingsTabGeneralEnableDiscordRichPresence}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding CheckUpdatesOnStart}">
-                                <TextBlock Text="Check for Updates on Launch" />
+                                <TextBlock Text="{window:Localize SettingsTabGeneralCheckUpdatesOnLaunch}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding ShowConfirmExit}">
-                                <TextBlock Text="Show &quot;Confirm Exit&quot; Dialog" />
+                                <TextBlock Text="{window:Localize SettingsTabGeneralShowConfirmExitDialog}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding HideCursorOnIdle}">
-                                <TextBlock Text="Hide Cursor on Idle" />
+                                <TextBlock Text="{window:Localize SettingsTabGeneralHideCursorOnIdle}" />
                             </CheckBox>
                         </StackPanel>
                         <Separator />
-                        <TextBlock FontWeight="Bold" Text="Game Directories" />
+                        <TextBlock FontWeight="Bold" Text="{window:Localize SettingsTabGeneralGameDirectories}" />
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
                             <ListBox Margin="0,10" MinHeight="300" Name="GameList" Items="{Binding GameDirectories}" />
                             <Grid HorizontalAlignment="Stretch">
@@ -49,27 +49,27 @@
                                 <TextBox Margin="0" VerticalAlignment="Stretch" Name="PathBox" />
                                 <Button Margin="5,0" MinWidth="90" Grid.Column="1" Name="AddButton"
                                         Click="AddButton_OnClick">
-                                    <TextBlock HorizontalAlignment="Center" Text="Add" />
+                                    <TextBlock HorizontalAlignment="Center" Text="{window:Localize SettingsTabGeneralAdd}" />
                                 </Button>
                                 <Button Margin="5,0" MinWidth="90" Grid.Column="2" Name="RemoveButton"
                                         Click="RemoveButton_OnClick">
-                                    <TextBlock HorizontalAlignment="Center" Text="Remove" />
+                                    <TextBlock HorizontalAlignment="Center" Text="{window:Localize SettingsTabGeneralRemove}" />
                                 </Button>
                             </Grid>
                         </StackPanel>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Input">
+            <TabItem Header="{window:Localize SettingsTabInput}">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
                               VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                     <StackPanel Orientation="Vertical" Margin="10">
                         <StackPanel Orientation="Horizontal" Spacing="20">
                             <CheckBox IsChecked="{Binding EnableDockedMode}">
-                                <TextBlock Text="Enable Docked Mode" />
+                                <TextBlock Text="{window:Localize SettingsTabInputEnableDockedMode}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding EnableKeyboard}">
-                                <TextBlock Text="Direct Keyboard Access" />
+                                <TextBlock Text="{window:Localize SettingsTabInputDirectKeyboardAccess}" />
                             </CheckBox>
                         </StackPanel>
                         <Separator Height="10" />
@@ -78,130 +78,130 @@
                             <StackPanel Margin="40" Grid.Column="0" Grid.Row="0" VerticalAlignment="Stretch"
                                         Spacing="30"
                                         HorizontalAlignment="Stretch" MinWidth="100" MinHeight="100">
-                                <TextBlock Text="Player 1" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <TextBlock Text="{window:Localize SettingsTabInputPlayer1}" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                 <Button VerticalAlignment="Center" HorizontalAlignment="Center" Tag="Player1"
                                         Click="Button_OnClick">
-                                    <TextBlock Text="Configure" />
+                                    <TextBlock Text="{window:Localize SettingsTabInputConfigure}" />
                                 </Button>
                             </StackPanel>
                             <StackPanel Margin="40" Grid.Column="1" Grid.Row="0" VerticalAlignment="Stretch"
                                         Spacing="30"
                                         HorizontalAlignment="Stretch" MinWidth="100" MinHeight="100">
-                                <TextBlock Text="Player 2" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <TextBlock Text="{window:Localize SettingsTabInputPlayer2}" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                 <Button VerticalAlignment="Center" HorizontalAlignment="Center" Tag="Player2"
                                         Click="Button_OnClick">
-                                    <TextBlock Text="Configure" />
+                                    <TextBlock Text="{window:Localize SettingsTabInputConfigure}" />
                                 </Button>
                             </StackPanel>
                             <StackPanel Margin="40" Grid.Column="2" Grid.Row="0" VerticalAlignment="Stretch"
                                         Spacing="30"
                                         HorizontalAlignment="Stretch" MinWidth="100" MinHeight="100">
-                                <TextBlock Text="Player 3" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <TextBlock Text="{window:Localize SettingsTabInputPlayer3}" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                 <Button VerticalAlignment="Center" HorizontalAlignment="Center" Tag="Player3"
                                         Click="Button_OnClick">
-                                    <TextBlock Text="Configure" />
+                                    <TextBlock Text="{window:Localize SettingsTabInputConfigure}" />
                                 </Button>
                             </StackPanel>
                             <StackPanel Margin="40" Grid.Column="0" Grid.Row="1" VerticalAlignment="Stretch"
                                         Spacing="30"
                                         HorizontalAlignment="Stretch" MinWidth="100" MinHeight="100">
-                                <TextBlock Text="Player 4" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <TextBlock Text="{window:Localize SettingsTabInputPlayer4}" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                 <Button VerticalAlignment="Center" HorizontalAlignment="Center" Tag="Player4"
                                         Click="Button_OnClick">
-                                    <TextBlock Text="Configure" />
+                                    <TextBlock Text="{window:Localize SettingsTabInputConfigure}" />
                                 </Button>
                             </StackPanel>
                             <StackPanel Margin="40" Grid.Column="1" Grid.Row="1" VerticalAlignment="Stretch"
                                         Spacing="30"
                                         HorizontalAlignment="Stretch" MinWidth="100" MinHeight="100">
-                                <TextBlock Text="Player 5" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <TextBlock Text="{window:Localize SettingsTabInputPlayer5}" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                 <Button VerticalAlignment="Center" HorizontalAlignment="Center" Tag="Player5"
                                         Click="Button_OnClick">
-                                    <TextBlock Text="Configure" />
+                                    <TextBlock Text="{window:Localize SettingsTabInputConfigure}" />
                                 </Button>
                             </StackPanel>
                             <StackPanel Margin="40" Grid.Column="2" Grid.Row="1" VerticalAlignment="Stretch"
                                         Spacing="30"
                                         HorizontalAlignment="Stretch" MinWidth="100" MinHeight="100">
-                                <TextBlock Text="Player 6" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <TextBlock Text="{window:Localize SettingsTabInputPlayer6}" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                 <Button VerticalAlignment="Center" HorizontalAlignment="Center" Tag="Player6"
                                         Click="Button_OnClick">
-                                    <TextBlock Text="Configure" />
+                                    <TextBlock Text="{window:Localize SettingsTabInputConfigure}" />
                                 </Button>
                             </StackPanel>
                             <StackPanel Margin="40" Grid.Column="0" Grid.Row="2" VerticalAlignment="Stretch"
                                         Spacing="30"
                                         HorizontalAlignment="Stretch" MinWidth="100" MinHeight="100">
-                                <TextBlock Text="Player 7" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <TextBlock Text="{window:Localize SettingsTabInputPlayer7}" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                 <Button VerticalAlignment="Center" HorizontalAlignment="Center" Tag="Player7"
                                         Click="Button_OnClick">
-                                    <TextBlock Text="Configure" />
+                                    <TextBlock Text="{window:Localize SettingsTabInputConfigure}" />
                                 </Button>
                             </StackPanel>
                             <StackPanel Margin="40" Grid.Column="1" Grid.Row="2" VerticalAlignment="Stretch"
                                         Spacing="30"
                                         HorizontalAlignment="Stretch" MinWidth="100" MinHeight="100">
-                                <TextBlock Text="Player 8" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <TextBlock Text="{window:Localize SettingsTabInputPlayer8}" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                 <Button VerticalAlignment="Center" HorizontalAlignment="Center" Tag="Player8"
                                         Click="Button_OnClick">
-                                    <TextBlock Text="Configure" />
+                                    <TextBlock Text="{window:Localize SettingsTabInputConfigure}" />
                                 </Button>
                             </StackPanel>
                             <StackPanel Margin="40" Grid.Column="2" Grid.Row="2" VerticalAlignment="Stretch"
                                         Spacing="30"
                                         HorizontalAlignment="Stretch" MinWidth="100" MinHeight="100">
-                                <TextBlock Text="Handheld" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <TextBlock Text="{window:Localize SettingsTabInputHandheld}" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                 <Button VerticalAlignment="Center" HorizontalAlignment="Center" Tag="Handheld"
                                         Click="Button_OnClick">
-                                    <TextBlock Text="Configure" />
+                                    <TextBlock Text="{window:Localize SettingsTabInputConfigure}" />
                                 </Button>
                             </StackPanel>
                         </Grid>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="System">
+            <TabItem Header="{window:Localize SettingsTabSystem}">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
                               VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="10" Spacing="10">
-                        <TextBlock FontWeight="Bold" Text="Core" />
+                        <TextBlock FontWeight="Bold" Text="{window:Localize SettingsTabSystemCore}" />
                         <StackPanel Orientation="Vertical">
                             <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
-                                <TextBlock Text="System Region:" VerticalAlignment="Center" />
+                                <TextBlock Text="{window:Localize SettingsTabSystemSystemRegion}" VerticalAlignment="Center" />
                                 <ComboBox SelectedIndex="{Binding Region}">
-                                    <ComboBoxItem>Japan</ComboBoxItem>
-                                    <ComboBoxItem>USA</ComboBoxItem>
-                                    <ComboBoxItem>Europe</ComboBoxItem>
-                                    <ComboBoxItem>Australia</ComboBoxItem>
-                                    <ComboBoxItem>China</ComboBoxItem>
-                                    <ComboBoxItem>Korea</ComboBoxItem>
-                                    <ComboBoxItem>Taiwan</ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemRegionJapan}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemRegionUSA}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemRegionEurope}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemRegionAustralia}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemRegionChina}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemRegionKorea}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemRegionTaiwan}" /></ComboBoxItem>
                                 </ComboBox>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
-                                <TextBlock Text="System Language:" VerticalAlignment="Center" />
+                                <TextBlock Text="{window:Localize SettingsTabSystemSystemLanguage}" VerticalAlignment="Center" />
                                 <ComboBox SelectedIndex="{Binding Language}">
-                                    <ComboBoxItem>Japanese</ComboBoxItem>
-                                    <ComboBoxItem>American English</ComboBoxItem>
-                                    <ComboBoxItem>French</ComboBoxItem>
-                                    <ComboBoxItem>German</ComboBoxItem>
-                                    <ComboBoxItem>Italian</ComboBoxItem>
-                                    <ComboBoxItem>Spanish</ComboBoxItem>
-                                    <ComboBoxItem>Chinese</ComboBoxItem>
-                                    <ComboBoxItem>Korean</ComboBoxItem>
-                                    <ComboBoxItem>Dutch</ComboBoxItem>
-                                    <ComboBoxItem>Portuguese</ComboBoxItem>
-                                    <ComboBoxItem>Russian</ComboBoxItem>
-                                    <ComboBoxItem>Taiwanese</ComboBoxItem>
-                                    <ComboBoxItem>British English</ComboBoxItem>
-                                    <ComboBoxItem>Canadian French</ComboBoxItem>
-                                    <ComboBoxItem>Latin American Spanish</ComboBoxItem>
-                                    <ComboBoxItem>Simplified Chinese</ComboBoxItem>
-                                    <ComboBoxItem>Traditional Chinese</ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemLanguageJapanese}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemLanguageAmericanEnglish}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemLanguageFrench}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemLanguageGerman}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemLanguageItalian}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemLanguageSpanish}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemLanguageChinese}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemLanguageKorean}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemLanguageDutch}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemLanguagePortuguese}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemLanguageRussian}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemLanguageTaiwanese}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemLanguageBritishEnglish}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemLanguageCanadianFrench}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemLanguageLatinAmericanSpanish}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemLanguageSimplifiedChinese}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemSystemLanguageTraditionalChinese}" /></ComboBoxItem>
                                 </ComboBox>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
-                                <TextBlock Text="System TimeZone:" VerticalAlignment="Center" />
+                                <TextBlock Text="{window:Localize SettingsTabSystemSystemTimeZone}" VerticalAlignment="Center" />
                                 <AutoCompleteBox MinWidth="250" FilterMode="Contains"
                                                  TextChanged="TimeZoneBox_OnTextChanged"
                                                  Text="{Binding Path=TimeZone, Mode=OneWay}" Name="TimeZoneBox"
@@ -210,148 +210,148 @@
                                                  SelectionChanged="TimeZoneBox_OnSelectionChanged" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
-                                <TextBlock Text="System Time" VerticalAlignment="Center" />
+                                <TextBlock Text="{window:Localize SettingsTabSystemSystemTime}" VerticalAlignment="Center" />
                                 <DatePicker VerticalAlignment="Center" SelectedDate="{Binding DateOffset}" />
                                 <TimePicker VerticalAlignment="Center" ClockIdentifier="24HourClock"
                                             SelectedTime="{Binding TimeOffset}" />
                             </StackPanel>
                             <CheckBox IsChecked="{Binding EnableVsync}">
-                                <TextBlock Text="Enable VSync" />
+                                <TextBlock Text="{window:Localize SettingsTabSystemEnableVsync}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding EnablePptc}">
-                                <TextBlock Text="Enable PPTC (Profiled Persistent Translation Cache)" />
+                                <TextBlock Text="{window:Localize SettingsTabSystemEnablePptc}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding EnableFsIntegrityChecks}">
-                                <TextBlock Text="Enable FS Integrity Checks" />
+                                <TextBlock Text="{window:Localize SettingsTabSystemEnableFsIntegrityChecks}" />
                             </CheckBox>
                             <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
-                                <TextBlock Text="Audio Backend:" VerticalAlignment="Center" />
+                                <TextBlock Text="{window:Localize SettingsTabSystemAudioBackend}" VerticalAlignment="Center" />
                                 <ComboBox SelectedIndex="{Binding AudioBackend}">
-                                    <ComboBoxItem>Dummy</ComboBoxItem>
-                                    <ComboBoxItem IsEnabled="{Binding IsOpenAlEnabled}">OpenAL</ComboBoxItem>
-                                    <ComboBoxItem IsEnabled="{Binding IsSoundIoEnabled}">SoundIO</ComboBoxItem>
-                                    <ComboBoxItem IsEnabled="{Binding IsSDL2Enabled}">SDL2</ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabSystemAudioBackendDummy}" /></ComboBoxItem>
+                                    <ComboBoxItem IsEnabled="{Binding IsOpenAlEnabled}"><TextBlock Text="{window:Localize SettingsTabSystemAudioBackendOpenAL}" /></ComboBoxItem>
+                                    <ComboBoxItem IsEnabled="{Binding IsSoundIoEnabled}"><TextBlock Text="{window:Localize SettingsTabSystemAudioBackendSoundIO}" /></ComboBoxItem>
+                                    <ComboBoxItem IsEnabled="{Binding IsSDL2Enabled}"><TextBlock Text="{window:Localize SettingsTabSystemAudioBackendSDL2}" /></ComboBoxItem>
                                 </ComboBox>
                             </StackPanel>
                         </StackPanel>
                         <Separator />
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock FontWeight="Bold" Text="Hacks" />
-                            <TextBlock Text=" - These many cause instabilities" />
+                            <TextBlock FontWeight="Bold" Text="{window:Localize SettingsTabSystemHacks}" />
+                            <TextBlock Text="{window:Localize SettingsTabSystemHacksNote}" />
                         </StackPanel>
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
                             <CheckBox IsChecked="{Binding ExpandDramSize}">
-                                <TextBlock Text="Expand DRAM size to 6GB" />
+                                <TextBlock Text="{window:Localize SettingsTabSystemExpandDramSize}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding IgnoreMissingServices}">
-                                <TextBlock Text="Ignore Missing Services" />
+                                <TextBlock Text="{window:Localize SettingsTabSystemIgnoreMissingServices}" />
                             </CheckBox>
                         </StackPanel>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Graphics">
+            <TabItem Header="{window:Localize SettingsTabGraphics}">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
                               VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="10" Spacing="10">
-                        <TextBlock FontWeight="Bold" Text="Enhancements" />
+                        <TextBlock FontWeight="Bold" Text="{window:Localize SettingsTabGraphicsEnhancements}" />
                         <CheckBox IsChecked="{Binding EnableShaderCache}">
-                            <TextBlock Text="Enable Shader Cache" />
+                            <TextBlock Text="{window:Localize SettingsTabGraphicsEnableShaderCache}" />
                         </CheckBox>
                         <StackPanel Orientation="Vertical">
                             <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
-                                <TextBlock Text="Anisotropic Filtering:" VerticalAlignment="Center" />
+                                <TextBlock Text="{window:Localize SettingsTabGraphicsAnisotropicFiltering}" VerticalAlignment="Center" />
                                 <ComboBox SelectedIndex="{Binding MaxAnisotropy}">
-                                    <ComboBoxItem>Auto</ComboBoxItem>
-                                    <ComboBoxItem>2x</ComboBoxItem>
-                                    <ComboBoxItem>4x</ComboBoxItem>
-                                    <ComboBoxItem>8x</ComboBoxItem>
-                                    <ComboBoxItem>16x</ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabGraphicsAnisotropicFilteringAuto}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabGraphicsAnisotropicFiltering2x}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabGraphicsAnisotropicFiltering4x}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabGraphicsAnisotropicFiltering8x}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabGraphicsAnisotropicFiltering16x}" /></ComboBoxItem>
                                 </ComboBox>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
-                                <TextBlock Text="Resolution Scale:" VerticalAlignment="Center" />
+                                <TextBlock Text="{window:Localize SettingsTabGraphicsResolutionScale}" VerticalAlignment="Center" />
                                 <ComboBox SelectedIndex="{Binding ResolutionScale}">
-                                    <ComboBoxItem>Custom (Not recommended)</ComboBoxItem>
-                                    <ComboBoxItem>Native (720p/1080p)</ComboBoxItem>
-                                    <ComboBoxItem>2x (1440p/2160p)</ComboBoxItem>
-                                    <ComboBoxItem>3x (2160p/3240p)</ComboBoxItem>
-                                    <ComboBoxItem>4x (2880p/4320p)</ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabGraphicsResolutionScaleCustom}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabGraphicsResolutionScaleNative}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabGraphicsResolutionScale2x}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabGraphicsResolutionScale3x}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabGraphicsResolutionScale4x}" /></ComboBoxItem>
                                 </ComboBox>
                                 <NumericUpDown Increment="0.01" Minimum="0.01" Maximum="100"
                                                IsVisible="{Binding IsResolutionScaleActive}"
                                                Value="{Binding CustomResolutionScale}" MinWidth="100" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
-                                <TextBlock Text="Aspect Ratio:" VerticalAlignment="Center" />
+                                <TextBlock Text="{window:Localize SettingsTabGraphicsAspectRatio}" VerticalAlignment="Center" />
                                 <ComboBox SelectedIndex="{Binding AspectRatio}">
-                                    <ComboBoxItem>4:3</ComboBoxItem>
-                                    <ComboBoxItem>16:9</ComboBoxItem>
-                                    <ComboBoxItem>16:10</ComboBoxItem>
-                                    <ComboBoxItem>21:9</ComboBoxItem>
-                                    <ComboBoxItem>32:9</ComboBoxItem>
-                                    <ComboBoxItem>Stretch to Fit Window</ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabGraphicsAspectRatio4x3}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabGraphicsAspectRatio16x9}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabGraphicsAspectRatio16x10}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabGraphicsAspectRatio21x9}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabGraphicsAspectRatio32x9}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabGraphicsAspectRatioStretch}" /></ComboBoxItem>
                                 </ComboBox>
                             </StackPanel>
                         </StackPanel>
                         <Separator />
-                        <TextBlock FontWeight="Bold" Text="Developer Options" />
+                        <TextBlock FontWeight="Bold" Text="{window:Localize SettingsTabGraphicsDeveloperOptions}" />
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
                             <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
-                                <TextBlock Text="Graphics Shader Dump Path:" VerticalAlignment="Center" />
+                                <TextBlock Text="{window:Localize SettingsTabGraphicsShaderDumpPath}" VerticalAlignment="Center" />
                                 <TextBox Text="{Binding ShaderDumpPath}" MinWidth="350" />
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="Logging">
+            <TabItem Header="{window:Localize SettingsTabLogging}">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto"
                               VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="10" Spacing="10">
-                        <TextBlock FontWeight="Bold" Text="Logging" />
+                        <TextBlock FontWeight="Bold" Text="{window:Localize SettingsTabLoggingLogging}" />
                         <StackPanel Orientation="Vertical">
                             <CheckBox IsChecked="{Binding EnableFileLog}">
-                                <TextBlock Text="Enable Logging to File" />
+                                <TextBlock Text="{window:Localize SettingsTabLoggingEnableLoggingToFile}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding EnableStub}">
-                                <TextBlock Text="Enable Stub Logs" />
+                                <TextBlock Text="{window:Localize SettingsTabLoggingEnableStubLogs}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding EnableInfo}">
-                                <TextBlock Text="Enable Info Logs" />
+                                <TextBlock Text="{window:Localize SettingsTabLoggingEnableInfoLogs}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding EnableWarn}">
-                                <TextBlock Text="Enable Warning Logs" />
+                                <TextBlock Text="{window:Localize SettingsTabLoggingEnableWarningLogs}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding EnableError}">
-                                <TextBlock Text="Enable Error Logs" />
+                                <TextBlock Text="{window:Localize SettingsTabLoggingEnableErrorLogs}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding EnableGuest}">
-                                <TextBlock Text="Enable Guest Logs" />
+                                <TextBlock Text="{window:Localize SettingsTabLoggingEnableGuestLogs}" />
                             </CheckBox>
                             <CheckBox IsChecked="{Binding EnableFsAccessLog}">
-                                <TextBlock Text="Enable Fs Access Logs" />
+                                <TextBlock Text="{window:Localize SettingsTabLoggingEnableFsAccessLogs}" />
                             </CheckBox>
                             <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
-                                <TextBlock Text="Fs Global Access Log Mode:" VerticalAlignment="Center" />
+                                <TextBlock Text="{window:Localize SettingsTabLoggingFsGlobalAccessLogMode}" VerticalAlignment="Center" />
                                 <NumericUpDown Maximum="3" Minimum="0" Increment="1"
                                                Value="{Binding FsGlobalAccessLogMode}" />
                             </StackPanel>
                         </StackPanel>
                         <Separator />
-                        <TextBlock FontWeight="Bold" Text="Developer Options (WARNING:  Will reduce performance)" />
+                        <TextBlock FontWeight="Bold" Text="{window:Localize SettingsTabLoggingDeveloperOptions}" />
                         <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Spacing="10">
                             <StackPanel Orientation="Horizontal" Spacing="20" Margin="0, 10">
-                                <TextBlock Text="OpenGL Log Level:" VerticalAlignment="Center" />
+                                <TextBlock Text="{window:Localize SettingsTabLoggingOpenglLogLevel}" VerticalAlignment="Center" />
                                 <ComboBox SelectedIndex="{Binding OpenglDebugLevel}">
-                                    <ComboBoxItem>None</ComboBoxItem>
-                                    <ComboBoxItem>Error</ComboBoxItem>
-                                    <ComboBoxItem>Slowdowns</ComboBoxItem>
-                                    <ComboBoxItem>All</ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabLoggingOpenglLogLevelNone}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabLoggingOpenglLogLevelError}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabLoggingOpenglLogLevelPerformance}" /></ComboBoxItem>
+                                    <ComboBoxItem><TextBlock Text="{window:Localize SettingsTabLoggingOpenglLogLevelAll}" /></ComboBoxItem>
                                 </ComboBox>
                             </StackPanel>
                             <CheckBox IsChecked="{Binding EnableDebug}">
-                                <TextBlock Text="Enable Debug Logs" />
+                                <TextBlock Text="{window:Localize SettingsTabLoggingEnableDebugLogs}" />
                             </CheckBox>
                         </StackPanel>
                     </StackPanel>
@@ -360,13 +360,13 @@
         </TabControl>
         <StackPanel Margin="10" Grid.Row="1" HorizontalAlignment="Right" Orientation="Horizontal">
             <Button Name="SaveButton" Click="SaveButton_Clicked">
-                <TextBlock Text="Save" />
+                <TextBlock Text="{window:Localize SettingsButtonSave}" />
             </Button>
             <Button Name="CloseButton" Click="CloseButton_Clicked">
-                <TextBlock Text="Close" />
+                <TextBlock Text="{window:Localize SettingsButtonClose}" />
             </Button>
             <Button  Name="ApplyButton" Click="ApplyButton_Clicked">
-                <TextBlock Text="Apply" />
+                <TextBlock Text="{window:Localize SettingsButtonApply}" />
             </Button>
         </StackPanel>
     </Grid>
