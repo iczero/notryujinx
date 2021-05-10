@@ -1,12 +1,9 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using PInvoke;
 using Ryujinx.Common.Configuration;
-using SPB.Graphics;
 using SPB.Platform.GLX;
 using SPB.Platform.WGL;
 using SPB.Windowing;
-using System;
 using System.Runtime.InteropServices;
 
 namespace Ryujinx.Ava.Ui.Controls
@@ -18,7 +15,7 @@ namespace Ryujinx.Ava.Ui.Controls
             Major = major;
             Minor = minor;
             DebugLevel = graphicsDebugLevel;
-            
+
             GLFW.WindowHint(WindowHintClientApi.ClientApi, ClientApi.OpenGlApi);
             GLFW.WindowHint(WindowHintInt.ContextVersionMajor, major);
             GLFW.WindowHint(WindowHintInt.ContextVersionMinor, minor);
@@ -29,7 +26,7 @@ namespace Ryujinx.Ava.Ui.Controls
                 GLFW.WindowHint(WindowHintBool.OpenGLDebugContext, true);
             }
         }
-        
+
         public NativeWindowBase Window { get; set; }
 
         public override unsafe void OnWindowCreated()

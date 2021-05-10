@@ -14,7 +14,7 @@ namespace Ryujinx.Ava.Ui.Controls
         public string SubMessage { get; set; }
 
         public uint MaxLength { get; }
-        
+
         public InputDialog(string title, string message, string input = "", string subMessage = "",
             uint maxLength = Int32.MaxValue)
         {

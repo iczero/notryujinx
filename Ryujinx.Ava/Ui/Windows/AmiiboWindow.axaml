@@ -11,8 +11,7 @@
                         CanResize="False"
                         Width="800" MinHeight="650" Height="650"
                         SizeToContent="Manual"
-                        MinWidth="600"
-                        Title="Ryujinx - About">
+                        MinWidth="600">
     <Design.DataContext>
         <viewModels:AmiiboWindowViewModel />
     </Design.DataContext>

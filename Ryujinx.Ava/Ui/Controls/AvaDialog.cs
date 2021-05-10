@@ -29,7 +29,8 @@ namespace Ryujinx.Ava.Ui.Controls
                 ContentTitle = title,
                 ContentMessage = $"{mainText}\n{secondaryText}",
                 Icon = new Bitmap(stream),
-                Buttons = buttonsType
+                Buttons = buttonsType,
+                CanResize = false
             });
         }
 

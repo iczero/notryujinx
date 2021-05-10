@@ -5,9 +5,9 @@
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
         x:Class="Ryujinx.Ava.Ui.Windows.AvatarWindow"
         CanResize="False"
+        xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
         xmlns:viewModels="clr-namespace:Ryujinx.Ava.Ui.ViewModels"
         xmlns:controls="clr-namespace:Ryujinx.Ava.Ui.Controls"
-        Title="Manage Accounts - Avatar"
         WindowStartupLocation="CenterOwner"
         SizeToContent="WidthAndHeight">
     <Design.DataContext>
@@ -36,9 +36,9 @@
             </ListBox.ItemTemplate>
         </ListBox>
         <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" Margin="10" HorizontalAlignment="Left">
-            <Button Content="Choose" Width="200" Name="ChooseButton" Click="ChooseButton_OnClick" />
-            <Button Content="Set Background Color" Width="200" Name="ColorButton" Click="ColorButton_OnClick" />
-            <Button HorizontalAlignment="Right" Content="Close" Click="CloseButton_OnClick" Name="CloseButton"
+            <Button Content="{window:Localize AvatarChoose}" Width="200" Name="ChooseButton" Click="ChooseButton_OnClick" />
+            <Button Content="{window:Localize AvatarSetBackgroundColor}" Width="200" Name="ColorButton" Click="ColorButton_OnClick" />
+            <Button HorizontalAlignment="Right" Content="{window:Localize AvatarClose}" Click="CloseButton_OnClick" Name="CloseButton"
                     Width="200" />
         </StackPanel>
     </Grid>
