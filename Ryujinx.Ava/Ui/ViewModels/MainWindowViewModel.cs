@@ -625,28 +625,28 @@ namespace Ryujinx.Ava.Ui.ViewModels
             switch (state)
             {
                 case PtcLoadingState ptcState:
-                    CacheLoadStatus = $"PTC : {current}/{total}";
+                    CacheLoadStatus = $"PTC: {current}/{total}";
                     if (ptcState == PtcLoadingState.Start)
                     {
-                        // _owner.HideGuestRendering();
-                        CacheLoadHeading = "Compiling PPTC";
+                        _owner.HideGuestRendering();
+                        CacheLoadHeading = "Compiling PTC";
                     }
                     else if (ptcState == PtcLoadingState.Loaded)
                     {
-                        // _owner.ShowGuestRendering();
+                        _owner.ShowGuestRendering();
                     }
                     showLoadProgress = ptcState != PtcLoadingState.Loaded;
                     break;
                 case ShaderCacheLoadingState shaderCacheState:
-                    CacheLoadStatus = $"Shaders : {current}/{total}";
+                    CacheLoadStatus = $"Shaders: {current}/{total}";
                     if (shaderCacheState == ShaderCacheLoadingState.Start)
                     {
-                        // _owner.HideGuestRendering();
+                        _owner.HideGuestRendering();
                         CacheLoadHeading = "Compiling shaders";
                     }
                     else if (shaderCacheState == ShaderCacheLoadingState.Loaded)
                     {
-                        // _owner.ShowGuestRendering();
+                        _owner.ShowGuestRendering();
                     }
                     showLoadProgress = shaderCacheState != ShaderCacheLoadingState.Loaded;
                     break;

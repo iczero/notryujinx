@@ -109,18 +109,34 @@ namespace Ryujinx.Ava.Ui.Controls
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                _handle = CreateLinux(null);
+                _handle = CreateLinux();
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                _handle = CreateWin32(null);
+                _handle = CreateWin32();
             }
+        }
+
+        public void Destroy()
+        {
+            OnWindowDestroying();
+
+            Task.Run(async () =>
+            {
+                // Delay deleting the actual window, because avalonia does not release it early enough
+                await Task.Delay(2000);
+                GLFWWindow.Dispose();
+
+                OnWindowDestroyed();
+
+                GLFW.Terminate();
+            });
         }
 
         private async void StateChanged(Rect rect)
         {
             SizeChanged?.Invoke(this, rect.Size);
-            
+
             if (!_init && WindowHandle != IntPtr.Zero && rect.Size != default)
             {
                 _init = true;
@@ -150,22 +166,9 @@ namespace Ryujinx.Ava.Ui.Controls
             return base.CreateNativeControlCore(parent);
         }
 
-        protected override void DestroyNativeControlCore(IPlatformHandle control)
-        {
-            OnWindowDestroying();
-            Task.Run(async () =>
-            {
-                // Delay deleting the actual window, because avalonia does not release it early enough
-                await Task.Delay(2000);
-                GLFWWindow.Dispose();
+        protected override void DestroyNativeControlCore(IPlatformHandle control) { }
 
-                OnWindowDestroyed();
-
-                GLFW.Terminate();
-            });
-        }
-
-        private unsafe IPlatformHandle CreateLinux(IPlatformHandle parent)
+        private unsafe IPlatformHandle CreateLinux()
         {
             CreateWindow();
 
@@ -173,6 +176,15 @@ namespace Ryujinx.Ava.Ui.Controls
             X11Display = (IntPtr)GlfwGetX11Display(GLFWWindow.WindowPtr);
 
             return new PlatformHandle(WindowHandle, "X11");
+        }
+
+        private unsafe IPlatformHandle CreateWin32()
+        {
+            CreateWindow();
+
+            WindowHandle = GLFW.GetWin32Window(GLFWWindow.WindowPtr);
+
+            return new PlatformHandle(WindowHandle, "HWND");
         }
 
         [DllImport("libglfw.so.3", EntryPoint = "glfwGetX11Display")]
@@ -259,15 +271,6 @@ namespace Ryujinx.Ava.Ui.Controls
         private void Window_MouseDown(MouseButtonEventArgs obj)
         {
             MouseDown?.Invoke(this, EventArgs.Empty);
-        }
-
-        private unsafe IPlatformHandle CreateWin32(IPlatformHandle parent)
-        {
-            CreateWindow();
-
-            WindowHandle = GLFW.GetWin32Window(GLFWWindow.WindowPtr);
-
-            return new PlatformHandle(WindowHandle, "HWND");
         }
 
         public virtual void Present() { }
