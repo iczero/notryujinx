@@ -27,20 +27,10 @@ namespace Ryujinx.Ava.Ui.Controls
             }
         }
 
-        public NativeWindowBase Window { get; set; }
 
         public override unsafe void OnWindowCreated()
         {
             base.OnWindowCreated();
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                Window = new WGLWindow(new NativeHandle(WindowHandle));
-            }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                Window = new GLXWindow(new NativeHandle(X11Display), new NativeHandle(WindowHandle));
-            }
 
             GLFWWindow.MakeCurrent();
 

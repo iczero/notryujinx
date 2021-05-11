@@ -230,7 +230,7 @@ namespace Ryujinx.Ava.Ui.Windows
             else if (selected.StartsWith("controller"))
             {
                 assigner = new GamepadButtonAssigner(ViewModel.SelectedGamepad,
-                    (ViewModel.InputConfig as InputConfiguration<GamepadButtonInputId, StickInputId>).TriggerThreshold, forStick);
+                    (ViewModel.InputConfig as InputConfiguration<GamepadInputId, StickInputId>).TriggerThreshold, forStick);
             }
             else
             {

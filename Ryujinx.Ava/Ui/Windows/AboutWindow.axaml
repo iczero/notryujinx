@@ -1,10 +1,11 @@
-<Locale:StyleableWindow xmlns="https://github.com/avaloniaui"
+<window:StyleableWindow xmlns="https://github.com/avaloniaui"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
                         x:Class="Ryujinx.Ava.Ui.Windows.AboutWindow"
                         xmlns:Locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+                        xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
                         CanResize="False"
                         Width="850" MinHeight="550" Height="550"
                         SizeToContent="Width"
@@ -119,4 +120,4 @@
             </Border>
         </Grid>
     </Grid>
-</Locale:StyleableWindow>
+</window:StyleableWindow>

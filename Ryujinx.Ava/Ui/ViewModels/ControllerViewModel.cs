@@ -157,12 +157,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             get => _device;
             set
             {
-                _device = value;
-
-                if (_device < 0)
-                {
-                    return;
-                }
+                _device = value < 0 ? 0 : value;
 
                 string selected = Devices.Keys.ToArray()[Device];
 
@@ -182,7 +177,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                         
                         if (config is StandardControllerInputConfig)
                         {
-                            InputConfig = new InputConfiguration<GamepadButtonInputId, StickInputId>(config);
+                            InputConfig = new InputConfiguration<GamepadInputId, StickInputId>(config);
                         }
                         else
                         {
@@ -342,14 +337,14 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
             catch { }
 
-            if (config == null)
+            if (config == null || config.Backend == InputBackendType.Invalid)
             {
                 config = LoadDefault();
             }
             
             if (config is StandardControllerInputConfig)
             {
-                InputConfig = new InputConfiguration<GamepadButtonInputId, StickInputId>(config);
+                InputConfig = new InputConfiguration<GamepadInputId, StickInputId>(config);
             }
             else
             {
@@ -480,8 +475,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private string GetProfileBasePath()
         {
             string path = AppDataManager.ProfilesDirPath;
-
-            string selected = Devices.Keys.ToArray()[Device];
+            
+            string selected = Devices.Keys.ToArray()[Device == -1 ? 0 : Device];
 
             if (selected.StartsWith("keyboard"))
             {
@@ -796,6 +791,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
             List<InputConfig> newConfig = new();
 
             newConfig.AddRange(ConfigurationState.Instance.Hid.InputConfig.Value);
+
+            newConfig.Remove(newConfig.Find(x => x == null));
 
             if (Device == 0)
             {

@@ -1,4 +1,4 @@
-<Locale:StyleableWindow xmlns="https://github.com/avaloniaui"
+<window:StyleableWindow xmlns="https://github.com/avaloniaui"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -7,6 +7,7 @@
                         xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Avalonia.Svg.Skia"
                         xmlns:c="clr-namespace:MessageBox.Avalonia.Controls;assembly=MessageBox.Avalonia"
                         xmlns:Locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+                        xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
                         xmlns:viewModels="clr-namespace:Ryujinx.Ava.Ui.ViewModels"
                         CanResize="False"
                         Width="800" MinHeight="650" Height="650"
@@ -59,4 +60,4 @@
             <Button Grid.Column="4" Width="80" Content="Cancel" Name="CancelButton" Click="CancelButton_Click" />
         </Grid>
     </Grid>
-</Locale:StyleableWindow>
+</window:StyleableWindow>

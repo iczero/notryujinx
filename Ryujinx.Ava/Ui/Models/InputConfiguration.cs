@@ -344,6 +344,8 @@ namespace Ryujinx.Ava.Ui.Models
                 config.Motion.Sensitivity = Sensitivity;
                 config.Motion.EnableMotion = EnableMotion;
                 config.Motion.GyroDeadzone = GyroDeadzone;
+
+                return config;
             }
 
             return null;
