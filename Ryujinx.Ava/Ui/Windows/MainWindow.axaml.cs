@@ -223,6 +223,7 @@ namespace Ryujinx.Ava.Ui.Windows
                 ViewModel.ShowMenuAndStatusBar = true;
             });
             GlRenderer.WindowCreated -= GlRenderer_Created;
+            GlRenderer.Destroy();
 
             AppHost = null;
 
