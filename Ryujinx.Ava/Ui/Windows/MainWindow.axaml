@@ -421,6 +421,52 @@
             </StackPanel>
         </ContentControl>
         <Grid
+            IsVisible="{Binding ShowLoadProgress}"
+            Grid.Row="1"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Background="Black">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Image
+                Grid.Row="1"
+                Width="256"
+                Height="256"
+                Margin="0,10,0,10"
+                Source="{Binding SelectedIcon, Converter={StaticResource ByteImage}}" />
+            <TextBlock
+                Grid.Row="2"
+                Margin="0,10,0,10"
+                FontWeight="Bold"
+                FontSize="38"
+                Text="{Binding CacheLoadHeading}"
+                TextAlignment="Center" />
+            <ProgressBar
+                Grid.Row="3"
+                BorderThickness="0.5"
+                BorderBrush="White"
+                Height="10"
+                Margin="160,0,160,0"
+                Maximum="{Binding ProgressMaximum}"
+                Minimum="0"
+                Value="{Binding ProgressValue}" />
+            <TextBlock
+                Grid.Row="4"
+                Margin="0,10,0,10"
+                FontSize="18"
+                Text="{Binding CacheLoadStatus}"
+                TextAlignment="Center" />
+        </Grid>
+        <Grid
             Name="StatusBar"
             Grid.Row="2"
             Margin="0"
@@ -530,21 +576,6 @@
                     TextAlignment="Left" />
             </StackPanel>
             <StackPanel Grid.Column="3" Orientation="Horizontal">
-                <StackPanel IsVisible="{Binding ShowLoadProgress}" Orientation="Horizontal">
-                    <TextBlock
-                        Margin="5,0,5,0"
-                        VerticalAlignment="Center"
-                        Text="{Binding CacheLoadStatus}"
-                        TextAlignment="Right" />
-                    <ProgressBar
-                        Height="5"
-                        MinWidth="100"
-                        Margin="5,0,5,0"
-                        VerticalAlignment="Center"
-                        Maximum="{Binding ProgressMaximum}"
-                        Minimum="0"
-                        Value="{Binding ProgressValue}" />
-                </StackPanel>
                 <TextBlock
                     Name="FirmwareStatus"
                     Margin="5,0,5,0"
