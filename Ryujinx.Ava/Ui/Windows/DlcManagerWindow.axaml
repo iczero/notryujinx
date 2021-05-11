@@ -1,10 +1,11 @@
-<Locale:StyleableWindow xmlns="https://github.com/avaloniaui"
+<window:StyleableWindow xmlns="https://github.com/avaloniaui"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
                         x:Class="Ryujinx.Ava.Ui.Windows.DlcManagerWindow"
                         xmlns:Locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+                        xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
                         SizeToContent="WidthAndHeight"
                         Width="850" Height="400"
                         MinWidth="500" MinHeight="400"
@@ -69,4 +70,4 @@
             </Button>
         </StackPanel>
     </Grid>
-</Locale:StyleableWindow>
+</window:StyleableWindow>
