@@ -1,7 +1,7 @@
 ﻿using LibHac.Common;
 using LibHac.Ns;
 
-namespace Ryujinx.Ava.Application
+namespace Ryujinx.Ava.Common
 {
     public class ApplicationData
     {
