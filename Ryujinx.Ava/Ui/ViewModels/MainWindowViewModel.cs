@@ -33,6 +33,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private AvaloniaList<ApplicationData> _applications;
         private DataGridCollectionView _appsCollection;
         private string _aspectStatusText;
+        private string _cacheLoadHeading;
         private string _cacheLoadStatus;
         private int _count;
         private string _dockedStatusText;
@@ -49,6 +50,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private bool _showLoadProgress;
         private bool _showMenuAndStatusBar = true;
         private Brush _vsyncColor;
+        private byte[] _selectedIcon;
 
         public MainWindowViewModel(MainWindow owner) : this()
         {
@@ -160,6 +162,17 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
         }
 
+        public string CacheLoadHeading
+        {
+            get => _cacheLoadHeading;
+            set
+            {
+                _cacheLoadHeading = value;
+
+                OnPropertyChanged();
+            }
+        }
+
         public string CacheLoadStatus
         {
             get => _cacheLoadStatus;
@@ -177,6 +190,17 @@ namespace Ryujinx.Ava.Ui.ViewModels
             set
             {
                 _vsyncColor = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public byte[] SelectedIcon
+        {
+            get => _selectedIcon;
+            set
+            {
+                _selectedIcon = value;
 
                 OnPropertyChanged();
             }
@@ -595,23 +619,42 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         private void ProgressHandler<T>(T state, int current, int total) where T : Enum
         {
+            bool showLoadProgress = false;
             ProgressMaximum = total;
             ProgressValue = current;
             switch (state)
             {
                 case PtcLoadingState ptcState:
-                    ShowLoadProgress = ptcState != PtcLoadingState.Loaded;
                     CacheLoadStatus = $"PTC : {current}/{total}";
+                    if (ptcState == PtcLoadingState.Start)
+                    {
+                        // _owner.HideGuestRendering();
+                        CacheLoadHeading = "Compiling PPTC";
+                    }
+                    else if (ptcState == PtcLoadingState.Loaded)
+                    {
+                        // _owner.ShowGuestRendering();
+                    }
+                    showLoadProgress = ptcState != PtcLoadingState.Loaded;
                     break;
                 case ShaderCacheLoadingState shaderCacheState:
-                    ShowLoadProgress = shaderCacheState != ShaderCacheLoadingState.Loaded;
                     CacheLoadStatus = $"Shaders : {current}/{total}";
+                    if (shaderCacheState == ShaderCacheLoadingState.Start)
+                    {
+                        // _owner.HideGuestRendering();
+                        CacheLoadHeading = "Compiling shaders";
+                    }
+                    else if (shaderCacheState == ShaderCacheLoadingState.Loaded)
+                    {
+                        // _owner.ShowGuestRendering();
+                    }
+                    showLoadProgress = shaderCacheState != ShaderCacheLoadingState.Loaded;
                     break;
                 default:
                     throw new ArgumentException($"Unknown Progress Handler type {typeof(T)}");
             }
 
-            ShowLoadProgress = ShowLoadProgress && IsGameRunning;
+            ShowLoadProgress = showLoadProgress && IsGameRunning;
         }
 
         public void OpenUserSaveDirectory()

@@ -175,11 +175,28 @@ namespace Ryujinx.Ava.Ui.Windows
                 ContentManager, AccountManager, this);
 
             GlRenderer.WindowCreated += GlRenderer_Created;
+            GlRenderer.Start();
 
-            ContentFrame.Content = GlRenderer;
-            
+            ShowGuestRendering();
+
             AppHost.StatusUpdatedEvent += Update_StatusBar;
             AppHost.AppExit += AppHost_AppExit;
+        }
+
+        public void ShowGuestRendering()
+        {
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                ContentFrame.Content = GlRenderer;
+            });
+        }
+
+        public void HideGuestRendering()
+        {
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                ContentFrame.Content = _mainViewContent;
+            });
         }
 
         private void GlRenderer_Created(object sender, IntPtr e)
@@ -242,22 +259,19 @@ namespace Ryujinx.Ava.Ui.Windows
 
         public void UpdateSizes(Size size)
         {
-            //Workaround for gamelist not fitting parent
+            // Workaround for gamelist not fitting parent
             if (GameList != null)
             {
                 Control firstSibling = GameList.Parent.LogicalChildren[0] as Control;
                 GameList.Height = GameList.Parent.Bounds.Height - GameList.Margin.Top - GameList.Margin.Bottom -
                                   firstSibling.Bounds.Height - firstSibling.Margin.Top - firstSibling.Margin.Bottom;
             }
-
-            AppHost?.SetRendererWindowSize(GlRenderer.Bounds.Size, PlatformImpl.DesktopScaling);
         }
 
         private void Resized(Size size)
         {
             UpdateSizes(size);
         }
-
 
         private void StateChanged(Rect rect)
         {
@@ -355,6 +369,8 @@ namespace Ryujinx.Ava.Ui.Windows
 
             if (selection != null && selection is ApplicationData data)
             {
+                ViewModel.SelectedIcon = data.Icon;
+
                 string path = new FileInfo(data.Path).FullName;
 
                 LoadGame(path);
