@@ -2,7 +2,6 @@
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
-using Avalonia.LogicalTree;
 using Avalonia.Platform;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -28,6 +27,8 @@ namespace Ryujinx.Ava.Ui.Controls
         public event EventHandler<Size> SizeChanged;
 
         private bool _init;
+        private double _scale;
+        private bool _isFullScreen;
 
         protected int Major { get; set; }
         protected int Minor { get; set; }
@@ -42,8 +43,10 @@ namespace Ryujinx.Ava.Ui.Controls
 
         public bool RendererFocused => GLFWWindow.IsFocused;
 
-        public NativeEmbeddedWindow()
+        public NativeEmbeddedWindow(double scale)
         {
+            _scale = scale;
+
             IObservable<Rect> stateObservable = this.GetObservable(BoundsProperty);
 
             MinHeight = 720;
@@ -69,26 +72,35 @@ namespace Ryujinx.Ava.Ui.Controls
         {
             get
             {
-                return GLFWWindow.IsFullscreen;
+                return _isFullScreen;
             }
             set
             {
-                if (GLFWWindow != null)
+                _isFullScreen = value;
+
+                UpdateSizes(_scale);
+            }
+        }
+
+        public unsafe void UpdateSizes(double scale)
+        {
+            _scale = scale;
+
+            if (GLFWWindow != null)
+            {
+                if (!_isFullScreen)
                 {
-                    if (!value)
-                    {
-                        GLFWWindow.Size = new Vector2i((int)Bounds.Width, (int)Bounds.Height);
-                    }
-                    else
-                    {
-                        var mode = GLFW.GetVideoMode(GLFW.GetPrimaryMonitor());
+                    GLFWWindow.Size = new Vector2i((int)(Bounds.Width * _scale), (int)(Bounds.Height * _scale));
+                }
+                else
+                {
+                    var mode = GLFW.GetVideoMode(GLFW.GetPrimaryMonitor());
 
-                        GLFWWindow.Size = new Vector2i(mode->Width, mode->Height);
-                        var position = this.PointToScreen(this.Bounds.Position);
-                        GLFWWindow.Location = new Vector2i(position.X, position.Y);
+                    GLFWWindow.Size = new Vector2i(mode->Width, mode->Height);
+                    var position = this.PointToScreen(Bounds.Position);
+                    GLFWWindow.Location = new Vector2i(position.X, position.Y);
 
-                        Bounds = Bounds;
-                    }
+                    Bounds = Bounds;
                 }
             }
         }

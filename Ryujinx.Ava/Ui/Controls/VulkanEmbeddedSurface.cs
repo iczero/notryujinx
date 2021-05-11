@@ -1,13 +1,12 @@
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Silk.NET.Vulkan;
-using Silk.NET.Vulkan.Extensions.KHR;
-using System;
-using System.Collections.Generic;
 
 namespace Ryujinx.Ava.Ui.Controls
 {
     public class VulkanEmbeddedSurface : NativeEmbeddedWindow
     {
+        public VulkanEmbeddedSurface(double scale) : base(scale) { }
+
         public unsafe SurfaceKHR CreateSurface(Instance instance, Vk vk)
         {
             GLFW.CreateWindowSurface(new VkHandle(instance.Handle), GLFWWindow.WindowPtr, null, out VkHandle surface);

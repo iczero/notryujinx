@@ -142,13 +142,17 @@ namespace Ryujinx.Ava
             ConfigurationState.Instance.HideCursorOnIdle.Event += HideCursorState_Changed;
         }
 
-        private void SetRendererWindowSize(Size size, double scale)
+        public void SetWindowScale(double scale)
+        {
+            Scaling = scale;
+        }
+
+        private void SetRendererWindowSize(Size size)
         {
             if (_renderer != null)
             {
+                double scale = Scaling;
                 _renderer.Window.SetSize((int)(size.Width * scale), (int)(size.Height * scale));
-
-                Scaling = scale;
             }
         }
 
@@ -520,7 +524,7 @@ namespace Ryujinx.Ava
             Width  = (int)e.Width;
             Height = (int)e.Height;
 
-            SetRendererWindowSize(e, Scaling);
+            SetRendererWindowSize(e);
         }
 
         private void MainLoop()

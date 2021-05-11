@@ -169,7 +169,8 @@ namespace Ryujinx.Ava.Ui.Windows
 
             _mainViewContent = ContentFrame.Content as Control;
 
-            GlRenderer = new OpenGlEmbeddedWindow(3, 3, ConfigurationState.Instance.Logger.GraphicsDebugLevel);
+            GlRenderer = new OpenGlEmbeddedWindow(3, 3, ConfigurationState.Instance.Logger.GraphicsDebugLevel,
+                PlatformImpl.DesktopScaling);
 
             AppHost = new AppHost(GlRenderer, Manager, PlatformImpl.DesktopScaling, path, VirtualFileSystem,
                 ContentManager, AccountManager, this);
@@ -267,6 +268,9 @@ namespace Ryujinx.Ava.Ui.Windows
                 GameList.Height = GameList.Parent.Bounds.Height - GameList.Margin.Top - GameList.Margin.Bottom -
                                   firstSibling.Bounds.Height - firstSibling.Margin.Top - firstSibling.Margin.Bottom;
             }
+
+            AppHost?.SetWindowScale(PlatformImpl.DesktopScaling);
+            GlRenderer?.UpdateSizes(PlatformImpl.DesktopScaling);
         }
 
         private void Resized(Size size)
