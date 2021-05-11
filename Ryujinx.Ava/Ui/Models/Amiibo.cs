@@ -37,7 +37,7 @@ namespace Ryujinx.Ava.Ui.Models
                 return Head + Tail;
             }
 
-            public override bool Equals(object? obj)
+            public override bool Equals(object obj)
             {
                 if (obj is AmiiboApi amiibo)
                 {
@@ -45,6 +45,11 @@ namespace Ryujinx.Ava.Ui.Models
                 }
 
                 return false;
+            }
+
+            public override int GetHashCode()
+            {
+                return base.GetHashCode();
             }
         }
 

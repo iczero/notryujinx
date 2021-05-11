@@ -46,12 +46,12 @@ namespace Ryujinx.Ava.Ui.Controls
             AvaloniaXamlLoader.Load(this);
         }
 
-        private void OKButton_OnClick(object? sender, RoutedEventArgs e)
+        private void OKButton_OnClick(object sender, RoutedEventArgs e)
         {
             Close(UserResult.Ok);
         }
 
-        private void CancelButton_OnClick(object? sender, RoutedEventArgs e)
+        private void CancelButton_OnClick(object sender, RoutedEventArgs e)
         {
             Close(UserResult.Cancel);
         }

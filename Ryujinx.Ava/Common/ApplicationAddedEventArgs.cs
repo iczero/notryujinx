@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ryujinx.Ava.Application
+namespace Ryujinx.Ava.Common
 {
     public class ApplicationAddedEventArgs : EventArgs
     {

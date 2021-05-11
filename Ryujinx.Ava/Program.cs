@@ -1,7 +1,7 @@
 using ARMeilleure.Translation.PTC;
 using Avalonia;
 using FFmpeg.AutoGen;
-using Ryujinx.Ava.Application;
+using Ryujinx.Ava.Application.Module;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.System;
@@ -14,34 +14,51 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace Ryujinx.Ava
 {
     internal class Program
     {
-        private static bool _initialized;
-
         public static string Version { get; private set; }
         public static string ConfigurationPath { get; private set; }
-
-        // Initialization code. Don't use any Avalonia, third-party APIs or any
-        // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
-        // yet and stuff might break.
-        public static void Main(string[] args)
-        {
-            Initialize(args);
-            BuildAvaloniaApp()
-                .StartWithClassicDesktopLifetime(args);
-        }
 
         [DllImport("libX11")]
         private static extern int XInitThreads();
 
+        // NOTE: Initialization code. Don't use any Avalonia, third-party APIs or any SynchronizationContext-reliant code before AppMain is called:
+        //       Things aren't initialized yet and stuff might break.
+        public static void Main(string[] args)
+        {
+            Initialize(args);
+
+            // Avalonia configuration, don't remove; also used by visual designer.
+            AppBuilder.Configure<App>()
+                .UsePlatformDetect()
+                .With(new X11PlatformOptions
+                {
+                    EnableMultiTouch = true,
+                    UseDBusMenu      = true,
+                    EnableIme        = true,
+                    UseEGL           = false,
+                    UseGpu           = false
+                })
+                .With(new Win32PlatformOptions
+                {
+                    EnableMultitouch       = true,
+                    UseWgl                 = false,
+                    AllowEglInitialization = false
+                })
+                .UseSkia()
+                .LogToTrace()
+                .StartWithClassicDesktopLifetime(args);
+        }
+
         private static void Initialize(string[] args)
         {
             // Parse Arguments
-            string launchPath = null;
-            string baseDirPath = null;
+            string launchPath        = null;
+            string baseDirectoryPath = null;
             for (int i = 0; i < args.Length; ++i)
             {
                 string arg = args[i];
@@ -51,10 +68,11 @@ namespace Ryujinx.Ava
                     if (i + 1 >= args.Length)
                     {
                         Logger.Error?.Print(LogClass.Application, $"Invalid option '{arg}'");
+
                         continue;
                     }
 
-                    baseDirPath = args[++i];
+                    baseDirectoryPath = args[++i];
                 }
                 else if (launchPath == null)
                 {
@@ -62,29 +80,27 @@ namespace Ryujinx.Ava
                 }
             }
 
-            // Task.Run(Updater.CleanupUpdate);
+            // Delete backup files after updating.
+            Task.Run(Updater.CleanupUpdate);
 
-            Version = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()
-                .InformationalVersion;
+            Version = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
 
             Console.Title = $"Ryujinx Console {Version}";
 
-            string systemPath = Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.Machine);
-            Environment.SetEnvironmentVariable("Path",
-                $"{Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "bin")};{systemPath}");
-
-            AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
-                ProcessUnhandledException(e.ExceptionObject as Exception, e.IsTerminating);
+            // Assign Event Handlers
+            AppDomain.CurrentDomain.UnhandledException += (sender, e) => ProcessUnhandledException(e.ExceptionObject as Exception, e.IsTerminating);
             AppDomain.CurrentDomain.ProcessExit += (sender, e) => Exit();
 
-            AppDataManager.Initialize(baseDirPath);
-
+            // Fix the ffmpeg path for Linux
             if (OperatingSystem.IsLinux())
             {
-                XInitThreads();
-                
+                _ = XInitThreads();
+
                 ffmpeg.RootPath = "/lib";
             }
+
+            // Initialize AppDataManager
+            AppDataManager.Initialize(baseDirectoryPath);
 
             // Initialize the configuration
             ConfigurationState.Initialize();
@@ -95,8 +111,8 @@ namespace Ryujinx.Ava
             // Initialize Discord integration
             DiscordIntegrationModule.Initialize();
 
-            SixLabors.ImageSharp.Configuration.Default.ImageFormatsManager.SetEncoder(JpegFormat.Instance,
-                new JpegEncoder {Quality = 100});
+            // Set ImageSharp JPEG quality
+            SixLabors.ImageSharp.Configuration.Default.ImageFormatsManager.SetEncoder(JpegFormat.Instance, new JpegEncoder { Quality = 100 });
 
             ReloadConfig();
 
@@ -107,15 +123,11 @@ namespace Ryujinx.Ava
 
         public static void ReloadConfig()
         {
-            string localConfigurationPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config.json");
-            string appDataConfigurationPath = Path.Combine(AppDataManager.BaseDirPath, "Config.json");
+            string localConfigurationPath   = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config.json");
+            string appDataConfigurationPath = Path.Combine(AppDataManager.BaseDirPath,            "Config.json");
 
             // Now load the configuration as the other subsystems are now registered
-            ConfigurationPath = File.Exists(localConfigurationPath)
-                ? localConfigurationPath
-                : File.Exists(appDataConfigurationPath)
-                    ? appDataConfigurationPath
-                    : null;
+            ConfigurationPath = File.Exists(localConfigurationPath) ? localConfigurationPath : File.Exists(appDataConfigurationPath) ? appDataConfigurationPath : null;
 
             if (ConfigurationPath == null)
             {
@@ -127,75 +139,28 @@ namespace Ryujinx.Ava
             }
             else
             {
-                if (ConfigurationFileFormat.TryLoad(ConfigurationPath,
-                    out ConfigurationFileFormat configurationFileFormat))
+                if (ConfigurationFileFormat.TryLoad(ConfigurationPath, out ConfigurationFileFormat configurationFileFormat))
                 {
                     ConfigurationState.Instance.Load(configurationFileFormat, ConfigurationPath);
                 }
                 else
                 {
                     ConfigurationState.Instance.LoadDefault();
-                    Logger.Warning?.PrintMsg(LogClass.Application,
-                        $"Failed to load config! Loading the default config instead.\nFailed config location {ConfigurationPath}");
+
+                    Logger.Warning?.PrintMsg(LogClass.Application, $"Failed to load config! Loading the default config instead.\nFailed config location {ConfigurationPath}");
                 }
             }
         }
-
-        public static void InitializeGlBindings(Func<string, IntPtr> getProcAddress)
-        {
-            if (_initialized)
-            {
-                return;
-            }
-            // We don't put a hard dependency on OpenTK.Graphics here.
-            // So we need to use reflection to initialize the GL bindings, so users don't have to.
-
-            // Try to load OpenTK.Graphics assembly.
-            Assembly assembly;
-            try
-            {
-                assembly = Assembly.Load("OpenTK.Graphics");
-            }
-            catch
-            {
-                // Failed to load graphics, oh well.
-                // Up to the user I guess?
-                // TODO: Should we expose this load failure to the user better?
-                return;
-            }
-
-            AvaloniaBindingHelper provider = new(getProcAddress);
-
-            void LoadBindings(string typeNamespace)
-            {
-                Type? type = assembly.GetType($"OpenTK.Graphics.{typeNamespace}.GL");
-                if (type == null)
-                {
-                    return;
-                }
-
-                MethodInfo? load = type.GetMethod("LoadBindings");
-                load.Invoke(null, new object[] {provider});
-            }
-
-            LoadBindings("ES11");
-            LoadBindings("ES20");
-            LoadBindings("ES30");
-            LoadBindings("OpenGL");
-            LoadBindings("OpenGL4");
-
-            _initialized = true;
-        }
-
 
         private static void PrintSystemInfo()
         {
             Logger.Notice.Print(LogClass.Application, $"Ryujinx Version: {Version}");
+
             SystemInfo.Gather().Print();
 
             IReadOnlyCollection<LogLevel> enabledLogs = Logger.GetEnabledLevels();
-            Logger.Notice.Print(LogClass.Application,
-                $"Logs Enabled: {(enabledLogs.Count == 0 ? "<None>" : string.Join(", ", enabledLogs))}");
+
+            Logger.Notice.Print(LogClass.Application, $"Logs Enabled: {(enabledLogs.Count == 0 ? "<None>" : string.Join(", ", enabledLogs))}");
 
             if (AppDataManager.Mode == AppDataManager.LaunchMode.Custom)
             {
@@ -235,27 +200,6 @@ namespace Ryujinx.Ava
             PtcProfiler.Dispose();
 
             Logger.Shutdown();
-        }
-
-        // Avalonia configuration, don't remove; also used by visual designer.
-        public static AppBuilder BuildAvaloniaApp()
-        {
-            return AppBuilder.Configure<App>()
-                .UsePlatformDetect()
-                .With(new X11PlatformOptions
-                {
-                    EnableMultiTouch = true,
-                    UseDBusMenu = true,
-                    EnableIme = true,
-                    UseEGL = false,
-                    UseGpu = false
-                })
-                .With(new Win32PlatformOptions
-                {
-                    EnableMultitouch = true, UseWgl = false, AllowEglInitialization = false
-                })
-                .UseSkia()
-                .LogToTrace();
         }
     }
 }

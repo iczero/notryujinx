@@ -59,12 +59,12 @@ namespace Ryujinx.Ava.Ui.Windows
             ViewModel?.Dispose();
         }
 
-        private void ViewModelOnOnClose(object? sender, EventArgs e)
+        private void ViewModelOnOnClose(object sender, EventArgs e)
         {
             Close();
         }
 
-        private void OnActivated(object? sender, EventArgs e)
+        private void OnActivated(object sender, EventArgs e)
         {
             IEnumerable<ILogical> children = View.GetLogicalDescendants();
             foreach (ILogical visual in children)
@@ -80,7 +80,7 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
-        private void ButtonOnUnchecked(object? sender, RoutedEventArgs e)
+        private void ButtonOnUnchecked(object sender, RoutedEventArgs e)
         {
             if (CurrentToggledButton != null)
             {
@@ -102,7 +102,7 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
-        private void ButtonOnCheck(object? sender, RoutedEventArgs e)
+        private void ButtonOnCheck(object sender, RoutedEventArgs e)
         {
             if (sender is ToggleButton button)
             {
@@ -136,7 +136,7 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
-        public async void HandleButtonPressed(ToggleButton button, bool forStick)
+        public void HandleButtonPressed(ToggleButton button, bool forStick)
         {
             if (_isWaitingForInput)
             {
@@ -240,7 +240,7 @@ namespace Ryujinx.Ava.Ui.Windows
             return assigner;
         }
 
-        private void MouseClick(object? sender, PointerPressedEventArgs e)
+        private void MouseClick(object sender, PointerPressedEventArgs e)
         {
             _mousePressed = true;
         }

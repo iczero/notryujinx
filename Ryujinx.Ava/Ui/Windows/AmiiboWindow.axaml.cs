@@ -45,7 +45,7 @@ namespace Ryujinx.Ava.Ui.Windows
             AvaloniaXamlLoader.Load(this);
         }
 
-        private void ScanButton_Click(object? sender, RoutedEventArgs e)
+        private void ScanButton_Click(object sender, RoutedEventArgs e)
         {
             if (ViewModel.AmiiboSelectedIndex > -1)
             {
@@ -56,7 +56,7 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
-        private void CancelButton_Click(object? sender, RoutedEventArgs e)
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             IsScanned = false;
 
