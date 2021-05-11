@@ -23,11 +23,11 @@ namespace Ryujinx.Ava.Common
 {
     public class ApplicationLibrary
     {
-        private static readonly byte[] _nspIcon = GetResourceBytes("Ryujinx.Ava.Ui.Resources.Icon_NSP.png");
-        private static readonly byte[] _xciIcon = GetResourceBytes("Ryujinx.Ava.Ui.Resources.Icon_XCI.png");
-        private static readonly byte[] _ncaIcon = GetResourceBytes("Ryujinx.Ava.Ui.Resources.Icon_NCA.png");
-        private static readonly byte[] _nroIcon = GetResourceBytes("Ryujinx.Ava.Ui.Resources.Icon_NRO.png");
-        private static readonly byte[] _nsoIcon = GetResourceBytes("Ryujinx.Ava.Ui.Resources.Icon_NSO.png");
+        private static readonly byte[] _nspIcon = GetResourceBytes("Ryujinx.Ava.Assets.Images.Icon_NSP.png");
+        private static readonly byte[] _xciIcon = GetResourceBytes("Ryujinx.Ava.Assets.Images.Icon_XCI.png");
+        private static readonly byte[] _ncaIcon = GetResourceBytes("Ryujinx.Ava.Assets.Images.Icon_NCA.png");
+        private static readonly byte[] _nroIcon = GetResourceBytes("Ryujinx.Ava.Assets.Images.Icon_NRO.png");
+        private static readonly byte[] _nsoIcon = GetResourceBytes("Ryujinx.Ava.Assets.Images.Icon_NSO.png");
 
         private static VirtualFileSystem _virtualFileSystem;
         private static Language _desiredTitleLanguage;

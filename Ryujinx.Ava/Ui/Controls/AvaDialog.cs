@@ -23,7 +23,7 @@ namespace Ryujinx.Ava.Ui.Controls
         {
             _owner = owner;
             Assembly assembly = Assembly.GetExecutingAssembly();
-            Stream stream = assembly.GetManifestResourceStream("Ryujinx.Ava.Ui.Resources.Logo_Ryujinx.png");
+            Stream stream = assembly.GetManifestResourceStream("Ryujinx.Ava.Assets.Images.Logo_Ryujinx.png");
             _dialog = BoxedMessage.Create(new MessageBoxParams
             {
                 ContentTitle = title,

@@ -9,6 +9,7 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using LibHac;
 using Ryujinx.Ava.Common;
+using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.Applet;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Models;
@@ -234,7 +235,7 @@ namespace Ryujinx.Ava.Ui.Windows
             SystemVersion version = ContentManager.GetCurrentFirmwareVersion();
             Dispatcher.UIThread.InvokeAsync(() =>
             {
-                string systemVersionFormat = Localizer.Instance[LocalizationStringKeys.StatusBarSystemVersion];
+                string systemVersionFormat = LocaleManager.Instance["StatusBarSystemVersion"];
                 FirmwareStatus.Text = string.Format(systemVersionFormat, version.VersionString);
             });
         }

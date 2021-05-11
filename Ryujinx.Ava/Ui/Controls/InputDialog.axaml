@@ -3,7 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
+        xmlns:Locale="clr-namespace:Ryujinx.Ava.Common.Locale"
         x:Class="Ryujinx.Ava.Ui.Controls.InputDialog"
         SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterOwner"
@@ -22,10 +22,10 @@
         <StackPanel Margin="5,0" Spacing="10" Grid.Row="3" HorizontalAlignment="Center"
                     Orientation="Horizontal">
             <Button Name="OkButton" Click="OKButton_OnClick" Width="100">
-                <TextBlock Text="{window:Localize InputDialogOk}" />
+                <TextBlock Text="{Locale:Locale InputDialogOk}" />
             </Button>
             <Button Name="CancelButton" Click="CancelButton_OnClick" Width="100">
-                <TextBlock Text="{window:Localize InputDialogCancel}" />
+                <TextBlock Text="{Locale:Locale InputDialogCancel}" />
             </Button>
         </StackPanel>
     </Grid>

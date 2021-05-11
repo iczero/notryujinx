@@ -16,25 +16,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Ui\Resources\Controller_JoyConLeft.svg" />
-    <None Remove="Ui\Resources\Controller_JoyConPair.svg" />
-    <None Remove="Ui\Resources\Controller_JoyConRight.svg" />
-    <None Remove="Ui\Resources\Controller_ProCon.svg" />
-    <None Remove="Ui\Resources\Icon_NCA.png" />
-    <None Remove="Ui\Resources\Icon_NRO.png" />
-    <None Remove="Ui\Resources\Icon_NSO.png" />
-    <None Remove="Ui\Resources\Icon_NSP.png" />
-    <None Remove="Ui\Resources\Icon_XCI.png" />
-    <None Remove="Ui\Resources\Logo_Amiibo.png" />
-    <None Remove="Ui\Resources\Logo_Discord.png" />
-    <None Remove="Ui\Resources\Logo_GitHub.png" />
-    <None Remove="Ui\Resources\Logo_Patreon.png" />
-    <None Remove="Ui\Resources\Logo_Ryujinx.png" />
-    <None Remove="Ui\Resources\Logo_Twitter.png" />
-    <None Remove="Ui\Resources\FluentUiIconsFilled.xaml" />
-    <None Remove="Ui\Resources\FluentUiIconsRegular.xaml" />
-    <None Remove="Ui\Resources\UiStrings_eng.txt" />
-    <None Remove="Ui\Resources\UiStrings_por.txt" />
     <None Update="alsoft.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -75,25 +56,26 @@
     <PackageReference Include="SPB" Version="0.0.2" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Ui\Resources\Controller_JoyConLeft.svg" />
-    <EmbeddedResource Include="Ui\Resources\Controller_JoyConPair.svg" />
-    <EmbeddedResource Include="Ui\Resources\Controller_JoyConRight.svg" />
-    <EmbeddedResource Include="Ui\Resources\Controller_ProCon.svg" />
-    <EmbeddedResource Include="Ui\Resources\Icon_NCA.png" />
-    <EmbeddedResource Include="Ui\Resources\Icon_NRO.png" />
-    <EmbeddedResource Include="Ui\Resources\Icon_NSO.png" />
-    <EmbeddedResource Include="Ui\Resources\Icon_NSP.png" />
-    <EmbeddedResource Include="Ui\Resources\Icon_XCI.png" />
-    <EmbeddedResource Include="Ui\Resources\Logo_Amiibo.png" />
-    <EmbeddedResource Include="Ui\Resources\Logo_Discord.png" />
-    <EmbeddedResource Include="Ui\Resources\Logo_GitHub.png" />
-    <EmbeddedResource Include="Ui\Resources\Logo_Patreon.png" />
-    <EmbeddedResource Include="Ui\Resources\Logo_Ryujinx.png" />
-    <EmbeddedResource Include="Ui\Resources\Logo_Twitter.png" />
+    <EmbeddedResource Include="Assets\Images\Controller_JoyConLeft.svg" />
+    <EmbeddedResource Include="Assets\Images\Controller_JoyConPair.svg" />
+    <EmbeddedResource Include="Assets\Images\Controller_JoyConRight.svg" />
+    <EmbeddedResource Include="Assets\Images\Controller_ProCon.svg" />
+    <EmbeddedResource Include="Assets\Images\Icon_NCA.png" />
+    <EmbeddedResource Include="Assets\Images\Icon_NRO.png" />
+    <EmbeddedResource Include="Assets\Images\Icon_NSO.png" />
+    <EmbeddedResource Include="Assets\Images\Icon_NSP.png" />
+    <EmbeddedResource Include="Assets\Images\Icon_XCI.png" />
+    <EmbeddedResource Include="Assets\Images\Logo_Amiibo.png" />
+    <EmbeddedResource Include="Assets\Images\Logo_Discord.png" />
+    <EmbeddedResource Include="Assets\Images\Logo_GitHub.png" />
+    <EmbeddedResource Include="Assets\Images\Logo_Patreon.png" />
+    <EmbeddedResource Include="Assets\Images\Logo_Ryujinx.png" />
+    <EmbeddedResource Include="Assets\Images\Logo_Twitter.png" />
+    <EmbeddedResource Include="Assets\Locales\en_US.json" />
+    <EmbeddedResource Include="Assets\Locales\fr_FR.json" />
+    <EmbeddedResource Include="Assets\Locales\pt_BR.json" />
     <EmbeddedResource Include="Assets\Styles\FluentUiIconsFilled.xaml" />
     <EmbeddedResource Include="Assets\Styles\FluentUiIconsRegular.xaml" />
-    <EmbeddedResource Include="Ui\Resources\UiStrings_eng.txt" />
-    <EmbeddedResource Include="Ui\Resources\UiStrings_por.txt" />
     <EmbeddedResource Include="Assets\Styles\Styles.xaml" />
   </ItemGroup>
   <ItemGroup>

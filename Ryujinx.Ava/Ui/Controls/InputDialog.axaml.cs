@@ -1,10 +1,8 @@
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using MessageBoxSlim.Avalonia;
 using Ryujinx.Ava.Ui.Windows;
-using System;
 
 namespace Ryujinx.Ava.Ui.Controls
 {
@@ -16,8 +14,7 @@ namespace Ryujinx.Ava.Ui.Controls
 
         public uint MaxLength { get; }
 
-        public InputDialog(string title, string message, string input = "", string subMessage = "",
-            uint maxLength = Int32.MaxValue)
+        public InputDialog(string title, string message, string input = "", string subMessage = "", uint maxLength = int.MaxValue)
         {
             Message = message;
             Input = input;
