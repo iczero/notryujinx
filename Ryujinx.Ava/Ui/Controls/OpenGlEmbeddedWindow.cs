@@ -1,16 +1,12 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Ryujinx.Common.Configuration;
-using SPB.Platform.GLX;
-using SPB.Platform.WGL;
-using SPB.Windowing;
-using System.Runtime.InteropServices;
 
 namespace Ryujinx.Ava.Ui.Controls
 {
     public class OpenGlEmbeddedWindow : NativeEmbeddedWindow
     {
-        public OpenGlEmbeddedWindow(int major, int minor, GraphicsDebugLevel graphicsDebugLevel)
+        public OpenGlEmbeddedWindow(int major, int minor, GraphicsDebugLevel graphicsDebugLevel, double scale) : base(scale)
         {
             Major = major;
             Minor = minor;
@@ -26,7 +22,6 @@ namespace Ryujinx.Ava.Ui.Controls
                 GLFW.WindowHint(WindowHintBool.OpenGLDebugContext, true);
             }
         }
-
 
         public override unsafe void OnWindowCreated()
         {
