@@ -49,7 +49,7 @@ namespace Ryujinx.Ava
         private const int CursorHideIdleTime = 8; // Hide Cursor seconds
 
         private static readonly Cursor InvisibleCursor = new Cursor(StandardCursorType.None);
-        
+
         private readonly AccountManager _accountManager;
 
         private readonly Stopwatch _chrono;
@@ -63,7 +63,7 @@ namespace Ryujinx.Ava
         private readonly long _ticksPerFrame;
 
         private readonly GraphicsDebugLevel _glLogLevel;
-        
+
         private bool _hideCursorOnIdle;
         private bool _isActive;
         private long _lastCursorMoveTime;
@@ -142,7 +142,7 @@ namespace Ryujinx.Ava
             ConfigurationState.Instance.HideCursorOnIdle.Event += HideCursorState_Changed;
         }
 
-        public void SetRendererWindowSize(Size size, double scale)
+        private void SetRendererWindowSize(Size size, double scale)
         {
             if (_renderer != null)
             {
@@ -187,7 +187,7 @@ namespace Ryujinx.Ava
 
                 _renderingThread.Start();
 
-                _mainThread = new Thread(MainLoop) 
+                _mainThread = new Thread(MainLoop)
                 {
                     Name = "GUI.UpdateThread"
                 };
@@ -387,7 +387,7 @@ namespace Ryujinx.Ava
                             Logger.Info?.Print(LogClass.Application, "Loading as XCI.");
 
                             EmulationContext.LoadXci(Path);
-                            
+
                             break;
                         }
                     case ".nca":
@@ -395,7 +395,7 @@ namespace Ryujinx.Ava
                             Logger.Info?.Print(LogClass.Application, "Loading as NCA.");
 
                             EmulationContext.LoadNca(Path);
-                            
+
                             break;
                         }
                     case ".nsp":
@@ -404,7 +404,7 @@ namespace Ryujinx.Ava
                             Logger.Info?.Print(LogClass.Application, "Loading as NSP.");
 
                             EmulationContext.LoadNsp(Path);
-                            
+
                             break;
                         }
                     default:
@@ -630,12 +630,12 @@ namespace Ryujinx.Ava
                     _ticks = Math.Min(_ticks - _ticksPerFrame, _ticksPerFrame);
                 }
             }
-            
+
             if (Window is OpenGlEmbeddedWindow window)
             {
                 window.MakeCurrent(null);
             }
-            
+
             Window.SizeChanged -= Window_SizeChanged;
         }
 
