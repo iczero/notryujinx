@@ -4,7 +4,7 @@ using MessageBox.Avalonia.BaseWindows.Base;
 using MessageBox.Avalonia.DTO;
 using MessageBox.Avalonia.Enums;
 using MessageBox.Avalonia.Models;
-using Ryujinx.Ava.Helper;
+using Ryujinx.Ava.Common;
 using System.Collections.Generic;
 
 namespace Ryujinx.Ava.Ui.Controls

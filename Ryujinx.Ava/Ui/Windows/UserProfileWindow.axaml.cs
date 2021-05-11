@@ -63,7 +63,7 @@ namespace Ryujinx.Ava.Ui.Windows
             _nameBox = this.FindControl<TextBox>("NameBox");
         }
 
-        private void ProfilesList_DoubleTapped(object? sender, RoutedEventArgs e)
+        private void ProfilesList_DoubleTapped(object sender, RoutedEventArgs e)
         {
             if (sender is ListBox listBox)
             {
@@ -85,12 +85,12 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
-        private void CloseButton_OnClick(object? sender, RoutedEventArgs e)
+        private void CloseButton_OnClick(object sender, RoutedEventArgs e)
         {
             Close();
         }
 
-        private void SetNameButton_OnClick(object? sender, RoutedEventArgs e)
+        private void SetNameButton_OnClick(object sender, RoutedEventArgs e)
         {
             if (!string.IsNullOrWhiteSpace(_nameBox.Text))
             {

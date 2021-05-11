@@ -1,4 +1,4 @@
-namespace Ryujinx.Ava.Application
+namespace Ryujinx.Ava.Common
 {
     public enum ApplicationSort
     {

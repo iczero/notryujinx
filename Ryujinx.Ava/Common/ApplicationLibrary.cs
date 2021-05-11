@@ -19,7 +19,7 @@ using System.Text;
 using System.Text.Json;
 using SpanHelpers = LibHac.Common.SpanHelpers;
 
-namespace Ryujinx.Ava.Application
+namespace Ryujinx.Ava.Common
 {
     public class ApplicationLibrary
     {

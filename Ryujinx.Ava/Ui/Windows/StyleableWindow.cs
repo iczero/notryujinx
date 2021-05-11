@@ -37,8 +37,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
             
-            Stream? stream = Assembly.GetExecutingAssembly()
-                .GetManifestResourceStream("Ryujinx.Ava.Ui.Resources.Logo_Ryujinx.png");
+            Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Ryujinx.Ava.Ui.Resources.Logo_Ryujinx.png");
             Icon = new WindowIcon(stream);
         }
 

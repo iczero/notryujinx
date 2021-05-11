@@ -12,7 +12,6 @@ using LibHac.Ncm;
 using LibHac.Ns;
 using MessageBoxSlim.Avalonia;
 using MessageBoxSlim.Avalonia.Enums;
-using Ryujinx.Ava.Helper;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Common.Logging;
 using Ryujinx.HLE.FileSystem;
@@ -24,7 +23,7 @@ using System.Threading;
 using static LibHac.Fs.ApplicationSaveDataManagement;
 using ApplicationId = LibHac.Ncm.ApplicationId;
 
-namespace Ryujinx.Ava.Application
+namespace Ryujinx.Ava.Common
 {
     public static class ApplicationHelper
     {
@@ -289,15 +288,13 @@ namespace Ryujinx.Ava.Application
                             }
                             else if (resultCode.Value.IsSuccess())
                             {
-                                Dispatcher.UIThread.InvokeAsync(() =>
+                                Dispatcher.UIThread.InvokeAsync(async () =>
                                 {
                                     dialog?.Close();
-                                    dialog = new AvaDialog("Ryujinx - NCA Section Extractor",
-                                        "Extraction completed successfully.",
-                                        "",
-                                        _owner);
 
-                                    dialog.Run();
+                                    dialog = new AvaDialog("Ryujinx - NCA Section Extractor", "Extraction completed successfully.", "", _owner);
+
+                                    await dialog.Run();
                                 });
                             }
                         }

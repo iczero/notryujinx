@@ -32,7 +32,7 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public void LoadSystemLanguage()
         {

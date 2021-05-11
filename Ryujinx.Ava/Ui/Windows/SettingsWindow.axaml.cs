@@ -64,7 +64,7 @@ namespace Ryujinx.Ava.Ui.Windows
             _timeZoneBox = this.FindControl<AutoCompleteBox>("TimeZoneBox");
         }
 
-        private async void AddButton_OnClick(object? sender, RoutedEventArgs e)
+        private async void AddButton_OnClick(object sender, RoutedEventArgs e)
         {
             string path = _pathBox.Text;
 
@@ -85,7 +85,7 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
-        private void RemoveButton_OnClick(object? sender, RoutedEventArgs e)
+        private void RemoveButton_OnClick(object sender, RoutedEventArgs e)
         {
             List<string> selected = new(_gameList.SelectedItems.Cast<string>());
 
@@ -95,7 +95,7 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
-        private void TimeZoneBox_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+        private void TimeZoneBox_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (e.AddedItems != null && e.AddedItems.Count > 0)
             {
@@ -110,7 +110,7 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
-        private void TimeZoneBox_OnTextChanged(object? sender, EventArgs e)
+        private void TimeZoneBox_OnTextChanged(object sender, EventArgs e)
         {
             if (sender is AutoCompleteBox box)
             {
@@ -121,7 +121,7 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
-        private void SaveButton_Clicked(object? sender, RoutedEventArgs e)
+        private void SaveButton_Clicked(object sender, RoutedEventArgs e)
         {
             ViewModel.SaveSettings();
 
@@ -133,12 +133,12 @@ namespace Ryujinx.Ava.Ui.Windows
             Close();
         }
 
-        private void CloseButton_Clicked(object? sender, RoutedEventArgs e)
+        private void CloseButton_Clicked(object sender, RoutedEventArgs e)
         {
             Close();
         }
 
-        private void ApplyButton_Clicked(object? sender, RoutedEventArgs e)
+        private void ApplyButton_Clicked(object sender, RoutedEventArgs e)
         {
             ViewModel.SaveSettings();
 
@@ -148,11 +148,11 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
-        private async void Button_OnClick(object? sender, RoutedEventArgs e)
+        private async void Button_OnClick(object sender, RoutedEventArgs e)
         {
             if (sender is Button button)
             {
-                string? tag = button.Tag.ToString();
+                string tag = button.Tag.ToString();
 
                 if (!string.IsNullOrWhiteSpace(tag))
                 {

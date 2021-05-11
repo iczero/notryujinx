@@ -7,8 +7,7 @@ using LibHac;
 using LibHac.Fs;
 using LibHac.FsSystem.NcaUtils;
 using MessageBoxSlim.Avalonia;
-using Ryujinx.Ava.Application;
-using Ryujinx.Ava.Helper;
+using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.Common.Configuration;
@@ -444,12 +443,12 @@ namespace Ryujinx.Ava.Ui.ViewModels
             return false;
         }
 
-        private void ApplicationLibrary_ApplicationAdded(object? sender, ApplicationAddedEventArgs e)
+        private void ApplicationLibrary_ApplicationAdded(object sender, ApplicationAddedEventArgs e)
         {
             AddApplication(e.AppData);
         }
 
-        private void ApplicationLibrary_ApplicationCountUpdated(object? sender, ApplicationCountUpdatedEventArgs e)
+        private void ApplicationLibrary_ApplicationCountUpdated(object sender, ApplicationCountUpdatedEventArgs e)
         {
             _count = e.NumAppsFound;
         }
@@ -481,7 +480,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             ReloadGameList();
         }
 
-        private async void ReloadGameList()
+        private void ReloadGameList()
         {
             if (_isLoading)
             {
@@ -544,12 +543,12 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
         }
 
-        public async void OpenRyujinxFolder()
+        public void OpenRyujinxFolder()
         {
             OpenHelper.OpenFolder(AppDataManager.BaseDirPath);
         }
 
-        public async void OpenLogsFolder()
+        public void OpenLogsFolder()
         {
             string logPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
 
@@ -558,7 +557,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             OpenHelper.OpenFolder(logPath);
         }
 
-        public async void ToggleFullscreen()
+        public void ToggleFullscreen()
         {
             WindowState state = _owner.WindowState;
 
@@ -868,7 +867,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
         }
 
-        public async void CloseWindow()
+        public void CloseWindow()
         {
             _owner.Close();
         }

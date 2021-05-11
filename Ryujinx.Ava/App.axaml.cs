@@ -1,6 +1,6 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Ryujinx.Ava.Ui.Styles;
+using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Ui.Windows;
 
 namespace Ryujinx.Ava
@@ -18,7 +18,7 @@ namespace Ryujinx.Ava
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                StyleManager = new StyleManager();
+                StyleManager       = new StyleManager();
                 desktop.MainWindow = new MainWindow();
             }
 

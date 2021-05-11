@@ -4,7 +4,7 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
-using Ryujinx.Ava.Helper;
+using Ryujinx.Ava.Common;
 using Ryujinx.Common.Utilities;
 using System.Net.Http;
 using System.Net.NetworkInformation;
@@ -40,7 +40,7 @@ namespace Ryujinx.Ava.Ui.Windows
             SupportersTextBlock = this.FindControl<TextBlock>("SupportersTextBlock");
         }
 
-        private void Button_OnClick(object? sender, RoutedEventArgs e)
+        private void Button_OnClick(object sender, RoutedEventArgs e)
         {
             if (sender is Button button)
             {
@@ -73,9 +73,9 @@ namespace Ryujinx.Ava.Ui.Windows
             await Dispatcher.UIThread.InvokeAsync(() => SupportersTextBlock.Text = Supporters);
         }
 
-        private void AmiiboLabel_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+        private void AmiiboLabel_OnPointerPressed(object sender, PointerPressedEventArgs e)
         {
-            if (sender is TextBlock text)
+            if (sender is TextBlock)
             {
                 OpenHelper.OpenUrl("https://amiiboapi.com");
             }

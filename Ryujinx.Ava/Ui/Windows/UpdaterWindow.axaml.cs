@@ -52,7 +52,7 @@ namespace Ryujinx.Ava.Ui.Windows
             ButtonBox = this.FindControl<StackPanel>("ButtonBox");
         }
 
-        public async void YesPressed()
+        public void YesPressed()
         {
             if (_restartQuery)
             {
@@ -82,7 +82,7 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
-        public async void NoPressed()
+        public void NoPressed()
         {
             _mainWindow.UpdateMenuItem.IsEnabled = true;
 

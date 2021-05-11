@@ -8,7 +8,7 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using LibHac;
-using Ryujinx.Ava.Application;
+using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Ui.Applet;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Models;
@@ -27,7 +27,6 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using InputManager = Ryujinx.Input.HLE.InputManager;
 using ProgressBar = Avalonia.Controls.ProgressBar;
@@ -70,13 +69,13 @@ namespace Ryujinx.Ava.Ui.Windows
 
             stateObserverable.Subscribe(StateChanged);
 
+            Title = $"Ryujinx {Program.Version}";
+
             Initialize();
 
             Manager = new InputManager(new AvaloniaKeyboardDriver(this), new SDL2GamepadDriver());
 
             LoadGameList();
-
-            AppHost.StatusUpdatedEvent += Update_StatusBar;
         }
 
         public VirtualFileSystem VirtualFileSystem { get; private set; }
@@ -124,12 +123,6 @@ namespace Ryujinx.Ava.Ui.Windows
 
         private void Update_StatusBar(object sender, StatusUpdatedEventArgs args)
         {
-            ViewModel.GameStatusText = args.GameStatus;
-            ViewModel.FifoStatusText = args.FifoStatus;
-            ViewModel.GpuStatusText = args.GpuName;
-            ViewModel.DockedStatusText = args.DockedMode;
-            ViewModel.AspectRatioStatusText = args.AspectRatio;
-
             Dispatcher.UIThread.InvokeAsync(() =>
             {
                 if (args.VSyncEnabled)
@@ -141,6 +134,12 @@ namespace Ryujinx.Ava.Ui.Windows
                     ViewModel.VsyncColor = new SolidColorBrush(Color.Parse("#ffff4554"));
                 }
             });
+
+            ViewModel.DockedStatusText      = args.DockedMode;
+            ViewModel.AspectRatioStatusText = args.AspectRatio;
+            ViewModel.GameStatusText        = args.GameStatus;
+            ViewModel.FifoStatusText        = args.FifoStatus;
+            ViewModel.GpuStatusText         = args.GpuName;
         }
 
         public void UpdateGridColumns()
@@ -177,7 +176,8 @@ namespace Ryujinx.Ava.Ui.Windows
             GlRenderer.WindowCreated += GlRenderer_Created;
 
             ContentFrame.Content = GlRenderer;
-
+            
+            AppHost.StatusUpdatedEvent += Update_StatusBar;
             AppHost.AppExit += AppHost_AppExit;
         }
 
@@ -186,7 +186,7 @@ namespace Ryujinx.Ava.Ui.Windows
             AppHost?.Start();
         }
 
-        private void AppHost_AppExit(object? sender, EventArgs e)
+        private void AppHost_AppExit(object sender, EventArgs e)
         {
             if (_isClosing)
             {
@@ -210,7 +210,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
             Dispatcher.UIThread.InvokeAsync(() =>
             {
-                Title = "Ryujinx";
+                Title = $"Ryujinx {Program.Version}";
             });
         }
 
@@ -303,7 +303,7 @@ namespace Ryujinx.Ava.Ui.Windows
             });
         }
 
-        private void MenuBase_OnMenuOpened(object? sender, RoutedEventArgs e)
+        private void MenuBase_OnMenuOpened(object sender, RoutedEventArgs e)
         {
             object selection = GameList.SelectedItem;
 
@@ -325,15 +325,13 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
-        private void GameList_OnPointerPressed(object? sender, PointerPressedEventArgs e)
+        private void GameList_OnPointerPressed(object sender, PointerPressedEventArgs e)
         {
             PointerPoint currentPoint = e.GetCurrentPoint(GameList);
+
             if (currentPoint.Properties.IsRightButtonPressed)
             {
-                DataGridRow? row = ((IControl)e.Source).GetSelfAndVisualAncestors()
-                    .OfType<DataGridRow>()
-                    .FirstOrDefault();
-
+                DataGridRow row = ((IControl)e.Source).GetSelfAndVisualAncestors().OfType<DataGridRow>().FirstOrDefault();
                 if (row != null)
                 {
                     GameList.SelectedIndex = row.GetIndex();
@@ -350,7 +348,7 @@ namespace Ryujinx.Ava.Ui.Windows
             base.OnClosing(e);
         }
 
-        private void GameList_OnDoubleTapped(object? sender, RoutedEventArgs e)
+        private void GameList_OnDoubleTapped(object sender, RoutedEventArgs e)
         {
             object selection = GameList.SelectedItem;
 
@@ -362,12 +360,17 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
-        private void SearchButton_OnClick(object? sender, RoutedEventArgs e)
+        private void GameList_OnTapped(object sender, RoutedEventArgs e)
+        {
+            GameList.SelectedIndex = -1;
+        }
+
+        private void SearchButton_OnClick(object sender, RoutedEventArgs e)
         {
             LoadGameList();
         }
 
-        private void SearchBox_OnKeyUp(object? sender, KeyEventArgs e)
+        private void SearchBox_OnKeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
@@ -375,7 +378,7 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
-        private void StopEmulation_Click(object? sender, RoutedEventArgs e)
+        private void StopEmulation_Click(object sender, RoutedEventArgs e)
         {
             Task.Run(() =>
             {
@@ -383,7 +386,7 @@ namespace Ryujinx.Ava.Ui.Windows
             });
         }
 
-        private void ScanAmiiboMenuItem_AttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
+        private void ScanAmiiboMenuItem_AttachedToVisualTree(object sender, VisualTreeAttachmentEventArgs e)
         {
             if (sender is MenuItem amiibo)
             {
@@ -391,20 +394,20 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
-        private void VsyncStatus_PointerReleased(object? sender, PointerReleasedEventArgs e)
+        private void VsyncStatus_PointerReleased(object sender, PointerReleasedEventArgs e)
         {
             AppHost.EmulationContext.EnableDeviceVsync = !AppHost.EmulationContext.EnableDeviceVsync;
 
             Logger.Info?.Print(LogClass.Application, $"VSync toggled to: {AppHost.EmulationContext.EnableDeviceVsync}");
         }
 
-        private void DockedStatus_PointerReleased(object? sender, PointerReleasedEventArgs e)
+        private void DockedStatus_PointerReleased(object sender, PointerReleasedEventArgs e)
         {
             ConfigurationState.Instance.System.EnableDockedMode.Value =
                 !ConfigurationState.Instance.System.EnableDockedMode.Value;
         }
 
-        private void AspectRatioStatus_PointerReleased(object? sender, PointerReleasedEventArgs e)
+        private void AspectRatioStatus_PointerReleased(object sender, PointerReleasedEventArgs e)
         {
             AspectRatio aspectRatio = ConfigurationState.Instance.Graphics.AspectRatio.Value;
 

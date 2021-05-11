@@ -94,19 +94,12 @@ namespace Ryujinx.Ava.Ui.ViewModels
                     return false;
                 }
 
-                return (InputConfig as InputConfiguration<GamepadInputId, StickInputId>).MotionBackend == MotionInputBackendType.CemuHook;
-
-                return true;
+                return (InputConfig as InputConfiguration<ConfigGamepadInputId, StickInputId>).MotionBackend == MotionInputBackendType.CemuHook;
             }
 
             set
             {
-                if (IsController == null)
-                {
-                    return;
-                }
-
-                var config = InputConfig as InputConfiguration<GamepadInputId, StickInputId>;
+                var config = InputConfig as InputConfiguration<ConfigGamepadInputId, StickInputId>;
                 config.MotionBackend = value ? MotionInputBackendType.CemuHook : MotionInputBackendType.GamepadDriver;
                 
                 OnPropertyChanged();
@@ -552,7 +545,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 
                 config = new StandardKeyboardInputConfig
                 {
-                    Version = Common.Configuration.Hid.InputConfig.CurrentVersion,
+                    Version = Ryujinx.Common.Configuration.Hid.InputConfig.CurrentVersion,
                     Backend = InputBackendType.WindowKeyboard,
                     Id = id,
                     ControllerType = ControllerType.JoyconPair,
@@ -608,7 +601,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 config = new StandardControllerInputConfig
                 {
-                    Version = Common.Configuration.Hid.InputConfig.CurrentVersion,
+                    Version = Ryujinx.Common.Configuration.Hid.InputConfig.CurrentVersion,
                     Backend = InputBackendType.GamepadSDL2,
                     Id = id,
                     ControllerType = ControllerType.JoyconPair,
@@ -752,7 +745,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             {
                 string path = Path.Combine(GetProfileBasePath(), profileDialog.FileName);
 
-                Common.Configuration.Hid.InputConfig config = null;
+                Ryujinx.Common.Configuration.Hid.InputConfig config = null;
 
                 if (IsKeyboard)
                 {

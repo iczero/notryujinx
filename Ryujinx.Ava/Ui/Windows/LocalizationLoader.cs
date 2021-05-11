@@ -8,7 +8,7 @@ namespace Ryujinx.Ava.Ui.Windows
     {
         public static void LoadFromEmbeddedResource(Dictionary<string, string> strings, string embeddedPath)
         {
-            Stream? stream = GetEmbeddedResourceStream(embeddedPath);
+            Stream stream = GetEmbeddedResourceStream(embeddedPath);
             if (stream == null)
             {
                 return;
@@ -17,7 +17,7 @@ namespace Ryujinx.Ava.Ui.Windows
             LoadFromStream(strings, stream);
         }
 
-        private static Stream? GetEmbeddedResourceStream(string embeddedPath)
+        private static Stream GetEmbeddedResourceStream(string embeddedPath)
         {
             return Assembly.GetCallingAssembly().GetManifestResourceStream(embeddedPath);
         }
@@ -28,7 +28,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
             while (true)
             {
-                string? line = reader.ReadLine();
+                string line = reader.ReadLine();
                 if (line == null)
                 {
                     break;

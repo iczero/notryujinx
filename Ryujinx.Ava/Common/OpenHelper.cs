@@ -2,13 +2,13 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace Ryujinx.Ava.Helper
+namespace Ryujinx.Ava.Common
 {
     internal static class OpenHelper
     {
         public static void OpenFolder(string path)
         {
-            Process.Start(new ProcessStartInfo {FileName = path, UseShellExecute = true, Verb = "open"});
+            Process.Start(new ProcessStartInfo { FileName = path, UseShellExecute = true, Verb = "open" });
         }
 
         public static void OpenUrl(string url)

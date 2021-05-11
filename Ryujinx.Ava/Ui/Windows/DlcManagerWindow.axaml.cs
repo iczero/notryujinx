@@ -144,7 +144,7 @@ namespace Ryujinx.Ava.Ui.Windows
             return null;
         }
 
-        private async void AddDlc(string path)
+        private void AddDlc(string path)
         {
             if (!File.Exists(path))
             {

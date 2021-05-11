@@ -47,12 +47,12 @@ namespace Ryujinx.Ava.Ui.Windows
             AvaloniaXamlLoader.Load(this);
         }
 
-        private void CloseButton_OnClick(object? sender, RoutedEventArgs e)
+        private void CloseButton_OnClick(object sender, RoutedEventArgs e)
         {
             Close();
         }
 
-        private void ChooseButton_OnClick(object? sender, RoutedEventArgs e)
+        private void ChooseButton_OnClick(object sender, RoutedEventArgs e)
         {
             if (ViewModel.SelectedIndex > -1)
             {
@@ -62,7 +62,7 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
-        private async void ColorButton_OnClick(object? sender, RoutedEventArgs e)
+        private async void ColorButton_OnClick(object sender, RoutedEventArgs e)
         {
             ColorPickerWindow dialog = new();
             Color? res = await dialog.ShowDialog(this);

@@ -35,9 +35,6 @@
     <None Remove="Ui\Resources\FluentUiIconsRegular.xaml" />
     <None Remove="Ui\Resources\UiStrings_eng.txt" />
     <None Remove="Ui\Resources\UiStrings_por.txt" />
-    <None Remove="Ui\Styles\Styles.xaml" />
-    <None Remove="Ui\Styles\DarkTheme.xaml" />
-    <None Remove="Ui\Styles\SideBar.xaml" />
     <None Update="alsoft.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -49,6 +46,11 @@
     <AvaloniaResource Include="Ui\**\*.xaml">
       <SubType>Designer</SubType>
     </AvaloniaResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\Styles\FluentUiIconsFilled.xaml" />
+    <AvaloniaResource Include="Assets\Styles\FluentUiIconsRegular.xaml" />
+    <AvaloniaResource Include="Assets\Styles\Styles.xaml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.0" />
@@ -88,11 +90,11 @@
     <EmbeddedResource Include="Ui\Resources\Logo_Patreon.png" />
     <EmbeddedResource Include="Ui\Resources\Logo_Ryujinx.png" />
     <EmbeddedResource Include="Ui\Resources\Logo_Twitter.png" />
-    <EmbeddedResource Include="Ui\Resources\FluentUiIconsFilled.xaml" />
-    <EmbeddedResource Include="Ui\Resources\FluentUiIconsRegular.xaml" />
+    <EmbeddedResource Include="Assets\Styles\FluentUiIconsFilled.xaml" />
+    <EmbeddedResource Include="Assets\Styles\FluentUiIconsRegular.xaml" />
     <EmbeddedResource Include="Ui\Resources\UiStrings_eng.txt" />
     <EmbeddedResource Include="Ui\Resources\UiStrings_por.txt" />
-    <EmbeddedResource Include="Ui\Styles\Styles.xaml" />
+    <EmbeddedResource Include="Assets\Styles\Styles.xaml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Ryujinx.Audio.Backends.SDL2\Ryujinx.Audio.Backends.SDL2.csproj" />
@@ -107,8 +109,19 @@
     <ProjectReference Include="..\Ryujinx.Graphics.Gpu\Ryujinx.Graphics.Gpu.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <AvaloniaXaml Update="App.axaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+    <AvaloniaXaml Update="Ui\Windows\MainWindow.axaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="App.axaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
     <Compile Update="Ui\Windows\MainWindow.axaml.cs">
-      <DependentUpon>MainWindow.axaml</DependentUpon>
+      <DependentUpon>MainWindow.xaml</DependentUpon>
     </Compile>
     <Compile Update="Ui\Windows\DlcManagerWindow.axaml.cs">
       <DependentUpon>DlcManagerWindow.axaml</DependentUpon>
