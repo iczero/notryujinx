@@ -22,7 +22,7 @@ namespace Ryujinx.Ava.Ui.Windows
 #if DEBUG
             this.AttachDevTools();
 #endif
-            Title = $"Ryujinx {Program.Version} - About";
+           // Title = $"Ryujinx {Program.Version} - About";
 
             _ = DownloadPatronsJson();
         }
