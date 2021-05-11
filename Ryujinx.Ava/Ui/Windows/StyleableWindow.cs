@@ -13,7 +13,6 @@ namespace Ryujinx.Ava.Ui.Windows
     {
         public StyleableWindow()
         {
-            App.StyleManager.AddWindow(this);
             ExtendClientAreaToDecorationsHint = false;
 
             TransparencyLevelHint = WindowTransparencyLevel.None;

@@ -32,25 +32,7 @@ namespace Ryujinx.Ava
         {
             Initialize(args);
 
-            // Avalonia configuration, don't remove; also used by visual designer.
-            AppBuilder.Configure<App>()
-                .UsePlatformDetect()
-                .With(new X11PlatformOptions
-                {
-                    EnableMultiTouch = true,
-                    UseDBusMenu      = true,
-                    EnableIme        = true,
-                    UseEGL           = false,
-                    UseGpu           = false
-                })
-                .With(new Win32PlatformOptions
-                {
-                    EnableMultitouch       = true,
-                    UseWgl                 = false,
-                    AllowEglInitialization = false
-                })
-                .UseSkia()
-                .LogToTrace()
+            BuildAvaloniaApp()
                 .StartWithClassicDesktopLifetime(args);
         }
 
@@ -150,6 +132,27 @@ namespace Ryujinx.Ava
                     Logger.Warning?.PrintMsg(LogClass.Application, $"Failed to load config! Loading the default config instead.\nFailed config location {ConfigurationPath}");
                 }
             }
+        }
+        
+        // Avalonia configuration, don't remove; also used by visual designer.
+        public static AppBuilder BuildAvaloniaApp()
+        {
+            return AppBuilder.Configure<App>()
+                .UsePlatformDetect()
+                .With(new X11PlatformOptions
+                {
+                    EnableMultiTouch = true,
+                    UseDBusMenu = true,
+                    EnableIme = true,
+                    UseEGL = false,
+                    UseGpu = false
+                })
+                .With(new Win32PlatformOptions
+                {
+                    EnableMultitouch = true, UseWgl = false, AllowEglInitialization = false
+                })
+                .UseSkia()
+                .LogToTrace();
         }
 
         private static void PrintSystemInfo()

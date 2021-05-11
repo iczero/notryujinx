@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
+using Avalonia.LogicalTree;
 using Avalonia.Platform;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -114,20 +115,22 @@ namespace Ryujinx.Ava.Ui.Controls
             {
                 _handle = CreateWin32(null);
             }
-
-            if (!_init && WindowHandle != IntPtr.Zero)
-            {
-                _init = true;
-
-                OnWindowCreated();
-
-                WindowCreated?.Invoke(this, WindowHandle);
-            }
         }
 
         private async void StateChanged(Rect rect)
         {
             SizeChanged?.Invoke(this, rect.Size);
+            
+            if (!_init && WindowHandle != IntPtr.Zero && rect.Size != default)
+            {
+                _init = true;
+                await Task.Run(() =>
+                {
+                    OnWindowCreated();
+
+                    WindowCreated?.Invoke(this, WindowHandle);
+                });
+            }
         }
 
         protected override IPlatformHandle CreateNativeControlCore(IPlatformHandle parent)
@@ -150,15 +153,16 @@ namespace Ryujinx.Ava.Ui.Controls
         protected override void DestroyNativeControlCore(IPlatformHandle control)
         {
             OnWindowDestroying();
+            Task.Run(async () =>
+            {
+                // Delay deleting the actual window, because avalonia does not release it early enough
+                await Task.Delay(2000);
+                GLFWWindow.Dispose();
 
-            GLFWWindow.Dispose();
+                OnWindowDestroyed();
 
-            OnWindowDestroyed();
-
-            WindowHandle = IntPtr.Zero;
-            X11Display = IntPtr.Zero;
-
-            GLFW.Terminate();
+                GLFW.Terminate();
+            });
         }
 
         private unsafe IPlatformHandle CreateLinux(IPlatformHandle parent)

@@ -32,9 +32,9 @@ namespace Ryujinx.Ava.Ui.Controls
             {
                 key = Enum.Parse<GamepadInputId>(value.ToString());
             }
-            else if (targetType == typeof(StickInputId))
+            else if (targetType == typeof(Ryujinx.Input.StickInputId))
             {
-                key = Enum.Parse<StickInputId>(value.ToString());
+                key = Enum.Parse<Ryujinx.Input.StickInputId>(value.ToString());
             }
 
             return key;
