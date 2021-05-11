@@ -1,13 +1,14 @@
 ﻿using Avalonia.Data;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.MarkupExtensions;
+using Ryujinx.Ava.Common.Locale;
 using System;
 
-namespace Ryujinx.Ava.Ui.Windows
+namespace Ryujinx.Ava.Common.Locale
 {
-    public class LocalizeExtension : MarkupExtension
+    public class LocaleExtension : MarkupExtension
     {
-        public LocalizeExtension(string key)
+        public LocaleExtension(string key)
         {
             Key = key;
         }
@@ -20,7 +21,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
             ReflectionBindingExtension binding = new($"[{keyToUse}]")
             {
-                Mode = BindingMode.OneWay, Source = Localizer.Instance
+                Mode = BindingMode.OneWay, Source = LocaleManager.Instance
             };
 
             return binding.ProvideValue(serviceProvider);

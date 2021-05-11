@@ -19,7 +19,7 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <Image Grid.Row="1" Margin="5, 10, 20 , 10" Source="resm:Ryujinx.Ava.Ui.Resources.Logo_Ryujinx.png" Height="80"
+        <Image Grid.Row="1" Margin="5, 10, 20 , 10" Source="resm:Ryujinx.Ava.Assets.Images.Logo_Ryujinx.png" Height="80"
                MinWidth="50" />
         <TextBlock Grid.Row="0" Margin="10" Grid.Column="1" Text="{Binding MainText}" />
         <TextBlock Grid.Row="1" Margin="10" Grid.Column="1" Text="{Binding SecondaryText}" />

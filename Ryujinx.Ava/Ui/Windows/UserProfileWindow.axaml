@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
         x:Class="Ryujinx.Ava.Ui.Windows.UserProfileWindow"
-        xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
+        xmlns:Locale="clr-namespace:Ryujinx.Ava.Common.Locale"
         xmlns:viewModels="clr-namespace:Ryujinx.Ava.Ui.ViewModels"
         xmlns:controls="clr-namespace:Ryujinx.Ava.Ui.Controls"
         CanResize="False"
@@ -29,7 +29,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <TextBlock Text="{window:Localize UserProfilesSelectedUserProfile}" />
+            <TextBlock Text="{Locale:Locale UserProfilesSelectedUserProfile}" />
             <Grid Grid.Row="1" Margin="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -46,9 +46,9 @@
                 </StackPanel>
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Grid.Column="2" Spacing="10"
                             Margin="5">
-                    <Button Content="{window:Localize UserProfilesSaveProfileName}" Name="SetNameButton" Click="SetNameButton_OnClick" />
+                    <Button Content="{Locale:Locale UserProfilesSaveProfileName}" Name="SetNameButton" Click="SetNameButton_OnClick" />
                     <Button Name="SelectProfileImage" Command="{Binding ChooseProfileImage}"
-                            Content="{window:Localize UserProfilesChangeProfileImage}" />
+                            Content="{Locale:Locale UserProfilesChangeProfileImage}" />
                 </StackPanel>
             </Grid>
         </Grid>
@@ -57,7 +57,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <TextBlock Text="{window:Localize UserProfilesAvailableUserProfiles}" />
+            <TextBlock Text="{Locale:Locale UserProfilesAvailableUserProfiles}" />
             <ListBox Grid.Row="1" Margin="10" Name="ProfilesList" DoubleTapped="ProfilesList_DoubleTapped"
                      Items="{Binding Profiles}">
                 <ListBox.ItemTemplate>
@@ -83,9 +83,9 @@
             </ListBox>
         </Grid>
         <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Stretch">
-            <Button Content="{window:Localize UserProfilesAddNewProfile}" Command="{Binding AddUser}" />
-            <Button IsEnabled="{Binding IsSelectedProfileDeletable}" Content="{window:Localize UserProfilesDeleteSelectedProfile}" Command="{Binding DeleteUser}" />
-            <Button HorizontalAlignment="Right" Content="{window:Localize UserProfilesClose}" Click="CloseButton_OnClick" Name="CloseButton" />
+            <Button Content="{Locale:Locale UserProfilesAddNewProfile}" Command="{Binding AddUser}" />
+            <Button IsEnabled="{Binding IsSelectedProfileDeletable}" Content="{Locale:Locale UserProfilesDeleteSelectedProfile}" Command="{Binding DeleteUser}" />
+            <Button HorizontalAlignment="Right" Content="{Locale:Locale UserProfilesClose}" Click="CloseButton_OnClick" Name="CloseButton" />
         </StackPanel>
     </Grid>
 </Window>

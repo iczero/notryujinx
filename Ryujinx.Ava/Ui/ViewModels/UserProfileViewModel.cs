@@ -1,3 +1,4 @@
+using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.HLE.HOS.Services.Account.Acc;
@@ -108,9 +109,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public async void AddUser()
         {
-            var dlgTitle = Localizer.Instance[LocalizationStringKeys.InputDialogAddNewProfileTitle];
-            var dlgMainText = Localizer.Instance[LocalizationStringKeys.InputDialogAddNewProfileHeader];
-            var dlgSubText = string.Format(Localizer.Instance[LocalizationStringKeys.InputDialogAddNewProfileSubtext], MaxProfileNameLength);
+            var dlgTitle = LocaleManager.Instance["InputDialogAddNewProfileTitle"];
+            var dlgMainText = LocaleManager.Instance["InputDialogAddNewProfileHeader"];
+            var dlgSubText = string.Format(LocaleManager.Instance["InputDialogAddNewProfileSubtext"], MaxProfileNameLength);
 
             _tempUserName = await AvaDialog.CreateInputDialog(dlgTitle, dlgMainText, dlgSubText, _owner, MaxProfileNameLength);
 

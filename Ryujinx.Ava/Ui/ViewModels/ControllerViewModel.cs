@@ -64,7 +64,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             Devices = new ObservableDictionary<string, string>();
             Profiles = new ObservableDictionary<string, string>();
 
-            ControllerImage = "Ryujinx.Ava.Ui.Resources.Controller_ProCon.svg";
+            ControllerImage = "Ryujinx.Ava.Assets.Images.Controller_ProCon.svg";
         }
 
         public string Title => $"Ryujinx - Controller Settings - {_player}";
@@ -128,20 +128,20 @@ namespace Ryujinx.Ava.Ui.ViewModels
                     switch (controller)
                     {
                         case "Handheld":
-                            ControllerImage = "Ryujinx.Ava.Ui.Resources.Controller_JoyConPair.svg";
+                            ControllerImage = "Ryujinx.Ava.Assets.Images.Controller_JoyConPair.svg";
                             break;
                         case "Pro Controller":
-                            ControllerImage = "Ryujinx.Ava.Ui.Resources.Controller_ProCon.svg";
+                            ControllerImage = "Ryujinx.Ava.Assets.Images.Controller_ProCon.svg";
                             break;
                         case "Joycon Pair":
-                            ControllerImage = "Ryujinx.Ava.Ui.Resources.Controller_JoyConPair.svg";
+                            ControllerImage = "Ryujinx.Ava.Assets.Images.Controller_JoyConPair.svg";
                             break;
                         case "Joycon Left":
-                            ControllerImage = "Ryujinx.Ava.Ui.Resources.Controller_JoyConLeft.svg";
+                            ControllerImage = "Ryujinx.Ava.Assets.Images.Controller_JoyConLeft.svg";
                             IsLeft = true;
                             break;
                         case "Joycon Right":
-                            ControllerImage = "Ryujinx.Ava.Ui.Resources.Controller_JoyConRight.svg";
+                            ControllerImage = "Ryujinx.Ava.Assets.Images.Controller_JoyConRight.svg";
                             IsRight = true;
                             break;
                     }

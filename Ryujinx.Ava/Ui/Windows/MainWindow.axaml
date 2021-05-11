@@ -1,10 +1,10 @@
-<local:StyleableWindow
+<Locale:StyleableWindow
     x:Class="Ryujinx.Ava.Ui.Windows.MainWindow"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Locale="clr-namespace:Ryujinx.Ava.Common.Locale"
     xmlns:controls="clr-namespace:Ryujinx.Ava.Ui.Controls"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:Ryujinx.Ava.Ui.Windows"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.Ui.ViewModels"
     Title="Ryujinx"
@@ -59,21 +59,21 @@
                     <MenuItem
                         Margin="5"
                         VerticalAlignment="Center"
-                        Header="{local:Localize MenuBarFile}">
-                        <MenuItem Command="{Binding OpenFile}" Header="{local:Localize MenuBarFileOpenFromFile}" />
-                        <MenuItem Command="{Binding OpenFolder}" Header="{local:Localize MenuBarFileOpenUnpacked}" />
+                        Header="{Locale:Locale MenuBarFile}">
+                        <MenuItem Command="{Binding OpenFile}" Header="{Locale:Locale MenuBarFileOpenFromFile}" />
+                        <MenuItem Command="{Binding OpenFolder}" Header="{Locale:Locale MenuBarFileOpenUnpacked}" />
                         <Separator />
-                        <MenuItem Command="{Binding OpenRyujinxFolder}" Header="{local:Localize MenuBarFileOpenEmuFolder}" />
-                        <MenuItem Command="{Binding OpenLogsFolder}" Header="{local:Localize MenuBarFileOpenLogsFolder}" />
+                        <MenuItem Command="{Binding OpenRyujinxFolder}" Header="{Locale:Locale MenuBarFileOpenEmuFolder}" />
+                        <MenuItem Command="{Binding OpenLogsFolder}" Header="{Locale:Locale MenuBarFileOpenLogsFolder}" />
                         <Separator />
-                        <MenuItem Command="{Binding CloseWindow}" Header="{local:Localize MenuBarFileExit}" />
+                        <MenuItem Command="{Binding CloseWindow}" Header="{Locale:Locale MenuBarFileExit}" />
                     </MenuItem>
                     <MenuItem
                         Margin="5"
                         VerticalAlignment="Center"
-                        Header="{local:Localize MenuBarOptions}">
-                        <MenuItem Command="{Binding ToggleFullscreen}" Header="{local:Localize MenuBarOptionsToggleFullscreen}" />
-                        <MenuItem Header="{local:Localize MenuBarOptionsStartGamesInFullscreen}">
+                        Header="{Locale:Locale MenuBarOptions}">
+                        <MenuItem Command="{Binding ToggleFullscreen}" Header="{Locale:Locale MenuBarOptionsToggleFullscreen}" />
+                        <MenuItem Header="{Locale:Locale MenuBarOptionsStartGamesInFullscreen}">
                             <MenuItem.Icon>
                                 <Border
                                     Margin="0"
@@ -198,46 +198,46 @@
                             </MenuItem>
                         </MenuItem>
                         <Separator />
-                        <MenuItem Command="{Binding OpenSettings}" Header="{local:Localize MenuBarOptionsSettings}" />
-                        <MenuItem Command="{Binding ManageProfiles}" Header="{local:Localize MenuBarOptionsManageUserProfiles}" />
+                        <MenuItem Command="{Binding OpenSettings}" Header="{Locale:Locale MenuBarOptionsSettings}" />
+                        <MenuItem Command="{Binding ManageProfiles}" Header="{Locale:Locale MenuBarOptionsManageUserProfiles}" />
                     </MenuItem>
                     <MenuItem
                         Margin="5"
                         VerticalAlignment="Center"
-                        Header="{local:Localize MenuBarActions}"
+                        Header="{Locale:Locale MenuBarActions}"
                         IsEnabled="{Binding IsGameRunning}">
                         <MenuItem
                             Click="StopEmulation_Click"
-                            Header="{local:Localize MenuBarOptionsStopEmulation}"
+                            Header="{Locale:Locale MenuBarOptionsStopEmulation}"
                             IsEnabled="{Binding IsGameRunning}" />
-                        <MenuItem Command="{Binding SimulateWakeUpMessage}" Header="{local:Localize MenuBarOptionsSimulateWakeUpMessage}" />
+                        <MenuItem Command="{Binding SimulateWakeUpMessage}" Header="{Locale:Locale MenuBarOptionsSimulateWakeUpMessage}" />
                         <Separator />
                         <MenuItem
                             Name="ScanAmiiboMenuItem"
                             AttachedToVisualTree="ScanAmiiboMenuItem_AttachedToVisualTree"
                             Command="{Binding OpenAmiiboWindow}"
-                            Header="{local:Localize MenuBarActionsScanAmiibo}"
+                            Header="{Locale:Locale MenuBarActionsScanAmiibo}"
                             IsEnabled="{Binding IsAmiiboRequested}" />
                     </MenuItem>
                     <MenuItem
                         Margin="5"
                         VerticalAlignment="Center"
-                        Header="{local:Localize MenuBarTools}">
-                        <MenuItem Header="{local:Localize MenuBarToolsInstallFirmware}">
-                            <MenuItem Command="{Binding InstallFirmwareFromFile}" Header="{local:Localize MenuBarFileToolsInstallFirmwareFromFile}" />
-                            <MenuItem Command="{Binding InstallFirmwareFromFolder}" Header="{local:Localize MenuBarFileToolsInstallFirmwareFromDirectory}" />
+                        Header="{Locale:Locale MenuBarTools}">
+                        <MenuItem Header="{Locale:Locale MenuBarToolsInstallFirmware}">
+                            <MenuItem Command="{Binding InstallFirmwareFromFile}" Header="{Locale:Locale MenuBarFileToolsInstallFirmwareFromFile}" />
+                            <MenuItem Command="{Binding InstallFirmwareFromFolder}" Header="{Locale:Locale MenuBarFileToolsInstallFirmwareFromDirectory}" />
                         </MenuItem>
                     </MenuItem>
                     <MenuItem
                         Margin="5"
                         VerticalAlignment="Center"
-                        Header="{local:Localize MenuBarHelp}">
+                        Header="{Locale:Locale MenuBarHelp}">
                         <MenuItem
                             Name="UpdateMenuItem"
                             Command="{Binding CheckForUpdates}"
-                            Header="{local:Localize MenuBarHelpCheckForUpdates}" />
+                            Header="{Locale:Locale MenuBarHelpCheckForUpdates}" />
                         <Separator />
-                        <MenuItem Command="{Binding OpenAboutWindow}" Header="{local:Localize MenuBarHelpAbout}" />
+                        <MenuItem Command="{Binding OpenAboutWindow}" Header="{Locale:Locale MenuBarHelpAbout}" />
                     </MenuItem>
                 </Menu>
                 <DockPanel
@@ -252,7 +252,7 @@
                         HorizontalAlignment="Right"
                         KeyUp="SearchBox_OnKeyUp"
                         Text="{Binding Search}"
-                        Watermark="Search..."/>
+                        Watermark="{Locale:Locale MenuSearch}" />
                     <Button
                         Name="SearchButton"
                         Margin="5,0,5,0"
@@ -285,75 +285,75 @@
                 <DataGrid
                     Name="GameList"
                     Margin="5,0,5,0"
+                    AlternatingRowBackground="{DynamicResource ThemeBackgroundColor}"
                     CanUserResizeColumns="True"
                     CanUserSortColumns="True"
                     DoubleTapped="GameList_OnDoubleTapped"
                     IsReadOnly="True"
                     Items="{Binding AppsCollection}"
                     PointerPressed="GameList_OnPointerPressed"
+                    RowBackground="{DynamicResource ThemeBackgroundColor}"
                     SelectionMode="Single"
-                    Tapped="GameList_OnTapped"
-                    AlternatingRowBackground="{DynamicResource ThemeBackgroundColor}"
-                    RowBackground="{DynamicResource ThemeBackgroundColor}">
+                    Tapped="GameList_OnTapped">
                     <DataGrid.ContextMenu>
                         <ContextMenu MenuOpened="MenuBase_OnMenuOpened">
                             <MenuItem
                                 Command="{Binding OpenUserSaveDirectory}"
-                                Header="{local:Localize GameListContextMenuOpenUserSaveDirectory}"
-                                ToolTip.Tip="{local:Localize GameListContextMenuOpenUserSaveDirectoryToolTip}" />
+                                Header="{Locale:Locale GameListContextMenuOpenUserSaveDirectory}"
+                                ToolTip.Tip="{Locale:Locale GameListContextMenuOpenUserSaveDirectoryToolTip}" />
                             <MenuItem
                                 Command="{Binding OpenDeviceSaveDirectory}"
-                                Header="{local:Localize GameListContextMenuOpenUserDeviceDirectory}"
-                                ToolTip.Tip="{local:Localize GameListContextMenuOpenUserDeviceDirectoryToolTip}" />
+                                Header="{Locale:Locale GameListContextMenuOpenUserDeviceDirectory}"
+                                ToolTip.Tip="{Locale:Locale GameListContextMenuOpenUserDeviceDirectoryToolTip}" />
                             <MenuItem
                                 Command="{Binding OpenBcatSaveDirectory}"
-                                Header="{local:Localize GameListContextMenuOpenUserBcatDirectory}"
-                                ToolTip.Tip="{local:Localize GameListContextMenuOpenUserBcatDirectoryToolTip}" />
+                                Header="{Locale:Locale GameListContextMenuOpenUserBcatDirectory}"
+                                ToolTip.Tip="{Locale:Locale GameListContextMenuOpenUserBcatDirectoryToolTip}" />
                             <Separator />
                             <MenuItem
                                 Command="{Binding OpenTitleUpdateManager}"
-                                Header="{local:Localize GameListContextMenuManageTitleUpdates}"
-                                ToolTip.Tip="{local:Localize GameListContextMenuManageTitleUpdatesToolTip}" />
+                                Header="{Locale:Locale GameListContextMenuManageTitleUpdates}"
+                                ToolTip.Tip="{Locale:Locale GameListContextMenuManageTitleUpdatesToolTip}" />
                             <MenuItem
                                 Command="{Binding OpenDlcManager}"
-                                Header="{local:Localize GameListContextMenuManageDlc}"
-                                ToolTip.Tip="{local:Localize GameListContextMenuManageDlcToolTip}" />
+                                Header="{Locale:Locale GameListContextMenuManageDlc}"
+                                ToolTip.Tip="{Locale:Locale GameListContextMenuManageDlcToolTip}" />
                             <MenuItem
                                 Command="{Binding OpenModsDirectory}"
-                                Header="{local:Localize GameListContextMenuOpenModsDirectory}"
-                                ToolTip.Tip="{local:Localize GameListContextMenuOpenModsDirectoryToolTip}" />
+                                Header="{Locale:Locale GameListContextMenuOpenModsDirectory}"
+                                ToolTip.Tip="{Locale:Locale GameListContextMenuOpenModsDirectoryToolTip}" />
                             <Separator />
-                            <MenuItem Header="{local:Localize GameListContextMenuCacheManagement}">
+                            <MenuItem Header="{Locale:Locale GameListContextMenuCacheManagement}">
                                 <MenuItem
                                     Command="{Binding PurgePtcCache}"
-                                    Header="{local:Localize GameListContextMenuCacheManagementPurgePptc}"
-                                    ToolTip.Tip="{local:Localize GameListContextMenuCacheManagementPurgePptcToolTip}" />
+                                    Header="{Locale:Locale GameListContextMenuCacheManagementPurgePptc}"
+                                    ToolTip.Tip="{Locale:Locale GameListContextMenuCacheManagementPurgePptcToolTip}" />
                                 <MenuItem
                                     Command="{Binding PurgeShaderCache}"
-                                    Header="{local:Localize GameListContextMenuCacheManagementPurgeShaderCache}"
-                                    ToolTip.Tip="{local:Localize GameListContextMenuCacheManagementPurgeShaderCacheToolTip}" />
+                                    Header="{Locale:Locale GameListContextMenuCacheManagementPurgeShaderCache}"
+                                    ToolTip.Tip="{Locale:Locale GameListContextMenuCacheManagementPurgeShaderCacheToolTip}" />
                                 <MenuItem
                                     Command="{Binding OpenPtcDirectory}"
-                                    Header="{local:Localize GameListContextMenuCacheManagementOpenPptcDirectory}"
-                                    ToolTip.Tip="{local:Localize GameListContextMenuCacheManagementOpenPptcDirectoryToolTip}" />
+                                    Header="{Locale:Locale GameListContextMenuCacheManagementOpenPptcDirectory}"
+                                    ToolTip.Tip="{Locale:Locale GameListContextMenuCacheManagementOpenPptcDirectoryToolTip}" />
                                 <MenuItem
                                     Command="{Binding OpenShaderCacheDirectory}"
-                                    Header="{local:Localize GameListContextMenuCacheManagementOpenShaderCacheDirectory}"
-                                    ToolTip.Tip="{local:Localize GameListContextMenuCacheManagementOpenShaderCacheDirectoryToolTip}" />
+                                    Header="{Locale:Locale GameListContextMenuCacheManagementOpenShaderCacheDirectory}"
+                                    ToolTip.Tip="{Locale:Locale GameListContextMenuCacheManagementOpenShaderCacheDirectoryToolTip}" />
                             </MenuItem>
-                            <MenuItem Header="{local:Localize GameListContextMenuExtractData}">
+                            <MenuItem Header="{Locale:Locale GameListContextMenuExtractData}">
                                 <MenuItem
                                     Command="{Binding ExtractExeFs}"
-                                    Header="{local:Localize GameListContextMenuExtractDataExeFS}"
-                                    ToolTip.Tip="{local:Localize GameListContextMenuExtractDataExeFSToolTip}" />
+                                    Header="{Locale:Locale GameListContextMenuExtractDataExeFS}"
+                                    ToolTip.Tip="{Locale:Locale GameListContextMenuExtractDataExeFSToolTip}" />
                                 <MenuItem
                                     Command="{Binding ExtractRomFs}"
-                                    Header="{local:Localize GameListContextMenuExtractDataRomFS}"
-                                    ToolTip.Tip="{local:Localize GameListContextMenuExtractDataRomFSToolTip}" />
+                                    Header="{Locale:Locale GameListContextMenuExtractDataRomFS}"
+                                    ToolTip.Tip="{Locale:Locale GameListContextMenuExtractDataRomFSToolTip}" />
                                 <MenuItem
                                     Command="{Binding ExtractLogo}"
-                                    Header="{local:Localize GameListContextMenuExtractDataLogo}"
-                                    ToolTip.Tip="{local:Localize GameListContextMenuExtractDataLogoToolTip}" />
+                                    Header="{Locale:Locale GameListContextMenuExtractDataLogo}"
+                                    ToolTip.Tip="{Locale:Locale GameListContextMenuExtractDataLogoToolTip}" />
                             </MenuItem>
                         </ContextMenu>
                     </DataGrid.ContextMenu>
@@ -469,8 +469,8 @@
                         Height="10"
                         Margin="5,0,5,0"
                         VerticalAlignment="Center"
-                        IsVisible="{Binding ShowListStatusControls}" 
-                        Foreground="{DynamicResource HighlightColor}"/>
+                        Foreground="{DynamicResource HighlightColor}"
+                        IsVisible="{Binding ShowListStatusControls}" />
                 </Grid>
             </StackPanel>
             <StackPanel
@@ -554,4 +554,4 @@
             </StackPanel>
         </Grid>
     </Grid>
-</local:StyleableWindow>
+</Locale:StyleableWindow>

@@ -1,10 +1,10 @@
-<window:StyleableWindow xmlns="https://github.com/avaloniaui"
+<Locale:StyleableWindow xmlns="https://github.com/avaloniaui"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
                         x:Class="Ryujinx.Ava.Ui.Windows.AboutWindow"
-                        xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
+                        xmlns:Locale="clr-namespace:Ryujinx.Ava.Common.Locale"
                         CanResize="False"
                         Width="850" MinHeight="550" Height="550"
                         SizeToContent="Width"
@@ -34,7 +34,7 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Margin="5, 10, 20 , 10"
-                       Source="resm:Ryujinx.Ava.Ui.Resources.Logo_Ryujinx.png" Height="110" MinWidth="50" />
+                       Source="resm:Ryujinx.Ava.Assets.Images.Logo_Ryujinx.png" Height="110" MinWidth="50" />
                 <TextBlock FontSize="35" Grid.Row="0" Grid.Column="1" Text="Ryujinx" Margin="5,20,0,0" />
                 <TextBlock FontSize="16" TextAlignment="Center" Grid.Row="1" Grid.Column="1" Text="(REE-YOU-JI-NX)"
                            Margin="0,0,0,0" />
@@ -59,7 +59,7 @@
                             ToolTip.Tip="Click to open the Ryujinx Patreon page in your default browser.">
                     <Button Height="50" Background="Transparent" Tag="https://www.patreon.com/ryujinx"
                             Click="Button_OnClick">
-                        <Image Source="resm:Ryujinx.Ava.Ui.Resources.Logo_Patreon.png" />
+                        <Image Source="resm:Ryujinx.Ava.Assets.Images.Logo_Patreon.png" />
                     </Button>
                     <TextBlock Text="Patreon" />
                 </StackPanel>
@@ -67,7 +67,7 @@
                             ToolTip.Tip="Click to open the Ryujinx GitHub page in your default browser.">
                     <Button Height="50" Background="Transparent" Tag="https://github.com/Ryujinx/Ryujinx"
                             Click="Button_OnClick">
-                        <Image Source="resm:Ryujinx.Ava.Ui.Resources.Logo_GitHub.png" />
+                        <Image Source="resm:Ryujinx.Ava.Assets.Images.Logo_GitHub.png" />
                     </Button>
                     <TextBlock Text="GitHub" />
                 </StackPanel>
@@ -75,7 +75,7 @@
                             ToolTip.Tip="Click to open an invite to the Ryujinx Discord server in your default browser.">
                     <Button Height="50" Background="Transparent" Tag="https://discordapp.com/invite/N2FmfVc"
                             Click="Button_OnClick">
-                        <Image Source="resm:Ryujinx.Ava.Ui.Resources.Logo_Discord.png" />
+                        <Image Source="resm:Ryujinx.Ava.Assets.Images.Logo_Discord.png" />
                     </Button>
                     <TextBlock Text="Discord" />
                 </StackPanel>
@@ -83,7 +83,7 @@
                             ToolTip.Tip="Click to open the Ryujinx Twitter page in your default browser.">
                     <Button Height="50" Background="Transparent" Tag="https://twitter.com/RyujinxEmu"
                             Click="Button_OnClick">
-                        <Image Source="resm:Ryujinx.Ava.Ui.Resources.Logo_Twitter.png" />
+                        <Image Source="resm:Ryujinx.Ava.Assets.Images.Logo_Twitter.png" />
                     </Button>
                     <TextBlock Text="Twitter" />
                 </StackPanel>
@@ -119,4 +119,4 @@
             </Border>
         </Grid>
     </Grid>
-</window:StyleableWindow>
+</Locale:StyleableWindow>
