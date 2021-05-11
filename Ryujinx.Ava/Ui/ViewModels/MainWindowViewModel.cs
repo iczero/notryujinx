@@ -8,6 +8,7 @@ using LibHac.Fs;
 using LibHac.FsSystem.NcaUtils;
 using MessageBoxSlim.Avalonia;
 using Ryujinx.Ava.Common;
+using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.Common.Configuration;
@@ -455,7 +456,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public void AddApplication(ApplicationData applicationData)
         {
-            string gamesLoadedFormat = Localizer.Instance[LocalizationStringKeys.StatusBarGamesLoaded];
+            string gamesLoadedFormat = LocaleManager.Instance["StatusBarGamesLoaded"];
 
             Dispatcher.UIThread.Post(() =>
             {
@@ -468,7 +469,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public async void LoadApplications()
         {
-            string gamesLoadedFormat = Localizer.Instance[LocalizationStringKeys.StatusBarGamesLoaded];
+            string gamesLoadedFormat = LocaleManager.Instance["StatusBarGamesLoaded"];
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 Applications.Clear();
