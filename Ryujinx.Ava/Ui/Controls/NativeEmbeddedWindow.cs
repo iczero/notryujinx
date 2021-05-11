@@ -27,7 +27,7 @@ namespace Ryujinx.Ava.Ui.Controls
         public event EventHandler<Size> SizeChanged;
 
         private bool _init;
-        
+
         protected int Major { get; set; }
         protected int Minor { get; set; }
         protected GraphicsDebugLevel DebugLevel { get; set; }
@@ -36,6 +36,8 @@ namespace Ryujinx.Ava.Ui.Controls
         protected IntPtr X11Display { get; set; }
 
         public GameWindow GLFWWindow { get; set; }
+
+        private IPlatformHandle _handle;
 
         public bool RendererFocused => GLFWWindow.IsFocused;
 
@@ -102,20 +104,29 @@ namespace Ryujinx.Ava.Ui.Controls
         {
         }
 
-        private async void StateChanged(Rect rect)
+        public void Start()
         {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                _handle = CreateLinux(null);
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                _handle = CreateWin32(null);
+            }
+
             if (!_init && WindowHandle != IntPtr.Zero)
             {
                 _init = true;
 
-                await Task.Run(() =>
-                {
-                    OnWindowCreated();
+                OnWindowCreated();
 
-                    WindowCreated?.Invoke(this, WindowHandle);
-                });
+                WindowCreated?.Invoke(this, WindowHandle);
             }
+        }
 
+        private async void StateChanged(Rect rect)
+        {
             SizeChanged?.Invoke(this, rect.Size);
         }
 
@@ -123,14 +134,9 @@ namespace Ryujinx.Ava.Ui.Controls
         {
             try
             {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                if (_handle != null)
                 {
-                    return CreateLinux(parent);
-                }
-
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    return CreateWin32(parent);
+                    return _handle;
                 }
             }
             finally
@@ -163,7 +169,6 @@ namespace Ryujinx.Ava.Ui.Controls
             X11Display = (IntPtr)GlfwGetX11Display(GLFWWindow.WindowPtr);
 
             return new PlatformHandle(WindowHandle, "X11");
-            ;
         }
 
         [DllImport("libglfw.so.3", EntryPoint = "glfwGetX11Display")]
@@ -189,7 +194,7 @@ namespace Ryujinx.Ava.Ui.Controls
                     StartVisible = false,
                     Title = "Renderer"
                 });
-            
+
             GLFWWindow.WindowBorder = WindowBorder.Hidden;
 
             GLFW.MakeContextCurrent(null);
