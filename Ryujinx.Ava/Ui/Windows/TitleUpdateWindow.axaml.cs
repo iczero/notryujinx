@@ -94,7 +94,7 @@ namespace Ryujinx.Ava.Ui.Windows
             }
             else
             {
-                TitleUpdateModel? selected = TitleUpdates.ToList().Find(x => x.Path == _titleUpdateWindowData.Selected);
+                TitleUpdateModel selected = TitleUpdates.ToList().Find(x => x.Path == _titleUpdateWindowData.Selected);
                 List<TitleUpdateModel> enabled = TitleUpdates.ToList().FindAll(x => x.IsEnabled);
 
                 foreach (TitleUpdateModel update in enabled)
@@ -109,7 +109,7 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
-        private async void AddUpdate(string path)
+        private void AddUpdate(string path)
         {
             if (File.Exists(path))
             {

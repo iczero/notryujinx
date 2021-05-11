@@ -54,14 +54,14 @@ namespace Ryujinx.Ava.Ui.Controls
         }
 
 
-        private void OkButton_OnClick(object? sender, RoutedEventArgs e)
+        private void OkButton_OnClick(object sender, RoutedEventArgs e)
         {
             IsOkPressed = true;
 
             Close();
         }
 
-        private void Cancel_OnClick(object? sender, RoutedEventArgs e)
+        private void Cancel_OnClick(object sender, RoutedEventArgs e)
         {
             Close();
         }
@@ -98,12 +98,12 @@ namespace Ryujinx.Ava.Ui.Controls
             Message_TextInput(this, new TextInputEventArgs());
         }
 
-        private void Message_TextInput(object? sender, TextInputEventArgs e)
+        private void Message_TextInput(object sender, TextInputEventArgs e)
         {
             OkButton.IsEnabled = _checkLength(Message.Length);
         }
 
-        private void Message_KeyUp(object? sender, KeyEventArgs e)
+        private void Message_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter && OkButton.IsEnabled)
             {

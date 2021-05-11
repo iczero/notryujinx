@@ -3,7 +3,7 @@ using Ryujinx.HLE.FileSystem.Content;
 using System;
 using System.IO;
 
-namespace Ryujinx.Ava.Helper
+namespace Ryujinx.Ava.Common
 {
     /// <summary>
     ///     Ensure installation validity
@@ -26,8 +26,7 @@ namespace Ryujinx.Ava.Helper
             return false;
         }
 
-        public static bool CanFixStartApplication(ContentManager contentManager, string baseApplicationPath,
-            UserError error, out SystemVersion firmwareVersion)
+        public static bool CanFixStartApplication(ContentManager contentManager, string baseApplicationPath, UserError error, out SystemVersion firmwareVersion)
         {
             try
             {
@@ -38,12 +37,10 @@ namespace Ryujinx.Ava.Helper
                 firmwareVersion = null;
             }
 
-            return error == UserError.NoFirmware &&
-                   Path.GetExtension(baseApplicationPath).ToLowerInvariant() == ".xci" && firmwareVersion != null;
+            return error == UserError.NoFirmware && Path.GetExtension(baseApplicationPath).ToLowerInvariant() == ".xci" && firmwareVersion != null;
         }
 
-        public static bool TryFixStartApplication(ContentManager contentManager, string baseApplicationPath,
-            UserError error, out UserError outError)
+        public static bool TryFixStartApplication(ContentManager contentManager, string baseApplicationPath, UserError error, out UserError outError)
         {
             if (error == UserError.NoFirmware)
             {
@@ -68,13 +65,11 @@ namespace Ryujinx.Ava.Helper
                     {
                         try
                         {
-                            Logger.Info?.Print(LogClass.Application,
-                                $"Installing firmware {firmwareVersion.VersionString}");
+                            Logger.Info?.Print(LogClass.Application, $"Installing firmware {firmwareVersion.VersionString}");
 
                             contentManager.InstallFirmware(baseApplicationPath);
 
-                            Logger.Info?.Print(LogClass.Application,
-                                $"System version {firmwareVersion.VersionString} successfully installed.");
+                            Logger.Info?.Print(LogClass.Application, $"System version {firmwareVersion.VersionString} successfully installed.");
 
                             outError = UserError.Success;
 
@@ -94,8 +89,7 @@ namespace Ryujinx.Ava.Helper
             return false;
         }
 
-        public static bool CanStartApplication(ContentManager contentManager, string baseApplicationPath,
-            out UserError error)
+        public static bool CanStartApplication(ContentManager contentManager, string baseApplicationPath, out UserError error)
         {
             if (Directory.Exists(baseApplicationPath) || File.Exists(baseApplicationPath))
             {

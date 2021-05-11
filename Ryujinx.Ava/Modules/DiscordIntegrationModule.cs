@@ -2,7 +2,7 @@
 using Ryujinx.Common;
 using Ryujinx.Configuration;
 
-namespace Ryujinx.Ava.Application
+namespace Ryujinx.Ava.Application.Module
 {
     static class DiscordIntegrationModule
     {

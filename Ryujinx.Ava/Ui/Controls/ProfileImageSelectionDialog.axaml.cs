@@ -43,7 +43,7 @@ namespace Ryujinx.Ava.Ui.Controls
             AvaloniaXamlLoader.Load(this);
         }
 
-        private async void Import_OnClick(object? sender, RoutedEventArgs e)
+        private async void Import_OnClick(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dialog = new();
             dialog.Filters.Add(new FileDialogFilter
@@ -68,7 +68,7 @@ namespace Ryujinx.Ava.Ui.Controls
             Close();
         }
 
-        private async void SelectFirmwareImage_OnClick(object? sender, RoutedEventArgs e)
+        private async void SelectFirmwareImage_OnClick(object sender, RoutedEventArgs e)
         {
             if (FirmwareFound)
             {

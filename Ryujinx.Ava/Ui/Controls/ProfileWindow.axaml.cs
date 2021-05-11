@@ -33,7 +33,7 @@ namespace Ryujinx.Ava.Ui.Controls
             Error = this.FindControl<TextBlock>("Error");
         }
 
-        private void OkButton_OnClick(object? sender, RoutedEventArgs e)
+        private void OkButton_OnClick(object sender, RoutedEventArgs e)
         {
             bool validFileName = true;
 
@@ -61,7 +61,7 @@ namespace Ryujinx.Ava.Ui.Controls
             }
         }
 
-        private void Cancel_OnClick(object? sender, RoutedEventArgs e)
+        private void Cancel_OnClick(object sender, RoutedEventArgs e)
         {
             Close();
         }

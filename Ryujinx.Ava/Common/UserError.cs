@@ -1,4 +1,4 @@
-﻿namespace Ryujinx.Ava.Helper
+﻿namespace Ryujinx.Ava.Common
 {
     /// <summary>
     ///     Represent a common error that could be reported to the user by the emulator.

@@ -50,7 +50,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         {
         }
 
-        public async void LoadProfiles()
+        public void LoadProfiles()
         {
             Profiles.Clear();
 
@@ -122,7 +122,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             _tempUserName = String.Empty;
         }
 
-        public async void DeleteUser()
+        public void DeleteUser()
         {
             if (_selectedProfile != null)
             {

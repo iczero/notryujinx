@@ -301,7 +301,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         private void SetAmiiboDetails()
         {
-            ResetAmiiboPreview().Wait();
+            ResetAmiiboPreview();
 
             Usage = string.Empty;
 
@@ -421,7 +421,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
         }
 
-        private async Task ResetAmiiboPreview()
+        private void ResetAmiiboPreview()
         {
             using (MemoryStream memoryStream = new(_amiiboLogoBytes))
             {
