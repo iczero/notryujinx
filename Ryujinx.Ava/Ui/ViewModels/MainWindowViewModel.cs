@@ -49,6 +49,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private bool _showAll;
         private bool _showLoadProgress;
         private bool _showMenuAndStatusBar = true;
+        private Brush _progressBarForegroundColor;
+        private Brush _progressBarBackgroundColor;
         private Brush _vsyncColor;
         private byte[] _selectedIcon;
 
@@ -179,6 +181,28 @@ namespace Ryujinx.Ava.Ui.ViewModels
             set
             {
                 _cacheLoadStatus = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public Brush ProgressBarBackgroundColor
+        {
+            get => _progressBarBackgroundColor;
+            set
+            {
+                _progressBarBackgroundColor = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public Brush ProgressBarForegroundColor
+        {
+            get => _progressBarForegroundColor;
+            set
+            {
+                _progressBarForegroundColor = value;
 
                 OnPropertyChanged();
             }
@@ -625,7 +649,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             switch (state)
             {
                 case PtcLoadingState ptcState:
-                    CacheLoadStatus = $"PTC: {current}/{total}";
+                    CacheLoadStatus = $"{current} / {total}";
                     if (ptcState == PtcLoadingState.Start)
                     {
                         _owner.HideGuestRendering();
@@ -638,7 +662,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                     showLoadProgress = ptcState != PtcLoadingState.Loaded;
                     break;
                 case ShaderCacheLoadingState shaderCacheState:
-                    CacheLoadStatus = $"Shaders: {current}/{total}";
+                    CacheLoadStatus = $"{current} / {total}";
                     if (shaderCacheState == ShaderCacheLoadingState.Start)
                     {
                         _owner.HideGuestRendering();
