@@ -97,8 +97,12 @@ namespace Ryujinx.Ava.Ui.Controls
                     var mode = GLFW.GetVideoMode(GLFW.GetPrimaryMonitor());
 
                     GLFWWindow.Size = new Vector2i(mode->Width, mode->Height);
-                    var position = this.PointToScreen(Bounds.Position);
-                    GLFWWindow.Location = new Vector2i(position.X, position.Y);
+
+                    if (VisualRoot != null)
+                    {
+                        var position = this.PointToScreen(Bounds.Position);
+                        GLFWWindow.Location = new Vector2i(position.X, position.Y);
+                    }
 
                     Bounds = Bounds;
                 }
