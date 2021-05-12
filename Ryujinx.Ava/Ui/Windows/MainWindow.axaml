@@ -427,46 +427,70 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             ZIndex="1000"
-            Background="Black">
+            Background="{DynamicResource ThemeBackgroundColor}">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="800" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Image
-                Grid.Row="1"
+            <Border
+                Grid.Column="1"
                 Width="256"
                 Height="256"
                 Margin="0,10,0,10"
-                Source="{Binding SelectedIcon, Converter={StaticResource ByteImage}}" />
-            <TextBlock
-                Grid.Row="2"
-                Margin="0,10,0,10"
-                FontWeight="Bold"
-                FontSize="38"
-                Text="{Binding CacheLoadHeading}"
-                TextAlignment="Center" />
-            <ProgressBar
-                Grid.Row="3"
-                BorderThickness="0.5"
-                BorderBrush="White"
-                Height="10"
-                Margin="160,0,160,0"
-                Maximum="{Binding ProgressMaximum}"
-                Minimum="0"
-                Value="{Binding ProgressValue}" />
-            <TextBlock
-                Grid.Row="4"
-                Margin="0,10,0,10"
-                FontSize="18"
-                Text="{Binding CacheLoadStatus}"
-                TextAlignment="Center" />
+                BorderBrush="Black"
+                BorderThickness="2"
+                CornerRadius="3"
+                Padding="4"
+                BoxShadow="4 4 32 8 #40000000">
+                <Image
+                    Width="256"
+                    Height="256"
+                    Source="{Binding SelectedIcon, Converter={StaticResource ByteImage}}" />
+            </Border>
+            <Grid
+                Grid.Column="2"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBlock
+                    Grid.Row="1"
+                    Margin="40,10,0,10"
+                    FontWeight="Bold"
+                    FontSize="38"
+                    Text="{Binding CacheLoadHeading}"
+                    TextAlignment="Left" />
+                <ProgressBar
+                    Grid.Row="2"
+                    BorderThickness="0.5"
+                    BorderBrush="White"
+                    Background="{Binding ProgressBarBackgroundColor}"
+                    Foreground="{Binding ProgressBarForegroundColor}"
+                    Height="10"
+                    Margin="40,0,20,0"
+                    Maximum="{Binding ProgressMaximum}"
+                    Minimum="0"
+                    Value="{Binding ProgressValue}" />
+                <TextBlock
+                    Grid.Row="3"
+                    Margin="40,10,0,10"
+                    FontSize="18"
+                    Text="{Binding CacheLoadStatus}"
+                    TextAlignment="Left" />
+            </Grid>
         </Grid>
         <Grid
             Name="StatusBar"

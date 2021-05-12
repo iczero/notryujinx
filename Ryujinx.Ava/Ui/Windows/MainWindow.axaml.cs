@@ -25,6 +25,7 @@ using Ryujinx.HLE.HOS.Services.Account.Acc;
 using Ryujinx.Input.Avalonia;
 using Ryujinx.Input.SDL2;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -375,6 +376,22 @@ namespace Ryujinx.Ava.Ui.Windows
             if (selection != null && selection is ApplicationData data)
             {
                 ViewModel.SelectedIcon = data.Icon;
+
+                using var stream = new MemoryStream(data.Icon);
+                using var gameIconBmp = new System.Drawing.Bitmap(stream);
+
+                var dominantColor = VibrantColorPicker.GetFilteredColor(gameIconBmp);
+
+                const int ColorDivisor = 4;
+
+                var progressFgColor = Color.FromRgb(dominantColor.R, dominantColor.G, dominantColor.B);
+                var progressBgColor = Color.FromRgb(
+                    (byte)(dominantColor.R / ColorDivisor),
+                    (byte)(dominantColor.G / ColorDivisor),
+                    (byte)(dominantColor.B / ColorDivisor));
+
+                ViewModel.ProgressBarForegroundColor = new SolidColorBrush(progressFgColor);
+                ViewModel.ProgressBarBackgroundColor = new SolidColorBrush(progressBgColor);
 
                 string path = new FileInfo(data.Path).FullName;
 
