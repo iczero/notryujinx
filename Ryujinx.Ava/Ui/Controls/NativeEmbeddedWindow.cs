@@ -90,7 +90,7 @@ namespace Ryujinx.Ava.Ui.Controls
             {
                 if (!_isFullScreen)
                 {
-                    GLFWWindow.Size = new Vector2i((int)(Bounds.Width * _scale), (int)(Bounds.Height * _scale));
+                    GLFWWindow.Size = new Vector2i((int)(Bounds.Width * scale), (int)(Bounds.Height * scale));
                 }
                 else
                 {

@@ -380,7 +380,7 @@ namespace Ryujinx.Ava.Ui.Windows
                 using var stream = new MemoryStream(data.Icon);
                 using var gameIconBmp = new System.Drawing.Bitmap(stream);
 
-                var dominantColor = VibrantColorPicker.GetFilteredColor(gameIconBmp);
+                var dominantColor = IconColorPicker.GetFilteredColor(gameIconBmp);
 
                 const int ColorDivisor = 4;
 
