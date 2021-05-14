@@ -1,73 +1,124 @@
-<window:StyleableWindow xmlns="https://github.com/avaloniaui"
-                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
-                        x:Class="Ryujinx.Ava.Ui.Windows.DlcManagerWindow"
-                        xmlns:Locale="clr-namespace:Ryujinx.Ava.Common.Locale"
-                        xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
-                        SizeToContent="WidthAndHeight"
-                        Width="850" Height="400"
-                        MinWidth="500" MinHeight="400"
-                        Title="Ryujinx - Dlc Manager">
-    <Grid Margin="15" HorizontalAlignment="Stretch" MinWidth="550" Name="DlcGrid">
+<window:StyleableWindow
+    x:Class="Ryujinx.Ava.Ui.Windows.DlcManagerWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
+    Title="Ryujinx - DLC Manager"
+    Width="550"
+    Height="250"
+    MinWidth="550"
+    MinHeight="250"
+    d:DesignHeight="250"
+    d:DesignWidth="550"
+    CanResize="False"
+    SizeToContent="WidthAndHeight"
+    WindowStartupLocation="CenterOwner"
+    mc:Ignorable="d">
+    <Grid Name="DlcGrid" Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock Grid.Row="0" Text="{Binding Heading}" HorizontalAlignment="Center" TextAlignment="Center"
-                   VerticalAlignment="Center" Margin="20" />
-        <Border BorderBrush="Gray" Grid.Row="1" Margin="10" BorderThickness="1" HorizontalAlignment="Stretch"
-                VerticalAlignment="Stretch">
-            <DataGrid MinWidth="300" Items="{Binding Dlcs}" HorizontalAlignment="Stretch" MinHeight="300"
-                      VerticalAlignment="Stretch" HorizontalScrollBarVisibility="Auto"
-                      VerticalScrollBarVisibility="Auto">
+        <TextBlock
+            Grid.Row="0"
+            Margin="20,15,20,20"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Text="{Binding Heading}"
+            TextAlignment="Center" />
+        <Border
+            Grid.Row="1"
+            Margin="5"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            BorderBrush="Gray"
+            BorderThickness="1">
+            <DataGrid
+                Width="550"
+                MinHeight="200"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                HorizontalScrollBarVisibility="Auto"
+                Items="{Binding Dlcs}"
+                VerticalScrollBarVisibility="Auto">
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="Enabled"
-                                            Width="90">
+                    <DataGridTemplateColumn Width="90" Header="Enabled">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <CheckBox
-                                    HorizontalAlignment="Right"
-                                    MinWidth="40"
                                     Width="50"
+                                    MinWidth="40"
+                                    HorizontalAlignment="Right"
                                     IsChecked="{Binding IsEnabled}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="Title Id"
-                                        CanUserResize="True"
-                                        Binding="{Binding TitleId}"
-                                        Width="190" />
-                    <DataGridTextColumn Header="Container Path"
-                                        CanUserResize="True"
-                                        Binding="{Binding ContainerPath}"
-                                        Width="*" />
-                    <DataGridTextColumn Header="Full Path"
-                                        CanUserResize="True"
-                                        Binding="{Binding FullPath}"
-                                        Width="*" />
+                    <DataGridTextColumn
+                        Width="190"
+                        Binding="{Binding TitleId}"
+                        CanUserResize="True"
+                        Header="TitleId" />
+                    <DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding ContainerPath}"
+                        CanUserResize="True"
+                        Header="Container Path" />
+                    <DataGridTextColumn
+                        Width="*"
+                        Binding="{Binding FullPath}"
+                        CanUserResize="True"
+                        Header="Full Path" />
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
-        <StackPanel Margin="10" Grid.Row="2" HorizontalAlignment="Right" Orientation="Horizontal">
-            <Separator HorizontalAlignment="Stretch" />
-            <Button Margin="5" Name="AddButton" Command="{Binding Add}">
-                <TextBlock Text="Add" />
-            </Button>
-            <Button Margin="5" Name="RemoveButton" Command="{Binding RemoveSelected}">
-                <TextBlock Text="Remove" />
-            </Button>
-            <Button Margin="5" Name="RemoveAllButton" Command="{Binding RemoveAll}">
-                <TextBlock Text="Remove All" />
-            </Button>
-            <Button Margin="5" Name="SaveButton" Command="{Binding Save}">
-                <TextBlock Text="Save" />
-            </Button>
-            <Button Margin="5" Name="CancelButton" Command="{Binding Close}">
-                <TextBlock Text="Cancel" />
-            </Button>
-        </StackPanel>
+        <Separator HorizontalAlignment="Stretch" />
+        <DockPanel
+            Grid.Row="2"
+            Margin="0"
+            HorizontalAlignment="Stretch">
+            <DockPanel Margin="0" HorizontalAlignment="Left">
+                <Button
+                    Name="AddButton"
+                    MinWidth="90"
+                    Margin="5"
+                    Command="{Binding Add}">
+                    <TextBlock Text="Add" />
+                </Button>
+                <Button
+                    Name="RemoveButton"
+                    MinWidth="90"
+                    Margin="5"
+                    Command="{Binding RemoveSelected}">
+                    <TextBlock Text="Remove" />
+                </Button>
+                <Button
+                    Name="RemoveAllButton"
+                    MinWidth="90"
+                    Margin="5"
+                    Command="{Binding RemoveAll}">
+                    <TextBlock Text="Remove All" />
+                </Button>
+            </DockPanel>
+            <DockPanel Margin="0" HorizontalAlignment="Right">
+                <Button
+                    Name="SaveButton"
+                    MinWidth="90"
+                    Margin="5"
+                    Command="{Binding Save}">
+                    <TextBlock Text="Save" />
+                </Button>
+                <Button
+                    Name="CancelButton"
+                    MinWidth="90"
+                    Margin="5"
+                    Command="{Binding Close}">
+                    <TextBlock Text="Cancel" />
+                </Button>
+            </DockPanel>
+        </DockPanel>
     </Grid>
 </window:StyleableWindow>
