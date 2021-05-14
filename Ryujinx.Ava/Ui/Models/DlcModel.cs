@@ -11,10 +11,10 @@ namespace Ryujinx.Ava.Ui.Models
         
         public DlcModel(string titleId, string containerPath, string fullPath, bool isEnabled)
         {
-            TitleId = titleId;
+            TitleId       = titleId;
             ContainerPath = containerPath;
-            FullPath = fullPath;
-            IsEnabled = isEnabled;
+            FullPath      = fullPath;
+            IsEnabled     = isEnabled;
         }
     }
 }
