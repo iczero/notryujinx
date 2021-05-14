@@ -25,6 +25,7 @@ using Ryujinx.Graphics.OpenGL;
 using Ryujinx.HLE;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.FileSystem.Content;
+using Ryujinx.HLE.HOS;
 using Ryujinx.HLE.HOS.Services.Account.Acc;
 using Ryujinx.HLE.HOS.Services.Hid;
 using Ryujinx.Input;
@@ -51,6 +52,7 @@ namespace Ryujinx.Ava
         private static readonly Cursor InvisibleCursor = new Cursor(StandardCursorType.None);
 
         private readonly AccountManager _accountManager;
+        private UserChannelPersistence _userChannelPersistence;
 
         private readonly Stopwatch _chrono;
 
@@ -99,25 +101,27 @@ namespace Ryujinx.Ava
         public string Path    { get; }
 
         public AppHost(
-            NativeEmbeddedWindow window,
-            InputManager         inputManager,
-            double               scaling,
-            string               path,
-            VirtualFileSystem    virtualFileSystem,
-            ContentManager       contentManager,
-            AccountManager       accountManager,
-            MainWindow           parent)
+            NativeEmbeddedWindow   window,
+            InputManager           inputManager,
+            double                 scaling,
+            string                 path,
+            VirtualFileSystem      virtualFileSystem,
+            ContentManager         contentManager,
+            AccountManager         accountManager,
+            UserChannelPersistence userChannelPersistence,
+            MainWindow             parent)
         {
-            _parent             = parent;
-            _inputManager       = inputManager;
-            _accountManager     = accountManager;
-            _keyboardInterface  = (IKeyboard)_inputManager.KeyboardDriver.GetGamepad("0");
-            _renderingThread    = new Thread(RenderLoop) { Name = "GUI.RenderThread" };
-            _chrono             = new Stopwatch();
-            _hideCursorOnIdle   = ConfigurationState.Instance.HideCursorOnIdle;
-            _lastCursorMoveTime = Stopwatch.GetTimestamp();
-            _ticksPerFrame      = Stopwatch.Frequency / TargetFps;
-            _glLogLevel         = ConfigurationState.Instance.Logger.GraphicsDebugLevel;
+            _parent                 = parent;
+            _inputManager           = inputManager;
+            _accountManager         = accountManager;
+            _userChannelPersistence = userChannelPersistence;
+            _keyboardInterface      = (IKeyboard)_inputManager.KeyboardDriver.GetGamepad("0");
+            _renderingThread        = new Thread(RenderLoop) { Name = "GUI.RenderThread" };
+            _chrono                 = new Stopwatch();
+            _hideCursorOnIdle       = ConfigurationState.Instance.HideCursorOnIdle;
+            _lastCursorMoveTime     = Stopwatch.GetTimestamp();
+            _ticksPerFrame          = Stopwatch.Frequency / TargetFps;
+            _glLogLevel             = ConfigurationState.Instance.Logger.GraphicsDebugLevel;
 
             Window            = window;
             NpadManager       = _inputManager.CreateNpadManager();
@@ -511,7 +515,7 @@ namespace Ryujinx.Ava
                 ? MemoryConfiguration.MemoryConfiguration6GB
                 : MemoryConfiguration.MemoryConfiguration4GB;
 
-            EmulationContext = new Switch(VirtualFileSystem, ContentManager, _accountManager, MainWindow.UserChannelPersistence, renderer, deviceDriver, memoryConfiguration)
+            EmulationContext = new Switch(VirtualFileSystem, ContentManager, _accountManager, _userChannelPersistence, renderer, deviceDriver, memoryConfiguration)
             {
                 UiHandler = _parent.UiHandler
             };
