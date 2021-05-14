@@ -25,7 +25,6 @@ using Ryujinx.HLE.HOS.Services.Account.Acc;
 using Ryujinx.Input.Avalonia;
 using Ryujinx.Input.SDL2;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
