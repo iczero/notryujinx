@@ -142,6 +142,8 @@ namespace Ryujinx.Ava.Ui.Windows
             ViewModel.GameStatusText        = args.GameStatus;
             ViewModel.FifoStatusText        = args.FifoStatus;
             ViewModel.GpuStatusText         = args.GpuName;
+
+            ViewModel.ShowStatusSeparator = true;
         }
 
         public void UpdateGridColumns()
