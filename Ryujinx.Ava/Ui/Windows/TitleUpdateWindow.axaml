@@ -13,7 +13,9 @@
     MinHeight="250"
     d:DesignHeight="250"
     d:DesignWidth="550"
+    CanResize="False"
     SizeToContent="WidthAndHeight"
+    WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
     <Grid Margin="15">
         <Grid.RowDefinitions>

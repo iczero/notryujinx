@@ -14,6 +14,7 @@ using Ryujinx.Common.Utilities;
 using Ryujinx.HLE.FileSystem;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -23,25 +24,30 @@ namespace Ryujinx.Ava.Ui.Windows
     public class DlcManagerWindow : StyleableWindow
     {
         private readonly List<DlcContainer> _dlcContainerList;
-        private readonly string _dlcJsonPath;
+        private readonly string             _dlcJsonPath;
+
+        public VirtualFileSystem VirtualFileSystem { get; }
+
+        public AvaloniaList<DlcModel> Dlcs { get; set; }
+        public Grid DlcGrid { get; private set; }
+        public string TitleId { get; }
+        public string TitleName { get; }
+
+        public string Heading => $"DLC Available for {TitleName} [{TitleId.ToUpper()}]";
 
         public DlcManagerWindow()
         {
             DataContext = this;
 
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
+            AttachDebugDevTools();
         }
 
         public DlcManagerWindow(VirtualFileSystem virtualFileSystem, string titleId, string titleName)
         {
             VirtualFileSystem = virtualFileSystem;
-            TitleId = titleId;
-            TitleName = titleName;
-
-            DataContext = this;
+            TitleId           = titleId;
+            TitleName         = titleName;
 
             _dlcJsonPath = Path.Combine(AppDataManager.GamesDirPath, titleId, "dlc.json");
 
@@ -54,21 +60,19 @@ namespace Ryujinx.Ava.Ui.Windows
                 _dlcContainerList = new List<DlcContainer>();
             }
 
+            DataContext = this;
+
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
+            AttachDebugDevTools();
 
             LoadDlcs();
         }
 
-        public AvaloniaList<DlcModel> Dlcs { get; set; }
-        public Grid DlcGrid { get; private set; }
-        public VirtualFileSystem VirtualFileSystem { get; }
-        public string TitleId { get; }
-        public string TitleName { get; }
-
-        public string Heading => $"DLC Available for {TitleName} [{TitleId.ToUpper()}]";
+        [Conditional("DEBUG")]
+        private void AttachDebugDevTools()
+        {
+            this.AttachDevTools();
+        }
 
         private void InitializeComponent()
         {
@@ -77,54 +81,28 @@ namespace Ryujinx.Ava.Ui.Windows
             AvaloniaXamlLoader.Load(this);
 
             DlcGrid = this.FindControl<Grid>("DlcGrid");
-
-            IObservable<Size> resizeObserverable = this.GetObservable(ClientSizeProperty);
-
-            resizeObserverable.Subscribe(Resized);
-
-            IObservable<Rect> stateObserverable = this.GetObservable(BoundsProperty);
-
-            stateObserverable.Subscribe(StateChanged);
         }
 
-        public void UpdateSizes(Size size)
-        {
-            //Workaround for dlc list not fitting parent
-
-            if (DlcGrid != null)
-            {
-                DlcGrid.Width = Bounds.Width - DlcGrid.Margin.Left - DlcGrid.Margin.Right;
-            }
-        }
-
-        private void Resized(Size size)
-        {
-            UpdateSizes(size);
-        }
-
-
-        private void StateChanged(Rect rect)
-        {
-            UpdateSizes(ClientSize);
-        }
-
-        public void LoadDlcs()
+        private void LoadDlcs()
         {
             foreach (DlcContainer dlcContainer in _dlcContainerList)
             {
                 using FileStream containerFile = File.OpenRead(dlcContainer.Path);
-                PartitionFileSystem pfs = new(containerFile.AsStorage());
+
+                PartitionFileSystem pfs = new PartitionFileSystem(containerFile.AsStorage());
+
                 VirtualFileSystem.ImportTickets(pfs);
 
                 foreach (DlcNca dlcNca in dlcContainer.DlcNcaList)
                 {
-                    pfs.OpenFile(out IFile ncaFile, dlcNca.Path.ToU8Span(), OpenMode.Read).ThrowIfFailure();
+                    pfs.OpenFile(out IFile ncaFile, dlcNca.Path.ToU8Span(), OpenMode.Read)
+                       .ThrowIfFailure();
+
                     Nca nca = TryCreateNca(ncaFile.AsStorage(), dlcContainer.Path);
 
                     if (nca != null)
                     {
-                        Dlcs.Add(new DlcModel(nca.Header.TitleId.ToString("X16"), dlcContainer.Path, dlcNca.Path,
-                            dlcNca.Enabled));
+                        Dlcs.Add(new DlcModel(nca.Header.TitleId.ToString("X16"), dlcContainer.Path, dlcNca.Path, dlcNca.Enabled));
                     }
                 }
             }
@@ -136,9 +114,9 @@ namespace Ryujinx.Ava.Ui.Windows
             {
                 return new Nca(VirtualFileSystem.KeySet, ncaStorage);
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                AvaDialog.CreateErrorDialog($"{exception.Message}. Errored File: {containerPath}", this);
+                AvaDialog.CreateErrorDialog($"{ex.Message}. Errored File: {containerPath}", this);
             }
 
             return null;
@@ -153,14 +131,15 @@ namespace Ryujinx.Ava.Ui.Windows
 
             using (FileStream containerFile = File.OpenRead(path))
             {
-                PartitionFileSystem pfs = new(containerFile.AsStorage());
-                bool containsDlc = false;
+                PartitionFileSystem pfs         = new PartitionFileSystem(containerFile.AsStorage());
+                bool                containsDlc = false;
 
                 VirtualFileSystem.ImportTickets(pfs);
 
                 foreach (DirectoryEntryEx fileEntry in pfs.EnumerateEntries("/", "*.nca"))
                 {
-                    pfs.OpenFile(out IFile ncaFile, fileEntry.FullPath.ToU8Span(), OpenMode.Read).ThrowIfFailure();
+                    pfs.OpenFile(out IFile ncaFile, fileEntry.FullPath.ToU8Span(), OpenMode.Read)
+                       .ThrowIfFailure();
 
                     Nca nca = TryCreateNca(ncaFile.AsStorage(), path);
 
@@ -184,8 +163,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
                 if (!containsDlc)
                 {
-                    AvaDialog.CreateErrorDialog("The specified file does not contain a DLC for the selected title!",
-                        this);
+                    AvaDialog.CreateErrorDialog("The specified file does not contain a DLC for the selected title!", this);
                 }
             }
         }
@@ -219,8 +197,9 @@ namespace Ryujinx.Ava.Ui.Windows
 
         public async void Add()
         {
-            OpenFileDialog dialog = new() {Title = "Select dlc files", AllowMultiple = true};
-            dialog.Filters.Add(new FileDialogFilter {Name = "NSP", Extensions = {"nsp"}});
+            OpenFileDialog dialog = new OpenFileDialog() { Title = "Select dlc files", AllowMultiple = true };
+
+            dialog.Filters.Add(new FileDialogFilter { Name = "NSP", Extensions = { "nsp" } });
 
             string[] files = await dialog.ShowAsync(this);
 
@@ -248,12 +227,14 @@ namespace Ryujinx.Ava.Ui.Windows
                         _dlcContainerList.Add(container);
                     }
 
-                    container = new DlcContainer {Path = dlc.ContainerPath, DlcNcaList = new List<DlcNca>()};
+                    container = new DlcContainer { Path = dlc.ContainerPath, DlcNcaList = new List<DlcNca>() };
                 }
 
                 container.DlcNcaList.Add(new DlcNca
                 {
-                    Enabled = dlc.IsEnabled, TitleId = Convert.ToUInt64(dlc.TitleId, 16), Path = dlc.FullPath
+                    Enabled = dlc.IsEnabled, 
+                    TitleId = Convert.ToUInt64(dlc.TitleId, 16), 
+                    Path    = dlc.FullPath
                 });
             }
 

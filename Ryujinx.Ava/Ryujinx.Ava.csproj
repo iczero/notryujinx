@@ -91,16 +91,8 @@
     <ProjectReference Include="..\Ryujinx.Graphics.Gpu\Ryujinx.Graphics.Gpu.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <AvaloniaXaml Update="App.axaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaXaml>
-    <AvaloniaXaml Update="Ui\Windows\MainWindow.axaml">
-      <Generator>MSBuild:Compile</Generator>
-    </AvaloniaXaml>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Update="App.axaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
+      <DependentUpon>App.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Ui\Windows\MainWindow.axaml.cs">
