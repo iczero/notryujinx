@@ -20,7 +20,7 @@ namespace Ryujinx.Ava
 {
     internal class Program
     {
-        public static string Version { get; private set; }
+        public static string Version           { get; private set; }
         public static string ConfigurationPath { get; private set; }
 
         [DllImport("libX11")]
@@ -32,8 +32,30 @@ namespace Ryujinx.Ava
         {
             Initialize(args);
 
-            BuildAvaloniaApp()
-                .StartWithClassicDesktopLifetime(args);
+            BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+        }
+
+        // Avalonia configuration, don't remove; also used by visual designer.
+        public static AppBuilder BuildAvaloniaApp()
+        {
+            return AppBuilder.Configure<App>()
+                .UsePlatformDetect()
+                .With(new X11PlatformOptions
+                {
+                    EnableMultiTouch = true,
+                    UseDBusMenu      = true,
+                    EnableIme        = true,
+                    UseEGL           = false,
+                    UseGpu           = false
+                })
+                .With(new Win32PlatformOptions
+                {
+                    EnableMultitouch       = true,
+                    UseWgl                 = false,
+                    AllowEglInitialization = false
+                })
+                .UseSkia()
+                .LogToTrace();
         }
 
         private static void Initialize(string[] args)
@@ -103,7 +125,7 @@ namespace Ryujinx.Ava
             ForceDedicatedGpu.Nvidia();
         }
 
-        public static void ReloadConfig()
+        private static void ReloadConfig()
         {
             string localConfigurationPath   = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config.json");
             string appDataConfigurationPath = Path.Combine(AppDataManager.BaseDirPath,            "Config.json");
@@ -132,27 +154,6 @@ namespace Ryujinx.Ava
                     Logger.Warning?.PrintMsg(LogClass.Application, $"Failed to load config! Loading the default config instead.\nFailed config location {ConfigurationPath}");
                 }
             }
-        }
-        
-        // Avalonia configuration, don't remove; also used by visual designer.
-        public static AppBuilder BuildAvaloniaApp()
-        {
-            return AppBuilder.Configure<App>()
-                .UsePlatformDetect()
-                .With(new X11PlatformOptions
-                {
-                    EnableMultiTouch = true,
-                    UseDBusMenu = true,
-                    EnableIme = true,
-                    UseEGL = false,
-                    UseGpu = false
-                })
-                .With(new Win32PlatformOptions
-                {
-                    EnableMultitouch = true, UseWgl = false, AllowEglInitialization = false
-                })
-                .UseSkia()
-                .LogToTrace();
         }
 
         private static void PrintSystemInfo()
