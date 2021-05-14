@@ -29,10 +29,10 @@ namespace Ryujinx.Ava.Ui.Windows
         private readonly string     _updateJsonPath;
         private TitleUpdateMetadata _titleUpdateWindowData;
 
-        public AvaloniaList<TitleUpdateModel> TitleUpdates      { get; set; }
-        public VirtualFileSystem              VirtualFileSystem { get; }
+        public VirtualFileSystem VirtualFileSystem { get; }
 
-        public string TitleId   { get; }
+        public AvaloniaList<TitleUpdateModel> TitleUpdates { get; set; }
+        public string TitleId { get; }
         public string TitleName { get; }
 
         public string Heading => $"Updates Available for {TitleName} [{TitleId.ToUpper()}]";
@@ -83,7 +83,7 @@ namespace Ryujinx.Ava.Ui.Windows
             AvaloniaXamlLoader.Load(this);
         }
 
-        public void LoadUpdates()
+        private void LoadUpdates()
         {
             TitleUpdates.Add(new TitleUpdateModel(default, string.Empty, true));
 
@@ -182,7 +182,7 @@ namespace Ryujinx.Ava.Ui.Windows
         {
             OpenFileDialog dialog = new OpenFileDialog() { Title = "Select update files", AllowMultiple = true };
 
-            dialog.Filters.Add(new FileDialogFilter { Name = "NSP", Extensions = {"nsp"} });
+            dialog.Filters.Add(new FileDialogFilter { Name = "NSP", Extensions = { "nsp" } });
 
             string[] files = await dialog.ShowAsync(this);
 
