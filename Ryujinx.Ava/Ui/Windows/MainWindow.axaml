@@ -561,7 +561,7 @@
                     PointerReleased="VsyncStatus_PointerReleased"
                     Text="VSync"
                     TextAlignment="Left" />
-                <TextBlock VerticalAlignment="Center" Text="|" />
+                <TextBlock VerticalAlignment="Center" IsVisible="{Binding ShowStatusSeparator}" Text="|" />
                 <TextBlock
                     Name="DockedStatus"
                     Margin="5,0,5,0"
@@ -570,7 +570,7 @@
                     PointerReleased="DockedStatus_PointerReleased"
                     Text="{Binding DockedStatusText}"
                     TextAlignment="Left" />
-                <TextBlock VerticalAlignment="Center" Text="|" />
+                <TextBlock VerticalAlignment="Center" IsVisible="{Binding ShowStatusSeparator}" Text="|" />
                 <TextBlock
                     Name="AspectRatioStatus"
                     Margin="5,0,5,0"
@@ -579,21 +579,21 @@
                     PointerReleased="AspectRatioStatus_PointerReleased"
                     Text="{Binding AspectRatioStatusText}"
                     TextAlignment="Left" />
-                <TextBlock VerticalAlignment="Center" Text="|" />
+                <TextBlock VerticalAlignment="Center" IsVisible="{Binding ShowStatusSeparator}" Text="|" />
                 <TextBlock
                     Margin="5,0,5,0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
                     Text="{Binding GameStatusText}"
                     TextAlignment="Left" />
-                <TextBlock VerticalAlignment="Center" Text="|" />
+                <TextBlock VerticalAlignment="Center" IsVisible="{Binding ShowStatusSeparator}" Text="|" />
                 <TextBlock
                     Margin="5,0,5,0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
                     Text="{Binding FifoStatusText}"
                     TextAlignment="Left" />
-                <TextBlock VerticalAlignment="Center" Text="|" />
+                <TextBlock VerticalAlignment="Center" IsVisible="{Binding ShowStatusSeparator}" Text="|" />
                 <TextBlock
                     Margin="5,0,5,0"
                     HorizontalAlignment="Left"

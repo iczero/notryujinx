@@ -49,6 +49,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private bool _showAll;
         private bool _showLoadProgress;
         private bool _showMenuAndStatusBar = true;
+        private bool _showStatusSeparator;
         private Brush _progressBarForegroundColor;
         private Brush _progressBarBackgroundColor;
         private Brush _vsyncColor;
@@ -291,6 +292,17 @@ namespace Ryujinx.Ava.Ui.ViewModels
             set
             {
                 _aspectStatusText = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public bool ShowStatusSeparator
+        {
+            get => _showStatusSeparator;
+            set
+            {
+                _showStatusSeparator = value;
 
                 OnPropertyChanged();
             }
