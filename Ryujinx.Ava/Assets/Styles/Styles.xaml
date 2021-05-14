@@ -54,7 +54,7 @@
         <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="SeparatorBrush" Value="{DynamicResource ThemeForegroundLowBrush}" />
+        <Setter Property="SeparatorBrush" Value="{DynamicResource ThemeControlBorderColor}" />
         <Setter Property="Padding" Value="5" />
         <Setter Property="Background" Value="{DynamicResource ThemeCardColor}" />
         <Setter Property="Template">
@@ -88,6 +88,13 @@
             </ControlTemplate>
         </Setter>
     </Style>
+    <Style Selector="DataGridCell">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="DataGridCell.Left">
+        <Setter Property="HorizontalAlignment" Value="Left" />
+    </Style>
     <Style Selector="CheckBox">
         <Setter Property="Margin" Value="0,10,0,10" />
         <Setter Property="BorderThickness" Value="1" />
@@ -96,6 +103,10 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="6 0" />
+    </Style>
+    <Style Selector="MenuItem:selected /template/ Border#root">
+        <Setter Property="Background" Value="{DynamicResource ThemeControlBorderColor}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeControlBorderColor}" />
     </Style>
 
     <Styles.Resources>
@@ -111,6 +122,8 @@
         <Color x:Key="ThemeControlHighlightHighColor">#EE404040</Color>
         <Color x:Key="ThemeBackgroundColor">#FF2D2D2D</Color>
         <Color x:Key="ThemeButtonForegroundColor">#FF212121</Color>
+        <Color x:Key="ThemeAlternatingRowColor">#FF323232</Color>
+        <Color x:Key="ThemeControlBorderColor">#FF505050</Color>
         <sys:Double x:Key="ScrollBarThickness">15</sys:Double>
         <sys:Double x:Key="FontSizeSmall">10</sys:Double>
         <sys:Double x:Key="FontSizeNormal">12</sys:Double>

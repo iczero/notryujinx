@@ -26,6 +26,7 @@ using Ryujinx.Input.Avalonia;
 using Ryujinx.Input.SDL2;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,60 +37,34 @@ namespace Ryujinx.Ava.Ui.Windows
 {
     public class MainWindow : StyleableWindow
     {
-        public static UserChannelPersistence UserChannelPersistence;
-
-        internal readonly AvaHostUiHandler UiHandler;
-
         private bool _canUpdate;
         private bool _isClosing;
-
         private bool _isLoading;
 
         private Control _mainViewContent;
 
-        public AppHost AppHost;
-        public InputManager Manager { get; }
+        private UserChannelPersistence _userChannelPersistence;
 
-        public MainWindow()
-        {
-            ViewModel = new MainWindowViewModel(this);
-
-            DataContext = ViewModel;
-
-            UiHandler = new AvaHostUiHandler(this);
-
-            InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
-            IObservable<Size> resizeObserverable = this.GetObservable(ClientSizeProperty);
-
-            resizeObserverable.Subscribe(Resized);
-
-            IObservable<Rect> stateObserverable = this.GetObservable(BoundsProperty);
-
-            stateObserverable.Subscribe(StateChanged);
-
-            Title = $"Ryujinx {Program.Version}";
-
-            Initialize();
-
-            Manager = new InputManager(new AvaloniaKeyboardDriver(this), new SDL2GamepadDriver());
-
-            LoadGameList();
-        }
+        internal readonly AvaHostUiHandler UiHandler;
 
         public VirtualFileSystem VirtualFileSystem { get; private set; }
-        public ContentManager ContentManager { get; private set; }
+        public ContentManager    ContentManager    { get; private set; }
+        public AccountManager    AccountManager    { get; private set; }
 
-        public NativeEmbeddedWindow GlRenderer { get; private set; }
-        public ContentControl ContentFrame { get; private set; }
-        public TextBlock LoadStatus { get; private set; }
-        public TextBlock FirmwareStatus { get; private set; }
-        public TextBox SearchBox { get; private set; }
-        public ProgressBar LoadProgressBar { get; private set; }
-        public Menu Menu { get; private set; }
-        public MenuItem UpdateMenuItem { get; private set; }
+        public AppHost      AppHost      { get; private set; }
+        public InputManager InputManager { get; private set; }
+
+        public NativeEmbeddedWindow GlRenderer      { get; private set; }
+        public ContentControl       ContentFrame    { get; private set; }
+        public TextBlock            LoadStatus      { get; private set; }
+        public TextBlock            FirmwareStatus  { get; private set; }
+        public TextBox              SearchBox       { get; private set; }
+        public ProgressBar          LoadProgressBar { get; private set; }
+        public Menu                 Menu            { get; private set; }
+        public MenuItem             UpdateMenuItem  { get; private set; }
+        public DataGrid             GameList        { get; private set; }
+
+        public MainWindowViewModel ViewModel { get; private set; }
 
         public bool CanUpdate
         {
@@ -102,11 +77,30 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
-        public DataGrid GameList { get; private set; }
+        public MainWindow()
+        {
+            ViewModel = new MainWindowViewModel(this);
+            UiHandler = new AvaHostUiHandler(this);
 
-        public MainWindowViewModel ViewModel { get; set; }
+            DataContext = ViewModel;
 
-        public AccountManager AccountManager { get; set; }
+            InitializeComponent();
+            AttachDebugDevTools();
+
+            Title = $"Ryujinx {Program.Version}";
+
+            Initialize();
+
+            InputManager = new InputManager(new AvaloniaKeyboardDriver(this), new SDL2GamepadDriver());
+
+            LoadGameList();
+        }
+
+        [Conditional("DEBUG")]
+        private void AttachDebugDevTools()
+        {
+            this.AttachDevTools();
+        }
 
         public void LoadGameList()
         {
@@ -163,19 +157,15 @@ namespace Ryujinx.Ava.Ui.Windows
         {
             if (AppHost != null)
             {
-                AvaDialog.CreateInfoDialog("A game has already been loaded",
-                    "Please stop emulation or close the emulator before launching another game.", this);
+                AvaDialog.CreateInfoDialog("A game has already been loaded", "Please stop emulation or close the emulator before launching another game.", this);
 
                 return;
             }
 
             _mainViewContent = ContentFrame.Content as Control;
 
-            GlRenderer = new OpenGlEmbeddedWindow(3, 3, ConfigurationState.Instance.Logger.GraphicsDebugLevel,
-                PlatformImpl.DesktopScaling);
-
-            AppHost = new AppHost(GlRenderer, Manager, PlatformImpl.DesktopScaling, path, VirtualFileSystem,
-                ContentManager, AccountManager, this);
+            GlRenderer = new OpenGlEmbeddedWindow(3, 3, ConfigurationState.Instance.Logger.GraphicsDebugLevel, PlatformImpl.DesktopScaling);
+            AppHost    = new AppHost(GlRenderer, InputManager, PlatformImpl.DesktopScaling, path, VirtualFileSystem, ContentManager, AccountManager, _userChannelPersistence, this);
 
             GlRenderer.WindowCreated += GlRenderer_Created;
             GlRenderer.Start();
@@ -183,7 +173,7 @@ namespace Ryujinx.Ava.Ui.Windows
             ShowGuestRendering();
 
             AppHost.StatusUpdatedEvent += Update_StatusBar;
-            AppHost.AppExit += AppHost_AppExit;
+            AppHost.AppExit            += AppHost_AppExit;
         }
 
         public void ShowGuestRendering()
@@ -239,10 +229,11 @@ namespace Ryujinx.Ava.Ui.Windows
         private void Initialize()
         {
             UpdateGridColumns();
-            UserChannelPersistence = new UserChannelPersistence();
-            VirtualFileSystem = VirtualFileSystem.CreateInstance();
-            ContentManager = new ContentManager(VirtualFileSystem);
-            AccountManager = new AccountManager(VirtualFileSystem);
+
+            _userChannelPersistence = new UserChannelPersistence();
+            VirtualFileSystem       = VirtualFileSystem.CreateInstance();
+            ContentManager          = new ContentManager(VirtualFileSystem);
+            AccountManager          = new AccountManager(VirtualFileSystem);
 
             VirtualFileSystem.Reload();
 
@@ -253,59 +244,34 @@ namespace Ryujinx.Ava.Ui.Windows
 
         public void RefreshFirmwareStatus()
         {
-            SystemVersion version = ContentManager.GetCurrentFirmwareVersion();
             Dispatcher.UIThread.InvokeAsync(() =>
             {
-                string systemVersionFormat = LocaleManager.Instance["StatusBarSystemVersion"];
-                FirmwareStatus.Text = string.Format(systemVersionFormat, version.VersionString);
+                FirmwareStatus.Text = string.Format(LocaleManager.Instance["StatusBarSystemVersion"], ContentManager.GetCurrentFirmwareVersion().VersionString);
             });
-        }
-
-        public void UpdateSizes(Size size)
-        {
-            // Workaround for gamelist not fitting parent
-            if (GameList != null)
-            {
-                Control firstSibling = GameList.Parent.LogicalChildren[0] as Control;
-                GameList.Height = GameList.Parent.Bounds.Height - GameList.Margin.Top - GameList.Margin.Bottom -
-                                  firstSibling.Bounds.Height - firstSibling.Margin.Top - firstSibling.Margin.Bottom;
-            }
-
-            AppHost?.SetWindowScale(PlatformImpl.DesktopScaling);
-            GlRenderer?.UpdateSizes(PlatformImpl.DesktopScaling);
-        }
-
-        private void Resized(Size size)
-        {
-            UpdateSizes(size);
-        }
-
-        private void StateChanged(Rect rect)
-        {
-            UpdateSizes(ClientSize);
         }
 
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
-            ContentFrame = this.FindControl<ContentControl>("Content");
-            GameList = this.FindControl<DataGrid>("GameList");
-            LoadStatus = this.FindControl<TextBlock>("LoadStatus");
-            FirmwareStatus = this.FindControl<TextBlock>("FirmwareStatus");
+
+            ContentFrame    = this.FindControl<ContentControl>("Content");
+            GameList        = this.FindControl<DataGrid>("GameList");
+            LoadStatus      = this.FindControl<TextBlock>("LoadStatus");
+            FirmwareStatus  = this.FindControl<TextBlock>("FirmwareStatus");
             LoadProgressBar = this.FindControl<ProgressBar>("LoadProgressBar");
-            SearchBox = this.FindControl<TextBox>("SearchBox");
-            Menu = this.FindControl<Menu>("Menu");
-            UpdateMenuItem = this.FindControl<MenuItem>("UpdateMenuItem");
+            SearchBox       = this.FindControl<TextBox>("SearchBox");
+            Menu            = this.FindControl<Menu>("Menu");
+            UpdateMenuItem  = this.FindControl<MenuItem>("UpdateMenuItem");
         }
 
         public static void UpdateGraphicsConfig()
         {
-            int resScale = ConfigurationState.Instance.Graphics.ResScale;
+            int   resScale       = ConfigurationState.Instance.Graphics.ResScale;
             float resScaleCustom = ConfigurationState.Instance.Graphics.ResScaleCustom;
 
-            GraphicsConfig.ResScale = resScale == -1 ? resScaleCustom : resScale;
-            GraphicsConfig.MaxAnisotropy = ConfigurationState.Instance.Graphics.MaxAnisotropy;
-            GraphicsConfig.ShadersDumpPath = ConfigurationState.Instance.Graphics.ShadersDumpPath;
+            GraphicsConfig.ResScale          = resScale == -1 ? resScaleCustom : resScale;
+            GraphicsConfig.MaxAnisotropy     = ConfigurationState.Instance.Graphics.MaxAnisotropy;
+            GraphicsConfig.ShadersDumpPath   = ConfigurationState.Instance.Graphics.ShadersDumpPath;
             GraphicsConfig.EnableShaderCache = ConfigurationState.Instance.Graphics.EnableShaderCache;
         }
 
@@ -319,7 +285,7 @@ namespace Ryujinx.Ava.Ui.Windows
             ApplicationLibrary.LoadAndSaveMetaData(titleId, appMetadata =>
             {
                 DateTime lastPlayedDateTime = DateTime.Parse(appMetadata.LastPlayed);
-                double sessionTimePlayed = DateTime.UtcNow.Subtract(lastPlayedDateTime).TotalSeconds;
+                double   sessionTimePlayed  = DateTime.UtcNow.Subtract(lastPlayedDateTime).TotalSeconds;
 
                 appMetadata.TimePlayed += Math.Round(sessionTimePlayed, MidpointRounding.AwayFromZero);
             });
@@ -333,12 +299,9 @@ namespace Ryujinx.Ava.Ui.Windows
             {
                 if (sender is ContextMenu menu)
                 {
-                    bool canHaveUserSave = !Utilities.IsEmpty(data.ControlHolder.ByteSpan) &&
-                                           data.ControlHolder.Value.UserAccountSaveDataSize > 0;
-                    bool canHaveDeviceSave = !Utilities.IsEmpty(data.ControlHolder.ByteSpan) &&
-                                             data.ControlHolder.Value.DeviceSaveDataSize > 0;
-                    bool canHaveBcatSave = !Utilities.IsEmpty(data.ControlHolder.ByteSpan) &&
-                                           data.ControlHolder.Value.BcatDeliveryCacheStorageSize > 0;
+                    bool canHaveUserSave   = !Utilities.IsEmpty(data.ControlHolder.ByteSpan) && data.ControlHolder.Value.UserAccountSaveDataSize > 0;
+                    bool canHaveDeviceSave = !Utilities.IsEmpty(data.ControlHolder.ByteSpan) && data.ControlHolder.Value.DeviceSaveDataSize > 0;
+                    bool canHaveBcatSave   = !Utilities.IsEmpty(data.ControlHolder.ByteSpan) && data.ControlHolder.Value.BcatDeliveryCacheStorageSize > 0;
 
                     ((menu.Items as AvaloniaList<object>)[0] as MenuItem).IsEnabled = canHaveUserSave;
                     ((menu.Items as AvaloniaList<object>)[1] as MenuItem).IsEnabled = canHaveDeviceSave;
@@ -361,15 +324,6 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            _isClosing = true;
-            AppHost?.Exit();
-            Manager.Dispose();
-            Program.Exit();
-            base.OnClosing(e);
-        }
-
         private void GameList_OnDoubleTapped(object sender, RoutedEventArgs e)
         {
             object selection = GameList.SelectedItem;
@@ -378,15 +332,15 @@ namespace Ryujinx.Ava.Ui.Windows
             {
                 ViewModel.SelectedIcon = data.Icon;
 
-                using var stream = new MemoryStream(data.Icon);
-                using var gameIconBmp = new System.Drawing.Bitmap(stream);
+                using MemoryStream stream      = new MemoryStream(data.Icon);
+                using var          gameIconBmp = new System.Drawing.Bitmap(stream);
 
                 var dominantColor = IconColorPicker.GetFilteredColor(gameIconBmp);
 
                 const int ColorDivisor = 4;
 
-                var progressFgColor = Color.FromRgb(dominantColor.R, dominantColor.G, dominantColor.B);
-                var progressBgColor = Color.FromRgb(
+                Color progressFgColor = Color.FromRgb(dominantColor.R, dominantColor.G, dominantColor.B);
+                Color progressBgColor = Color.FromRgb(
                     (byte)(dominantColor.R / ColorDivisor),
                     (byte)(dominantColor.G / ColorDivisor),
                     (byte)(dominantColor.B / ColorDivisor));
@@ -405,17 +359,9 @@ namespace Ryujinx.Ava.Ui.Windows
             GameList.SelectedIndex = -1;
         }
 
-        private void SearchButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            LoadGameList();
-        }
-
         private void SearchBox_OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
-            {
-                LoadGameList();
-            }
+            ViewModel.SearchText = SearchBox.Text;
         }
 
         private void StopEmulation_Click(object sender, RoutedEventArgs e)
@@ -428,9 +374,9 @@ namespace Ryujinx.Ava.Ui.Windows
 
         private void ScanAmiiboMenuItem_AttachedToVisualTree(object sender, VisualTreeAttachmentEventArgs e)
         {
-            if (sender is MenuItem amiibo)
+            if (sender is MenuItem)
             {
-                ViewModel.IsAmiiboRequested = AppHost.EmulationContext.System.SearchingForAmiibo(out int _);
+                ViewModel.IsAmiiboRequested = AppHost.EmulationContext.System.SearchingForAmiibo(out _);
             }
         }
 
@@ -443,18 +389,25 @@ namespace Ryujinx.Ava.Ui.Windows
 
         private void DockedStatus_PointerReleased(object sender, PointerReleasedEventArgs e)
         {
-            ConfigurationState.Instance.System.EnableDockedMode.Value =
-                !ConfigurationState.Instance.System.EnableDockedMode.Value;
+            ConfigurationState.Instance.System.EnableDockedMode.Value = !ConfigurationState.Instance.System.EnableDockedMode.Value;
         }
 
         private void AspectRatioStatus_PointerReleased(object sender, PointerReleasedEventArgs e)
         {
             AspectRatio aspectRatio = ConfigurationState.Instance.Graphics.AspectRatio.Value;
 
-            ConfigurationState.Instance.Graphics.AspectRatio.Value =
-                (int)aspectRatio + 1 > Enum.GetNames(typeof(AspectRatio)).Length - 1
-                    ? AspectRatio.Fixed4x3
-                    : aspectRatio + 1;
+            ConfigurationState.Instance.Graphics.AspectRatio.Value = (int)aspectRatio + 1 > Enum.GetNames(typeof(AspectRatio)).Length - 1 ? AspectRatio.Fixed4x3 : aspectRatio + 1;
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            _isClosing = true;
+            
+            AppHost?.Exit();
+            InputManager.Dispose();
+            Program.Exit();
+
+            base.OnClosing(e);
         }
     }
 }

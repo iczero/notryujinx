@@ -75,7 +75,18 @@ namespace Ryujinx.Ava.Ui.ViewModels
             Ptc.PtcStateChanged += ProgressHandler;
         }
 
-        public string Search { get; set; }
+        private string _searchText;
+
+        public string SearchText
+        { 
+            get => _searchText;
+            set
+            {
+                _searchText = value;
+
+                AppsCollection.Refresh();
+            }
+        }
 
         public DataGridCollectionView AppsCollection
         {
@@ -498,7 +509,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         {
             if (arg is ApplicationData app)
             {
-                return string.IsNullOrWhiteSpace(Search) || app.ApplicationName.ToLower().Contains(Search.ToLower());
+                return string.IsNullOrWhiteSpace(_searchText) || app.ApplicationName.ToLower().Contains(_searchText.ToLower());
             }
 
             return false;
@@ -552,11 +563,10 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             Thread thread = new(() =>
             {
-                ApplicationLibrary.LoadApplications(ConfigurationState.Instance.Ui.GameDirs, _owner.VirtualFileSystem,
-                    ConfigurationState.Instance.System.Language);
+                ApplicationLibrary.LoadApplications(ConfigurationState.Instance.Ui.GameDirs, _owner.VirtualFileSystem, ConfigurationState.Instance.System.Language);
 
                 _isLoading = false;
-            }) {Name = "GUI.AppListLoadThread", Priority = ThreadPriority.AboveNormal};
+            }) { Name = "GUI.AppListLoadThread", Priority = ThreadPriority.AboveNormal };
 
             thread.Start();
         }
