@@ -16,6 +16,7 @@ using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.HOS;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -25,26 +26,30 @@ namespace Ryujinx.Ava.Ui.Windows
 {
     public class TitleUpdateWindow : StyleableWindow
     {
-        private readonly string _updateJsonPath;
+        private readonly string     _updateJsonPath;
         private TitleUpdateMetadata _titleUpdateWindowData;
+
+        public AvaloniaList<TitleUpdateModel> TitleUpdates      { get; set; }
+        public VirtualFileSystem              VirtualFileSystem { get; }
+
+        public string TitleId   { get; }
+        public string TitleName { get; }
+
+        public string Heading => $"Updates Available for {TitleName} [{TitleId.ToUpper()}]";
 
         public TitleUpdateWindow()
         {
             DataContext = this;
 
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
+            AttachDebugDevTools();
         }
 
         public TitleUpdateWindow(VirtualFileSystem virtualFileSystem, string titleId, string titleName)
         {
             VirtualFileSystem = virtualFileSystem;
-            TitleId = titleId;
-            TitleName = titleName;
-
-            DataContext = this;
+            TitleId           = titleId;
+            TitleName         = titleName;
 
             _updateJsonPath = Path.Combine(AppDataManager.GamesDirPath, titleId, "updates.json");
 
@@ -54,23 +59,22 @@ namespace Ryujinx.Ava.Ui.Windows
             }
             catch
             {
-                _titleUpdateWindowData = new TitleUpdateMetadata {Selected = "", Paths = new List<string>()};
+                _titleUpdateWindowData = new TitleUpdateMetadata { Selected = "", Paths = new List<string>() };
             }
 
+            DataContext = this;
+
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
+            AttachDebugDevTools();
 
             LoadUpdates();
         }
 
-        public AvaloniaList<TitleUpdateModel> TitleUpdates { get; set; }
-        public VirtualFileSystem VirtualFileSystem { get; }
-        public string TitleId { get; }
-        public string TitleName { get; }
-
-        public string Heading => $"Updates Available for {TitleName} [{TitleId.ToUpper()}]";
+        [Conditional("DEBUG")]
+        private void AttachDebugDevTools()
+        {
+            this.AttachDevTools();
+        }
 
         private void InitializeComponent()
         {
@@ -94,8 +98,8 @@ namespace Ryujinx.Ava.Ui.Windows
             }
             else
             {
-                TitleUpdateModel selected = TitleUpdates.ToList().Find(x => x.Path == _titleUpdateWindowData.Selected);
-                List<TitleUpdateModel> enabled = TitleUpdates.ToList().FindAll(x => x.IsEnabled);
+                TitleUpdateModel       selected = TitleUpdates.ToList().Find(x => x.Path == _titleUpdateWindowData.Selected);
+                List<TitleUpdateModel> enabled  = TitleUpdates.ToList().FindAll(x => x.IsEnabled);
 
                 foreach (TitleUpdateModel update in enabled)
                 {
@@ -115,20 +119,20 @@ namespace Ryujinx.Ava.Ui.Windows
             {
                 using (FileStream file = new(path, FileMode.Open, FileAccess.Read))
                 {
-                    PartitionFileSystem nsp = new(file.AsStorage());
+                    PartitionFileSystem nsp = new PartitionFileSystem(file.AsStorage());
 
                     try
                     {
-                        (Nca patchNca, Nca controlNca) =
-                            ApplicationLoader.GetGameUpdateDataFromPartition(VirtualFileSystem, nsp, TitleId, 0);
+                        (Nca patchNca, Nca controlNca) = ApplicationLoader.GetGameUpdateDataFromPartition(VirtualFileSystem, nsp, TitleId, 0);
 
                         if (controlNca != null && patchNca != null)
                         {
-                            ApplicationControlProperty controlData = new();
+                            ApplicationControlProperty controlData = new ApplicationControlProperty();
 
                             controlNca.OpenFileSystem(NcaSectionType.Data, IntegrityCheckLevel.None)
                                 .OpenFile(out IFile nacpFile, "/control.nacp".ToU8Span(), OpenMode.Read)
                                 .ThrowIfFailure();
+
                             nacpFile.Read(out _, 0, SpanHelpers.AsByteSpan(ref controlData), ReadOption.None)
                                 .ThrowIfFailure();
 
@@ -136,13 +140,12 @@ namespace Ryujinx.Ava.Ui.Windows
                         }
                         else
                         {
-                            AvaDialog.CreateErrorDialog(
-                                "The specified file does not contain an update for the selected title!", this);
+                            AvaDialog.CreateErrorDialog("The specified file does not contain an update for the selected title!", this);
                         }
                     }
-                    catch (Exception exception)
+                    catch (Exception ex)
                     {
-                        AvaDialog.CreateErrorDialog($"{exception.Message}. Errored File: {path}", this);
+                        AvaDialog.CreateErrorDialog($"{ex.Message}. Errored File: {path}", this);
                     }
                 }
             }
@@ -177,9 +180,9 @@ namespace Ryujinx.Ava.Ui.Windows
 
         public async void Add()
         {
-            OpenFileDialog dialog = new() {Title = "Select update files", AllowMultiple = true};
+            OpenFileDialog dialog = new OpenFileDialog() { Title = "Select update files", AllowMultiple = true };
 
-            dialog.Filters.Add(new FileDialogFilter {Name = "NSP", Extensions = {"nsp"}});
+            dialog.Filters.Add(new FileDialogFilter { Name = "NSP", Extensions = {"nsp"} });
 
             string[] files = await dialog.ShowAsync(this);
 
@@ -195,6 +198,7 @@ namespace Ryujinx.Ava.Ui.Windows
         public void Save()
         {
             _titleUpdateWindowData.Paths.Clear();
+
             _titleUpdateWindowData.Selected = "";
 
             foreach (TitleUpdateModel update in TitleUpdates)
