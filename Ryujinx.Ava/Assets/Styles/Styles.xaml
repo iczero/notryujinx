@@ -39,14 +39,15 @@
         <Setter Property="Padding" Value="8" />
         <Setter Property="MinHeight" Value="25" />
         <Setter Property="Margin" Value="5 5" />
-        <Setter Property="Foreground" Value="{DynamicResource ThemeButtonForegroundColor}" />
-        <Setter Property="Background" Value="{DynamicResource HighlightBrush}" />
     </Style>
     <Style Selector="Button ContentPresenter">
         <Setter Property="CornerRadius" Value="5" />
     </Style>
     <Style Selector="Button:pressed">
         <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundColor}" />
+    </Style>
+    <Style Selector="Button:pointerover">
+        <Setter Property="Background" Value="{DynamicResource HighlightBrush}" />
     </Style>
     <Style Selector="DataGridColumnHeader">
         <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
