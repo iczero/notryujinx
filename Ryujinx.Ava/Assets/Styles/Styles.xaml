@@ -48,6 +48,7 @@
     </Style>
     <Style Selector="Button:pointerover">
         <Setter Property="Background" Value="{DynamicResource HighlightBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ThemeBackgroundColor}" />
     </Style>
     <Style Selector="DataGridColumnHeader">
         <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
