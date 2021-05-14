@@ -10,9 +10,9 @@
     xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
     Title="Ryujinx"
     Width="1280"
-    Height="770"
+    Height="780"
     MinWidth="1280"
-    MinHeight="770"
+    MinHeight="780"
     d:DesignHeight="720"
     d:DesignWidth="1280"
     WindowStartupLocation="CenterScreen"
@@ -48,7 +48,7 @@
             <DockPanel HorizontalAlignment="Stretch">
                 <Menu
                     Name="Menu"
-                    Height="26"
+                    Height="36"
                     Margin="0"
                     HorizontalAlignment="Left"
                     IsVisible="{Binding ShowMenuAndStatusBar}">
@@ -252,23 +252,8 @@
                         Margin="5,0,5,0"
                         HorizontalAlignment="Right"
                         KeyUp="SearchBox_OnKeyUp"
-                        Text="{Binding Search}"
+                        Text="{Binding SearchText}"
                         Watermark="{Locale:Locale MenuSearch}" />
-                    <Button
-                        Name="SearchButton"
-                        Margin="5,0,5,0"
-                        VerticalAlignment="Center"
-                        Background="Transparent"
-                        Click="SearchButton_OnClick">
-                        <Path
-                            Width="12"
-                            Height="12"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Data="{StaticResource SearchRegular}"
-                            Fill="{DynamicResource ThemeForegroundLowColor}"
-                            Stretch="Fill" />
-                    </Button>
                 </DockPanel>
             </DockPanel>
         </StackPanel>
@@ -281,153 +266,162 @@
             Padding="0"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
+            BorderBrush="{DynamicResource ThemeControlBorderColor}"
+            BorderThickness="0,0,0,1"
             DockPanel.Dock="Top">
-            <StackPanel Orientation="Vertical">
-                <DataGrid
-                    Name="GameList"
-                    Margin="5,0,5,0"
-                    AlternatingRowBackground="{DynamicResource ThemeBackgroundColor}"
-                    CanUserResizeColumns="True"
-                    CanUserSortColumns="True"
-                    DoubleTapped="GameList_OnDoubleTapped"
-                    IsReadOnly="True"
-                    Items="{Binding AppsCollection}"
-                    PointerPressed="GameList_OnPointerPressed"
-                    RowBackground="{DynamicResource ThemeBackgroundColor}"
-                    SelectionMode="Single"
-                    Tapped="GameList_OnTapped">
-                    <DataGrid.ContextMenu>
-                        <ContextMenu MenuOpened="MenuBase_OnMenuOpened">
+            <DataGrid
+                Name="GameList"
+                Margin="0"
+                AlternatingRowBackground="{DynamicResource ThemeAlternatingRowColor}"
+                CanUserResizeColumns="True"
+                CanUserSortColumns="True"
+                DoubleTapped="GameList_OnDoubleTapped"
+                IsReadOnly="True"
+                Items="{Binding AppsCollection}"
+                PointerPressed="GameList_OnPointerPressed"
+                RowBackground="{DynamicResource ThemeBackgroundColor}"
+                SelectionMode="Single"
+                Tapped="GameList_OnTapped">
+                <DataGrid.ContextMenu>
+                    <ContextMenu MenuOpened="MenuBase_OnMenuOpened">
+                        <MenuItem
+                            Command="{Binding OpenUserSaveDirectory}"
+                            Header="{Locale:Locale GameListContextMenuOpenUserSaveDirectory}"
+                            ToolTip.Tip="{Locale:Locale GameListContextMenuOpenUserSaveDirectoryToolTip}" />
+                        <MenuItem
+                            Command="{Binding OpenDeviceSaveDirectory}"
+                            Header="{Locale:Locale GameListContextMenuOpenUserDeviceDirectory}"
+                            ToolTip.Tip="{Locale:Locale GameListContextMenuOpenUserDeviceDirectoryToolTip}" />
+                        <MenuItem
+                            Command="{Binding OpenBcatSaveDirectory}"
+                            Header="{Locale:Locale GameListContextMenuOpenUserBcatDirectory}"
+                            ToolTip.Tip="{Locale:Locale GameListContextMenuOpenUserBcatDirectoryToolTip}" />
+                        <Separator />
+                        <MenuItem
+                            Command="{Binding OpenTitleUpdateManager}"
+                            Header="{Locale:Locale GameListContextMenuManageTitleUpdates}"
+                            ToolTip.Tip="{Locale:Locale GameListContextMenuManageTitleUpdatesToolTip}" />
+                        <MenuItem
+                            Command="{Binding OpenDlcManager}"
+                            Header="{Locale:Locale GameListContextMenuManageDlc}"
+                            ToolTip.Tip="{Locale:Locale GameListContextMenuManageDlcToolTip}" />
+                        <MenuItem
+                            Command="{Binding OpenModsDirectory}"
+                            Header="{Locale:Locale GameListContextMenuOpenModsDirectory}"
+                            ToolTip.Tip="{Locale:Locale GameListContextMenuOpenModsDirectoryToolTip}" />
+                        <Separator />
+                        <MenuItem Header="{Locale:Locale GameListContextMenuCacheManagement}">
                             <MenuItem
-                                Command="{Binding OpenUserSaveDirectory}"
-                                Header="{Locale:Locale GameListContextMenuOpenUserSaveDirectory}"
-                                ToolTip.Tip="{Locale:Locale GameListContextMenuOpenUserSaveDirectoryToolTip}" />
+                                Command="{Binding PurgePtcCache}"
+                                Header="{Locale:Locale GameListContextMenuCacheManagementPurgePptc}"
+                                ToolTip.Tip="{Locale:Locale GameListContextMenuCacheManagementPurgePptcToolTip}" />
                             <MenuItem
-                                Command="{Binding OpenDeviceSaveDirectory}"
-                                Header="{Locale:Locale GameListContextMenuOpenUserDeviceDirectory}"
-                                ToolTip.Tip="{Locale:Locale GameListContextMenuOpenUserDeviceDirectoryToolTip}" />
+                                Command="{Binding PurgeShaderCache}"
+                                Header="{Locale:Locale GameListContextMenuCacheManagementPurgeShaderCache}"
+                                ToolTip.Tip="{Locale:Locale GameListContextMenuCacheManagementPurgeShaderCacheToolTip}" />
                             <MenuItem
-                                Command="{Binding OpenBcatSaveDirectory}"
-                                Header="{Locale:Locale GameListContextMenuOpenUserBcatDirectory}"
-                                ToolTip.Tip="{Locale:Locale GameListContextMenuOpenUserBcatDirectoryToolTip}" />
-                            <Separator />
+                                Command="{Binding OpenPtcDirectory}"
+                                Header="{Locale:Locale GameListContextMenuCacheManagementOpenPptcDirectory}"
+                                ToolTip.Tip="{Locale:Locale GameListContextMenuCacheManagementOpenPptcDirectoryToolTip}" />
                             <MenuItem
-                                Command="{Binding OpenTitleUpdateManager}"
-                                Header="{Locale:Locale GameListContextMenuManageTitleUpdates}"
-                                ToolTip.Tip="{Locale:Locale GameListContextMenuManageTitleUpdatesToolTip}" />
+                                Command="{Binding OpenShaderCacheDirectory}"
+                                Header="{Locale:Locale GameListContextMenuCacheManagementOpenShaderCacheDirectory}"
+                                ToolTip.Tip="{Locale:Locale GameListContextMenuCacheManagementOpenShaderCacheDirectoryToolTip}" />
+                        </MenuItem>
+                        <MenuItem Header="{Locale:Locale GameListContextMenuExtractData}">
                             <MenuItem
-                                Command="{Binding OpenDlcManager}"
-                                Header="{Locale:Locale GameListContextMenuManageDlc}"
-                                ToolTip.Tip="{Locale:Locale GameListContextMenuManageDlcToolTip}" />
+                                Command="{Binding ExtractExeFs}"
+                                Header="{Locale:Locale GameListContextMenuExtractDataExeFS}"
+                                ToolTip.Tip="{Locale:Locale GameListContextMenuExtractDataExeFSToolTip}" />
                             <MenuItem
-                                Command="{Binding OpenModsDirectory}"
-                                Header="{Locale:Locale GameListContextMenuOpenModsDirectory}"
-                                ToolTip.Tip="{Locale:Locale GameListContextMenuOpenModsDirectoryToolTip}" />
-                            <Separator />
-                            <MenuItem Header="{Locale:Locale GameListContextMenuCacheManagement}">
-                                <MenuItem
-                                    Command="{Binding PurgePtcCache}"
-                                    Header="{Locale:Locale GameListContextMenuCacheManagementPurgePptc}"
-                                    ToolTip.Tip="{Locale:Locale GameListContextMenuCacheManagementPurgePptcToolTip}" />
-                                <MenuItem
-                                    Command="{Binding PurgeShaderCache}"
-                                    Header="{Locale:Locale GameListContextMenuCacheManagementPurgeShaderCache}"
-                                    ToolTip.Tip="{Locale:Locale GameListContextMenuCacheManagementPurgeShaderCacheToolTip}" />
-                                <MenuItem
-                                    Command="{Binding OpenPtcDirectory}"
-                                    Header="{Locale:Locale GameListContextMenuCacheManagementOpenPptcDirectory}"
-                                    ToolTip.Tip="{Locale:Locale GameListContextMenuCacheManagementOpenPptcDirectoryToolTip}" />
-                                <MenuItem
-                                    Command="{Binding OpenShaderCacheDirectory}"
-                                    Header="{Locale:Locale GameListContextMenuCacheManagementOpenShaderCacheDirectory}"
-                                    ToolTip.Tip="{Locale:Locale GameListContextMenuCacheManagementOpenShaderCacheDirectoryToolTip}" />
-                            </MenuItem>
-                            <MenuItem Header="{Locale:Locale GameListContextMenuExtractData}">
-                                <MenuItem
-                                    Command="{Binding ExtractExeFs}"
-                                    Header="{Locale:Locale GameListContextMenuExtractDataExeFS}"
-                                    ToolTip.Tip="{Locale:Locale GameListContextMenuExtractDataExeFSToolTip}" />
-                                <MenuItem
-                                    Command="{Binding ExtractRomFs}"
-                                    Header="{Locale:Locale GameListContextMenuExtractDataRomFS}"
-                                    ToolTip.Tip="{Locale:Locale GameListContextMenuExtractDataRomFSToolTip}" />
-                                <MenuItem
-                                    Command="{Binding ExtractLogo}"
-                                    Header="{Locale:Locale GameListContextMenuExtractDataLogo}"
-                                    ToolTip.Tip="{Locale:Locale GameListContextMenuExtractDataLogoToolTip}" />
-                            </MenuItem>
-                        </ContextMenu>
-                    </DataGrid.ContextMenu>
-                    <DataGrid.Columns>
-                        <DataGridTemplateColumn
-                            Width="70"
-                            Header="Fav"
-                            SortMemberPath="Favorite">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <CheckBox
-                                        Width="50"
-                                        MinWidth="40"
-                                        HorizontalAlignment="Right"
-                                        IsChecked="{Binding Favorite}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="Icon">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Image
-                                        Width="80"
-                                        Height="80"
-                                        Margin="20,10"
-                                        HorizontalAlignment="Center"
-                                        Source="{Binding Icon, Converter={StaticResource ByteImage}}" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTextColumn
-                            Width="1.5*"
-                            Binding="{Binding ApplicationName}"
-                            Header="Application" />
-                        <DataGridTextColumn
-                            Width="*"
-                            Binding="{Binding Developer}"
-                            Header="Developer" />
-                        <DataGridTextColumn
-                            Width="0.5*"
-                            Binding="{Binding Version}"
-                            Header="Version" />
-                        <DataGridTextColumn
-                            Width="0.6*"
-                            Binding="{Binding TimePlayed}"
-                            Header="Time Played" />
-                        <DataGridTextColumn
-                            Width="*"
-                            Binding="{Binding LastPlayed}"
-                            Header="Last Played" />
-                        <DataGridTextColumn
-                            Width="80"
-                            Binding="{Binding FileExtension}"
-                            Header="File Ext" />
-                        <DataGridTextColumn
-                            Width="0.5*"
-                            Binding="{Binding FileSize}"
-                            Header="File Size" />
-                        <DataGridTextColumn
-                            Width="*"
-                            Binding="{Binding Path}"
-                            Header="Path" />
-                    </DataGrid.Columns>
-                </DataGrid>
-            </StackPanel>
+                                Command="{Binding ExtractRomFs}"
+                                Header="{Locale:Locale GameListContextMenuExtractDataRomFS}"
+                                ToolTip.Tip="{Locale:Locale GameListContextMenuExtractDataRomFSToolTip}" />
+                            <MenuItem
+                                Command="{Binding ExtractLogo}"
+                                Header="{Locale:Locale GameListContextMenuExtractDataLogo}"
+                                ToolTip.Tip="{Locale:Locale GameListContextMenuExtractDataLogoToolTip}" />
+                        </MenuItem>
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Width="70" SortMemberPath="Favorite">
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{Locale:Locale GameListHeaderFavorite}" />
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding Favorite}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{Locale:Locale GameListHeaderIcon}" />
+                        </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image
+                                    Width="80"
+                                    Height="80"
+                                    Margin="15"
+                                    Source="{Binding Icon, Converter={StaticResource ByteImage}}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn
+                        Width="1.5*"
+                        Binding="{Binding ApplicationName}"
+                        CellStyleClasses="Left">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{Locale:Locale GameListHeaderApplication}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Width="*" Binding="{Binding Developer}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{Locale:Locale GameListHeaderDeveloper}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Width="0.5*" Binding="{Binding Version}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{Locale:Locale GameListHeaderVersion}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Width="0.6*" Binding="{Binding TimePlayed}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{Locale:Locale GameListHeaderTimePlayed}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Width="*" Binding="{Binding LastPlayed}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{Locale:Locale GameListHeaderLastPlayed}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Width="80" Binding="{Binding FileExtension}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{Locale:Locale GameListHeaderFileExtension}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Width="0.5*" Binding="{Binding FileSize}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{Locale:Locale GameListHeaderFileSize}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Width="*" Binding="{Binding Path}">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{Locale:Locale GameListHeaderPath}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
         </ContentControl>
         <Grid
-            IsVisible="{Binding ShowLoadProgress}"
             Grid.Row="1"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            ZIndex="1000"
-            Background="{DynamicResource ThemeBackgroundColor}">
+            Background="{DynamicResource ThemeBackgroundColor}"
+            IsVisible="{Binding ShowLoadProgress}"
+            ZIndex="1000">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -442,11 +436,11 @@
                 Width="256"
                 Height="256"
                 Margin="0,10,0,10"
+                Padding="4"
                 BorderBrush="Black"
                 BorderThickness="2"
-                CornerRadius="3"
-                Padding="4"
-                BoxShadow="4 4 32 8 #40000000">
+                BoxShadow="4 4 32 8 #40000000"
+                CornerRadius="3">
                 <Image
                     Width="256"
                     Height="256"
@@ -469,18 +463,18 @@
                 <TextBlock
                     Grid.Row="1"
                     Margin="40,10,0,10"
-                    FontWeight="Bold"
                     FontSize="38"
+                    FontWeight="Bold"
                     Text="{Binding CacheLoadHeading}"
                     TextAlignment="Left" />
                 <ProgressBar
                     Grid.Row="2"
-                    BorderThickness="0.5"
-                    BorderBrush="White"
-                    Background="{Binding ProgressBarBackgroundColor}"
-                    Foreground="{Binding ProgressBarForegroundColor}"
                     Height="10"
                     Margin="40,0,20,0"
+                    Background="{Binding ProgressBarBackgroundColor}"
+                    BorderBrush="White"
+                    BorderThickness="0.5"
+                    Foreground="{Binding ProgressBarForegroundColor}"
                     Maximum="{Binding ProgressMaximum}"
                     Minimum="0"
                     Value="{Binding ProgressValue}" />
@@ -561,7 +555,10 @@
                     PointerReleased="VsyncStatus_PointerReleased"
                     Text="VSync"
                     TextAlignment="Left" />
-                <TextBlock VerticalAlignment="Center" IsVisible="{Binding ShowStatusSeparator}" Text="|" />
+                <TextBlock
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding ShowStatusSeparator}"
+                    Text="|" />
                 <TextBlock
                     Name="DockedStatus"
                     Margin="5,0,5,0"
@@ -570,7 +567,10 @@
                     PointerReleased="DockedStatus_PointerReleased"
                     Text="{Binding DockedStatusText}"
                     TextAlignment="Left" />
-                <TextBlock VerticalAlignment="Center" IsVisible="{Binding ShowStatusSeparator}" Text="|" />
+                <TextBlock
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding ShowStatusSeparator}"
+                    Text="|" />
                 <TextBlock
                     Name="AspectRatioStatus"
                     Margin="5,0,5,0"
@@ -579,21 +579,30 @@
                     PointerReleased="AspectRatioStatus_PointerReleased"
                     Text="{Binding AspectRatioStatusText}"
                     TextAlignment="Left" />
-                <TextBlock VerticalAlignment="Center" IsVisible="{Binding ShowStatusSeparator}" Text="|" />
+                <TextBlock
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding ShowStatusSeparator}"
+                    Text="|" />
                 <TextBlock
                     Margin="5,0,5,0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
                     Text="{Binding GameStatusText}"
                     TextAlignment="Left" />
-                <TextBlock VerticalAlignment="Center" IsVisible="{Binding ShowStatusSeparator}" Text="|" />
+                <TextBlock
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding ShowStatusSeparator}"
+                    Text="|" />
                 <TextBlock
                     Margin="5,0,5,0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
                     Text="{Binding FifoStatusText}"
                     TextAlignment="Left" />
-                <TextBlock VerticalAlignment="Center" IsVisible="{Binding ShowStatusSeparator}" Text="|" />
+                <TextBlock
+                    VerticalAlignment="Center"
+                    IsVisible="{Binding ShowStatusSeparator}"
+                    Text="|" />
                 <TextBlock
                     Margin="5,0,5,0"
                     HorizontalAlignment="Left"

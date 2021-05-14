@@ -47,8 +47,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             AvaloniaKeyboardDriver = new AvaloniaKeyboardDriver(owner);
 
-            mainWindow.Manager.GamepadDriver.OnGamepadConnected += HandleOnGamepadConnected;
-            mainWindow.Manager.GamepadDriver.OnGamepadDisconnected += HandleOnGamepadDisconnected;
+            mainWindow.InputManager.GamepadDriver.OnGamepadConnected += HandleOnGamepadConnected;
+            mainWindow.InputManager.GamepadDriver.OnGamepadDisconnected += HandleOnGamepadDisconnected;
 
             if (_mainWindow.AppHost != null)
             {
@@ -269,8 +269,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public void Dispose()
         {
-            _mainWindow.Manager.GamepadDriver.OnGamepadConnected -= HandleOnGamepadConnected;
-            _mainWindow.Manager.GamepadDriver.OnGamepadDisconnected -= HandleOnGamepadDisconnected;
+            _mainWindow.InputManager.GamepadDriver.OnGamepadConnected -= HandleOnGamepadConnected;
+            _mainWindow.InputManager.GamepadDriver.OnGamepadDisconnected -= HandleOnGamepadDisconnected;
 
             _mainWindow.AppHost?.NpadManager.UnblockInputUpdates();
 
@@ -298,19 +298,19 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             if (selected.StartsWith("keyboard"))
             {
-                if (_mainWindow.Manager.KeyboardDriver is AvaloniaKeyboardDriver)
+                if (_mainWindow.InputManager.KeyboardDriver is AvaloniaKeyboardDriver)
                 {
                     // NOTE: To get input in this window, we need to bind a custom keyboard driver instead of using the InputManager one as the main window isn't focused...
                     SelectedGamepad = AvaloniaKeyboardDriver.GetGamepad(id);
                 }
                 else
                 {
-                    SelectedGamepad = _mainWindow.Manager.KeyboardDriver.GetGamepad(id);
+                    SelectedGamepad = _mainWindow.InputManager.KeyboardDriver.GetGamepad(id);
                 }
             }
             else
             {
-                SelectedGamepad = _mainWindow.Manager.GamepadDriver.GetGamepad(id);
+                SelectedGamepad = _mainWindow.InputManager.GamepadDriver.GetGamepad(id);
             }
         }
 
@@ -418,9 +418,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
             Devices.Clear();
             Devices.Add("disabled", "Disabled");
 
-            foreach (string id in _mainWindow.Manager.KeyboardDriver.GamepadsIds)
+            foreach (string id in _mainWindow.InputManager.KeyboardDriver.GamepadsIds)
             {
-                IGamepad gamepad = _mainWindow.Manager.KeyboardDriver.GetGamepad(id);
+                IGamepad gamepad = _mainWindow.InputManager.KeyboardDriver.GetGamepad(id);
 
                 if (gamepad != null)
                 {
@@ -430,9 +430,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 }
             }
 
-            foreach (string id in _mainWindow.Manager.GamepadDriver.GamepadsIds)
+            foreach (string id in _mainWindow.InputManager.GamepadDriver.GamepadsIds)
             {
-                IGamepad gamepad = _mainWindow.Manager.GamepadDriver.GetGamepad(id);
+                IGamepad gamepad = _mainWindow.InputManager.GamepadDriver.GetGamepad(id);
 
                 if (gamepad != null)
                 {
