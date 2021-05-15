@@ -14,13 +14,12 @@ namespace Ryujinx.Ava.Ui.Windows
         public StyleableWindow()
         {
             ExtendClientAreaToDecorationsHint = false;
-
-            TransparencyLevelHint = WindowTransparencyLevel.None;
+            TransparencyLevelHint             = WindowTransparencyLevel.None;
 
             this.GetObservable(WindowStateProperty)
                 .Subscribe(x =>
                 {
-                    PseudoClasses.Set(":maximized", x == WindowState.Maximized);
+                    PseudoClasses.Set(":maximized",  x == WindowState.Maximized);
                     PseudoClasses.Set(":fullscreen", x == WindowState.FullScreen);
                 });
 
@@ -29,25 +28,23 @@ namespace Ryujinx.Ava.Ui.Windows
                 {
                     if (!x)
                     {
-                        SystemDecorations = SystemDecorations.Full;
+                        SystemDecorations     = SystemDecorations.Full;
                         TransparencyLevelHint = WindowTransparencyLevel.None;
                     }
                 });
 
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            
+
             Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Ryujinx.Ava.Assets.Images.Logo_Ryujinx.png");
+
             Icon = new WindowIcon(stream);
         }
-
-        Type IStyleable.StyleKey => typeof(Window);
 
         protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
         {
             base.OnApplyTemplate(e);
-            ExtendClientAreaChromeHints =
-                ExtendClientAreaChromeHints.PreferSystemChrome |
-                ExtendClientAreaChromeHints.OSXThickTitleBar;
+
+            ExtendClientAreaChromeHints = ExtendClientAreaChromeHints.PreferSystemChrome | ExtendClientAreaChromeHints.OSXThickTitleBar;
         }
     }
 }

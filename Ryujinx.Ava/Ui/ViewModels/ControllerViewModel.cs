@@ -171,13 +171,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
                     InputConfig config = null;
                     try
                     {
-                        config =
-                            (InputConfig)ConfigurationState.Instance.Hid.InputConfig.Value.Find(inputConfig =>
-                                inputConfig.PlayerIndex == _player);
+                        config = ConfigurationState.Instance.Hid.InputConfig.Value.Find(inputConfig => inputConfig.PlayerIndex == _player);
                         
                         if (config is StandardControllerInputConfig)
                         {
-                            InputConfig = new InputConfiguration<GamepadInputId, StickInputId>(config);
+                            InputConfig = new InputConfiguration<ConfigGamepadInputId, StickInputId>(config);
                         }
                         else
                         {
@@ -194,7 +192,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                         if (IsController)
                         {
-                            InputConfig = new InputConfiguration<GamepadInputId, StickInputId>(config);
+                            InputConfig = new InputConfiguration<ConfigGamepadInputId, StickInputId>(config);
                         }
                         else
                         {
@@ -246,8 +244,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 {
                     SvgSource source = new();
 
-                    source.Load(Assembly.GetAssembly(typeof(ControllerSettingsViewModel))
-                        .GetManifestResourceStream(_controllerImage));
+                    source.Load(Assembly.GetAssembly(typeof(ControllerSettingsViewModel)).GetManifestResourceStream(_controllerImage));
 
                     image.Source = source;
                 }
@@ -269,7 +266,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public void Dispose()
         {
-            _mainWindow.InputManager.GamepadDriver.OnGamepadConnected -= HandleOnGamepadConnected;
+            _mainWindow.InputManager.GamepadDriver.OnGamepadConnected    -= HandleOnGamepadConnected;
             _mainWindow.InputManager.GamepadDriver.OnGamepadDisconnected -= HandleOnGamepadDisconnected;
 
             _mainWindow.AppHost?.NpadManager.UnblockInputUpdates();
@@ -740,7 +737,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             {
                 string path = Path.Combine(GetProfileBasePath(), profileDialog.FileName);
 
-                Ryujinx.Common.Configuration.Hid.InputConfig config = null;
+                InputConfig config = null;
 
                 if (IsKeyboard)
                 {
@@ -766,10 +763,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 return;
             }
 
-            AvaDialog messageDialog = AvaDialog.CreateConfirmationDialog("Deleting Profile",
-                "This action is irreversible, are your sure you want to continue?", _owner);
-
-            UserResult result = await messageDialog.Run();
+            UserResult result = await AvaDialog.CreateConfirmationDialog("Deleting Profile", "This action is irreversible, are your sure you want to continue?", _owner);
 
             if (result == UserResult.Yes)
             {

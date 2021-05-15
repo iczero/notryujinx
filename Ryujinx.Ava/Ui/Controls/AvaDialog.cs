@@ -71,9 +71,9 @@ namespace Ryujinx.Ava.Ui.Controls
             await new AvaDialog("Ryujinx - Error", "Ryujinx has encountered an error", errorMessage, owner).Run();
         }
 
-        internal static AvaDialog CreateConfirmationDialog(string mainText, string secondaryText, Window owner)
+        internal static async Task<UserResult> CreateConfirmationDialog(string mainText, string secondaryText, Window owner)
         {
-            return new("Ryujinx - Confirmation", mainText, secondaryText, owner, ButtonEnum.Yes | ButtonEnum.No);
+            return await new AvaDialog("Ryujinx - Confirmation", mainText, secondaryText, owner, ButtonEnum.Yes | ButtonEnum.No).Run();
         }
 
         internal static async Task<bool> CreateChoiceDialog(string title, string mainText, string secondaryText,

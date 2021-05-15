@@ -1,7 +1,6 @@
 ﻿using Avalonia.Data;
 using Avalonia.Markup.Xaml;
 using Avalonia.Markup.Xaml.MarkupExtensions;
-using Ryujinx.Ava.Common.Locale;
 using System;
 
 namespace Ryujinx.Ava.Common.Locale

@@ -35,6 +35,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private string _aspectStatusText;
         private string _cacheLoadHeading;
         private string _cacheLoadStatus;
+        private string _searchText;
         private int _count;
         private string _dockedStatusText;
         private string _fifoStatusText;
@@ -62,11 +63,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public MainWindowViewModel()
         {
-            Applications = new AvaloniaList<ApplicationData>();
-
-            AppsCollection = new DataGridCollectionView(Applications);
-
-            AppsCollection.Filter = Filter;
+            Applications   = new AvaloniaList<ApplicationData>();
+            AppsCollection = new DataGridCollectionView(Applications)
+            {
+                Filter = Filter
+            };
 
             ApplicationLibrary.ApplicationCountUpdated += ApplicationLibrary_ApplicationCountUpdated;
             ApplicationLibrary.ApplicationAdded += ApplicationLibrary_ApplicationAdded;
@@ -74,8 +75,6 @@ namespace Ryujinx.Ava.Ui.ViewModels
             Ptc.PtcStateChanged -= ProgressHandler;
             Ptc.PtcStateChanged += ProgressHandler;
         }
-
-        private string _searchText;
 
         public string SearchText
         { 
@@ -493,8 +492,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                     _showAll = window.ViewModel.ShowAllAmiibo;
                     _lastScannedAmiiboId = window.ScannedAmiibo.GetId();
 
-                    _owner.AppHost.EmulationContext.System.ScanAmiibo(deviceId, _lastScannedAmiiboId,
-                        window.ViewModel.UseRandomUuid);
+                    _owner.AppHost.EmulationContext.System.ScanAmiibo(deviceId, _lastScannedAmiiboId, window.ViewModel.UseRandomUuid);
                 }
             }
         }
@@ -523,6 +521,14 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private void ApplicationLibrary_ApplicationCountUpdated(object sender, ApplicationCountUpdatedEventArgs e)
         {
             _count = e.NumAppsFound;
+
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (_count == 0)
+                {
+                    _owner.LoadProgressBar.IsVisible = false;
+                }
+            });
         }
 
         public void AddApplication(ApplicationData applicationData)
@@ -535,20 +541,31 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 _owner.LoadProgressBar.Value = Applications.Count;
                 _owner.LoadProgressBar.Maximum = _count;
                 _owner.LoadStatus.Text = string.Format(gamesLoadedFormat, Applications.Count, _count);
+
+                if (_count >= Applications.Count || _count == 0)
+                {
+                    _owner.LoadProgressBar.IsVisible = false;
+                }
             });
         }
 
         public async void LoadApplications()
         {
             string gamesLoadedFormat = LocaleManager.Instance["StatusBarGamesLoaded"];
+
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 Applications.Clear();
+
+                _count = 0;
+
+                _owner.LoadProgressBar.IsVisible = true;
                 _owner.LoadProgressBar.Maximum = _count;
                 _owner.LoadProgressBar.Minimum = 0;
-                _owner.LoadProgressBar.Value = 0;
+                _owner.LoadProgressBar.Value   = 0;
                 _owner.LoadStatus.Text = string.Format(gamesLoadedFormat, 0, _count);
             });
+
             ReloadGameList();
         }
 
@@ -598,7 +615,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             if (files != null && files.Length > 0)
             {
-                _owner.LoadGame(files[0]);
+                _owner.LoadApplication(files[0]);
             }
         }
 
@@ -610,7 +627,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             if (!string.IsNullOrWhiteSpace(folder) && Directory.Exists(folder))
             {
-                _owner.LoadGame(folder);
+                _owner.LoadApplication(folder);
             }
         }
 
@@ -721,7 +738,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             if (selection != null && selection is ApplicationData data)
             {
-                string modsBasePath = _owner.VirtualFileSystem.ModLoader.GetModsBasePath();
+                string modsBasePath  = _owner.VirtualFileSystem.ModLoader.GetModsBasePath();
                 string titleModsPath = _owner.VirtualFileSystem.ModLoader.GetTitleDir(modsBasePath, data.TitleId);
 
                 OpenHelper.OpenFolder(titleModsPath);
@@ -736,7 +753,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             {
                 string ptcDir = Path.Combine(AppDataManager.GamesDirPath, data.TitleId, "cache", "cpu");
 
-                string mainPath = Path.Combine(ptcDir, "0");
+                string mainPath   = Path.Combine(ptcDir, "0");
                 string backupPath = Path.Combine(ptcDir, "1");
 
                 if (!Directory.Exists(ptcDir))
@@ -756,15 +773,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             if (selection != null && selection is ApplicationData data)
             {
-                DirectoryInfo mainDir =
-                    new(Path.Combine(AppDataManager.GamesDirPath, data.TitleId, "cache", "cpu", "0"));
-                DirectoryInfo backupDir =
-                    new(Path.Combine(AppDataManager.GamesDirPath, data.TitleId, "cache", "cpu", "1"));
+                DirectoryInfo mainDir   = new(Path.Combine(AppDataManager.GamesDirPath, data.TitleId, "cache", "cpu", "0"));
+                DirectoryInfo backupDir = new(Path.Combine(AppDataManager.GamesDirPath, data.TitleId, "cache", "cpu", "1"));
 
                 // FIXME: Found a way to reproduce the bold effect on the title name (fork?).
-                AvaDialog warningDialog = AvaDialog.CreateConfirmationDialog("Warning",
-                    $"You are about to delete the PPTC cache for :\n\n{data.TitleName}\n\nAre you sure you want to proceed?",
-                    _owner);
+                UserResult result = await AvaDialog.CreateConfirmationDialog("Warning", $"You are about to delete the PPTC cache for :\n\n{data.TitleName}\n\nAre you sure you want to proceed?", _owner);
 
                 List<FileInfo> cacheFiles = new();
 
@@ -778,7 +791,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                     cacheFiles.AddRange(backupDir.EnumerateFiles("*.cache"));
                 }
 
-                if (cacheFiles.Count > 0 && await warningDialog.Run() == UserResult.Yes)
+                if (cacheFiles.Count > 0 && result == UserResult.Yes)
                 {
                     foreach (FileInfo file in cacheFiles)
                     {
@@ -823,13 +836,10 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             if (selection != null && selection is ApplicationData data)
             {
-                DirectoryInfo shaderCacheDir =
-                    new(Path.Combine(AppDataManager.GamesDirPath, data.TitleId, "cache", "shader"));
+                DirectoryInfo shaderCacheDir = new(Path.Combine(AppDataManager.GamesDirPath, data.TitleId, "cache", "shader"));
 
                 // FIXME: Found a way to reproduce the bold effect on the title name (fork?).
-                AvaDialog warningDialog = AvaDialog.CreateConfirmationDialog("Warning",
-                    $"You are about to delete the shader cache for :\n\n{data.TitleName}\n\nAre you sure you want to proceed?",
-                    _owner);
+                UserResult result = await AvaDialog.CreateConfirmationDialog("Warning", $"You are about to delete the shader cache for :\n\n{data.TitleName}\n\nAre you sure you want to proceed?", _owner);
 
                 List<DirectoryInfo> cacheDirectory = new();
 
@@ -838,7 +848,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                     cacheDirectory.AddRange(shaderCacheDir.EnumerateDirectories("*"));
                 }
 
-                if (cacheDirectory.Count > 0 && await warningDialog.Run() == UserResult.Yes)
+                if (cacheDirectory.Count > 0 && result == UserResult.Yes)
                 {
                     foreach (DirectoryInfo directory in cacheDirectory)
                     {
@@ -991,13 +1001,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 dialogMessage += "\n\nDo you want to continue?";
 
-                UserResult responseInstallDialog =
-                    await AvaDialog.CreateConfirmationDialog(dialogTitle, dialogMessage, _owner).Run();
+                UserResult result = await AvaDialog.CreateConfirmationDialog(dialogTitle, dialogMessage, _owner);
 
-                UpdateWaitWindow waitingDialog =
-                    AvaDialog.CreateWaitingDialog(dialogTitle, "Installing firmware...", _owner);
+                UpdateWaitWindow waitingDialog = AvaDialog.CreateWaitingDialog(dialogTitle, "Installing firmware...", _owner);
 
-                if (responseInstallDialog == UserResult.Yes)
+                if (result == UserResult.Yes)
                 {
                     Logger.Info?.Print(LogClass.Application, $"Installing firmware {firmwareVersion.VersionString}");
 
