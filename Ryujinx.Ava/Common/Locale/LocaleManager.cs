@@ -1,11 +1,12 @@
-﻿using Ryujinx.Common;
+﻿using Ryujinx.Ava.Ui.ViewModels;
+using Ryujinx.Common;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.Json;
 
 namespace Ryujinx.Ava.Common.Locale
 {
-    class LocaleManager
+    class LocaleManager : BaseModel
     {
         private const string DefaultLanguageCode = "en_US";
 
@@ -44,9 +45,15 @@ namespace Ryujinx.Ava.Common.Locale
 
                 return key;
             }
+            set
+            {
+                _localeStrings[key] = value;
+
+                OnPropertyChanged();
+            }
         }
 
-        private void LoadLanguage(string languageCode)
+        public void LoadLanguage(string languageCode)
         {
             string languageJson = EmbeddedResources.ReadAllText($"Ryujinx.Ava/Assets/Locales/{languageCode}.json");
 
@@ -55,7 +62,12 @@ namespace Ryujinx.Ava.Common.Locale
                 return;
             }
 
-            _localeStrings = JsonSerializer.Deserialize<Dictionary<string, string>>(languageJson);
+            var strings = JsonSerializer.Deserialize<Dictionary<string, string>>(languageJson);
+
+            foreach (var item in strings)
+            {
+                this[item.Key] = item.Value;
+            }
         }
     }
 }

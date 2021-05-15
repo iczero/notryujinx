@@ -86,6 +86,11 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <Separator />
+                        <MenuItem Header="Change Language">
+                            <MenuItem Command="{Binding ChangeLanguage}" CommandParameter="en_US" Header="American English" />
+                            <MenuItem Command="{Binding ChangeLanguage}" CommandParameter="fr_FR" Header="French" />
+                            <MenuItem Command="{Binding ChangeLanguage}" CommandParameter="pt_BR" Header="Brazilian Portuguese" />
+                        </MenuItem>
                         <MenuItem Header="Enable GUI Columns">
                             <MenuItem Header="Enable Favorites Column">
                                 <MenuItem.Icon>

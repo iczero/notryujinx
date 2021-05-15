@@ -187,7 +187,9 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
+#pragma warning disable CS1998
         public async void LoadApplication(string path)
+#pragma warning restore CS1998
         {
             if (AppHost != null)
             {
