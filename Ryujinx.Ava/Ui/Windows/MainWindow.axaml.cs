@@ -8,6 +8,7 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using LibHac;
+using MessageBoxSlim.Avalonia;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.Applet;
@@ -153,7 +154,40 @@ namespace Ryujinx.Ava.Ui.Windows
             GameList.Columns[9].IsVisible = ViewModel.ShowFilePathColumn;
         }
 
-        public void LoadGame(string path)
+        public async Task PerformanceCheck()
+        {
+            if (ConfigurationState.Instance.Logger.EnableDebug.Value)
+            {
+                string mainMessage      = "You have debug logging enabled, which is designed to be used by developers only.";
+                string secondaryMessage = "For optimal performance, it's recommended to disable debug logging. Would you like to disable debug logging now?";
+
+                UserResult result = await AvaDialog.CreateConfirmationDialog(mainMessage, secondaryMessage, this);
+
+                if (result != UserResult.Yes)
+                {
+                    ConfigurationState.Instance.Logger.EnableDebug.Value = false;
+
+                    SaveConfig();
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(ConfigurationState.Instance.Graphics.ShadersDumpPath.Value))
+            {
+                string mainMessage      = "You have shader dumping enabled, which is designed to be used by developers only.";
+                string secondaryMessage = "For optimal performance, it's recommended to disable shader dumping. Would you like to disable shader dumping now?";
+
+                UserResult result = await AvaDialog.CreateConfirmationDialog(mainMessage, secondaryMessage, this);
+
+                if (result != UserResult.Yes)
+                {
+                    ConfigurationState.Instance.Graphics.ShadersDumpPath.Value = "";
+
+                    SaveConfig();
+                }
+            }
+        }
+
+        public async void LoadApplication(string path)
         {
             if (AppHost != null)
             {
@@ -161,6 +195,12 @@ namespace Ryujinx.Ava.Ui.Windows
 
                 return;
             }
+
+#if RELEASE
+            await PerformanceCheck();
+#endif
+
+            Logger.RestartTime();
 
             _mainViewContent = ContentFrame.Content as Control;
 
@@ -350,7 +390,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
                 string path = new FileInfo(data.Path).FullName;
 
-                LoadGame(path);
+                LoadApplication(path);
             }
         }
 

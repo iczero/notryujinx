@@ -36,7 +36,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
-
+using System.Threading.Tasks;
 using InputManager = Ryujinx.Input.HLE.InputManager;
 using Key = Ryujinx.Input.Key;
 using Switch = Ryujinx.HLE.Switch;
@@ -162,7 +162,7 @@ namespace Ryujinx.Ava
 
         public void Start()
         {
-            if (LoadGuestApplication())
+            if (LoadGuestApplication().Result)
             {
                 _parent.ViewModel.IsGameRunning = true;
 
@@ -301,7 +301,7 @@ namespace Ryujinx.Ava
             }
         }
 
-        private bool LoadGuestApplication()
+        private async Task<bool> LoadGuestApplication()
         {
             InitializeSwitchInstance();
 
@@ -317,11 +317,9 @@ namespace Ryujinx.Ava
                     {
                         string message = $"Would you like to install the firmware embedded in this game? (Firmware {firmwareVersion.VersionString})";
 
-                        AvaDialog dialog = AvaDialog.CreateConfirmationDialog("No Firmware Installed", message, _parent);
+                        UserResult result = await AvaDialog.CreateConfirmationDialog("No Firmware Installed", message, _parent);
 
-                        UserResult response = dialog.Run().Result;
-
-                        if (response != UserResult.Yes)
+                        if (result != UserResult.Yes)
                         {
                             UserErrorDialog.CreateUserErrorDialog(userError, _parent);
 
