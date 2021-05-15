@@ -81,7 +81,7 @@
                                     Padding="0"
                                     BorderBrush="White"
                                     BorderThickness="1">
-                                    <CheckBox Margin="-1,0,0,0" IsChecked="{Binding StartGamesInFullscreen, Mode=TwoWay}" />
+                                    <CheckBox Margin="0" IsChecked="{Binding StartGamesInFullscreen, Mode=TwoWay}" />
                                 </Border>
                             </MenuItem.Icon>
                         </MenuItem>
@@ -94,7 +94,7 @@
                                         Padding="0"
                                         BorderBrush="White"
                                         BorderThickness="1">
-                                        <CheckBox Margin="-1,0,0,0" IsChecked="{Binding ShowFavoriteColumn, Mode=TwoWay}" />
+                                        <CheckBox Margin="0" IsChecked="{Binding ShowFavoriteColumn, Mode=TwoWay}" />
                                     </Border>
                                 </MenuItem.Icon>
                             </MenuItem>
@@ -105,7 +105,7 @@
                                         Padding="0"
                                         BorderBrush="White"
                                         BorderThickness="1">
-                                        <CheckBox Margin="-1,0,0,0" IsChecked="{Binding ShowIconColumn, Mode=TwoWay}" />
+                                        <CheckBox Margin="0" IsChecked="{Binding ShowIconColumn, Mode=TwoWay}" />
                                     </Border>
                                 </MenuItem.Icon>
                             </MenuItem>
@@ -114,9 +114,10 @@
                                     <Border
                                         Margin="0"
                                         Padding="0"
+                                        HorizontalAlignment="Center"
                                         BorderBrush="White"
                                         BorderThickness="1">
-                                        <CheckBox Margin="-1,0,0,0" IsChecked="{Binding ShowTitleColumn, Mode=TwoWay}" />
+                                        <CheckBox Margin="0" IsChecked="{Binding ShowTitleColumn, Mode=TwoWay}" />
                                     </Border>
                                 </MenuItem.Icon>
                             </MenuItem>
@@ -127,7 +128,7 @@
                                         Padding="0"
                                         BorderBrush="White"
                                         BorderThickness="1">
-                                        <CheckBox Margin="-1,0,0,0" IsChecked="{Binding ShowDeveloperColumn, Mode=TwoWay}" />
+                                        <CheckBox Margin="0" IsChecked="{Binding ShowDeveloperColumn, Mode=TwoWay}" />
                                     </Border>
                                 </MenuItem.Icon>
                             </MenuItem>
@@ -138,7 +139,7 @@
                                         Padding="0"
                                         BorderBrush="White"
                                         BorderThickness="1">
-                                        <CheckBox Margin="-1,0,0,0" IsChecked="{Binding ShowVersionColumn, Mode=TwoWay}" />
+                                        <CheckBox Margin="0" IsChecked="{Binding ShowVersionColumn, Mode=TwoWay}" />
                                     </Border>
                                 </MenuItem.Icon>
                             </MenuItem>
@@ -149,7 +150,7 @@
                                         Padding="0"
                                         BorderBrush="White"
                                         BorderThickness="1">
-                                        <CheckBox Margin="-1,0,0,0" IsChecked="{Binding ShowTimePlayedColumn, Mode=TwoWay}" />
+                                        <CheckBox Margin="0" IsChecked="{Binding ShowTimePlayedColumn, Mode=TwoWay}" />
                                     </Border>
                                 </MenuItem.Icon>
                             </MenuItem>
@@ -160,7 +161,7 @@
                                         Padding="0"
                                         BorderBrush="White"
                                         BorderThickness="1">
-                                        <CheckBox Margin="-1,0,0,0" IsChecked="{Binding ShowLastPlayedColumn, Mode=TwoWay}" />
+                                        <CheckBox Margin="0" IsChecked="{Binding ShowLastPlayedColumn, Mode=TwoWay}" />
                                     </Border>
                                 </MenuItem.Icon>
                             </MenuItem>
@@ -171,7 +172,7 @@
                                         Padding="0"
                                         BorderBrush="White"
                                         BorderThickness="1">
-                                        <CheckBox Margin="-1,0,0,0" IsChecked="{Binding ShowFileExtColumn, Mode=TwoWay}" />
+                                        <CheckBox Margin="0" IsChecked="{Binding ShowFileExtColumn, Mode=TwoWay}" />
                                     </Border>
                                 </MenuItem.Icon>
                             </MenuItem>
@@ -182,7 +183,7 @@
                                         Padding="0"
                                         BorderBrush="White"
                                         BorderThickness="1">
-                                        <CheckBox Margin="-1,0,0,0" IsChecked="{Binding ShowFileSizeColumn, Mode=TwoWay}" />
+                                        <CheckBox Margin="0" IsChecked="{Binding ShowFileSizeColumn, Mode=TwoWay}" />
                                     </Border>
                                 </MenuItem.Icon>
                             </MenuItem>
@@ -193,7 +194,7 @@
                                         Padding="0"
                                         BorderBrush="White"
                                         BorderThickness="1">
-                                        <CheckBox Margin="-1,0,0,0" IsChecked="{Binding ShowFilePathColumn, Mode=TwoWay}" />
+                                        <CheckBox Margin="0" IsChecked="{Binding ShowFilePathColumn, Mode=TwoWay}" />
                                     </Border>
                                 </MenuItem.Icon>
                             </MenuItem>
@@ -249,7 +250,7 @@
                         Name="SearchBox"
                         Height="26"
                         MinWidth="200"
-                        Margin="5,0,5,0"
+                        Margin="0"
                         HorizontalAlignment="Right"
                         KeyUp="SearchBox_OnKeyUp"
                         Text="{Binding SearchText}"
@@ -510,6 +511,7 @@
                     <Button
                         Width="25"
                         Height="15"
+                        MinWidth="0"
                         Margin="5,0,5,0"
                         VerticalAlignment="Center"
                         Background="Transparent"
@@ -526,7 +528,7 @@
                     <TextBlock
                         Name="LoadStatus"
                         Grid.Column="1"
-                        Margin="5,0,5,0"
+                        Margin="0,0,5,0"
                         VerticalAlignment="Center"
                         IsVisible="{Binding ShowListStatusControls}" />
                     <ProgressBar

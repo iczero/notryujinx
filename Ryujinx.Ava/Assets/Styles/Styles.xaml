@@ -38,6 +38,7 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="8" />
         <Setter Property="MinHeight" Value="25" />
+        <Setter Property="MinWidth" Value="90" />
         <Setter Property="Margin" Value="5 5" />
     </Style>
     <Style Selector="Button ContentPresenter">
@@ -108,6 +109,33 @@
         <Setter Property="Background" Value="{DynamicResource ThemeControlBorderColor}" />
         <Setter Property="BorderBrush" Value="{DynamicResource ThemeControlBorderColor}" />
     </Style>
+    <Style Selector="TabItem ScrollViewer">
+        <Setter Property="Background" Value="{DynamicResource ThemeBackgroundColor}" />
+        <Setter Property="Margin" Value="0,-5,0,0" />
+    </Style>
+    <Style Selector="TabItem Border">
+        <Setter Property="BorderThickness" Value="0,1,0,0" />
+        <Setter Property="BorderBrush" Value="{DynamicResource HighlightBrush}" />
+    </Style>
+    <Style Selector="TabItem">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="BorderThickness" Value="0,0,1,0" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeButtonForegroundColor}" />
+        <Setter Property="Background" Value="{DynamicResource ThemeControlBorderColor}" />
+    </Style>
+    <Style Selector="TabItem:pointerover">
+        <Setter Property="Foreground" Value="{DynamicResource ThemeButtonForegroundColor}" />
+    </Style>
+    <Style Selector="TabItem:selected">
+        <Setter Property="Background" Value="{DynamicResource HighlightColor}" />
+        <Setter Property="Foreground" Value="{DynamicResource ThemeBackgroundColor}" />
+    </Style>
+    <Style Selector="Separator">
+        <Setter Property="Background" Value="{DynamicResource ThemeControlBorderColor}" />
+        <Setter Property="Foreground" Value="{DynamicResource ThemeControlBorderColor}" />
+        <Setter Property="MinHeight" Value="1" />
+        <Setter Property="Margin" Value="5" />
+    </Style>
 
     <Styles.Resources>
         <SolidColorBrush x:Key="DataGridSelectionBackgroundBrush" Color="{DynamicResource DataGridSelectionColor}" />
@@ -124,6 +152,7 @@
         <Color x:Key="ThemeButtonForegroundColor">#FF212121</Color>
         <Color x:Key="ThemeAlternatingRowColor">#FF323232</Color>
         <Color x:Key="ThemeControlBorderColor">#FF505050</Color>
+        <Color x:Key="ThemeTextColor">#FFDEDEDE</Color>
         <sys:Double x:Key="ScrollBarThickness">15</sys:Double>
         <sys:Double x:Key="FontSizeSmall">10</sys:Double>
         <sys:Double x:Key="FontSizeNormal">12</sys:Double>

@@ -1,7 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Text.Json.Serialization;
-using NotImplementedException = System.NotImplementedException;
 
 namespace Ryujinx.Common.Configuration.Hid
 {
@@ -31,7 +29,7 @@ namespace Ryujinx.Common.Configuration.Hid
         /// </summary>
         public PlayerIndex PlayerIndex { get; set; }
         
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
