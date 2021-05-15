@@ -286,10 +286,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
         public void RefreshFirmwareStatus()
         {
-            Dispatcher.UIThread.InvokeAsync(() =>
-            {
-                FirmwareStatus.Text = string.Format(LocaleManager.Instance["StatusBarSystemVersion"], ContentManager.GetCurrentFirmwareVersion().VersionString);
-            });
+            LocaleManager.Instance.UpdateDynamicValue("StatusBarSystemVersion", ContentManager.GetCurrentFirmwareVersion().VersionString);
         }
 
         private void InitializeComponent()
