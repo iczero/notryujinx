@@ -14,9 +14,12 @@ namespace Ryujinx.Ava.Common.Locale
 
         public static LocaleManager Instance { get; } = new LocaleManager();
 
+        private Dictionary<string, object[]> _dynamicValues;
+
         public LocaleManager()
         {
             _localeStrings = new Dictionary<string, string>();
+            _dynamicValues = new Dictionary<string, object[]>();
 
             Load();
         }
@@ -40,6 +43,11 @@ namespace Ryujinx.Ava.Common.Locale
             {
                 if (_localeStrings.TryGetValue(key, out string value))
                 {
+                    if(_dynamicValues.TryGetValue(key, out var dynamicValue))
+                    {
+                        return string.Format(value, dynamicValue);
+                    }
+
                     return value;
                 }
 
@@ -51,6 +59,23 @@ namespace Ryujinx.Ava.Common.Locale
 
                 OnPropertyChanged();
             }
+        }
+
+        public void UpdateDynamicValue(string key, params object[] values)
+        {
+            lock (_dynamicValues)
+            {
+                if (_dynamicValues.ContainsKey(key))
+                {
+                    _dynamicValues[key] = values;
+                }
+                else
+                {
+                    _dynamicValues.Add(key, values);
+                }
+            }
+
+            OnPropertyChanged("Item");
         }
 
         public void LoadLanguage(string languageCode)
