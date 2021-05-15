@@ -680,6 +680,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
             await window.ShowDialog(_owner);
         }
 
+        public void ChangeLanguage(object obj)
+        {
+            LocaleManager.Instance.LoadLanguage((string)obj);
+        }
+
         private void ProgressHandler<T>(T state, int current, int total) where T : Enum
         {
             bool showLoadProgress = false;
