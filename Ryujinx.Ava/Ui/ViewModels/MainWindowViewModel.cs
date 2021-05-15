@@ -533,14 +533,12 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public void AddApplication(ApplicationData applicationData)
         {
-            string gamesLoadedFormat = LocaleManager.Instance["StatusBarGamesLoaded"];
-
             Dispatcher.UIThread.Post(() =>
             {
                 Applications.Add(applicationData);
                 _owner.LoadProgressBar.Value = Applications.Count;
                 _owner.LoadProgressBar.Maximum = _count;
-                _owner.LoadStatus.Text = string.Format(gamesLoadedFormat, Applications.Count, _count);
+                LocaleManager.Instance.UpdateDynamicValue("StatusBarGamesLoaded", Applications.Count, _count);
 
                 if (_count >= Applications.Count || _count == 0)
                 {
@@ -551,8 +549,6 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public async void LoadApplications()
         {
-            string gamesLoadedFormat = LocaleManager.Instance["StatusBarGamesLoaded"];
-
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 Applications.Clear();
@@ -563,7 +559,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 _owner.LoadProgressBar.Maximum = _count;
                 _owner.LoadProgressBar.Minimum = 0;
                 _owner.LoadProgressBar.Value   = 0;
-                _owner.LoadStatus.Text = string.Format(gamesLoadedFormat, 0, _count);
+                LocaleManager.Instance.UpdateDynamicValue("StatusBarGamesLoaded", 0, _count);
             });
 
             ReloadGameList();
