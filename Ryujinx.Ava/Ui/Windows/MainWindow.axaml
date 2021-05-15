@@ -623,7 +623,7 @@
                     Margin="5,0,5,0"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
-                    Text="System Version: 0.0.0" />
+                    Text="{Locale:Locale StatusBarSystemVersion}"  />
             </StackPanel>
         </Grid>
     </Grid>
