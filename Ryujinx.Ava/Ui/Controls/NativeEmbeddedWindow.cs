@@ -139,8 +139,12 @@ namespace Ryujinx.Ava.Ui.Controls
 
             Task.Run(async () =>
             {
-                // Delay deleting the actual window, because avalonia does not release it early enough
-                await Task.Delay(2000);
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    // Delay deleting the actual window, because avalonia does not release it early enough on Linux.
+                    await Task.Delay(2000);
+                }
+
                 GLFWWindow.Dispose();
 
                 OnWindowDestroyed();
