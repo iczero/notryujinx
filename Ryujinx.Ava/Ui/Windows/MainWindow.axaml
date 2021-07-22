@@ -310,7 +310,7 @@
               </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTextColumn
-                Width="1.5*"
+                Width="Auto"
                 Binding="{Binding ApplicationName}"
                 CellStyleClasses="Left">
               <DataGridTextColumn.Header>

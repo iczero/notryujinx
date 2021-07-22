@@ -41,9 +41,6 @@
         <Setter Property="MinWidth" Value="90" />
         <Setter Property="Margin" Value="5 5" />
     </Style>
-    <Style Selector="Button ContentPresenter">
-        <Setter Property="CornerRadius" Value="5" />
-    </Style>
     <Style Selector="Button:pressed">
         <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundColor}" />
     </Style>
@@ -109,11 +106,11 @@
         <Setter Property="Background" Value="{DynamicResource ThemeControlBorderColor}" />
         <Setter Property="BorderBrush" Value="{DynamicResource ThemeControlBorderColor}" />
     </Style>
-    <Style Selector="TabItem ScrollViewer">
+    <Style Selector="TabItem &gt; ScrollViewer">
         <Setter Property="Background" Value="{DynamicResource ThemeBackgroundColor}" />
         <Setter Property="Margin" Value="0,-5,0,0" />
     </Style>
-    <Style Selector="TabItem Border">
+    <Style Selector="TabItem &gt; ScrollViewer &gt; Border">
         <Setter Property="BorderThickness" Value="0,1,0,0" />
         <Setter Property="BorderBrush" Value="{DynamicResource HighlightBrush}" />
     </Style>
@@ -136,6 +133,14 @@
         <Setter Property="MinHeight" Value="1" />
         <Setter Property="Margin" Value="5" />
     </Style>
+    <Style Selector=":is(Button).DateTimeFlyoutButtonStyle">
+        <Setter Property="Background" Value="{DynamicResource HighlightColor}" />
+        <Setter Property="Foreground" Value="{DynamicResource ThemeBackgroundColor}" />
+    </Style>
+    <Style Selector="DatePickerPresenter">
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeButtonForegroundColor}" />
+    </Style>
 
     <Styles.Resources>
         <SolidColorBrush x:Key="DataGridSelectionBackgroundBrush" Color="{DynamicResource DataGridSelectionColor}" />
@@ -145,11 +150,12 @@
         <Color x:Key="DataGridSelectionColor">#FF00FABB</Color>
         <Color x:Key="HighlightHoverColor">#3D1E1E</Color>
         <Color x:Key="ThemeForegroundLowColor">#FFBCBCBC</Color>
-        <Color x:Key="ThemeControlHighlightLowBrush">#3D1E1E</Color>
+        <Color x:Key="ThemeControlHighlightLowBrush">#177888</Color>
         <Color x:Key="ThemeControlMidColor">#EE404040</Color>
         <Color x:Key="ThemeControlHighlightHighColor">#EE404040</Color>
         <Color x:Key="ThemeBackgroundColor">#FF2D2D2D</Color>
         <Color x:Key="ThemeButtonForegroundColor">#FF212121</Color>
+        <Color x:Key="ThemeDarkColor">#FF262626</Color>
         <Color x:Key="ThemeAlternatingRowColor">#FF323232</Color>
         <Color x:Key="ThemeControlBorderColor">#FF505050</Color>
         <Color x:Key="ThemeTextColor">#FFDEDEDE</Color>

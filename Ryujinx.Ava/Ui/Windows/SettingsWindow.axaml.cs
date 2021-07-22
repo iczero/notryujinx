@@ -4,8 +4,8 @@ using Avalonia.Data;
 using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.ViewModels;
-using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.FileSystem.Content;
 using System;
@@ -18,6 +18,7 @@ namespace Ryujinx.Ava.Ui.Windows
 {
     public class SettingsWindow : StyleableWindow
     {
+        private TabControl      _tabs;
         private ListBox         _gameList;
         private TextBox         _pathBox;
         private AutoCompleteBox _timeZoneBox;
@@ -26,6 +27,8 @@ namespace Ryujinx.Ava.Ui.Windows
 
         public SettingsWindow(VirtualFileSystem virtualFileSystem, ContentManager contentManager)
         {
+            Title = $"Ryujinx {Program.Version} - {LocaleManager.Instance["Settings"]}";
+
             ViewModel   = new SettingsViewModel(virtualFileSystem, contentManager);
             DataContext = ViewModel;
 
@@ -60,9 +63,46 @@ namespace Ryujinx.Ava.Ui.Windows
         {
             AvaloniaXamlLoader.Load(this);
 
+            _tabs        = this.FindControl<TabControl>("Tabs");
             _pathBox     = this.FindControl<TextBox>("PathBox");
             _gameList    = this.FindControl<ListBox>("GameList");
             _timeZoneBox = this.FindControl<AutoCompleteBox>("TimeZoneBox");
+
+            _tabs.SelectionChanged += Tabs_SelectionChanged;
+        }
+
+        private void Tabs_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // TODO: Remove hardcoded size maybe?
+
+            if (_tabs.SelectedIndex == 4)
+            {
+                if (Width == 800)
+                {
+                    Width    = 1100;
+                    Position = new PixelPoint(Position.X - 150, Position.Y);
+                }
+
+                if (Height == 650)
+                {
+                    Height   = 780;
+                    Position = new PixelPoint(Position.X, Position.Y - 65);
+                }
+            }
+            else
+            {
+                if (Width == 1100)
+                {
+                    Width    = 800;
+                    Position = new PixelPoint(Position.X + 150, Position.Y);
+                }
+
+                if (Height == 780)
+                {
+                    Height   = 650;
+                    Position = new PixelPoint(Position.X, Position.Y + 65);
+                }
+            }
         }
 
         private async void AddButton_OnClick(object sender, RoutedEventArgs e)
@@ -142,23 +182,6 @@ namespace Ryujinx.Ava.Ui.Windows
             if (Owner is MainWindow window)
             {
                 window.ViewModel.LoadApplications();
-            }
-        }
-
-        private async void Button_OnClick(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button button)
-            {
-                string tag = button.Tag.ToString();
-
-                if (!string.IsNullOrWhiteSpace(tag))
-                {
-                    PlayerIndex player = Enum.Parse<PlayerIndex>(tag);
-
-                    ControllerSettingsWindow settingsWindow = new(player, Owner as MainWindow);
-
-                    await settingsWindow.ShowDialog(this);
-                }
             }
         }
     }

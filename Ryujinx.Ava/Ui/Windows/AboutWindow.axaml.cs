@@ -16,6 +16,8 @@ namespace Ryujinx.Ava.Ui.Windows
     {
         public AboutWindow()
         {
+            Title = $"Ryujinx {Program.Version} - About";
+
             DataContext = this;
 
             InitializeComponent();

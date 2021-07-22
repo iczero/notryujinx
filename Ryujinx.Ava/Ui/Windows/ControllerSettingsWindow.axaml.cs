@@ -1,20 +1,20 @@
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Avalonia.Threading;
 using Ryujinx.Ava.Ui.Models;
 using Ryujinx.Ava.Ui.ViewModels;
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Configuration.Hid.Controller;
+using Ryujinx.Configuration;
 using Ryujinx.Input;
 using Ryujinx.Input.Assigner;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,72 +23,37 @@ using StickInputId = Ryujinx.Input.StickInputId;
 
 namespace Ryujinx.Ava.Ui.Windows
 {
-    public class ControllerSettingsWindow : StyleableWindow
+    public class ControllerSettingsWindow : UserControl
     {
         private bool _isWaitingForInput;
         private bool _mousePressed;
         private bool _middleMousePressed;
 
+        public DockPanel                   SettingButtons       { get; set; }
+        public ToggleButton                CurrentToggledButton { get; set; }
+        public ControllerSettingsViewModel ViewModel            { get; set; }
+
         public ControllerSettingsWindow()
         {
-            Initialize();
-        }
+            DataContext = ViewModel = new ControllerSettingsViewModel(this);
 
-        public ControllerSettingsWindow(PlayerIndex playerIndex, MainWindow parent)
-        {
-            ViewModel = new ControllerSettingsViewModel(playerIndex, this, parent);
+            InitializeComponent();
 
-            ViewModel.OnClose += ViewModelOnOnClose;
-
-            DataContext = ViewModel;
-
-            Initialize();
-
-            Activated += OnActivated;
-        }
-
-        public ScrollViewer View { get; set; }
-        public Grid ViewGrid { get; set; }
-        public ToggleButton CurrentToggledButton { get; set; }
-
-        public ControllerSettingsViewModel ViewModel { get; set; }
-
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            base.OnClosing(e);
-
-            ViewModel?.Dispose();
-        }
-
-        private void ViewModelOnOnClose(object sender, EventArgs e)
-        {
-            Close();
-        }
-
-        private void OnActivated(object sender, EventArgs e)
-        {
-            IEnumerable<ILogical> children = View.GetLogicalDescendants();
-            foreach (ILogical visual in children)
+            foreach (ILogical visual in SettingButtons.GetLogicalDescendants())
             {
-                if (visual is Control control)
+                if (visual is ToggleButton button && !(visual is CheckBox))
                 {
-                    if (visual is ToggleButton button && !(visual is CheckBox))
-                    {
-                        button.Checked += ButtonOnCheck;
-                        button.Unchecked += ButtonOnUnchecked;
-                    }
+                    button.Checked   += Button_Checked;
+                    button.Unchecked += Button_Unchecked;
                 }
             }
         }
 
-        private void ButtonOnUnchecked(object sender, RoutedEventArgs e)
+        private void InitializeComponent()
         {
-            if (CurrentToggledButton != null)
-            {
-                ToggleButton button = CurrentToggledButton;
-                CurrentToggledButton = null;
-                button.IsChecked = false;
-            }
+            AvaloniaXamlLoader.Load(this);
+
+            SettingButtons = this.FindControl<DockPanel>("SettingButtons");
         }
 
         protected override void OnPointerReleased(PointerReleasedEventArgs e)
@@ -98,12 +63,13 @@ namespace Ryujinx.Ava.Ui.Windows
             if (CurrentToggledButton != null && !CurrentToggledButton.IsPointerOver)
             {
                 ToggleButton button = CurrentToggledButton;
+
                 CurrentToggledButton = null;
-                button.IsChecked = false;
+                button.IsChecked     = false;
             }
         }
 
-        private void ButtonOnCheck(object sender, RoutedEventArgs e)
+        private void Button_Checked(object sender, RoutedEventArgs e)
         {
             if (sender is ToggleButton button)
             {
@@ -115,8 +81,7 @@ namespace Ryujinx.Ava.Ui.Windows
                 if (CurrentToggledButton == null && (bool)button.IsChecked)
                 {
                     CurrentToggledButton = button;
-
-                    _isWaitingForInput = false;
+                    _isWaitingForInput   = false;
 
                     bool isStick = button.Tag != null && button.Tag.ToString() == "stick";
                     
@@ -129,9 +94,10 @@ namespace Ryujinx.Ava.Ui.Windows
                     if (CurrentToggledButton != null)
                     {
                         ToggleButton oldButton = CurrentToggledButton;
+
                         CurrentToggledButton = null;
-                        oldButton.IsChecked = false;
-                        button.IsChecked = false;
+                        oldButton.IsChecked  = false;
+                        button.IsChecked     = false;
                     }
                 }
             }
@@ -145,19 +111,17 @@ namespace Ryujinx.Ava.Ui.Windows
                 {
                     button.IsChecked = false;
                 });
+
                 return;
             }
 
-            _mousePressed = false;
+            _mousePressed      = false;
+            _isWaitingForInput = true;
 
             PointerPressed += MouseClick;
 
             IButtonAssigner assigner = CreateButtonAssigner(forStick);
-
-            _isWaitingForInput = true;
-
-            // Open Avalonia keyboard for cancel operations
-            IKeyboard keyboard = (IKeyboard)ViewModel.AvaloniaKeyboardDriver.GetGamepad("0");
+            IKeyboard       keyboard = (IKeyboard)ViewModel.AvaloniaKeyboardDriver.GetGamepad("0"); // Open Avalonia keyboard for cancel operations.
 
             Thread inputThread = new(() =>
             {
@@ -169,11 +133,12 @@ namespace Ryujinx.Ava.Ui.Windows
                     {
                         return;
                     }
+
                     Thread.Sleep(10);
+
                     assigner.ReadInput();
 
-                    if (_mousePressed || keyboard.IsPressed(Key.Escape) || assigner.HasAnyButtonPressed() ||
-                        assigner.ShouldCancel())
+                    if (_mousePressed || keyboard.IsPressed(Key.Escape) || assigner.HasAnyButtonPressed() || assigner.ShouldCancel())
                     {
                         break;
                     }
@@ -200,11 +165,14 @@ namespace Ryujinx.Ava.Ui.Windows
                     }
 
                     keyboard.Dispose();
+                    
                     _middleMousePressed = false;
-                    _isWaitingForInput = false;
+                    _isWaitingForInput  = false;
                     
                     button = CurrentToggledButton;
+                    
                     CurrentToggledButton = null;
+
                     if (button != null)
                     {
                         button.IsChecked = false;
@@ -212,7 +180,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
                     PointerPressed -= MouseClick;
 
-                    void SetButtonText(ToggleButton button, string text)
+                    static void SetButtonText(ToggleButton button, string text)
                     {
                         ILogical textBlock = button.GetLogicalDescendants().First(x => x is TextBlock);
 
@@ -224,11 +192,10 @@ namespace Ryujinx.Ava.Ui.Windows
                 });
             });
 
-            inputThread.Name = "GUI.InputThread";
+            inputThread.Name         = "GUI.InputThread";
             inputThread.IsBackground = true;
             inputThread.Start();
         }
-
 
         private IButtonAssigner CreateButtonAssigner(bool forStick)
         {
@@ -242,8 +209,9 @@ namespace Ryujinx.Ava.Ui.Windows
             }
             else if (selected.StartsWith("controller"))
             {
-                assigner = new GamepadButtonAssigner(ViewModel.SelectedGamepad,
-                    (ViewModel.InputConfig as InputConfiguration<GamepadInputId, StickInputId>).TriggerThreshold, forStick);
+                //InputConfig config = ConfigurationState.Instance.Hid.InputConfig.Value.Find(inputConfig => inputConfig.Id == ViewModel.SelectedGamepad.Id);
+
+                assigner = new GamepadButtonAssigner(ViewModel.SelectedGamepad, /*(config as StandardControllerInputConfig).TriggerThreshold*/0.0f, forStick);
             }
             else
             {
@@ -251,6 +219,16 @@ namespace Ryujinx.Ava.Ui.Windows
             }
 
             return assigner;
+        }
+        private void Button_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (CurrentToggledButton != null)
+            {
+                ToggleButton button = CurrentToggledButton;
+
+                CurrentToggledButton = null;
+                button.IsChecked     = false;
+            }
         }
 
         private void MouseClick(object sender, PointerPressedEventArgs e)
@@ -261,51 +239,6 @@ namespace Ryujinx.Ava.Ui.Windows
             {
                 _middleMousePressed = true;
             }
-        }
-
-        public void Initialize()
-        {
-            InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
-            View = this.FindControl<ScrollViewer>("View");
-            ViewGrid = this.FindControl<Grid>("ViewGrid");
-
-            IObservable<Size> resizeObserverable = this.GetObservable(ClientSizeProperty);
-
-            resizeObserverable.Subscribe(Resized);
-
-            IObservable<Rect> stateObserverable = this.GetObservable(BoundsProperty);
-
-            stateObserverable.Subscribe(StateChanged);
-        }
-
-        public void UpdateSizes(Size size)
-        {
-            //Workaround for gamelist not fitting parent
-
-            if (ViewGrid != null)
-            {
-                ViewGrid.Height = ClientSize.Height;
-                ViewGrid.Width = ClientSize.Width;
-            }
-        }
-
-        private void Resized(Size size)
-        {
-            UpdateSizes(size);
-        }
-
-
-        private void StateChanged(Rect rect)
-        {
-            UpdateSizes(ClientSize);
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
         }
     }
 }
