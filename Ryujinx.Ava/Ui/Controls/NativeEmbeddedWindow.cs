@@ -20,8 +20,8 @@ namespace Ryujinx.Ava.Ui.Controls
     {
         public event EventHandler<KeyEventArgs> KeyPressed;
         public event EventHandler<KeyEventArgs> KeyReleased;
-        public event EventHandler MouseDown;
-        public event EventHandler MouseUp;
+        public event EventHandler<MouseButtonEventArgs> MouseDown;
+        public event EventHandler<MouseButtonEventArgs> MouseUp;
         public event EventHandler<(double X, double Y)> MouseMove;
         public event EventHandler<IntPtr> WindowCreated;
         public event EventHandler<Size> SizeChanged;
@@ -283,14 +283,14 @@ namespace Ryujinx.Ava.Ui.Controls
 
         private void Window_MouseUp(MouseButtonEventArgs obj)
         {
-            MouseUp?.Invoke(this, EventArgs.Empty);
+            MouseUp?.Invoke(this, obj);
 
             RefocusMainWindow();
         }
 
         private void Window_MouseDown(MouseButtonEventArgs obj)
         {
-            MouseDown?.Invoke(this, EventArgs.Empty);
+            MouseDown?.Invoke(this, obj);
         }
 
         public virtual void Present() { }

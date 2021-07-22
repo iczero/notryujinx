@@ -90,11 +90,14 @@ namespace Ryujinx.Ava.Ui.Windows
 
             Title = $"Ryujinx {Program.Version}";
 
-            Initialize();
+            if (Program.PreviewerDetached)
+            {
+                Initialize();
 
-            InputManager = new InputManager(new AvaloniaKeyboardDriver(this), new SDL2GamepadDriver());
+                InputManager = new InputManager(new AvaloniaKeyboardDriver(this), new SDL2GamepadDriver());
 
-            LoadGameList();
+                LoadGameList();
+            }
         }
 
         [Conditional("DEBUG")]
@@ -207,7 +210,7 @@ namespace Ryujinx.Ava.Ui.Windows
             _mainViewContent = ContentFrame.Content as Control;
 
             GlRenderer = new OpenGlEmbeddedWindow(3, 3, ConfigurationState.Instance.Logger.GraphicsDebugLevel, PlatformImpl.DesktopScaling);
-            AppHost    = new AppHost(GlRenderer, InputManager, PlatformImpl.DesktopScaling, path, VirtualFileSystem, ContentManager, AccountManager, _userChannelPersistence, this);
+            AppHost    = new AppHost(GlRenderer, InputManager, path, VirtualFileSystem, ContentManager, AccountManager, _userChannelPersistence, this);
 
             GlRenderer.WindowCreated += GlRenderer_Created;
             GlRenderer.Start();
@@ -287,6 +290,10 @@ namespace Ryujinx.Ava.Ui.Windows
         public void RefreshFirmwareStatus()
         {
             LocaleManager.Instance.UpdateDynamicValue("StatusBarSystemVersion", ContentManager.GetCurrentFirmwareVersion().VersionString);
+            
+            bool hasApplet = ContentManager.GetCurrentFirmwareVersion() != null && ContentManager.GetCurrentFirmwareVersion().Major > 3;
+
+            ViewModel.IsAppletMenuActive = hasApplet;
         }
 
         private void InitializeComponent()
@@ -415,15 +422,15 @@ namespace Ryujinx.Ava.Ui.Windows
         {
             if (sender is MenuItem)
             {
-                ViewModel.IsAmiiboRequested = AppHost.EmulationContext.System.SearchingForAmiibo(out _);
+                ViewModel.IsAmiiboRequested = AppHost.Device.System.SearchingForAmiibo(out _);
             }
         }
 
         private void VsyncStatus_PointerReleased(object sender, PointerReleasedEventArgs e)
         {
-            AppHost.EmulationContext.EnableDeviceVsync = !AppHost.EmulationContext.EnableDeviceVsync;
+            AppHost.Device.EnableDeviceVsync = !AppHost.Device.EnableDeviceVsync;
 
-            Logger.Info?.Print(LogClass.Application, $"VSync toggled to: {AppHost.EmulationContext.EnableDeviceVsync}");
+            Logger.Info?.Print(LogClass.Application, $"VSync toggled to: {AppHost.Device.EnableDeviceVsync}");
         }
 
         private void DockedStatus_PointerReleased(object sender, PointerReleasedEventArgs e)

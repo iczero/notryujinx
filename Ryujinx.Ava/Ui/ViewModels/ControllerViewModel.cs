@@ -399,12 +399,12 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         private static string GetShrinkedGamepadName(string str)
         {
-            const string shrinkChars = "..";
-            const int maxSize = 52;
+            const string ShrinkChars = "...";
+            const int MaxSize = 50;
 
-            if (str.Length > maxSize - shrinkChars.Length)
+            if (str.Length > MaxSize)
             {
-                return str.Substring(0, maxSize) + shrinkChars;
+                return str.Substring(0, MaxSize - ShrinkChars.Length) + ShrinkChars;
             }
 
             return str;
@@ -540,7 +540,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                     Version = Ryujinx.Common.Configuration.Hid.InputConfig.CurrentVersion,
                     Backend = InputBackendType.WindowKeyboard,
                     Id = id,
-                    ControllerType = ControllerType.JoyconPair,
+                    ControllerType = ControllerType.ProController,
                     LeftJoycon =
                         new LeftJoyconCommonConfig<Key>
                         {
@@ -596,7 +596,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                     Version = Ryujinx.Common.Configuration.Hid.InputConfig.CurrentVersion,
                     Backend = InputBackendType.GamepadSDL2,
                     Id = id,
-                    ControllerType = ControllerType.JoyconPair,
+                    ControllerType = ControllerType.ProController,
                     DeadzoneLeft = 0.1f,
                     DeadzoneRight = 0.1f,
                     TriggerThreshold = 0.5f,
@@ -822,7 +822,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             if (_mainWindow.AppHost != null)
             {
-                _mainWindow.AppHost.NpadManager.ReloadConfiguration(newConfig);
+                _mainWindow.AppHost.NpadManager.ReloadConfiguration(newConfig, ConfigurationState.Instance.Hid.EnableKeyboard, ConfigurationState.Instance.Hid.EnableMouse);
             }
 
             // Atomically replace and signal input change.

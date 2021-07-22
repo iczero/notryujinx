@@ -2,7 +2,10 @@ using ARMeilleure.Translation.PTC;
 using Avalonia;
 using FFmpeg.AutoGen;
 using Ryujinx.Ava.Application.Module;
+using Ryujinx.Ava.Common;
+using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Common.Configuration;
+using Ryujinx.Common.GraphicsDriver;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.System;
 using Ryujinx.Common.SystemInfo;
@@ -20,8 +23,11 @@ namespace Ryujinx.Ava
 {
     internal class Program
     {
+        public static double WindowScaleFactor { get; private set; }
         public static string Version           { get; private set; }
         public static string ConfigurationPath { get; private set; }
+
+        public static bool PreviewerDetached { get; private set; }
 
         [DllImport("libX11")]
         private static extern int XInitThreads();
@@ -30,6 +36,8 @@ namespace Ryujinx.Ava
         //       Things aren't initialized yet and stuff might break.
         public static void Main(string[] args)
         {
+            PreviewerDetached = true;
+            
             Initialize(args);
 
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
@@ -60,9 +68,11 @@ namespace Ryujinx.Ava
 
         private static void Initialize(string[] args)
         {
-            // Parse Arguments
-            string launchPath        = null;
-            string baseDirectoryPath = null;
+            // Parse Arguments.
+            string launchPathArg      = null;
+            string baseDirPathArg     = null;
+            bool   startFullscreenArg = false;
+
             for (int i = 0; i < args.Length; ++i)
             {
                 string arg = args[i];
@@ -76,13 +86,21 @@ namespace Ryujinx.Ava
                         continue;
                     }
 
-                    baseDirectoryPath = args[++i];
+                    baseDirPathArg = args[++i];
                 }
-                else if (launchPath == null)
+                else if (arg == "-f" || arg == "--fullscreen")
                 {
-                    launchPath = arg;
+                    startFullscreenArg = true;
+                }
+                else if (launchPathArg == null)
+                {
+                    launchPathArg = arg;
                 }
             }
+
+            // Make process DPI aware for proper window sizing on high-res screens.
+            ForceDpiAware.Windows();
+            WindowScaleFactor = ForceDpiAware.GetWindowScaleFactor();
 
             // Delete backup files after updating.
             Task.Run(Updater.CleanupUpdate);
@@ -91,38 +109,49 @@ namespace Ryujinx.Ava
 
             Console.Title = $"Ryujinx Console {Version}";
 
-            // Assign Event Handlers
-            AppDomain.CurrentDomain.UnhandledException += (sender, e) => ProcessUnhandledException(e.ExceptionObject as Exception, e.IsTerminating);
-            AppDomain.CurrentDomain.ProcessExit += (sender, e) => Exit();
+            string systemPath = Environment.GetEnvironmentVariable("Path", EnvironmentVariableTarget.Machine);
+            Environment.SetEnvironmentVariable("Path", $"{Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "bin")};{systemPath}");
 
-            // Fix the ffmpeg path for Linux
-            if (OperatingSystem.IsLinux())
-            {
-                _ = XInitThreads();
+            // Hook unhandled exception and process exit events.
+            AppDomain.CurrentDomain.UnhandledException += (object sender, UnhandledExceptionEventArgs e) => ProcessUnhandledException(e.ExceptionObject as Exception, e.IsTerminating);
+            AppDomain.CurrentDomain.ProcessExit        += (object sender, EventArgs e)                   => Exit();
 
-                ffmpeg.RootPath = "/lib";
-            }
+            // Setup base data directory.
+            AppDataManager.Initialize(baseDirPathArg);
 
-            // Initialize AppDataManager
-            AppDataManager.Initialize(baseDirectoryPath);
-
-            // Initialize the configuration
+            // Initialize the configuration.
             ConfigurationState.Initialize();
 
-            // Initialize the logger system
+            // Initialize the logger system.
             LoggerModule.Initialize();
 
-            // Initialize Discord integration
+            // Initialize Discord integration.
             DiscordIntegrationModule.Initialize();
 
-            // Set ImageSharp JPEG quality
-            SixLabors.ImageSharp.Configuration.Default.ImageFormatsManager.SetEncoder(JpegFormat.Instance, new JpegEncoder { Quality = 100 });
+            // Sets ImageSharp Jpeg Encoder Quality.
+            SixLabors.ImageSharp.Configuration.Default.ImageFormatsManager.SetEncoder(JpegFormat.Instance, new JpegEncoder()
+            {
+                Quality = 100
+            });
 
             ReloadConfig();
 
+            // Logging system information.
             PrintSystemInfo();
 
-            ForceDedicatedGpu.Nvidia();
+            // Enable OGL multithreading on the driver, when available.
+            DriverUtilities.ToggleOGLThreading(true);
+
+            // Check if keys exists.
+            bool hasSystemProdKeys = File.Exists(Path.Combine(AppDataManager.KeysDirPath, "prod.keys"));
+            bool hasCommonProdKeys = AppDataManager.Mode == AppDataManager.LaunchMode.UserProfile && File.Exists(Path.Combine(AppDataManager.KeysDirPathUser, "prod.keys"));
+            if (!hasSystemProdKeys && !hasCommonProdKeys)
+            {
+                // TODO Defer prompt
+                //UserErrorDialog.CreateUserErrorDialog(UserError.NoKeys);
+            }
+            
+            // TODO add direct lauch and updater
         }
 
         private static void ReloadConfig()
@@ -159,11 +188,9 @@ namespace Ryujinx.Ava
         private static void PrintSystemInfo()
         {
             Logger.Notice.Print(LogClass.Application, $"Ryujinx Version: {Version}");
-
             SystemInfo.Gather().Print();
 
-            IReadOnlyCollection<LogLevel> enabledLogs = Logger.GetEnabledLevels();
-
+            var enabledLogs = Logger.GetEnabledLevels();
             Logger.Notice.Print(LogClass.Application, $"Logs Enabled: {(enabledLogs.Count == 0 ? "<None>" : string.Join(", ", enabledLogs))}");
 
             if (AppDataManager.Mode == AppDataManager.LaunchMode.Custom)
