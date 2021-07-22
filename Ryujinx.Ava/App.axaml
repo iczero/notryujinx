@@ -1,11 +1,13 @@
 <Application
     x:Class="Ryujinx.Ava.App"
     xmlns="https://github.com/avaloniaui"
+    xmlns:sty="using:FluentAvalonia.Styling"
+    xmlns:ui="using:FluentAvalonia.UI.Controls"
+    xmlns:uip="using:FluentAvalonia.UI.Controls.Primitives"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Application.Styles>
-        <StyleInclude Source="avares://Avalonia.Themes.Default/DefaultTheme.xaml" />
-        <StyleInclude Source="avares://Avalonia.Themes.Default/Accents/BaseDark.xaml" />
+        <sty:FluentAvaloniaTheme RequestedTheme="Dark"/>
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Default.xaml" />
-        <StyleInclude Source="avares://Ryujinx.Ava/Assets/Styles/Styles.xaml" />
+        <!--<StyleInclude Source="avares://Ryujinx.Ava/Assets/Styles/Styles.xaml" />-->
     </Application.Styles>
 </Application>
