@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace Ryujinx.Ava.Ui.Windows
 {
-    public class StyleableWindow : Window, IStyleable
+    public class StyleableWindow : Window
     {
         public StyleableWindow()
         {

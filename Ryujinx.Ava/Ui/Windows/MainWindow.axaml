@@ -1,6 +1,7 @@
 <window:StyleableWindow
     x:Class="Ryujinx.Ava.Ui.Windows.MainWindow"
     xmlns="https://github.com/avaloniaui"
+    xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
     xmlns:controls="clr-namespace:Ryujinx.Ava.Ui.Controls"
@@ -48,7 +49,6 @@
             <DockPanel HorizontalAlignment="Stretch">
                 <Menu
                     Name="Menu"
-                    Height="36"
                     Margin="0"
                     HorizontalAlignment="Left"
                     IsVisible="{Binding ShowMenuAndStatusBar}">
@@ -80,13 +80,7 @@
                         <MenuItem Command="{Binding ToggleFullscreen}" Header="{locale:Locale MenuBarOptionsToggleFullscreen}" />
                         <MenuItem Header="{locale:Locale MenuBarOptionsStartGamesInFullscreen}">
                             <MenuItem.Icon>
-                                <Border
-                                    Margin="0"
-                                    Padding="0"
-                                    BorderBrush="White"
-                                    BorderThickness="1">
                                     <CheckBox Margin="0" IsChecked="{Binding StartGamesInFullscreen, Mode=TwoWay}" />
-                                </Border>
                             </MenuItem.Icon>
                         </MenuItem>
                         <Separator />
@@ -98,113 +92,52 @@
                         <MenuItem Header="Enable GUI Columns">
                             <MenuItem Header="Enable Favorites Column">
                                 <MenuItem.Icon>
-                                    <Border
-                                        Margin="0"
-                                        Padding="0"
-                                        BorderBrush="White"
-                                        BorderThickness="1">
                                         <CheckBox Margin="0" IsChecked="{Binding ShowFavoriteColumn, Mode=TwoWay}" />
-                                    </Border>
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Enable Icon Column">
                                 <MenuItem.Icon>
-                                    <Border
-                                        Margin="0"
-                                        Padding="0"
-                                        BorderBrush="White"
-                                        BorderThickness="1">
                                         <CheckBox Margin="0" IsChecked="{Binding ShowIconColumn, Mode=TwoWay}" />
-                                    </Border>
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Enable Title/ID Column">
                                 <MenuItem.Icon>
-                                    <Border
-                                        Margin="0"
-                                        Padding="0"
-                                        HorizontalAlignment="Center"
-                                        BorderBrush="White"
-                                        BorderThickness="1">
                                         <CheckBox Margin="0" IsChecked="{Binding ShowTitleColumn, Mode=TwoWay}" />
-                                    </Border>
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Enable Developer Column">
                                 <MenuItem.Icon>
-                                    <Border
-                                        Margin="0"
-                                        Padding="0"
-                                        BorderBrush="White"
-                                        BorderThickness="1">
                                         <CheckBox Margin="0" IsChecked="{Binding ShowDeveloperColumn, Mode=TwoWay}" />
-                                    </Border>
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Enable Version Column">
                                 <MenuItem.Icon>
-                                    <Border
-                                        Margin="0"
-                                        Padding="0"
-                                        BorderBrush="White"
-                                        BorderThickness="1">
                                         <CheckBox Margin="0" IsChecked="{Binding ShowVersionColumn, Mode=TwoWay}" />
-                                    </Border>
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Enable Time Played Column">
                                 <MenuItem.Icon>
-                                    <Border
-                                        Margin="0"
-                                        Padding="0"
-                                        BorderBrush="White"
-                                        BorderThickness="1">
                                         <CheckBox Margin="0" IsChecked="{Binding ShowTimePlayedColumn, Mode=TwoWay}" />
-                                    </Border>
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Enable Last Played Column">
                                 <MenuItem.Icon>
-                                    <Border
-                                        Margin="0"
-                                        Padding="0"
-                                        BorderBrush="White"
-                                        BorderThickness="1">
                                         <CheckBox Margin="0" IsChecked="{Binding ShowLastPlayedColumn, Mode=TwoWay}" />
-                                    </Border>
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Enable File Extension Column">
                                 <MenuItem.Icon>
-                                    <Border
-                                        Margin="0"
-                                        Padding="0"
-                                        BorderBrush="White"
-                                        BorderThickness="1">
                                         <CheckBox Margin="0" IsChecked="{Binding ShowFileExtColumn, Mode=TwoWay}" />
-                                    </Border>
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Enable File Size Column">
                                 <MenuItem.Icon>
-                                    <Border
-                                        Margin="0"
-                                        Padding="0"
-                                        BorderBrush="White"
-                                        BorderThickness="1">
                                         <CheckBox Margin="0" IsChecked="{Binding ShowFileSizeColumn, Mode=TwoWay}" />
-                                    </Border>
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Enable Path Column">
                                 <MenuItem.Icon>
-                                    <Border
-                                        Margin="0"
-                                        Padding="0"
-                                        BorderBrush="White"
-                                        BorderThickness="1">
                                         <CheckBox Margin="0" IsChecked="{Binding ShowFilePathColumn, Mode=TwoWay}" />
-                                    </Border>
                                 </MenuItem.Icon>
                             </MenuItem>
                         </MenuItem>
@@ -281,7 +214,7 @@
             DockPanel.Dock="Top">
             <DataGrid
                 Name="GameList"
-                Margin="0"
+                Margin="5,0,5,0"
                 AlternatingRowBackground="{DynamicResource ThemeAlternatingRowColor}"
                 CanUserResizeColumns="True"
                 CanUserSortColumns="True"
@@ -525,14 +458,7 @@
                         VerticalAlignment="Center"
                         Background="Transparent"
                         Command="{Binding LoadApplications}">
-                        <Path
-                            Width="12"
-                            Height="12"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Data="{StaticResource ArrowClockwiseRegular}"
-                            Fill="{DynamicResource ThemeForegroundLowColor}"
-                            Stretch="Fill" />
+                        <ui:SymbolIcon Symbol="Refresh" Height="100" Width="50"/>
                     </Button>
                     <TextBlock
                         Name="LoadStatus"

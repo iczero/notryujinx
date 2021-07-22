@@ -15,7 +15,7 @@ namespace Ryujinx.Ava.Ui.Controls
     internal class AvaDialog
     {
         private static bool _isChoiceDialogOpen;
-        private readonly IMessageBox<UserResult> _dialog;
+        private readonly IMessageBox<MessageBoxSlim.Avalonia.UserResult> _dialog;
         private readonly Window _owner;
 
         internal AvaDialog(string title, string mainText, string secondaryText, Window owner,

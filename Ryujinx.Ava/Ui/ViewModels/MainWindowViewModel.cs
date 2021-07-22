@@ -25,6 +25,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using ShaderCacheLoadingState = Ryujinx.Graphics.Gpu.Shader.ShaderCacheState;
+using UserResult = MessageBoxSlim.Avalonia.UserResult;
 
 namespace Ryujinx.Ava.Ui.ViewModels
 {
@@ -1025,7 +1026,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 dialogMessage += "\n\nDo you want to continue?";
 
-                UserResult result = await AvaDialog.CreateConfirmationDialog(dialogTitle, dialogMessage, _owner);
+                MessageBoxSlim.Avalonia.UserResult result = (UserResult) await ContentDialogHelper.CreateConfirmationDialog(_owner, dialogTitle, dialogMessage);
 
                 UpdateWaitWindow waitingDialog = AvaDialog.CreateWaitingDialog(dialogTitle, "Installing firmware...", _owner);
 
