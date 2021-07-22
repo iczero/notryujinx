@@ -8,6 +8,7 @@
     <TieredCompilation>false</TieredCompilation>
     <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
     <RootNamespace>Ryujinx.Ava</RootNamespace>
+    <ApplicationIcon>Ryujinx.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -97,9 +98,17 @@
     <ProjectReference Include="..\Ryujinx.Graphics.Gpu\Ryujinx.Graphics.Gpu.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <AvaloniaXaml Update="Ui\Windows\ControllerSettingsWindow.axaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaXaml>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Update="App.axaml.cs">
       <DependentUpon>App.axaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Ui\Windows\ControllerSettingsWindow.axaml.cs">
+      <DependentUpon>ControllerSettingsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Update="Ui\Windows\MainWindow.axaml.cs">
       <DependentUpon>MainWindow.axaml</DependentUpon>
