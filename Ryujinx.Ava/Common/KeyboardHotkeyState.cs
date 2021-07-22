@@ -6,6 +6,7 @@ namespace Ryujinx.Ava.Common
     public enum KeyboardHotkeyState
     {
         None,
-        ToggleVSync
+        ToggleVSync,
+        Screenshot
     }
 }

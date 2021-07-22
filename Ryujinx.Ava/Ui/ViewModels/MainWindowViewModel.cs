@@ -15,6 +15,7 @@ using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
 using Ryujinx.Configuration;
 using Ryujinx.HLE;
+using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.FileSystem.Content;
 using Ryujinx.Modules;
 using System;
@@ -55,6 +56,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private Brush _progressBarBackgroundColor;
         private Brush _vsyncColor;
         private byte[] _selectedIcon;
+        private bool _isAppletMenuActive;
 
         public MainWindowViewModel(MainWindow owner) : this()
         {
@@ -128,7 +130,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
         }
 
-        public bool ShowListStatusControls => !IsGameRunning;
+        public bool EnableNonGameRunningControls => !IsGameRunning;
 
         public bool IsGameRunning
         {
@@ -138,7 +140,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 _isGameRunning = value;
 
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ShowListStatusControls));
+                OnPropertyChanged(nameof(EnableNonGameRunningControls));
             }
         }
 
@@ -328,6 +330,17 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 OnPropertyChanged();
             }
         }
+        
+        public bool IsAppletMenuActive
+        {
+            get => _isAppletMenuActive && EnableNonGameRunningControls;
+            set
+            {
+                _isAppletMenuActive = value;
+
+                OnPropertyChanged();
+            }
+        }
 
         public bool ShowTitleColumn
         {
@@ -480,9 +493,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 return;
             }
 
-            if (_owner.AppHost.EmulationContext.System.SearchingForAmiibo(out int deviceId))
+            if (_owner.AppHost.Device.System.SearchingForAmiibo(out int deviceId))
             {
-                string titleId = _owner.AppHost.EmulationContext.Application.TitleIdText.ToUpper();
+                string titleId = _owner.AppHost.Device.Application.TitleIdText.ToUpper();
                 AmiiboWindow window = new(_showAll, _lastScannedAmiiboId, titleId);
 
                 await window.ShowDialog(_owner);
@@ -492,7 +505,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                     _showAll = window.ViewModel.ShowAllAmiibo;
                     _lastScannedAmiiboId = window.ScannedAmiibo.GetId();
 
-                    _owner.AppHost.EmulationContext.System.ScanAmiibo(deviceId, _lastScannedAmiiboId, window.ViewModel.UseRandomUuid);
+                    _owner.AppHost.Device.System.ScanAmiibo(deviceId, _lastScannedAmiiboId, window.ViewModel.UseRandomUuid);
                 }
             }
         }
@@ -624,6 +637,16 @@ namespace Ryujinx.Ava.Ui.ViewModels
             if (!string.IsNullOrWhiteSpace(folder) && Directory.Exists(folder))
             {
                 _owner.LoadApplication(folder);
+            }
+        }
+        
+        public async void OpenMiiApplet()
+        {
+            string contentPath = _owner.ContentManager.GetInstalledContentPath(0x0100000000001009, StorageId.NandSystem, NcaContentType.Program);
+            
+            if (!string.IsNullOrWhiteSpace(contentPath))
+            {
+                _owner.LoadApplication(contentPath);
             }
         }
 
@@ -828,7 +851,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public void SimulateWakeUpMessage()
         {
-            _owner.AppHost.EmulationContext.System.SimulateWakeUpMessage();
+            _owner.AppHost.Device.System.SimulateWakeUpMessage();
         }
 
         public async void PurgeShaderCache()
@@ -1030,6 +1053,15 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                                 AvaDialog.CreateInfoDialog(dialogTitle, message, _owner);
                                 Logger.Info?.Print(LogClass.Application, message);
+                                
+                                // Purge Applet Cache.
+
+                                DirectoryInfo miiEditorCacheFolder = new DirectoryInfo(System.IO.Path.Combine(AppDataManager.GamesDirPath, "0100000000001009", "cache"));
+
+                                if (miiEditorCacheFolder.Exists)
+                                {
+                                    miiEditorCacheFolder.Delete(true);
+                                }
                             });
                         }
                         catch (Exception ex)

@@ -57,6 +57,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         public bool HideCursorOnIdle         { get; set; }
         public bool EnableDockedMode         { get; set; }
         public bool EnableKeyboard           { get; set; }
+        public bool EnableMouse              { get; set; }
         public bool EnableVsync              { get; set; }
         public bool EnablePptc               { get; set; }
         public bool EnableFsIntegrityChecks  { get; set; }
@@ -74,6 +75,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
         public bool IsOpenAlEnabled          { get; set; }
         public bool IsSoundIoEnabled         { get; set; }
         public bool IsSDL2Enabled            { get; set; }
+        public bool SoftwareMemoryMode       { get; set; }
+        public bool HostMemoryMode            { get; set; }
+        public bool HostUncheckedMemoryMode   { get; set; }
         public bool IsResolutionScaleActive => _resolutionScale == 0;
 
         public string TimeZone       { get; set; }
@@ -98,7 +102,10 @@ namespace Ryujinx.Ava.Ui.ViewModels
             _virtualFileSystem = virtualFileSystem;
             _contentManager    = contentManager;
 
-            LoadTimeZones();
+            if (Program.PreviewerDetached)
+            {
+                LoadTimeZones();
+            }
         }
 
         public SettingsViewModel()
@@ -109,7 +116,10 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             CheckSoundBackends();
 
-            LoadCurrentConfiguration();
+            if (Program.PreviewerDetached)
+            {
+                LoadCurrentConfiguration();
+            }
         }
 
         public void CheckSoundBackends()
@@ -161,6 +171,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             HideCursorOnIdle         = config.HideCursorOnIdle;
             EnableDockedMode         = config.System.EnableDockedMode;
             EnableKeyboard           = config.Hid.EnableKeyboard;
+            EnableMouse              = config.Hid.EnableMouse;
             EnableVsync              = config.Graphics.EnableVsync;
             EnablePptc               = config.System.EnablePtc;
             EnableFsIntegrityChecks  = config.System.EnableFsIntegrityChecks;
@@ -200,6 +211,19 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             DateOffset = dateTimeOffset.Date;
             TimeOffset = dateTimeOffset.TimeOfDay;
+
+            switch (config.System.MemoryManagerMode.Value)
+            {
+                case MemoryManagerMode.HostMapped:
+                    HostMemoryMode = true;
+                    break;
+                case MemoryManagerMode.HostMappedUnsafe:
+                    HostUncheckedMemoryMode = true;
+                    break;
+                case MemoryManagerMode.SoftwarePageTable:
+                    SoftwareMemoryMode = true;
+                    break;
+            }
         }
 
         public void SaveSettings()
@@ -234,6 +258,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             config.System.IgnoreMissingServices.Value   = IgnoreMissingServices;
             config.System.ExpandRam.Value               = ExpandDramSize;
             config.Hid.EnableKeyboard.Value             = EnableKeyboard;
+            config.Hid.EnableMouse.Value                = EnableKeyboard;
             config.System.Language.Value                = (Language)Language;
             config.System.Region.Value                  = (Region)Region;
 
@@ -257,6 +282,19 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 config.System.AudioBackend.Value = audioBackend;
 
                 Logger.Info?.Print(LogClass.Application, $"AudioBackend toggled to: {audioBackend}");
+            }
+
+            if (HostMemoryMode)
+            {
+                config.System.MemoryManagerMode.Value = MemoryManagerMode.HostMapped;
+            }
+            if (HostUncheckedMemoryMode)
+            {
+                config.System.MemoryManagerMode.Value = MemoryManagerMode.HostMappedUnsafe;
+            }
+            if (SoftwareMemoryMode)
+            {
+                config.System.MemoryManagerMode.Value = MemoryManagerMode.SoftwarePageTable;
             }
 
             config.ToFileFormat().SaveConfig(Program.ConfigurationPath);

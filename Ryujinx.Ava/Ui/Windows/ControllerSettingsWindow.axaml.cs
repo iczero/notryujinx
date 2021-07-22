@@ -27,6 +27,7 @@ namespace Ryujinx.Ava.Ui.Windows
     {
         private bool _isWaitingForInput;
         private bool _mousePressed;
+        private bool _middleMousePressed;
 
         public ControllerSettingsWindow()
         {
@@ -178,18 +179,30 @@ namespace Ryujinx.Ava.Ui.Windows
                     }
                 }
 
-                string pressedButton = assigner.GetPressedButton();
-
                 Dispatcher.UIThread.Post(() =>
                 {
-                    try
+                    string pressedButton = assigner.GetPressedButton();
+                    if (_middleMousePressed)
                     {
-                        SetButtonText(button, pressedButton);
+                        try
+                        {
+                            SetButtonText(button, "Unbound");
+                        }
+                        catch { }
                     }
-                    catch { }
+                    else if (pressedButton != "")
+                    {
+                        try
+                        {
+                            SetButtonText(button, pressedButton);
+                        }
+                        catch { }
+                    }
 
                     keyboard.Dispose();
+                    _middleMousePressed = false;
                     _isWaitingForInput = false;
+                    
                     button = CurrentToggledButton;
                     CurrentToggledButton = null;
                     if (button != null)
@@ -243,6 +256,11 @@ namespace Ryujinx.Ava.Ui.Windows
         private void MouseClick(object sender, PointerPressedEventArgs e)
         {
             _mousePressed = true;
+
+            if (e.GetCurrentPoint(this).Properties.IsMiddleButtonPressed)
+            {
+                _middleMousePressed = true;
+            }
         }
 
         public void Initialize()
