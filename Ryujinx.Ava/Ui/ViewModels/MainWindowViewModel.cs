@@ -72,6 +72,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 Filter = Filter
             };
 
+            AppsCollection.SortDescriptions.Add(DataGridSortDescription.FromPath("Favorite", System.ComponentModel.ListSortDirection.Descending));
+
             ApplicationLibrary.ApplicationCountUpdated += ApplicationLibrary_ApplicationCountUpdated;
             ApplicationLibrary.ApplicationAdded += ApplicationLibrary_ApplicationAdded;
 
@@ -486,6 +488,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        public bool IsRefreshing { get; private set; }
 
         public async void OpenAmiiboWindow()
         {
