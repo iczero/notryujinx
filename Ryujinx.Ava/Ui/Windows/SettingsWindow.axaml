@@ -10,7 +10,7 @@
     xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
     SizeToContent="Width"
     MinWidth="900"
-    Height="680"
+    Height="700"
     d:DesignWidth="800"
     d:DesignHeight="950"
     CanResize="false"
@@ -64,15 +64,10 @@
                                 HorizontalAlignment="Stretch"
                                 Orientation="Vertical"
                                 Spacing="10">
-                                <Border
-                                    BorderThickness="1"
-                                    BorderBrush="DarkSlateGray" Padding="5">
                                     <ListBox
                                         Name="GameList"
                                         MinHeight="150"
-                                        Margin="0,10"
                                         Items="{Binding GameDirectories}" />
-                                </Border>
                                 <Grid HorizontalAlignment="Stretch">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
@@ -107,7 +102,7 @@
                     </Border>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="{locale:Locale SettingsTabSystem}" IsSelected="true">
+            <TabItem Header="{locale:Locale SettingsTabSystem}">
                 <ScrollViewer
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
@@ -563,7 +558,7 @@
         </TabControl>
         <StackPanel
             Grid.Row="1"
-            Margin="10"
+            Margin="2"
             Orientation="Horizontal"
             HorizontalAlignment="Right">
             <ui:CommandBarButton Icon="Save" Label="{locale:Locale SettingsButtonSave}" Click="SaveButton_Clicked" />

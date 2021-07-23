@@ -1,7 +1,6 @@
 using Avalonia;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
-using MessageBoxSlim.Avalonia;
 using Ryujinx.Ava.Ui.Windows;
 
 namespace Ryujinx.Ava.Ui.Controls

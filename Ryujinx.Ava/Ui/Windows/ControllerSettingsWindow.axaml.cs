@@ -260,7 +260,7 @@ namespace Ryujinx.Ava.Ui.Windows
                 var result = await ContentDialogHelper.CreateConfirmationDialog(this.GetVisualRoot() as StyleableWindow, "The current controller settings has been updated.",
                     "Do you want to save?");
 
-                if (result == UserResults.Yes)
+                if (result == UserResult.Yes)
                 {
                     ViewModel.Save();
                 }

@@ -113,7 +113,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             var dlgMainText = LocaleManager.Instance["InputDialogAddNewProfileHeader"];
             var dlgSubText = string.Format(LocaleManager.Instance["InputDialogAddNewProfileSubtext"], MaxProfileNameLength);
 
-            _tempUserName = await AvaDialog.CreateInputDialog(dlgTitle, dlgMainText, dlgSubText, _owner, MaxProfileNameLength);
+            _tempUserName = await ContentDialogHelper.CreateInputDialog(dlgTitle, dlgMainText, dlgSubText, _owner, MaxProfileNameLength);
 
             if (!string.IsNullOrWhiteSpace(_tempUserName))
             {

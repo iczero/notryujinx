@@ -3,7 +3,6 @@ using ARMeilleure.Translation.PTC;
 using Avalonia.Input;
 using Avalonia.Threading;
 using LibHac.FsSystem;
-using MessageBoxSlim.Avalonia;
 using OpenTK.Windowing.Common;
 using Ryujinx.Audio.Backends.Dummy;
 using Ryujinx.Audio.Backends.OpenAL;
@@ -174,6 +173,7 @@ namespace Ryujinx.Ava
                 _renderer.Window.SetSize((int)(size.Width * scale), (int)(size.Height * scale));
             }
         }
+
         private unsafe void Renderer_ScreenCaptured(object sender, ScreenCaptureImageInfo e)
         {
             if (e.Data.Length > 0 && e.Height > 0 && e.Width > 0)
@@ -374,7 +374,7 @@ namespace Ryujinx.Ava
                     {
                         string message = $"Would you like to install the firmware embedded in this game? (Firmware {firmwareVersion.VersionString})";
 
-                        UserResult result = await AvaDialog.CreateConfirmationDialog("No Firmware Installed", message, _parent);
+                        UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_parent, "No Firmware Installed", message);
 
                         if (result != UserResult.Yes)
                         {
@@ -404,7 +404,7 @@ namespace Ryujinx.Ava
 
                         string message = $"No installed firmware was found but Ryujinx was able to install firmware {firmwareVersion.VersionString} from the provided game.\nThe emulator will now start.";
 
-                        AvaDialog.CreateInfoDialog($"Firmware {firmwareVersion.VersionString} was installed", message, _parent);
+                        ContentDialogHelper.CreateInfoDialog(_parent, $"Firmware {firmwareVersion.VersionString} was installed", message);
                     }
                 }
                 else
@@ -759,7 +759,7 @@ namespace Ryujinx.Ava
                             }
                             else
                             {
-                                bool shouldExit = await AvaDialog.CreateExitDialog(_parent);
+                                bool shouldExit = await ContentDialogHelper.CreateExitDialog(_parent);
                                 if (shouldExit)
                                 {
                                     Exit();

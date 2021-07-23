@@ -65,8 +65,7 @@ namespace Ryujinx.Modules
             }
             catch
             {
-                AvaDialog.CreateWarningDialog("Failed to convert the current Ryujinx version.", "Cancelling Update!",
-                    mainWindow);
+                ContentDialogHelper.CreateWarningDialog(mainWindow, "Failed to convert the current Ryujinx version.", "Cancelling Update!");
                 Logger.Error?.Print(LogClass.Application, "Failed to convert the current Ryujinx version!");
 
                 return;
@@ -92,8 +91,8 @@ namespace Ryujinx.Modules
                     {
                         if (showVersionUpToDate)
                         {
-                            AvaDialog.CreateUpdaterInfoDialog(
-                                "You are already using the most updated version of Ryujinx!", "", mainWindow);
+                            ContentDialogHelper.CreateUpdaterInfoDialog(mainWindow,
+                                "You are already using the most updated version of Ryujinx!", "");
                         }
 
                         return;
@@ -103,8 +102,8 @@ namespace Ryujinx.Modules
             catch (Exception exception)
             {
                 Logger.Error?.Print(LogClass.Application, exception.Message);
-                AvaDialog.CreateErrorDialog(
-                    "An error has occurred when trying to get release information from AppVeyor.", mainWindow);
+                ContentDialogHelper.CreateErrorDialog(mainWindow,
+                    "An error has occurred when trying to get release information from AppVeyor.");
 
                 return;
             }
@@ -115,8 +114,8 @@ namespace Ryujinx.Modules
             }
             catch
             {
-                AvaDialog.CreateWarningDialog("Failed to convert the received Ryujinx version from AppVeyor.",
-                    "Cancelling Update!", mainWindow);
+                ContentDialogHelper.CreateWarningDialog(mainWindow, "Failed to convert the received Ryujinx version from AppVeyor.",
+                    "Cancelling Update!");
                 Logger.Error?.Print(LogClass.Application,
                     "Failed to convert the received Ryujinx version from AppVeyor!");
 
@@ -127,8 +126,7 @@ namespace Ryujinx.Modules
             {
                 if (showVersionUpToDate)
                 {
-                    AvaDialog.CreateUpdaterInfoDialog("You are already using the most updated version of Ryujinx!", "",
-                        mainWindow);
+                    ContentDialogHelper.CreateUpdaterInfoDialog(mainWindow, "You are already using the most updated version of Ryujinx!", "");
                 }
 
                 Running = false;
@@ -303,14 +301,14 @@ namespace Ryujinx.Modules
             updateDialog.ButtonBox.IsVisible = true;
         }
 
-        public static bool CanUpdate(bool showWarnings, Window parent)
+        public static bool CanUpdate(bool showWarnings, StyleableWindow parent)
         {
             if (RuntimeInformation.OSArchitecture != Architecture.X64)
             {
                 if (showWarnings)
                 {
-                    AvaDialog.CreateWarningDialog("You are not running a supported system architecture!",
-                        "(Only x64 systems are supported!)", parent);
+                    ContentDialogHelper.CreateWarningDialog( parent,"You are not running a supported system architecture!",
+                        "(Only x64 systems are supported!)");
                 }
 
                 return false;
@@ -320,8 +318,8 @@ namespace Ryujinx.Modules
             {
                 if (showWarnings)
                 {
-                    AvaDialog.CreateWarningDialog("You are not connected to the Internet!",
-                        "Please verify that you have a working Internet connection!", parent);
+                    ContentDialogHelper.CreateWarningDialog(parent, "You are not connected to the Internet!",
+                        "Please verify that you have a working Internet connection!");
                 }
 
                 return false;
@@ -331,9 +329,8 @@ namespace Ryujinx.Modules
             {
                 if (showWarnings)
                 {
-                    AvaDialog.CreateWarningDialog("You Cannot update a Dirty build of Ryujinx!",
-                        "Please download Ryujinx at https://ryujinx.org/ if you are looking for a supported version.",
-                        parent);
+                    ContentDialogHelper.CreateWarningDialog(parent, "You Cannot update a Dirty build of Ryujinx!",
+                        "Please download Ryujinx at https://ryujinx.org/ if you are looking for a supported version.");
                 }
 
                 return false;

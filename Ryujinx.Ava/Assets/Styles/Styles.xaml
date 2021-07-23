@@ -127,6 +127,8 @@
         <Thickness x:Key="PageMargin">40 0 40 0</Thickness>
         <Thickness x:Key="Margin">0 5 0 5</Thickness>
         <Color x:Key="DataGridSelectionColor">#FF00FABB</Color>
+        <Color x:Key="DarkBackgroundColor">#FF2D2D2D</Color>
+        <Color x:Key="ThemeControlBorderColor">#FF505050</Color>
         <sys:Double x:Key="ScrollBarThickness">15</sys:Double>
         <sys:Double x:Key="FontSizeSmall">10</sys:Double>
         <sys:Double x:Key="FontSizeNormal">12</sys:Double>

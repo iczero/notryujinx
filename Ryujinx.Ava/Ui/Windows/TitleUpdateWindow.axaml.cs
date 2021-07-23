@@ -140,12 +140,12 @@ namespace Ryujinx.Ava.Ui.Windows
                         }
                         else
                         {
-                            AvaDialog.CreateErrorDialog("The specified file does not contain an update for the selected title!", this);
+                            ContentDialogHelper.CreateErrorDialog(this, "The specified file does not contain an update for the selected title!");
                         }
                     }
                     catch (Exception ex)
                     {
-                        AvaDialog.CreateErrorDialog($"{ex.Message}. Errored File: {path}", this);
+                        ContentDialogHelper.CreateErrorDialog(this, $"{ex.Message}. Errored File: {path}");
                     }
                 }
             }

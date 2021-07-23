@@ -214,7 +214,6 @@
           DockPanel.Dock="Top">
         <DataGrid
             Name="GameList"
-            Margin="0,5,0,0"
             AlternatingRowBackground="{DynamicResource ThemeAlternatingRowColor}"
             CanUserResizeColumns="True"
             CanUserSortColumns="True"
@@ -362,7 +361,8 @@
           Grid.Row="1"
           HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch"
-          Background="{DynamicResource ThemeBackgroundColor}"
+          Margin="0"
+          Background="{DynamicResource DarkBackgroundColor}"
           IsVisible="{Binding ShowLoadProgress}"
           ZIndex="1000">
         <Grid.ColumnDefinitions>
@@ -432,7 +432,9 @@
       <Grid
           Name="StatusBar"
           Grid.Row="2"
+          Height="30"
           HorizontalAlignment="Stretch"
+          Background="{DynamicResource DarkBackgroundColor}"
           VerticalAlignment="Bottom"
           DockPanel.Dock="Bottom"
           IsVisible="{Binding ShowMenuAndStatusBar}">
@@ -477,6 +479,7 @@
         </StackPanel>
         <StackPanel
             Grid.Column="1"
+            Margin="5,0,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Center"
             IsVisible="{Binding IsGameRunning}"
@@ -487,13 +490,11 @@
               VerticalAlignment="Center"
               Foreground="{Binding VsyncColor}"
               PointerReleased="VsyncStatus_PointerReleased"
+              Margin="5,0,5,0"
               Text="VSync"
               TextAlignment="Left" />
           <TextBlock
-              VerticalAlignment="Center"
-              IsVisible="{Binding ShowStatusSeparator}"
-              Text="|" />
-          <TextBlock
+              Margin="5,0,5,0"
               Name="DockedStatus"
               HorizontalAlignment="Left"
               VerticalAlignment="Center"
@@ -501,10 +502,7 @@
               Text="{Binding DockedStatusText}"
               TextAlignment="Left" />
           <TextBlock
-              VerticalAlignment="Center"
-              IsVisible="{Binding ShowStatusSeparator}"
-              Text="|" />
-          <TextBlock
+              Margin="5,0,5,0"
               Name="AspectRatioStatus"
               HorizontalAlignment="Left"
               VerticalAlignment="Center"
@@ -512,28 +510,19 @@
               Text="{Binding AspectRatioStatusText}"
               TextAlignment="Left" />
           <TextBlock
-              VerticalAlignment="Center"
-              IsVisible="{Binding ShowStatusSeparator}"
-              Text="|" />
-          <TextBlock
+              Margin="5,0,5,0"
               HorizontalAlignment="Left"
               VerticalAlignment="Center"
               Text="{Binding GameStatusText}"
               TextAlignment="Left" />
           <TextBlock
-              VerticalAlignment="Center"
-              IsVisible="{Binding ShowStatusSeparator}"
-              Text="|" />
-          <TextBlock
+              Margin="5,0,5,0"
               HorizontalAlignment="Left"
               VerticalAlignment="Center"
               Text="{Binding FifoStatusText}"
               TextAlignment="Left" />
           <TextBlock
-              VerticalAlignment="Center"
-              IsVisible="{Binding ShowStatusSeparator}"
-              Text="|" />
-          <TextBlock
+              Margin="5,0,5,0"
               HorizontalAlignment="Left"
               VerticalAlignment="Center"
               Text="{Binding GpuStatusText}"

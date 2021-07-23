@@ -2,9 +2,8 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Svg.Skia;
 using Avalonia.VisualTree;
-using DynamicData;
+using FluentAvalonia.Core;
 using IX.Observable;
-using MessageBoxSlim.Avalonia;
 using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Models;
@@ -757,7 +756,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 return;
             }
 
-            UserResult result = await AvaDialog.CreateConfirmationDialog("Deleting Profile", "This action is irreversible, are your sure you want to continue?", _mainWindow);
+            UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_mainWindow, "Deleting Profile", "This action is irreversible, are your sure you want to continue?");
 
             if (result == UserResult.Yes)
             {
