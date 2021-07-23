@@ -4,8 +4,10 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
+using Avalonia.VisualTree;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Models;
 using Ryujinx.Ava.Ui.ViewModels;
 using Ryujinx.Common.Configuration.Hid;
@@ -28,6 +30,7 @@ namespace Ryujinx.Ava.Ui.Windows
         private bool _isWaitingForInput;
         private bool _mousePressed;
         private bool _middleMousePressed;
+        private bool _dialogOpen;
 
         public DockPanel                   SettingButtons       { get; set; }
         public ToggleButton                CurrentToggledButton { get; set; }
@@ -103,6 +106,11 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
+        public void SaveCurrentProfile()
+        {
+            ViewModel.Save();
+        }
+
         public void HandleButtonPressed(ToggleButton button, bool forStick)
         {
             if (_isWaitingForInput)
@@ -163,6 +171,8 @@ namespace Ryujinx.Ava.Ui.Windows
                         }
                         catch { }
                     }
+
+                    ViewModel.IsModified = true;
 
                     keyboard.Dispose();
                     
@@ -239,6 +249,33 @@ namespace Ryujinx.Ava.Ui.Windows
             {
                 _middleMousePressed = true;
             }
+        }
+
+        private async void PlayerIndexBox_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+        {
+            if (ViewModel.IsModified && !_dialogOpen)
+            {
+                _dialogOpen = true;
+                
+                var result = await ContentDialogHelper.CreateConfirmationDialog(this.GetVisualRoot() as StyleableWindow, "The current controller settings has been updated.",
+                    "Do you want to save?");
+
+                if (result == UserResults.Yes)
+                {
+                    ViewModel.Save();
+                }
+
+                _dialogOpen = false;
+
+                ViewModel.IsModified = false;
+
+                if (e.AddedItems.Count > 0)
+                {
+                    (PlayerIndex key, _) = (KeyValuePair<PlayerIndex, string>)e.AddedItems[0];
+                    ViewModel.PlayerId = key;
+                }
+            }
+
         }
     }
 }
