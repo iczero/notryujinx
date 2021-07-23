@@ -22,6 +22,7 @@ namespace Ryujinx.Ava.Ui.Windows
         private ListBox         _gameList;
         private TextBox         _pathBox;
         private AutoCompleteBox _timeZoneBox;
+        private ControllerSettingsWindow _controllerSettings;
 
         public SettingsViewModel ViewModel { get; set; }
 
@@ -67,6 +68,7 @@ namespace Ryujinx.Ava.Ui.Windows
             _pathBox     = this.FindControl<TextBox>("PathBox");
             _gameList    = this.FindControl<ListBox>("GameList");
             _timeZoneBox = this.FindControl<AutoCompleteBox>("TimeZoneBox");
+            _controllerSettings = this.FindControl<ControllerSettingsWindow>("ControllerSettings");
 
             _tabs.SelectionChanged += Tabs_SelectionChanged;
         }
@@ -183,6 +185,11 @@ namespace Ryujinx.Ava.Ui.Windows
             {
                 window.ViewModel.LoadApplications();
             }
+        }
+
+        private void InputSaveButton_Clicked(object? sender, RoutedEventArgs e)
+        {
+            _controllerSettings?.SaveCurrentProfile();
         }
     }
 }

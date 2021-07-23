@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Svg.Skia;
+using Avalonia.VisualTree;
 using DynamicData;
 using IX.Observable;
 using MessageBoxSlim.Avalonia;
@@ -43,6 +44,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         private InputConfig _inputConfig;
         private object      _inputConfiguration;
+        private readonly UserControl _owner;
 
         public IGamepadDriver AvaloniaKeyboardDriver { get; }
         public IGamepad       SelectedGamepad        { get; private set; }
@@ -58,6 +60,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
         public bool IsKeyboard   => !IsController;
         public bool IsRight { get; set; }
         public bool IsLeft  { get; set; }
+        
+        public bool IsModified { get; set; }
 
         public object InputConfig
         {
@@ -75,6 +79,12 @@ namespace Ryujinx.Ava.Ui.ViewModels
             get => _playerId;
             set
             {
+                if (IsModified)
+                {
+                    return;
+                }
+
+                IsModified = false;
                 _playerId = value;
 
                 if (!Enum.IsDefined(typeof(PlayerIndex), _playerId))
@@ -243,6 +253,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public ControllerSettingsViewModel(UserControl owner) : this()
         {
+            _owner = owner;
+            
             if (Program.PreviewerDetached)
             {
                 _mainWindow =
@@ -698,13 +710,13 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
         }
 
-        public /*async*/ void AddProfile()
+        public async void AddProfile()
         {
             if (Device == 0)
             {
                 return;
             }
-/*
+
             if (InputConfig == null)
             {
                 return;
@@ -722,20 +734,20 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 if (IsKeyboard)
                 {
-                    config = (InputConfig as InputConfiguration<Key, StickInputId>).GetConfig();
+                    config = (InputConfig as InputConfiguration<Key, ConfigStickInputId>).GetConfig();
                 }
                 else if (IsController)
                 {
-                    config = (InputConfig as InputConfiguration<GamepadInputId, StickInputId>).GetConfig();
+                    config = (InputConfig as InputConfiguration<GamepadInputId, ConfigStickInputId>).GetConfig();
                 }
 
                 string jsonString = JsonHelper.Serialize(config, true);
 
-                File.WriteAllText(path, jsonString);
+                await File.WriteAllTextAsync(path, jsonString);
             }
 
             LoadProfiles();
-*/
+
         }
 
         public async void RemoveProfile()
@@ -763,7 +775,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public void Save()
         {
-            /*
+            IsModified = false;
+            
             List<InputConfig> newConfig = new();
 
             newConfig.AddRange(ConfigurationState.Instance.Hid.InputConfig.Value);
@@ -772,7 +785,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             if (Device == 0)
             {
-                newConfig.Remove(newConfig.Find(x => x.PlayerIndex == _playerId));
+                newConfig.Remove(newConfig.Find(x => x.PlayerIndex == this.PlayerId));
             }
             else
             {
@@ -780,19 +793,19 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 if (selected.StartsWith("keyboard"))
                 {
-                    var inputConfig = InputConfig as InputConfiguration<Key, StickInputId>;
+                    var inputConfig = InputConfig as InputConfiguration<Key, ConfigStickInputId>;
                     inputConfig.Id = selected.Split("/")[1];
                 }
                 else
                 {
-                    var inputConfig = InputConfig as InputConfiguration<ConfigGamepadInputId, StickInputId>;
+                    var inputConfig = InputConfig as InputConfiguration<GamepadInputId, ConfigStickInputId>;
                     inputConfig.Id = selected.Split("/")[1].Split(" ")[0];
                 }
             }
             
-            var config = !IsController ? (InputConfig as InputConfiguration<Key, StickInputId>).GetConfig() : (InputConfig as InputConfiguration<ConfigGamepadInputId, StickInputId>).GetConfig();
+            var config = !IsController ? (InputConfig as InputConfiguration<Key, ConfigStickInputId>).GetConfig() : (InputConfig as InputConfiguration<GamepadInputId, ConfigStickInputId>).GetConfig();
 
-            int i = newConfig.FindIndex(x => x.PlayerIndex == _playerId);
+            int i = newConfig.FindIndex(x => x.PlayerIndex ==  this.PlayerId);
             if (i == -1)
             {
                 newConfig.Add(config);
@@ -806,32 +819,12 @@ namespace Ryujinx.Ava.Ui.ViewModels
             {
                 _mainWindow.AppHost.NpadManager.ReloadConfiguration(newConfig, ConfigurationState.Instance.Hid.EnableKeyboard, ConfigurationState.Instance.Hid.EnableMouse);
             }
-
+            
             // Atomically replace and signal input change.
             // NOTE: Do not modify InputConfig.Value directly as other code depends on the on-change event.
             ConfigurationState.Instance.Hid.InputConfig.Value = newConfig;
-            */
-
-            _inputConfig = ConfigurationState.Instance.Hid.InputConfig.Value.Find(inputConfig => inputConfig.PlayerIndex == _playerId);
-
-            if (_inputConfig is StandardKeyboardInputConfig)
-            {
-                _inputConfiguration = new InputConfiguration<Key, ConfigStickInputId>(_inputConfig as StandardKeyboardInputConfig);
-            }
-
-            if (_inputConfig is StandardControllerInputConfig)
-            {
-                _inputConfiguration = new InputConfiguration<ConfigGamepadInputId, ConfigStickInputId>(_inputConfig as StandardControllerInputConfig);
-            }
 
             ConfigurationState.Instance.ToFileFormat().SaveConfig(Program.ConfigurationPath);
-
-            if (_mainWindow.AppHost != null)
-            {
-                _mainWindow.AppHost.NpadManager.ReloadConfiguration(ConfigurationState.Instance.Hid.InputConfig, 
-                    ConfigurationState.Instance.Hid.EnableKeyboard, 
-                    ConfigurationState.Instance.Hid.EnableMouse);
-            }
         }
 
         public void NotifyChange(string property)

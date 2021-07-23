@@ -34,8 +34,6 @@
     </AvaloniaResource>
   </ItemGroup>
   <ItemGroup>
-    <AvaloniaResource Include="Assets\Styles\FluentUiIconsFilled.xaml" />
-    <AvaloniaResource Include="Assets\Styles\FluentUiIconsRegular.xaml" />
     <AvaloniaResource Include="Assets\Styles\Styles.xaml" />
   </ItemGroup>
   <ItemGroup>
@@ -81,8 +79,6 @@
     <EmbeddedResource Include="Assets\Locales\en_US.json" />
     <EmbeddedResource Include="Assets\Locales\fr_FR.json" />
     <EmbeddedResource Include="Assets\Locales\pt_BR.json" />
-    <EmbeddedResource Include="Assets\Styles\FluentUiIconsFilled.xaml" />
-    <EmbeddedResource Include="Assets\Styles\FluentUiIconsRegular.xaml" />
     <EmbeddedResource Include="Assets\Styles\Styles.xaml" />
   </ItemGroup>
   <ItemGroup>

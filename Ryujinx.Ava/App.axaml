@@ -8,6 +8,6 @@
     <Application.Styles>
         <sty:FluentAvaloniaTheme RequestedTheme="Dark"/>
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Default.xaml" />
-        <!--<StyleInclude Source="avares://Ryujinx.Ava/Assets/Styles/Styles.xaml" />-->
+        <StyleInclude Source="avares://Ryujinx.Ava/Assets/Styles/Styles.xaml" />
     </Application.Styles>
 </Application>
