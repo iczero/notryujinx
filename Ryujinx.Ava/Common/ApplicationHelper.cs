@@ -10,9 +10,8 @@ using LibHac.FsSystem;
 using LibHac.FsSystem.NcaUtils;
 using LibHac.Ncm;
 using LibHac.Ns;
-using MessageBoxSlim.Avalonia;
-using MessageBoxSlim.Avalonia.Enums;
 using Ryujinx.Ava.Ui.Controls;
+using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.Common.Logging;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.HOS;
@@ -28,10 +27,10 @@ namespace Ryujinx.Ava.Common
     public static class ApplicationHelper
     {
         private static VirtualFileSystem _virtualFileSystem;
-        private static Window _owner;
+        private static StyleableWindow _owner;
         private static bool _cancel;
 
-        public static void Initialize(VirtualFileSystem virtualFileSystem, Window owner)
+        public static void Initialize(VirtualFileSystem virtualFileSystem, StyleableWindow owner)
         {
             _owner = owner;
             _virtualFileSystem = virtualFileSystem;
@@ -49,19 +48,15 @@ namespace Ryujinx.Ava.Common
             {
                 // Savedata was not found. Ask the user if they want to create it
 
-                UserResult dialogResponse = UserResult.None;
+                bool dialogResponse = false;
 
                 Dispatcher.UIThread.InvokeAsync(async () =>
                 {
-                    AvaDialog dialog = new("Ryujinx",
-                        $"There is no savedata for {titleName} [{titleId:x16}]",
-                        "Would you like to create savedata for this game?",
-                        _owner,
-                        ButtonEnum.Yes | ButtonEnum.No);
-                    dialogResponse = await dialog.Run();
+                    dialogResponse = await ContentDialogHelper.CreateChoiceDialog(_owner, "Ryujinx", $"There is no savedata for {titleName} [{titleId:x16}]",
+                        "Would you like to create savedata for this game?");
                 }).Wait();
 
-                if (dialogResponse != UserResult.Yes)
+                if (!dialogResponse)
                 {
                     return false;
                 }
@@ -89,8 +84,8 @@ namespace Ryujinx.Ava.Common
 
                 if (result.IsFailure())
                 {
-                    AvaDialog.CreateErrorDialog(
-                        $"There was an error creating the specified savedata: {result.ToStringWithName()}", _owner);
+                    ContentDialogHelper.CreateErrorDialog(_owner,
+                        $"There was an error creating the specified savedata: {result.ToStringWithName()}");
 
                     return false;
                 }
@@ -107,8 +102,8 @@ namespace Ryujinx.Ava.Common
                 return true;
             }
 
-            AvaDialog.CreateErrorDialog(
-                $"There was an error finding the specified savedata: {result.ToStringWithName()}", _owner);
+            ContentDialogHelper.CreateErrorDialog(_owner,
+                $"There was an error finding the specified savedata: {result.ToStringWithName()}");
 
             return false;
         }
@@ -161,21 +156,13 @@ namespace Ryujinx.Ava.Common
 
             _cancel = false;
 
-            AvaDialog dialog = null;
-
             if (!string.IsNullOrWhiteSpace(destination))
             {
                 Thread extractorThread = new(() =>
                 {
                     Dispatcher.UIThread.Post(async () =>
                     {
-                        dialog = new AvaDialog("Ryujinx - NCA Section Extractor",
-                            $"Extracting {ncaSectionType} section from {Path.GetFileName(titleFilePath)}...",
-                            "",
-                            _owner,
-                            ButtonEnum.Cancel);
-
-                        UserResult result = await dialog.Run();
+                        UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_owner, $"Extracting {ncaSectionType} section from {Path.GetFileName(titleFilePath)}...", "", "", "Cancel", "Ryujinx - NCA Section Extractor");
 
                         if (result == UserResult.Cancel)
                         {
@@ -240,9 +227,8 @@ namespace Ryujinx.Ava.Common
 
                             Dispatcher.UIThread.InvokeAsync(() =>
                             {
-                                dialog?.Close();
-                                AvaDialog.CreateErrorDialog(
-                                    "Extraction failure. The main NCA was not present in the selected file.", _owner);
+                                ContentDialogHelper.CreateErrorDialog(_owner,
+                                    "Extraction failure. The main NCA was not present in the selected file.");
                             });
 
                             return;
@@ -281,20 +267,15 @@ namespace Ryujinx.Ava.Common
 
                                 Dispatcher.UIThread.InvokeAsync(() =>
                                 {
-                                    dialog?.Close();
-                                    AvaDialog.CreateErrorDialog(
-                                        "Extraction failure. Read the log file for further information.", _owner);
+                                    ContentDialogHelper.CreateErrorDialog(_owner,
+                                        "Extraction failure. Read the log file for further information.");
                                 });
                             }
                             else if (resultCode.Value.IsSuccess())
                             {
                                 Dispatcher.UIThread.InvokeAsync(async () =>
                                 {
-                                    dialog?.Close();
-
-                                    dialog = new AvaDialog("Ryujinx - NCA Section Extractor", "Extraction completed successfully.", "", _owner);
-
-                                    await dialog.Run();
+                                    await ContentDialogHelper.CreateInfoDialog(_owner, "Extraction completed successfully.", "", "Ryujinx - NCA Section Extractor");
                                 });
                             }
                         }

@@ -1,6 +1,6 @@
 namespace Ryujinx.Ava.Ui.Controls
 {
-    public enum UserResults
+    public enum UserResult
     {
         Ok,
         Yes,
