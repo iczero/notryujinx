@@ -6,7 +6,6 @@ using Avalonia.Threading;
 using LibHac;
 using LibHac.Fs;
 using LibHac.FsSystem.NcaUtils;
-using MessageBoxSlim.Avalonia;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.Controls;
@@ -25,7 +24,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using ShaderCacheLoadingState = Ryujinx.Graphics.Gpu.Shader.ShaderCacheState;
-using UserResult = MessageBoxSlim.Avalonia.UserResult;
 
 namespace Ryujinx.Ava.Ui.ViewModels
 {
@@ -806,7 +804,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 DirectoryInfo backupDir = new(Path.Combine(AppDataManager.GamesDirPath, data.TitleId, "cache", "cpu", "1"));
 
                 // FIXME: Found a way to reproduce the bold effect on the title name (fork?).
-                UserResult result = await AvaDialog.CreateConfirmationDialog("Warning", $"You are about to delete the PPTC cache for :\n\n{data.TitleName}\n\nAre you sure you want to proceed?", _owner);
+                UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_owner, "Warning", $"You are about to delete the PPTC cache for :\n\n{data.TitleName}\n\nAre you sure you want to proceed?");
 
                 List<FileInfo> cacheFiles = new();
 
@@ -830,7 +828,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                         }
                         catch (Exception e)
                         {
-                            AvaDialog.CreateErrorDialog($"Error purging PPTC cache at {file.Name}: {e}", _owner);
+                            ContentDialogHelper.CreateErrorDialog(_owner, $"Error purging PPTC cache at {file.Name}: {e}");
                         }
                     }
                 }
@@ -868,7 +866,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 DirectoryInfo shaderCacheDir = new(Path.Combine(AppDataManager.GamesDirPath, data.TitleId, "cache", "shader"));
 
                 // FIXME: Found a way to reproduce the bold effect on the title name (fork?).
-                UserResult result = await AvaDialog.CreateConfirmationDialog("Warning", $"You are about to delete the shader cache for :\n\n{data.TitleName}\n\nAre you sure you want to proceed?", _owner);
+                UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_owner, "Warning", $"You are about to delete the shader cache for :\n\n{data.TitleName}\n\nAre you sure you want to proceed?");
 
                 List<DirectoryInfo> cacheDirectory = new();
 
@@ -887,7 +885,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                         }
                         catch (Exception e)
                         {
-                            AvaDialog.CreateErrorDialog($"Error purging shader cache at {directory.Name}: {e}", _owner);
+                            ContentDialogHelper.CreateErrorDialog(_owner, $"Error purging shader cache at {directory.Name}: {e}");
                         }
                     }
                 }
@@ -956,12 +954,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
             if (!ulong.TryParse(data.TitleId, NumberStyles.HexNumber, CultureInfo.InvariantCulture,
                 out ulong titleIdNumber))
             {
-                AvaDialog dialog = new("Ryujinx - Error",
-                    "Ryujinx has encountered an error",
-                    "UI error: The selected game did not have a valid title ID",
-                    _owner);
-
-                dialog.Run().Wait();
+                ContentDialogHelper.CreateErrorDialog(_owner,
+                    "Ryujinx has encountered an error", "UI error: The selected game did not have a valid title ID");
 
                 return;
             }
@@ -1013,7 +1007,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 if (firmwareVersion == null)
                 {
-                    AvaDialog.CreateErrorDialog($"A valid system firmware was not found in {filename}.", _owner);
+                    ContentDialogHelper.CreateErrorDialog(_owner, $"A valid system firmware was not found in {filename}.");
 
                     return;
                 }
@@ -1030,9 +1024,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 dialogMessage += "\n\nDo you want to continue?";
 
-                MessageBoxSlim.Avalonia.UserResult result = (UserResult) await ContentDialogHelper.CreateConfirmationDialog(_owner, dialogTitle, dialogMessage);
+                UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_owner, dialogTitle, dialogMessage);
 
-                UpdateWaitWindow waitingDialog = AvaDialog.CreateWaitingDialog(dialogTitle, "Installing firmware...", _owner);
+                UpdateWaitWindow waitingDialog = ContentDialogHelper.CreateWaitingDialog(dialogTitle, "Installing firmware...");
 
                 if (result == UserResult.Yes)
                 {
@@ -1049,14 +1043,14 @@ namespace Ryujinx.Ava.Ui.ViewModels
                         {
                             _owner.ContentManager.InstallFirmware(filename);
 
-                            Dispatcher.UIThread.InvokeAsync(delegate
+                            Dispatcher.UIThread.InvokeAsync(async delegate
                             {
                                 waitingDialog.Close();
 
                                 string message =
                                     $"System version {firmwareVersion.VersionString} successfully installed.";
 
-                                AvaDialog.CreateInfoDialog(dialogTitle, message, _owner);
+                                await ContentDialogHelper.CreateInfoDialog(_owner, dialogTitle, message);
                                 Logger.Info?.Print(LogClass.Application, message);
                                 
                                 // Purge Applet Cache.
@@ -1071,11 +1065,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
                         }
                         catch (Exception ex)
                         {
-                            Dispatcher.UIThread.InvokeAsync(delegate
+                            Dispatcher.UIThread.InvokeAsync(async delegate
                             {
                                 waitingDialog.Close();
 
-                                AvaDialog.CreateErrorDialog(ex.Message, _owner);
+                                ContentDialogHelper.CreateErrorDialog(_owner, ex.Message);
                             });
                         }
                         finally
@@ -1095,7 +1089,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
             catch (Exception ex)
             {
-                AvaDialog.CreateErrorDialog(ex.Message, _owner);
+                ContentDialogHelper.CreateErrorDialog(_owner, ex.Message);
             }
         }
 

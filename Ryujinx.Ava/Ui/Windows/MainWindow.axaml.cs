@@ -8,7 +8,6 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using LibHac;
-using MessageBoxSlim.Avalonia;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.Applet;
@@ -164,7 +163,7 @@ namespace Ryujinx.Ava.Ui.Windows
                 string mainMessage      = "You have debug logging enabled, which is designed to be used by developers only.";
                 string secondaryMessage = "For optimal performance, it's recommended to disable debug logging. Would you like to disable debug logging now?";
 
-                UserResult result = await AvaDialog.CreateConfirmationDialog(mainMessage, secondaryMessage, this);
+                UserResult result = await ContentDialogHelper.CreateConfirmationDialog(this, mainMessage, secondaryMessage);
 
                 if (result != UserResult.Yes)
                 {
@@ -179,7 +178,7 @@ namespace Ryujinx.Ava.Ui.Windows
                 string mainMessage      = "You have shader dumping enabled, which is designed to be used by developers only.";
                 string secondaryMessage = "For optimal performance, it's recommended to disable shader dumping. Would you like to disable shader dumping now?";
 
-                UserResult result = await AvaDialog.CreateConfirmationDialog(mainMessage, secondaryMessage, this);
+                UserResult result = await ContentDialogHelper.CreateConfirmationDialog(this, mainMessage, secondaryMessage);
 
                 if (result != UserResult.Yes)
                 {
@@ -196,7 +195,7 @@ namespace Ryujinx.Ava.Ui.Windows
         {
             if (AppHost != null)
             {
-                AvaDialog.CreateInfoDialog("A game has already been loaded", "Please stop emulation or close the emulator before launching another game.", this);
+                ContentDialogHelper.CreateInfoDialog(this, "A game has already been loaded", "Please stop emulation or close the emulator before launching another game.");
 
                 return;
             }
