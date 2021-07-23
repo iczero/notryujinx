@@ -27,7 +27,7 @@
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
             Orientation="Vertical">
-            <Grid Margin="2" HorizontalAlignment="Stretch">
+            <Grid Margin="2,2,2,5" HorizontalAlignment="Stretch">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
@@ -157,6 +157,7 @@
                             <Button
                                 Margin="5,0,0,0"
                                 VerticalAlignment="Center"
+                                ToolTip.Tip="{locale:Locale ControllerSettingsLoadProfileToolTip}"
                                 Command="{Binding LoadProfile}">
                                 <ui:SymbolIcon
                                     Symbol="Upload"
@@ -166,6 +167,7 @@
                             <Button
                                 Margin="5,0,0,0"
                                 VerticalAlignment="Center"
+                                ToolTip.Tip="{locale:Locale ControllerSettingsAddProfileToolTip}"
                                 Command="{Binding AddProfile}">
                                 <ui:SymbolIcon
                                     Symbol="Add"
@@ -175,6 +177,7 @@
                             <Button
                                 Margin="5,0,0,0"
                                 VerticalAlignment="Center"
+                                ToolTip.Tip="{locale:Locale ControllerSettingsRemoveProfileToolTip}"
                                 Command="{Binding RemoveProfile}">
                                 <ui:SymbolIcon
                                     Symbol="Delete"
@@ -1739,11 +1742,10 @@
                         Source="{Binding Image}" />
                 </DockPanel>
             </Border>
-            <Expander
-                Header="Extra"
-                IsExpanded="True">
+            <Expander   IsVisible="{Binding IsController}"
+                Header="Extra">
                 <StackPanel Orientation="Horizontal" Margin="5">
-                    <Expander Header="Motion" IsExpanded="True"  IsVisible="{Binding IsController}">
+                    <Expander Header="Motion" IsExpanded="True">
                         <StackPanel Orientation="Vertical" Spacing="10">
                             <TextBlock HorizontalAlignment="Center" Text="{locale:Locale ControllerSettingsMotion}" />
                             <CheckBox IsChecked="{Binding InputConfig.EnableMotion}">
