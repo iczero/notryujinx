@@ -284,5 +284,8 @@
   "InputDialogAddNewProfileSubtext": "(Max Length: {0})",
   "AvatarChoose": "Choose",
   "AvatarSetBackgroundColor": "Set Background Color",
-  "AvatarClose": "Close"
+  "AvatarClose": "Close",
+  "ControllerSettingsLoadProfileToolTip": "Load Profile",
+  "ControllerSettingsAddProfileToolTip": "Add Profile",
+  "ControllerSettingsRemoveProfileToolTip": "Remove Profile"
 }
