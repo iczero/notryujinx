@@ -11,6 +11,8 @@ namespace Ryujinx.Ava.Ui.Controls
 {
     public static class ContentDialogHelper
     {
+        private static bool _isChoiceDialogOpen;
+
         private async static Task<UserResults> ShowContentDialog(StyleableWindow window, string title, string primaryText, string secondaryText, string primaryButton,
             string secondaryButton, string closeButton, int iconSymbol)
         {
@@ -73,9 +75,9 @@ namespace Ryujinx.Ava.Ui.Controls
             return content;
         }
 
-        public static void CreateInfoDialog(StyleableWindow window, string title, string primary, string secondaryText)
+        public static async void CreateInfoDialog(StyleableWindow window, string title, string primary, string secondaryText)
         {
-            ShowContentDialog(window, title, primary, secondaryText, "OK", "", "Close",
+            await ShowContentDialog(window, title, primary, secondaryText, "OK", "", "Close",
                 0xF4A3);
         }
 
@@ -84,6 +86,42 @@ namespace Ryujinx.Ava.Ui.Controls
             return await ShowContentDialog(window, "Ryujinx - Confirmation", primary, secondaryText, "Yes", "",
                 "No",
                 (int) Symbol.Help);
+        }
+        
+        internal static async void CreateUpdaterInfoDialog(StyleableWindow window, string primary, string secondaryText)
+        {
+            await ShowContentDialog(window, "Ryujinx - Updater", primary, secondaryText, "", "", "OK",
+                0xF4A3);
+        }
+        
+        internal static async void CreateWarningDialog(StyleableWindow window, string primary, string secondaryText)
+        {
+            await ShowContentDialog(window, "Ryujinx - Warning", primary, secondaryText, "", "", "OK",
+                0xF4A3);
+        }
+        
+        
+        internal static async Task<bool> CreateChoiceDialog(StyleableWindow window, string title, string primary, string secondaryText)
+        {
+            if (_isChoiceDialogOpen)
+            {
+                return false;
+            }
+
+            _isChoiceDialogOpen = true;
+
+            UserResults response =
+                await ShowContentDialog(window, title, primary, secondaryText, "Yes", "", "No", (int) Symbol.Help);
+
+            _isChoiceDialogOpen = false;
+
+            return response == UserResults.Yes;
+        }
+        
+        internal static async Task<bool> CreateExitDialog(StyleableWindow owner)
+        {
+            return await CreateChoiceDialog(owner, "Ryujinx - Exit", "Are you sure you want to stop emulation?",
+                "All unsaved data will be lost!");
         }
     }
 }
