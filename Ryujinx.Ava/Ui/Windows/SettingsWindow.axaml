@@ -9,16 +9,17 @@
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.Ui.ViewModels"
     xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
     SizeToContent="Width"
+    MinWidth="900"
     Height="680"
     d:DesignWidth="800"
-    d:DesignHeight="650"
+    d:DesignHeight="950"
     CanResize="false"
     WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
     <Design.DataContext>
         <viewModels:SettingsViewModel />
     </Design.DataContext>
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinWidth="600">
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="Auto" />
@@ -106,7 +107,7 @@
                     </Border>
                 </ScrollViewer>
             </TabItem>
-            <TabItem Header="{locale:Locale SettingsTabSystem}">
+            <TabItem Header="{locale:Locale SettingsTabSystem}" IsSelected="true">
                 <ScrollViewer
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
@@ -280,13 +281,17 @@
                                     Spacing="20">
                                     <TextBlock VerticalAlignment="Center"
                                                Text="{locale:Locale SettingsTabSystemMemoryManagerMode}" />
-                                    <RadioButton Content="{locale:Locale SettingsTabSystemMemoryManagerModeSoftware}"
-                                                 IsChecked="{Binding SoftwareMemoryMode}" />
-                                    <RadioButton Content="{locale:Locale SettingsTabSystemMemoryManagerModeHost}"
-                                                 IsChecked="{Binding HostMemoryMode}" />
-                                    <RadioButton
-                                        Content="{locale:Locale SettingsTabSystemMemoryManagerModeHostUnchecked}"
-                                        IsChecked="{Binding HostUncheckedMemoryMode}" />
+                                  <ComboBox SelectedIndex="{Binding MemoryMode}">
+                                    <ComboBoxItem>
+                                      <TextBlock Text="{locale:Locale SettingsTabSystemMemoryManagerModeSoftware}" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem IsEnabled="{Binding IsOpenAlEnabled}">
+                                      <TextBlock Text="{locale:Locale SettingsTabSystemMemoryManagerModeHost}" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem IsEnabled="{Binding IsSoundIoEnabled}">
+                                      <TextBlock Text="{locale:Locale SettingsTabSystemMemoryManagerModeHostUnchecked}" />
+                                    </ComboBoxItem>
+                                  </ComboBox>
                                 </StackPanel>
                             </StackPanel>
                             <Separator />
@@ -470,8 +475,9 @@
                                 <StackPanel
                                     Margin="0,10"
                                     Orientation="Horizontal"
+                                    VerticalAlignment="Stretch"
                                     Spacing="20">
-                                    <TextBlock VerticalAlignment="Center"
+                                    <TextBlock VerticalAlignment="Center" Margin="0,5"
                                                Text="{locale:Locale SettingsTabLoggingFsGlobalAccessLogMode}" />
                                     <ui:NumberBox
                                         Maximum="3"
@@ -549,7 +555,7 @@
                                     </ui:CommandBar.PrimaryCommands>
                                 </ui:CommandBar>
                             </Grid>
-                            <window:ControllerSettingsWindow Name="ControllerSettings" />
+                            <window:ControllerSettingsWindow Name="ControllerSettings" Margin="0,0,0,0"/>
                         </StackPanel>
                     </Border>
                 </ScrollViewer>

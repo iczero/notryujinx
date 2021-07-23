@@ -75,9 +75,6 @@ namespace Ryujinx.Ava.Ui.ViewModels
         public bool IsOpenAlEnabled          { get; set; }
         public bool IsSoundIoEnabled         { get; set; }
         public bool IsSDL2Enabled            { get; set; }
-        public bool SoftwareMemoryMode       { get; set; }
-        public bool HostMemoryMode            { get; set; }
-        public bool HostUncheckedMemoryMode   { get; set; }
         public bool IsResolutionScaleActive => _resolutionScale == 0;
 
         public string TimeZone       { get; set; }
@@ -90,6 +87,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         public int MaxAnisotropy         { get; set; }
         public int AspectRatio           { get; set; }
         public int OpenglDebugLevel      { get; set; }
+        public int MemoryMode            { get; set; }
 
         public DateTimeOffset         DateOffset { get; set; }
         public TimeSpan               TimeOffset { get; set; }
@@ -196,6 +194,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             Region                = (int)config.System.Region.Value;
             FsGlobalAccessLogMode = config.System.FsGlobalAccessLogMode;
             AudioBackend          = (int)config.System.AudioBackend.Value;
+            MemoryMode            = (int)config.System.MemoryManagerMode.Value;
 
             float anisotropy = config.Graphics.MaxAnisotropy;
 
@@ -211,19 +210,6 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             DateOffset = dateTimeOffset.Date;
             TimeOffset = dateTimeOffset.TimeOfDay;
-
-            switch (config.System.MemoryManagerMode.Value)
-            {
-                case MemoryManagerMode.HostMapped:
-                    HostMemoryMode = true;
-                    break;
-                case MemoryManagerMode.HostMappedUnsafe:
-                    HostUncheckedMemoryMode = true;
-                    break;
-                case MemoryManagerMode.SoftwarePageTable:
-                    SoftwareMemoryMode = true;
-                    break;
-            }
         }
 
         public void SaveSettings()
@@ -268,6 +254,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             config.Graphics.ShadersDumpPath.Value     = ShaderDumpPath;
             config.Ui.GameDirs.Value                  = gameDirs;
             config.System.FsGlobalAccessLogMode.Value = FsGlobalAccessLogMode;
+            config.System.MemoryManagerMode.Value     = (MemoryManagerMode)MemoryMode;
 
             float anisotropy = MaxAnisotropy == 0 ? -1 : MathF.Pow(MaxAnisotropy, 2);
 
@@ -282,19 +269,6 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 config.System.AudioBackend.Value = audioBackend;
 
                 Logger.Info?.Print(LogClass.Application, $"AudioBackend toggled to: {audioBackend}");
-            }
-
-            if (HostMemoryMode)
-            {
-                config.System.MemoryManagerMode.Value = MemoryManagerMode.HostMapped;
-            }
-            if (HostUncheckedMemoryMode)
-            {
-                config.System.MemoryManagerMode.Value = MemoryManagerMode.HostMappedUnsafe;
-            }
-            if (SoftwareMemoryMode)
-            {
-                config.System.MemoryManagerMode.Value = MemoryManagerMode.SoftwarePageTable;
             }
 
             config.ToFileFormat().SaveConfig(Program.ConfigurationPath);
