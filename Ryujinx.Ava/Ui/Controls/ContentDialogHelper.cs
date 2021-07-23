@@ -83,7 +83,7 @@ namespace Ryujinx.Ava.Ui.Controls
         {
             return await ShowContentDialog(window, "Ryujinx - Confirmation", primary, secondaryText, "Yes", "",
                 "No",
-                0xF4A3);
+                (int) Symbol.Help);
         }
     }
 }

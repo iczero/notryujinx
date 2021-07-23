@@ -9,7 +9,7 @@
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.Ui.ViewModels"
     xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
     SizeToContent="Width"
-    Height="650"
+    Height="680"
     d:DesignWidth="800"
     d:DesignHeight="650"
     CanResize="false"
@@ -23,507 +23,547 @@
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+        <ui:ContentDialog Name="ContentDialog"
+                          IsPrimaryButtonEnabled="True"
+                          IsSecondaryButtonEnabled="True"
+                          IsVisible="False" />
         <TabControl Name="Tabs" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <TabItem Header="{locale:Locale SettingsTabGeneral}">
-                    <ScrollViewer
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
-                        HorizontalScrollBarVisibility="Disabled"
-                        VerticalScrollBarVisibility="Auto">
-                        <Border>
+            <TabItem Header="{locale:Locale SettingsTabGeneral}">
+                <ScrollViewer
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Auto">
+                    <Border>
+                        <StackPanel
+                            Margin="10"
+                            HorizontalAlignment="Stretch"
+                            Orientation="Vertical"
+                            Spacing="10">
+                            <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGeneralGeneral}" />
+                            <StackPanel Margin="10,0,10,0" Orientation="Vertical">
+                                <CheckBox IsChecked="{Binding EnableDiscordIntegration}">
+                                    <TextBlock VerticalAlignment="Center"
+                                               Text="{locale:Locale SettingsTabGeneralEnableDiscordRichPresence}" />
+                                </CheckBox>
+                                <CheckBox IsChecked="{Binding CheckUpdatesOnStart}">
+                                    <TextBlock Text="{locale:Locale SettingsTabGeneralCheckUpdatesOnLaunch}" />
+                                </CheckBox>
+                                <CheckBox IsChecked="{Binding ShowConfirmExit}">
+                                    <TextBlock Text="{locale:Locale SettingsTabGeneralShowConfirmExitDialog}" />
+                                </CheckBox>
+                                <CheckBox IsChecked="{Binding HideCursorOnIdle}">
+                                    <TextBlock Text="{locale:Locale SettingsTabGeneralHideCursorOnIdle}" />
+                                </CheckBox>
+                            </StackPanel>
+                            <Separator />
+                            <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGeneralGameDirectories}" />
                             <StackPanel
-                                Margin="10"
+                                Margin="10,0,10,0"
                                 HorizontalAlignment="Stretch"
                                 Orientation="Vertical"
                                 Spacing="10">
-                                <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGeneralGeneral}" />
-                                <StackPanel Margin="10,0,10,0" Orientation="Vertical">
-                                    <CheckBox IsChecked="{Binding EnableDiscordIntegration}">
-                                        <TextBlock  VerticalAlignment="Center"  Text="{locale:Locale SettingsTabGeneralEnableDiscordRichPresence}" />
-                                    </CheckBox>
-                                    <CheckBox IsChecked="{Binding CheckUpdatesOnStart}">
-                                        <TextBlock Text="{locale:Locale SettingsTabGeneralCheckUpdatesOnLaunch}" />
-                                    </CheckBox>
-                                    <CheckBox IsChecked="{Binding ShowConfirmExit}">
-                                        <TextBlock Text="{locale:Locale SettingsTabGeneralShowConfirmExitDialog}" />
-                                    </CheckBox>
-                                    <CheckBox IsChecked="{Binding HideCursorOnIdle}">
-                                        <TextBlock Text="{locale:Locale SettingsTabGeneralHideCursorOnIdle}" />
-                                    </CheckBox>
-                                </StackPanel>
-                                <Separator />
-                                <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGeneralGameDirectories}" />
-                                <StackPanel
-                                    Margin="10,0,10,0"
-                                    HorizontalAlignment="Stretch"
-                                    Orientation="Vertical"
-                                    Spacing="10">
-                                  <Border 
+                                <Border
                                     BorderThickness="1"
                                     BorderBrush="DarkSlateGray" Padding="5">
                                     <ListBox
                                         Name="GameList"
                                         MinHeight="150"
                                         Margin="0,10"
-                                       Items="{Binding GameDirectories}" />
-                                  </Border>
-                                    <Grid HorizontalAlignment="Stretch">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-                                        <TextBox
-                                            Name="PathBox"
-                                            Margin="0"
-                                            VerticalAlignment="Stretch" />
-                                        <Button
-                                            Name="AddButton"
-                                            Grid.Column="1"
-                                            MinWidth="90"
-                                            Margin="5,0"
-                                            Click="AddButton_OnClick">
-                                            <TextBlock HorizontalAlignment="Center" Text="{locale:Locale SettingsTabGeneralAdd}" />
-                                        </Button>
-                                        <Button
-                                            Name="RemoveButton"
-                                            Grid.Column="2"
-                                            MinWidth="90"
-                                            Margin="5,0"
-                                            Click="RemoveButton_OnClick">
-                                            <TextBlock HorizontalAlignment="Center" Text="{locale:Locale SettingsTabGeneralRemove}" />
-                                        </Button>
-                                    </Grid>
-                                </StackPanel>
+                                        Items="{Binding GameDirectories}" />
+                                </Border>
+                                <Grid HorizontalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox
+                                        Name="PathBox"
+                                        Margin="0"
+                                        VerticalAlignment="Stretch" />
+                                    <Button
+                                        Name="AddButton"
+                                        Grid.Column="1"
+                                        MinWidth="90"
+                                        Margin="5,0"
+                                        Click="AddButton_OnClick">
+                                        <TextBlock HorizontalAlignment="Center"
+                                                   Text="{locale:Locale SettingsTabGeneralAdd}" />
+                                    </Button>
+                                    <Button
+                                        Name="RemoveButton"
+                                        Grid.Column="2"
+                                        MinWidth="90"
+                                        Margin="5,0"
+                                        Click="RemoveButton_OnClick">
+                                        <TextBlock HorizontalAlignment="Center"
+                                                   Text="{locale:Locale SettingsTabGeneralRemove}" />
+                                    </Button>
+                                </Grid>
                             </StackPanel>
-                        </Border>
-                    </ScrollViewer>
-                </TabItem>
-                <TabItem Header="{locale:Locale SettingsTabSystem}">
-                    <ScrollViewer
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
-                        HorizontalScrollBarVisibility="Disabled"
-                        VerticalScrollBarVisibility="Auto">
-                        <Border>
-                            <StackPanel
-                                Margin="10"
-                                HorizontalAlignment="Stretch"
-                                Orientation="Vertical"
-                                Spacing="10">
-                                <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabSystemCore}" />
-                                <StackPanel Margin="10,0,10,0" Orientation="Vertical">
-                                    <StackPanel
-                                        Margin="0,10"
-                                        Orientation="Horizontal"
-                                        Spacing="20">
-                                        <TextBlock VerticalAlignment="Center" Text="{locale:Locale SettingsTabSystemSystemRegion}" />
-                                        <ComboBox SelectedIndex="{Binding Region}">
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemRegionJapan}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemRegionUSA}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemRegionEurope}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemRegionAustralia}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemRegionChina}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemRegionKorea}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemRegionTaiwan}" />
-                                            </ComboBoxItem>
-                                        </ComboBox>
-                                    </StackPanel>
-                                    <StackPanel
-                                        Margin="0,10"
-                                        Orientation="Horizontal"
-                                        Spacing="20">
-                                        <TextBlock VerticalAlignment="Center" Text="{locale:Locale SettingsTabSystemSystemLanguage}" />
-                                        <ComboBox SelectedIndex="{Binding Language}">
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageJapanese}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageAmericanEnglish}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageFrench}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageGerman}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageItalian}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageSpanish}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageChinese}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageKorean}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageDutch}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguagePortuguese}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageRussian}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageTaiwanese}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageBritishEnglish}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageCanadianFrench}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageLatinAmericanSpanish}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageSimplifiedChinese}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageTraditionalChinese}" />
-                                            </ComboBoxItem>
-                                        </ComboBox>
-                                    </StackPanel>
-                                    <StackPanel
-                                        Margin="0,10"
-                                        Orientation="Horizontal"
-                                        Spacing="20">
-                                        <TextBlock VerticalAlignment="Center" Text="{locale:Locale SettingsTabSystemSystemTimeZone}" />
-                                        <AutoCompleteBox
-                                            Name="TimeZoneBox"
-                                            MinWidth="250"
-                                            FilterMode="Contains"
-                                            Items="{Binding TimeZones}"
-                                            SelectionChanged="TimeZoneBox_OnSelectionChanged"
-                                            Text="{Binding Path=TimeZone, Mode=OneWay}"
-                                            TextChanged="TimeZoneBox_OnTextChanged"
-                                            ValueMemberBinding="{Binding TzMultiBinding}" />
-                                    </StackPanel>
-                                    <StackPanel
-                                        Margin="0,10"
-                                        Orientation="Vertical"
-                                        Spacing="20">
-                                        <TextBlock VerticalAlignment="Center" Text="{locale:Locale SettingsTabSystemSystemTime}" />
-                                        <DatePicker VerticalAlignment="Center" SelectedDate="{Binding DateOffset}" />
-                                        <TimePicker
-                                            VerticalAlignment="Center"
-                                            ClockIdentifier="24HourClock"
-                                            SelectedTime="{Binding TimeOffset}" />
-                                    </StackPanel>
-                                    <CheckBox IsChecked="{Binding EnableVsync}">
-                                        <TextBlock Text="{locale:Locale SettingsTabSystemEnableVsync}" />
-                                    </CheckBox>
-                                    <CheckBox IsChecked="{Binding EnablePptc}">
-                                        <TextBlock Text="{locale:Locale SettingsTabSystemEnablePptc}" />
-                                    </CheckBox>
-                                    <CheckBox IsChecked="{Binding EnableFsIntegrityChecks}">
-                                        <TextBlock Text="{locale:Locale SettingsTabSystemEnableFsIntegrityChecks}" />
-                                    </CheckBox>
-                                    <StackPanel
-                                        Margin="0,10"
-                                        Orientation="Horizontal"
-                                        Spacing="20">
-                                        <TextBlock VerticalAlignment="Center" Text="{locale:Locale SettingsTabSystemAudioBackend}" />
-                                        <ComboBox SelectedIndex="{Binding AudioBackend}">
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemAudioBackendDummy}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem IsEnabled="{Binding IsOpenAlEnabled}">
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemAudioBackendOpenAL}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem IsEnabled="{Binding IsSoundIoEnabled}">
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemAudioBackendSoundIO}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem IsEnabled="{Binding IsSDL2Enabled}">
-                                                <TextBlock Text="{locale:Locale SettingsTabSystemAudioBackendSDL2}" />
-                                            </ComboBoxItem>
-                                        </ComboBox>
-                                    </StackPanel>
-                                    <StackPanel
-                                        Margin="0,10"
-                                        Orientation="Horizontal"
-                                        Spacing="20">
-                                        <TextBlock VerticalAlignment="Center" Text="{locale:Locale SettingsTabSystemMemoryManagerMode}" />
-                                        <RadioButton Content="{locale:Locale SettingsTabSystemMemoryManagerModeSoftware}" IsChecked="{Binding SoftwareMemoryMode}"/>
-                                        <RadioButton Content="{locale:Locale SettingsTabSystemMemoryManagerModeHost}" IsChecked="{Binding HostMemoryMode}"/>
-                                        <RadioButton Content="{locale:Locale SettingsTabSystemMemoryManagerModeHostUnchecked}" IsChecked="{Binding HostUncheckedMemoryMode}"/>
-                                    </StackPanel>
-                                </StackPanel>
-                                <Separator />
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabSystemHacks}" />
-                                    <TextBlock Text="{locale:Locale SettingsTabSystemHacksNote}" />
-                                </StackPanel>
-                                <StackPanel
-                                    Margin="10,0,10,0"
-                                    HorizontalAlignment="Stretch"
-                                    Orientation="Vertical"
-                                    Spacing="10">
-                                    <CheckBox IsChecked="{Binding ExpandDramSize}">
-                                        <TextBlock Text="{locale:Locale SettingsTabSystemExpandDramSize}" />
-                                    </CheckBox>
-                                    <CheckBox IsChecked="{Binding IgnoreMissingServices}">
-                                        <TextBlock Text="{locale:Locale SettingsTabSystemIgnoreMissingServices}" />
-                                    </CheckBox>
-                                </StackPanel>
-                            </StackPanel>
-                        </Border>
-                    </ScrollViewer>
-                </TabItem>
-                <TabItem Header="{locale:Locale SettingsTabGraphics}">
-                    <ScrollViewer
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
-                        HorizontalScrollBarVisibility="Disabled"
-                        VerticalScrollBarVisibility="Auto">
-                        <Border>
-                            <StackPanel
-                                Margin="10"
-                                HorizontalAlignment="Stretch"
-                                Orientation="Vertical"
-                                Spacing="10">
-                                <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGraphicsEnhancements}" />
-                                <CheckBox IsChecked="{Binding EnableShaderCache}">
-                                    <TextBlock Text="{locale:Locale SettingsTabGraphicsEnableShaderCache}" />
-                                </CheckBox>
-                                <StackPanel Margin="10,0,10,0" Orientation="Vertical">
-                                    <StackPanel
-                                        Margin="0,10"
-                                        Orientation="Horizontal"
-                                        Spacing="20">
-                                        <TextBlock VerticalAlignment="Center" Text="{locale:Locale SettingsTabGraphicsAnisotropicFiltering}" />
-                                        <ComboBox SelectedIndex="{Binding MaxAnisotropy}">
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabGraphicsAnisotropicFilteringAuto}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabGraphicsAnisotropicFiltering2x}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabGraphicsAnisotropicFiltering4x}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabGraphicsAnisotropicFiltering8x}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabGraphicsAnisotropicFiltering16x}" />
-                                            </ComboBoxItem>
-                                        </ComboBox>
-                                    </StackPanel>
-                                    <StackPanel
-                                        Margin="0,10"
-                                        Orientation="Horizontal"
-                                        Spacing="20">
-                                        <TextBlock VerticalAlignment="Center" Text="{locale:Locale SettingsTabGraphicsResolutionScale}" />
-                                        <ComboBox SelectedIndex="{Binding ResolutionScale}">
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabGraphicsResolutionScaleCustom}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabGraphicsResolutionScaleNative}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabGraphicsResolutionScale2x}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabGraphicsResolutionScale3x}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabGraphicsResolutionScale4x}" />
-                                            </ComboBoxItem>
-                                        </ComboBox>
-                                        <NumericUpDown
-                                            MinWidth="100"
-                                            Increment="0.01"
-                                            IsVisible="{Binding IsResolutionScaleActive}"
-                                            Maximum="100"
-                                            Minimum="0.01"
-                                            Value="{Binding CustomResolutionScale}" />
-                                    </StackPanel>
-                                    <StackPanel
-                                        Margin="0,10"
-                                        Orientation="Horizontal"
-                                        Spacing="20">
-                                        <TextBlock VerticalAlignment="Center" Text="{locale:Locale SettingsTabGraphicsAspectRatio}" />
-                                        <ComboBox SelectedIndex="{Binding AspectRatio}">
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabGraphicsAspectRatio4x3}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabGraphicsAspectRatio16x9}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabGraphicsAspectRatio16x10}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabGraphicsAspectRatio21x9}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabGraphicsAspectRatio32x9}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabGraphicsAspectRatioStretch}" />
-                                            </ComboBoxItem>
-                                        </ComboBox>
-                                    </StackPanel>
-                                </StackPanel>
-                                <Separator />
-                                <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGraphicsDeveloperOptions}" />
-                                <StackPanel
-                                    Margin="10,0,10,0"
-                                    HorizontalAlignment="Stretch"
-                                    Orientation="Vertical"
-                                    Spacing="10">
-                                    <StackPanel
-                                        Margin="0,10"
-                                        Orientation="Horizontal"
-                                        Spacing="20">
-                                        <TextBlock VerticalAlignment="Center" Text="{locale:Locale SettingsTabGraphicsShaderDumpPath}" />
-                                        <TextBox MinWidth="350" Text="{Binding ShaderDumpPath}" />
-                                    </StackPanel>
-                                </StackPanel>
-                            </StackPanel>
-                        </Border>
-                    </ScrollViewer>
-                </TabItem>
-                <TabItem Header="{locale:Locale SettingsTabLogging}">
-                    <ScrollViewer
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
-                        HorizontalScrollBarVisibility="Disabled"
-                        VerticalScrollBarVisibility="Auto">
-                        <Border>
-                            <StackPanel
-                                Margin="10"
-                                HorizontalAlignment="Stretch"
-                                Orientation="Vertical"
-                                Spacing="10">
-                                <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabLoggingLogging}" />
-                                <StackPanel Margin="10,0,10,0" Orientation="Vertical">
-                                    <CheckBox IsChecked="{Binding EnableFileLog}">
-                                        <TextBlock Text="{locale:Locale SettingsTabLoggingEnableLoggingToFile}" />
-                                    </CheckBox>
-                                    <CheckBox IsChecked="{Binding EnableStub}">
-                                        <TextBlock Text="{locale:Locale SettingsTabLoggingEnableStubLogs}" />
-                                    </CheckBox>
-                                    <CheckBox IsChecked="{Binding EnableInfo}">
-                                        <TextBlock Text="{locale:Locale SettingsTabLoggingEnableInfoLogs}" />
-                                    </CheckBox>
-                                    <CheckBox IsChecked="{Binding EnableWarn}">
-                                        <TextBlock Text="{locale:Locale SettingsTabLoggingEnableWarningLogs}" />
-                                    </CheckBox>
-                                    <CheckBox IsChecked="{Binding EnableError}">
-                                        <TextBlock Text="{locale:Locale SettingsTabLoggingEnableErrorLogs}" />
-                                    </CheckBox>
-                                    <CheckBox IsChecked="{Binding EnableGuest}">
-                                        <TextBlock Text="{locale:Locale SettingsTabLoggingEnableGuestLogs}" />
-                                    </CheckBox>
-                                    <CheckBox IsChecked="{Binding EnableFsAccessLog}">
-                                        <TextBlock Text="{locale:Locale SettingsTabLoggingEnableFsAccessLogs}" />
-                                    </CheckBox>
-                                    <StackPanel
-                                        Margin="0,10"
-                                        Orientation="Horizontal"
-                                        Spacing="20">
-                                        <TextBlock VerticalAlignment="Center" Text="{locale:Locale SettingsTabLoggingFsGlobalAccessLogMode}" />
-                                        <ui:NumberBox
-                                            Maximum="3"
-                                            Minimum="0"
-                                            SpinButtonPlacementMode="Inline"
-                                            SmallChange="1"
-                                            LargeChange="1"
-                                            Value="{Binding FsGlobalAccessLogMode}" />
-                                    </StackPanel>
-                                </StackPanel>
-                                <Separator />
-                                <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabLoggingDeveloperOptions}" />
-                                <StackPanel
-                                    Margin="10,0,10,0"
-                                    HorizontalAlignment="Stretch"
-                                    Orientation="Vertical"
-                                    Spacing="10">
-                                    <StackPanel
-                                        Margin="0,10"
-                                        Orientation="Horizontal"
-                                        Spacing="20">
-                                        <TextBlock VerticalAlignment="Center" Text="{locale:Locale SettingsTabLoggingOpenglLogLevel}" />
-                                        <ComboBox SelectedIndex="{Binding OpenglDebugLevel}">
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabLoggingOpenglLogLevelNone}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabLoggingOpenglLogLevelError}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabLoggingOpenglLogLevelPerformance}" />
-                                            </ComboBoxItem>
-                                            <ComboBoxItem>
-                                                <TextBlock Text="{locale:Locale SettingsTabLoggingOpenglLogLevelAll}" />
-                                            </ComboBoxItem>
-                                        </ComboBox>
-                                    </StackPanel>
-                                    <CheckBox IsChecked="{Binding EnableDebug}">
-                                        <TextBlock Text="{locale:Locale SettingsTabLoggingEnableDebugLogs}" />
-                                    </CheckBox>
-                                </StackPanel>
-                            </StackPanel>
-                        </Border>
-                    </ScrollViewer>
-                </TabItem>
-              <TabItem Header="{locale:Locale SettingsTabInput}" IsSelected="True">
+                        </StackPanel>
+                    </Border>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="{locale:Locale SettingsTabSystem}">
                 <ScrollViewer
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
                     HorizontalScrollBarVisibility="Disabled"
                     VerticalScrollBarVisibility="Auto">
-                  <Border>
-                    <StackPanel Margin="4" Orientation="Vertical">
-                      <StackPanel
-                          Orientation="Horizontal"
-                          Spacing="20">
-                        <CheckBox IsChecked="{Binding EnableDockedMode}">
-                          <TextBlock VerticalAlignment="Center" Text="{locale:Locale SettingsTabInputEnableDockedMode}" />
-                        </CheckBox>
-                        <CheckBox IsChecked="{Binding EnableKeyboard}">
-                          <TextBlock Text="{locale:Locale SettingsTabInputDirectKeyboardAccess}" />
-                        </CheckBox>
-                      </StackPanel>
-                      <window:ControllerSettingsWindow></window:ControllerSettingsWindow>
-                    </StackPanel>
-                  </Border>
+                    <Border>
+                        <StackPanel
+                            Margin="10"
+                            HorizontalAlignment="Stretch"
+                            Orientation="Vertical"
+                            Spacing="10">
+                            <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabSystemCore}" />
+                            <StackPanel Margin="10,0,10,0" Orientation="Vertical">
+                                <StackPanel
+                                    Margin="0,10"
+                                    Orientation="Horizontal"
+                                    Spacing="20">
+                                    <TextBlock VerticalAlignment="Center"
+                                               Text="{locale:Locale SettingsTabSystemSystemRegion}" />
+                                    <ComboBox SelectedIndex="{Binding Region}">
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemSystemRegionJapan}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemSystemRegionUSA}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemSystemRegionEurope}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemSystemRegionAustralia}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemSystemRegionChina}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemSystemRegionKorea}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemSystemRegionTaiwan}" />
+                                        </ComboBoxItem>
+                                    </ComboBox>
+                                </StackPanel>
+                                <StackPanel
+                                    Margin="0,10"
+                                    Orientation="Horizontal"
+                                    Spacing="20">
+                                    <TextBlock VerticalAlignment="Center"
+                                               Text="{locale:Locale SettingsTabSystemSystemLanguage}" />
+                                    <ComboBox SelectedIndex="{Binding Language}">
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageJapanese}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock
+                                                Text="{locale:Locale SettingsTabSystemSystemLanguageAmericanEnglish}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageFrench}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageGerman}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageItalian}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageSpanish}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageChinese}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageKorean}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageDutch}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguagePortuguese}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageRussian}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemSystemLanguageTaiwanese}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock
+                                                Text="{locale:Locale SettingsTabSystemSystemLanguageBritishEnglish}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock
+                                                Text="{locale:Locale SettingsTabSystemSystemLanguageCanadianFrench}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock
+                                                Text="{locale:Locale SettingsTabSystemSystemLanguageLatinAmericanSpanish}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock
+                                                Text="{locale:Locale SettingsTabSystemSystemLanguageSimplifiedChinese}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock
+                                                Text="{locale:Locale SettingsTabSystemSystemLanguageTraditionalChinese}" />
+                                        </ComboBoxItem>
+                                    </ComboBox>
+                                </StackPanel>
+                                <StackPanel
+                                    Margin="0,10"
+                                    Orientation="Horizontal"
+                                    Spacing="20">
+                                    <TextBlock VerticalAlignment="Center"
+                                               Text="{locale:Locale SettingsTabSystemSystemTimeZone}" />
+                                    <AutoCompleteBox
+                                        Name="TimeZoneBox"
+                                        MinWidth="250"
+                                        FilterMode="Contains"
+                                        Items="{Binding TimeZones}"
+                                        SelectionChanged="TimeZoneBox_OnSelectionChanged"
+                                        Text="{Binding Path=TimeZone, Mode=OneWay}"
+                                        TextChanged="TimeZoneBox_OnTextChanged"
+                                        ValueMemberBinding="{Binding TzMultiBinding}" />
+                                </StackPanel>
+                                <StackPanel
+                                    Margin="0,10"
+                                    Orientation="Vertical"
+                                    Spacing="20">
+                                    <TextBlock VerticalAlignment="Center"
+                                               Text="{locale:Locale SettingsTabSystemSystemTime}" />
+                                    <DatePicker VerticalAlignment="Center" SelectedDate="{Binding DateOffset}" />
+                                    <TimePicker
+                                        VerticalAlignment="Center"
+                                        ClockIdentifier="24HourClock"
+                                        SelectedTime="{Binding TimeOffset}" />
+                                </StackPanel>
+                                <CheckBox IsChecked="{Binding EnableVsync}">
+                                    <TextBlock Text="{locale:Locale SettingsTabSystemEnableVsync}" />
+                                </CheckBox>
+                                <CheckBox IsChecked="{Binding EnablePptc}">
+                                    <TextBlock Text="{locale:Locale SettingsTabSystemEnablePptc}" />
+                                </CheckBox>
+                                <CheckBox IsChecked="{Binding EnableFsIntegrityChecks}">
+                                    <TextBlock Text="{locale:Locale SettingsTabSystemEnableFsIntegrityChecks}" />
+                                </CheckBox>
+                                <StackPanel
+                                    Margin="0,10"
+                                    Orientation="Horizontal"
+                                    Spacing="20">
+                                    <TextBlock VerticalAlignment="Center"
+                                               Text="{locale:Locale SettingsTabSystemAudioBackend}" />
+                                    <ComboBox SelectedIndex="{Binding AudioBackend}">
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemAudioBackendDummy}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem IsEnabled="{Binding IsOpenAlEnabled}">
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemAudioBackendOpenAL}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem IsEnabled="{Binding IsSoundIoEnabled}">
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemAudioBackendSoundIO}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem IsEnabled="{Binding IsSDL2Enabled}">
+                                            <TextBlock Text="{locale:Locale SettingsTabSystemAudioBackendSDL2}" />
+                                        </ComboBoxItem>
+                                    </ComboBox>
+                                </StackPanel>
+                                <StackPanel
+                                    Margin="0,10"
+                                    Orientation="Horizontal"
+                                    Spacing="20">
+                                    <TextBlock VerticalAlignment="Center"
+                                               Text="{locale:Locale SettingsTabSystemMemoryManagerMode}" />
+                                    <RadioButton Content="{locale:Locale SettingsTabSystemMemoryManagerModeSoftware}"
+                                                 IsChecked="{Binding SoftwareMemoryMode}" />
+                                    <RadioButton Content="{locale:Locale SettingsTabSystemMemoryManagerModeHost}"
+                                                 IsChecked="{Binding HostMemoryMode}" />
+                                    <RadioButton
+                                        Content="{locale:Locale SettingsTabSystemMemoryManagerModeHostUnchecked}"
+                                        IsChecked="{Binding HostUncheckedMemoryMode}" />
+                                </StackPanel>
+                            </StackPanel>
+                            <Separator />
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabSystemHacks}" />
+                                <TextBlock Text="{locale:Locale SettingsTabSystemHacksNote}" />
+                            </StackPanel>
+                            <StackPanel
+                                Margin="10,0,10,0"
+                                HorizontalAlignment="Stretch"
+                                Orientation="Vertical"
+                                Spacing="10">
+                                <CheckBox IsChecked="{Binding ExpandDramSize}">
+                                    <TextBlock Text="{locale:Locale SettingsTabSystemExpandDramSize}" />
+                                </CheckBox>
+                                <CheckBox IsChecked="{Binding IgnoreMissingServices}">
+                                    <TextBlock Text="{locale:Locale SettingsTabSystemIgnoreMissingServices}" />
+                                </CheckBox>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
                 </ScrollViewer>
-              </TabItem>
-            </TabControl>
-        <DockPanel
+            </TabItem>
+            <TabItem Header="{locale:Locale SettingsTabGraphics}">
+                <ScrollViewer
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Auto">
+                    <Border>
+                        <StackPanel
+                            Margin="10"
+                            HorizontalAlignment="Stretch"
+                            Orientation="Vertical"
+                            Spacing="10">
+                            <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGraphicsEnhancements}" />
+                            <CheckBox IsChecked="{Binding EnableShaderCache}">
+                                <TextBlock Text="{locale:Locale SettingsTabGraphicsEnableShaderCache}" />
+                            </CheckBox>
+                            <StackPanel Margin="10,0,10,0" Orientation="Vertical">
+                                <StackPanel
+                                    Margin="0,10"
+                                    Orientation="Horizontal"
+                                    Spacing="20">
+                                    <TextBlock VerticalAlignment="Center"
+                                               Text="{locale:Locale SettingsTabGraphicsAnisotropicFiltering}" />
+                                    <ComboBox SelectedIndex="{Binding MaxAnisotropy}">
+                                        <ComboBoxItem>
+                                            <TextBlock
+                                                Text="{locale:Locale SettingsTabGraphicsAnisotropicFilteringAuto}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabGraphicsAnisotropicFiltering2x}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabGraphicsAnisotropicFiltering4x}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabGraphicsAnisotropicFiltering8x}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock
+                                                Text="{locale:Locale SettingsTabGraphicsAnisotropicFiltering16x}" />
+                                        </ComboBoxItem>
+                                    </ComboBox>
+                                </StackPanel>
+                                <StackPanel
+                                    Margin="0,10"
+                                    Orientation="Horizontal"
+                                    Spacing="20">
+                                    <TextBlock VerticalAlignment="Center"
+                                               Text="{locale:Locale SettingsTabGraphicsResolutionScale}" />
+                                    <ComboBox SelectedIndex="{Binding ResolutionScale}">
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabGraphicsResolutionScaleCustom}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabGraphicsResolutionScaleNative}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabGraphicsResolutionScale2x}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabGraphicsResolutionScale3x}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabGraphicsResolutionScale4x}" />
+                                        </ComboBoxItem>
+                                    </ComboBox>
+                                    <NumericUpDown
+                                        MinWidth="100"
+                                        Increment="0.01"
+                                        IsVisible="{Binding IsResolutionScaleActive}"
+                                        Maximum="100"
+                                        Minimum="0.01"
+                                        Value="{Binding CustomResolutionScale}" />
+                                </StackPanel>
+                                <StackPanel
+                                    Margin="0,10"
+                                    Orientation="Horizontal"
+                                    Spacing="20">
+                                    <TextBlock VerticalAlignment="Center"
+                                               Text="{locale:Locale SettingsTabGraphicsAspectRatio}" />
+                                    <ComboBox SelectedIndex="{Binding AspectRatio}">
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabGraphicsAspectRatio4x3}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabGraphicsAspectRatio16x9}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabGraphicsAspectRatio16x10}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabGraphicsAspectRatio21x9}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabGraphicsAspectRatio32x9}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabGraphicsAspectRatioStretch}" />
+                                        </ComboBoxItem>
+                                    </ComboBox>
+                                </StackPanel>
+                            </StackPanel>
+                            <Separator />
+                            <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGraphicsDeveloperOptions}" />
+                            <StackPanel
+                                Margin="10,0,10,0"
+                                HorizontalAlignment="Stretch"
+                                Orientation="Vertical"
+                                Spacing="10">
+                                <StackPanel
+                                    Margin="0,10"
+                                    Orientation="Horizontal"
+                                    Spacing="20">
+                                    <TextBlock VerticalAlignment="Center"
+                                               Text="{locale:Locale SettingsTabGraphicsShaderDumpPath}" />
+                                    <TextBox MinWidth="350" Text="{Binding ShaderDumpPath}" />
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="{locale:Locale SettingsTabLogging}">
+                <ScrollViewer
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Auto">
+                    <Border>
+                        <StackPanel
+                            Margin="10"
+                            HorizontalAlignment="Stretch"
+                            Orientation="Vertical"
+                            Spacing="10">
+                            <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabLoggingLogging}" />
+                            <StackPanel Margin="10,0,10,0" Orientation="Vertical">
+                                <CheckBox IsChecked="{Binding EnableFileLog}">
+                                    <TextBlock Text="{locale:Locale SettingsTabLoggingEnableLoggingToFile}" />
+                                </CheckBox>
+                                <CheckBox IsChecked="{Binding EnableStub}">
+                                    <TextBlock Text="{locale:Locale SettingsTabLoggingEnableStubLogs}" />
+                                </CheckBox>
+                                <CheckBox IsChecked="{Binding EnableInfo}">
+                                    <TextBlock Text="{locale:Locale SettingsTabLoggingEnableInfoLogs}" />
+                                </CheckBox>
+                                <CheckBox IsChecked="{Binding EnableWarn}">
+                                    <TextBlock Text="{locale:Locale SettingsTabLoggingEnableWarningLogs}" />
+                                </CheckBox>
+                                <CheckBox IsChecked="{Binding EnableError}">
+                                    <TextBlock Text="{locale:Locale SettingsTabLoggingEnableErrorLogs}" />
+                                </CheckBox>
+                                <CheckBox IsChecked="{Binding EnableGuest}">
+                                    <TextBlock Text="{locale:Locale SettingsTabLoggingEnableGuestLogs}" />
+                                </CheckBox>
+                                <CheckBox IsChecked="{Binding EnableFsAccessLog}">
+                                    <TextBlock Text="{locale:Locale SettingsTabLoggingEnableFsAccessLogs}" />
+                                </CheckBox>
+                                <StackPanel
+                                    Margin="0,10"
+                                    Orientation="Horizontal"
+                                    Spacing="20">
+                                    <TextBlock VerticalAlignment="Center"
+                                               Text="{locale:Locale SettingsTabLoggingFsGlobalAccessLogMode}" />
+                                    <ui:NumberBox
+                                        Maximum="3"
+                                        Minimum="0"
+                                        SpinButtonPlacementMode="Inline"
+                                        SmallChange="1"
+                                        LargeChange="1"
+                                        Value="{Binding FsGlobalAccessLogMode}" />
+                                </StackPanel>
+                            </StackPanel>
+                            <Separator />
+                            <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabLoggingDeveloperOptions}" />
+                            <StackPanel
+                                Margin="10,0,10,0"
+                                HorizontalAlignment="Stretch"
+                                Orientation="Vertical"
+                                Spacing="10">
+                                <StackPanel
+                                    Margin="0,10"
+                                    Orientation="Horizontal"
+                                    Spacing="20">
+                                    <TextBlock VerticalAlignment="Center"
+                                               Text="{locale:Locale SettingsTabLoggingOpenglLogLevel}" />
+                                    <ComboBox SelectedIndex="{Binding OpenglDebugLevel}">
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabLoggingOpenglLogLevelNone}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabLoggingOpenglLogLevelError}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock
+                                                Text="{locale:Locale SettingsTabLoggingOpenglLogLevelPerformance}" />
+                                        </ComboBoxItem>
+                                        <ComboBoxItem>
+                                            <TextBlock Text="{locale:Locale SettingsTabLoggingOpenglLogLevelAll}" />
+                                        </ComboBoxItem>
+                                    </ComboBox>
+                                </StackPanel>
+                                <CheckBox IsChecked="{Binding EnableDebug}">
+                                    <TextBlock Text="{locale:Locale SettingsTabLoggingEnableDebugLogs}" />
+                                </CheckBox>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="{locale:Locale SettingsTabInput}">
+                <ScrollViewer
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Auto">
+                    <Border>
+                        <StackPanel Margin="4" Orientation="Vertical">
+                            <Grid
+                                HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <CheckBox Grid.Column="0" Margin="5,0" IsChecked="{Binding EnableDockedMode}">
+                                    <TextBlock VerticalAlignment="Center"
+                                               Text="{locale:Locale SettingsTabInputEnableDockedMode}" />
+                                </CheckBox>
+                                <CheckBox Grid.Column="1" Margin="5,0" IsChecked="{Binding EnableKeyboard}">
+                                    <TextBlock Text="{locale:Locale SettingsTabInputDirectKeyboardAccess}" />
+                                </CheckBox>
+                                <ui:CommandBar Grid.Column="3" HorizontalAlignment="Right">
+                                    <ui:CommandBar.PrimaryCommands>
+                                        <ui:CommandBarButton Icon="Save" Label="{locale:Locale SettingsButtonSave}"
+                                                             Click="InputSaveButton_Clicked" />
+                                    </ui:CommandBar.PrimaryCommands>
+                                </ui:CommandBar>
+                            </Grid>
+                            <window:ControllerSettingsWindow Name="ControllerSettings" />
+                        </StackPanel>
+                    </Border>
+                </ScrollViewer>
+            </TabItem>
+        </TabControl>
+        <StackPanel
             Grid.Row="1"
             Margin="10"
+            Orientation="Horizontal"
             HorizontalAlignment="Right">
-            <Button Margin="5,0,5,0" Name="SaveButton" Click="SaveButton_Clicked">
-                <TextBlock Text="{locale:Locale SettingsButtonSave}" />
-            </Button>
-            <Button Margin="5,0,5,0"  Name="CloseButton" Click="CloseButton_Clicked">
-                <TextBlock Text="{locale:Locale SettingsButtonClose}" />
-            </Button>
-          <Button Margin="5,0,5,0"  Name="ApplyButton" Click="ApplyButton_Clicked">
-                <TextBlock Text="{locale:Locale SettingsButtonApply}" />
-            </Button>
-        </DockPanel>
+            <ui:CommandBarButton Icon="Save" Label="{locale:Locale SettingsButtonSave}" Click="SaveButton_Clicked" />
+            <ui:CommandBarButton Icon="Dismiss" Label="{locale:Locale SettingsButtonClose}" Click="CloseButton_Clicked" />
+            <ui:CommandBarButton Icon="Checkmark" Label="{locale:Locale SettingsButtonApply}"
+                                 Click="ApplyButton_Clicked" />
+        </StackPanel>
     </Grid>
 </window:StyleableWindow>
