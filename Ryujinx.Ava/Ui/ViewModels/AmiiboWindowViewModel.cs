@@ -3,9 +3,9 @@ using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
-using MessageBoxSlim.Avalonia;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Models;
+using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using System;
@@ -26,7 +26,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private readonly string _amiiboJsonPath;
         private readonly byte[] _amiiboLogoBytes;
         private readonly HttpClient _httpClient;
-        private readonly Window _owner;
+        private readonly StyleableWindow _owner;
         private Bitmap _amiiboImage;
         private List<Amiibo.AmiiboApi> _amiiboList;
         private AvaloniaList<Amiibo.AmiiboApi> _amiibos;
@@ -40,7 +40,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private string _usage;
         private bool _useRandomUuid;
 
-        public AmiiboWindowViewModel(Window owner, string lastScannedAmiiboId, string titleId)
+        public AmiiboWindowViewModel(StyleableWindow owner, string lastScannedAmiiboId, string titleId)
         {
             _owner = owner;
             _httpClient = new HttpClient {Timeout = TimeSpan.FromMilliseconds(5000)};
@@ -386,8 +386,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 return amiiboJsonString;
             }
 
-            AvaDialog.CreateInfoDialog("Amiibo API", "An error occured while fetching informations from the API.",
-                _owner);
+            await ContentDialogHelper.CreateInfoDialog(_owner, "Amiibo API", "An error occured while fetching informations from the API.");
 
             Close();
 
@@ -431,11 +430,10 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
         }
 
-        private void ShowInfoDialog()
+        private async void ShowInfoDialog()
         {
-            AvaDialog.CreateInfoDialog("Amiibo API",
-                "Unable to connect to Amiibo API server. The service may be down or you may need to verify your internet connection is online.",
-                _owner);
+            await ContentDialogHelper.CreateInfoDialog(_owner, "Amiibo API",
+                "Unable to connect to Amiibo API server. The service may be down or you may need to verify your internet connection is online.");
         }
     }
 }

@@ -116,7 +116,7 @@ namespace Ryujinx.Ava.Ui.Windows
             }
             catch (Exception ex)
             {
-                AvaDialog.CreateErrorDialog($"{ex.Message}. Errored File: {containerPath}", this);
+                ContentDialogHelper.CreateErrorDialog(this, $"{ex.Message}. Errored File: {containerPath}");
             }
 
             return null;
@@ -163,7 +163,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
                 if (!containsDlc)
                 {
-                    AvaDialog.CreateErrorDialog("The specified file does not contain a DLC for the selected title!", this);
+                    ContentDialogHelper.CreateErrorDialog(this, "The specified file does not contain a DLC for the selected title!");
                 }
             }
         }

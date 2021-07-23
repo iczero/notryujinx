@@ -1,10 +1,11 @@
 using Avalonia.Controls;
 using Avalonia.Threading;
 using FluentAvalonia.UI.Controls;
-using FluentAvalonia.UI.Input;
-using MessageBoxSlim.Avalonia;
+using IX.System.Threading;
 using Ryujinx.Ava.Ui.Models;
 using Ryujinx.Ava.Ui.Windows;
+using Ryujinx.Common.Logging;
+using System;
 using System.Threading.Tasks;
 
 namespace Ryujinx.Ava.Ui.Controls
@@ -13,10 +14,10 @@ namespace Ryujinx.Ava.Ui.Controls
     {
         private static bool _isChoiceDialogOpen;
 
-        private async static Task<UserResults> ShowContentDialog(StyleableWindow window, string title, string primaryText, string secondaryText, string primaryButton,
+        private async static Task<UserResult> ShowContentDialog(StyleableWindow window, string title, string primaryText, string secondaryText, string primaryButton,
             string secondaryButton, string closeButton, int iconSymbol)
         {
-            UserResults result = UserResults.None;
+            UserResult result = UserResult.None;
 
             ContentDialog contentDialog = window.ContentDialog;
 
@@ -30,20 +31,68 @@ namespace Ryujinx.Ava.Ui.Controls
                 // Todo check proper responses
                 contentDialog.PrimaryButtonCommand = MiniCommand.Create(() =>
                 {
-                    result = primaryButton.ToLower() == "yes" ? UserResults.Yes : UserResults.Ok;
+                    result = primaryButton.ToLower() == "yes" ? UserResult.Yes : UserResult.Ok;
                 });
                 contentDialog.SecondaryButtonCommand = MiniCommand.Create(() =>
                 {
-                    result = UserResults.No;
+                    result = UserResult.No;
                 });
                 contentDialog.CloseButtonCommand = MiniCommand.Create(() =>
                 {
-                    result = UserResults.Cancel;
+                    result = UserResult.Cancel;
                 });
                 await contentDialog.ShowAsync(ContentDialogPlacement.Popup);
             };
 
             return result;
+        }
+
+        private async static Task<UserResult> ShowDeferredContentDialog(StyleableWindow window, string title, string primaryText, string secondaryText, string primaryButton,
+            string secondaryButton, string closeButton, int iconSymbol, ManualResetEvent deferResetEvent)
+        {
+            UserResult result = UserResult.None;
+
+            ContentDialog contentDialog = window.ContentDialog;
+
+            contentDialog.PrimaryButtonClick += DeferClose;
+
+            if (contentDialog != null)
+            {
+                contentDialog.Title = title;
+                contentDialog.PrimaryButtonText = primaryButton;
+                contentDialog.SecondaryButtonText = secondaryButton;
+                contentDialog.CloseButtonText = closeButton;
+                contentDialog.Content = CreateDialogTextContent(primaryText, secondaryText, iconSymbol);
+                // Todo check proper responses
+                contentDialog.PrimaryButtonCommand = MiniCommand.Create(() =>
+                {
+                    result = primaryButton.ToLower() == "yes" ? UserResult.Yes : UserResult.Ok;
+                });
+                contentDialog.SecondaryButtonCommand = MiniCommand.Create(() =>
+                {
+                    result = UserResult.No;
+                });
+                contentDialog.CloseButtonCommand = MiniCommand.Create(() =>
+                {
+                    result = UserResult.Cancel;
+                });
+                await contentDialog.ShowAsync(ContentDialogPlacement.Popup);
+            };
+
+            return result;
+
+            void DeferClose(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+            {
+                var deferral = args.GetDeferral();
+
+                contentDialog.PrimaryButtonClick -= DeferClose;
+
+                Task.Run(()=>{
+                    deferResetEvent.WaitOne();
+
+                    deferral.Complete();
+                });
+            }
         }
 
         private static Grid CreateDialogTextContent(string primaryText, string secondaryText, int symbol = 0xF4A3)
@@ -75,19 +124,25 @@ namespace Ryujinx.Ava.Ui.Controls
             return content;
         }
 
-        public static async void CreateInfoDialog(StyleableWindow window, string title, string primary, string secondaryText)
+        public static async Task<UserResult> CreateInfoDialog(StyleableWindow window, string primary, string secondaryText, string title = "Ryujinx - Info")
         {
-            await ShowContentDialog(window, title, primary, secondaryText, "OK", "", "Close",
+            return await ShowContentDialog(window, title, primary, secondaryText, "OK", "", "Close",
                 0xF4A3);
         }
 
-        internal static async Task<UserResults> CreateConfirmationDialog(StyleableWindow window, string primary, string secondaryText)
+        internal static async Task<UserResult> CreateConfirmationDialog(StyleableWindow window, string primary, string secondaryText, string acceptButtonText = "Yes", string cancelButtonText = "No", string title = "Ryujinx - Confirmation")
         {
-            return await ShowContentDialog(window, "Ryujinx - Confirmation", primary, secondaryText, "Yes", "",
-                "No",
+            return await ShowContentDialog(window, "Ryujinx - Confirmation", primary, secondaryText, acceptButtonText, "",
+                cancelButtonText,
                 (int) Symbol.Help);
         }
-        
+
+        internal static UpdateWaitWindow CreateWaitingDialog(string mainText, string secondaryText)
+        {
+            return new(mainText, secondaryText);
+        }
+
+
         internal static async void CreateUpdaterInfoDialog(StyleableWindow window, string primary, string secondaryText)
         {
             await ShowContentDialog(window, "Ryujinx - Updater", primary, secondaryText, "", "", "OK",
@@ -99,8 +154,14 @@ namespace Ryujinx.Ava.Ui.Controls
             await ShowContentDialog(window, "Ryujinx - Warning", primary, secondaryText, "", "", "OK",
                 0xF4A3);
         }
-        
-        
+
+        internal static async void CreateErrorDialog(StyleableWindow owner, string errorMessage, string secondaryErrorMessage = "")
+        {
+            Logger.Error?.Print(LogClass.Application, errorMessage);
+
+            await ShowContentDialog(owner, "Ryujinx - Error", "Ryujinx has encountered an error", errorMessage, secondaryErrorMessage, "", "OK", 0xF3F2);
+        }
+
         internal static async Task<bool> CreateChoiceDialog(StyleableWindow window, string title, string primary, string secondaryText)
         {
             if (_isChoiceDialogOpen)
@@ -110,18 +171,31 @@ namespace Ryujinx.Ava.Ui.Controls
 
             _isChoiceDialogOpen = true;
 
-            UserResults response =
+            UserResult response =
                 await ShowContentDialog(window, title, primary, secondaryText, "Yes", "", "No", (int) Symbol.Help);
 
             _isChoiceDialogOpen = false;
 
-            return response == UserResults.Yes;
+            return response == UserResult.Yes;
         }
         
         internal static async Task<bool> CreateExitDialog(StyleableWindow owner)
         {
             return await CreateChoiceDialog(owner, "Ryujinx - Exit", "Are you sure you want to stop emulation?",
                 "All unsaved data will be lost!");
+        }
+
+        internal static async Task<string> CreateInputDialog(string title, string mainText, string subText,
+            Window owner, uint maxLength = Int32.MaxValue, string input = "")
+        {
+            InputDialog dialog = new(title, mainText, input, subText, maxLength);
+
+            if (await dialog.ShowDialog<UserResult>(owner) == UserResult.Ok)
+            {
+                return dialog.Input;
+            }
+
+            return string.Empty;
         }
     }
 }

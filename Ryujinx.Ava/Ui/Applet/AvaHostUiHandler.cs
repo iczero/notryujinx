@@ -1,6 +1,5 @@
 using Avalonia.Controls;
 using Avalonia.Threading;
-using MessageBoxSlim.Avalonia;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.HLE;
@@ -13,9 +12,9 @@ namespace Ryujinx.Ava.Ui.Applet
 {
     internal class AvaHostUiHandler : IHostUiHandler
     {
-        private readonly Window _parent;
+        private readonly StyleableWindow _parent;
 
-        public AvaHostUiHandler(Window parent)
+        public AvaHostUiHandler(StyleableWindow parent)
         {
             _parent = parent;
         }
@@ -43,13 +42,9 @@ namespace Ryujinx.Ava.Ui.Applet
 
             Dispatcher.UIThread.Post(async () =>
             {
-                AvaDialog msgDialog = null;
-
                 try
                 {
-                    msgDialog = new AvaDialog(title, message, "", _parent);
-
-                    UserResult response = await msgDialog.Run();
+                    UserResult response = await ContentDialogHelper.CreateConfirmationDialog(_parent, message, "", "Ok", title);
 
                     if (response == UserResult.Ok)
                     {
@@ -60,7 +55,7 @@ namespace Ryujinx.Ava.Ui.Applet
                 }
                 catch (Exception ex)
                 {
-                    AvaDialog.CreateErrorDialog($"Error displaying Message Dialog: {ex}", _parent);
+                    ContentDialogHelper.CreateErrorDialog(_parent, $"Error displaying Message Dialog: {ex}");
 
                     dialogCloseEvent.Set();
                 }
@@ -105,7 +100,7 @@ namespace Ryujinx.Ava.Ui.Applet
                 catch (Exception ex)
                 {
                     error = true;
-                    AvaDialog.CreateErrorDialog($"Error displaying Software Keyboard: {ex}", _parent);
+                    ContentDialogHelper.CreateErrorDialog(_parent, $"Error displaying Software Keyboard: {ex}");
                 }
                 finally
                 {
@@ -162,7 +157,7 @@ namespace Ryujinx.Ava.Ui.Applet
                 catch (Exception ex)
                 {
                     dialogCloseEvent.Set();
-                    AvaDialog.CreateErrorDialog($"Error displaying ErrorApplet Dialog: {ex}", _parent);
+                    ContentDialogHelper.CreateErrorDialog(_parent, $"Error displaying ErrorApplet Dialog: {ex}");
                 }
             });
 
