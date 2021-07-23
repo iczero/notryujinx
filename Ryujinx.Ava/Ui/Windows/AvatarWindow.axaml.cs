@@ -64,7 +64,11 @@ namespace Ryujinx.Ava.Ui.Windows
 
         private async void ColorButton_OnClick(object sender, RoutedEventArgs e)
         {
-            ColorPickerWindow dialog = new();
+            ColorPickerWindow dialog = new()
+            {
+                Color = Colors.White
+            };
+
             Color? res = await dialog.ShowDialog(this);
 
             if (res != default)
