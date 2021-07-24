@@ -297,8 +297,7 @@
                             <StackPanel
                                 Margin="10,0,10,0"
                                 HorizontalAlignment="Stretch"
-                                Orientation="Vertical"
-                                Spacing="10">
+                                Orientation="Vertical">
                                 <CheckBox IsChecked="{Binding ExpandDramSize}">
                                     <TextBlock Text="{locale:Locale SettingsTabSystemExpandDramSize}" />
                                 </CheckBox>
@@ -321,7 +320,7 @@
                             Margin="10"
                             HorizontalAlignment="Stretch"
                             Orientation="Vertical"
-                            Spacing="10">
+                            Spacing="5">
                             <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGraphicsEnhancements}" />
                             <CheckBox IsChecked="{Binding EnableShaderCache}">
                                 <TextBlock Text="{locale:Locale SettingsTabGraphicsEnableShaderCache}" />
@@ -553,12 +552,13 @@
         </TabControl>
         <StackPanel
             Grid.Row="1"
-            Margin="2"
+            Margin="5"
+            Spacing="10"
             Orientation="Horizontal"
             HorizontalAlignment="Right">
-            <ui:CommandBarButton Icon="Save" Label="{locale:Locale SettingsButtonSave}" Click="SaveButton_Clicked" />
-            <ui:CommandBarButton Icon="Dismiss" Label="{locale:Locale SettingsButtonClose}" Click="CloseButton_Clicked" />
-            <ui:CommandBarButton Icon="Checkmark" Label="{locale:Locale SettingsButtonApply}"
+            <Button Content="{locale:Locale SettingsButtonSave}" Click="SaveButton_Clicked" />
+            <Button Content="{locale:Locale SettingsButtonClose}" Click="CloseButton_Clicked" />
+            <Button Content="{locale:Locale SettingsButtonApply}"
                                  Click="ApplyButton_Clicked" />
         </StackPanel>
     </Grid>

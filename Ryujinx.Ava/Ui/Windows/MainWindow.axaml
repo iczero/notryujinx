@@ -292,7 +292,7 @@
               </DataGridTemplateColumn.Header>
               <DataGridTemplateColumn.CellTemplate>
                 <DataTemplate>
-                  <CheckBox IsChecked="{Binding Favorite}" Margin="5,0,0,0" />
+                  <CheckBox IsChecked="{Binding Favorite}" Margin="15,0,0,0" />
                 </DataTemplate>
               </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
@@ -311,7 +311,6 @@
               </DataGridTemplateColumn.CellTemplate>
             </DataGridTemplateColumn>
             <DataGridTextColumn
-                Width="Auto"
                 Binding="{Binding ApplicationName}"
                 CellStyleClasses="Left">
               <DataGridTextColumn.Header>
@@ -471,6 +470,8 @@
                 Name="LoadProgressBar"
                 Grid.Column="2"
                 Height="10"
+                Maximum="{Binding StatusBarProgressMaximum}"
+                Value="{Binding StatusBarProgressValue}"
                 VerticalAlignment="Center"
                 Foreground="{DynamicResource HighlightColor}"
                 IsVisible="{Binding EnableNonGameRunningControls}" />

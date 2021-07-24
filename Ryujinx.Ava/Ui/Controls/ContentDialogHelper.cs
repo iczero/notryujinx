@@ -1,4 +1,7 @@
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Media;
 using Avalonia.Threading;
 using FluentAvalonia.UI.Controls;
 using IX.System.Threading;
@@ -14,12 +17,41 @@ namespace Ryujinx.Ava.Ui.Controls
     {
         private static bool _isChoiceDialogOpen;
 
+        public static bool UseModalOverlay { get; set; }
+
         private async static Task<UserResult> ShowContentDialog(StyleableWindow window, string title, string primaryText, string secondaryText, string primaryButton,
             string secondaryButton, string closeButton, int iconSymbol)
         {
             UserResult result = UserResult.None;
 
+            Popup popup = null;
+            Window overlay = null;
+
             ContentDialog contentDialog = window.ContentDialog;
+
+            if (UseModalOverlay)
+            {
+                var windowClientLocation = window.PointToScreen(new Point());
+
+                contentDialog = new ContentDialog();
+
+                overlay = new Window
+                {
+                    Content = contentDialog,
+                    ExtendClientAreaToDecorationsHint = true,
+                    TransparencyLevelHint = WindowTransparencyLevel.Transparent,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    SystemDecorations = SystemDecorations.None,
+                    ExtendClientAreaTitleBarHeightHint = 0,
+                    Background = new SolidColorBrush(Colors.Transparent, 0),
+                    Height = window.Bounds.Height,
+                    Width = window.Bounds.Width,
+                    CanResize = false,
+                    Position = windowClientLocation
+                };
+
+                overlay.ShowDialog(window);
+            }
 
             if (contentDialog != null)
             {
@@ -41,8 +73,15 @@ namespace Ryujinx.Ava.Ui.Controls
                 {
                     result = UserResult.Cancel;
                 });
+
                 await contentDialog.ShowAsync(ContentDialogPlacement.Popup);
             };
+
+            if(UseModalOverlay)
+            {
+                overlay.Content = null;
+                overlay.Close();
+            }
 
             return result;
         }
