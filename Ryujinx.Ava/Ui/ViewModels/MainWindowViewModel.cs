@@ -1050,7 +1050,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                                 string message =
                                     $"System version {firmwareVersion.VersionString} successfully installed.";
 
-                                await ContentDialogHelper.CreateInfoDialog(_owner, dialogTitle, message);
+                                await ContentDialogHelper.CreateInfoDialog(_owner, dialogTitle, message, "", "Ok");
                                 Logger.Info?.Print(LogClass.Application, message);
                                 
                                 // Purge Applet Cache.

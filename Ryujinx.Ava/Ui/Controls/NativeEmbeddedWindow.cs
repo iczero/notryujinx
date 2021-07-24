@@ -18,8 +18,6 @@ namespace Ryujinx.Ava.Ui.Controls
 {
     public class NativeEmbeddedWindow : NativeControlHost
     {
-        private static bool _glfwInitialized;
-
         public event EventHandler<KeyEventArgs> KeyPressed;
         public event EventHandler<KeyEventArgs> KeyReleased;
         public event EventHandler<MouseButtonEventArgs> MouseDown;
@@ -61,13 +59,6 @@ namespace Ryujinx.Ava.Ui.Controls
             IObservable<Rect> resizeObserverable = this.GetObservable(BoundsProperty);
 
             resizeObserverable.Subscribe(Resized);
-
-            if (!_glfwInitialized)
-            {
-                GLFW.Init();
-
-                _glfwInitialized = true;
-            }
 
         }
 

@@ -93,6 +93,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 LoadConfiguration();
                 LoadDevice();
+                LoadProfiles();
 
                 OnPropertyChanged();
             }
@@ -110,9 +111,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
                     _controller = 0;
                 }
 
-                if (Controllers.Count > 0 && value < Controllers.Count && value > -1)
+                if (Controllers.Count > 0 && value < Controllers.Count && _controller > -1)
                 {
-                    ControllerType controller = Controllers.Keys.ToArray()[value];
+                    ControllerType controller = Controllers.Keys.ToArray()[_controller];
 
                     IsLeft  = false;
                     IsRight = false;
@@ -240,11 +241,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 }
 
                 return _isCemuHookMotionController;
-                //return (_inputConfig as StandardControllerInputConfig).Motion.MotionBackend == MotionInputBackendType.CemuHook;
             }
             set
             {
-                //(_inputConfig as StandardControllerInputConfig).Motion.MotionBackend = value ? MotionInputBackendType.CemuHook : MotionInputBackendType.GamepadDriver;
                 _isCemuHookMotionController = value;
                 OnPropertyChanged();
             }
@@ -295,9 +294,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
             PlayerIndexes.Add(PlayerIndex.Handheld, LocaleManager.Instance["ControllerSettingsHandheld"]);
         }
 
-        private void LoadConfiguration()
+        private void LoadConfiguration(InputConfig inputConfig = null)
         {
-            _inputConfig = ConfigurationState.Instance.Hid.InputConfig.Value.Find(inputConfig => inputConfig.PlayerIndex == _playerId);
+            _inputConfig = inputConfig ?? ConfigurationState.Instance.Hid.InputConfig.Value.Find(inputConfig => inputConfig.PlayerIndex == _playerId);
 
             if (_inputConfig is StandardKeyboardInputConfig)
             {
@@ -333,7 +332,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 var item = Devices.FirstOrDefault(x => x.Key == $"{ident}/{_inputConfig.Id}");
                 if (item.Key != null)
                 {
-                    Device = Devices.Keys.IndexOf(item.Key);
+                    Device = Devices.Keys.ToList().IndexOf(item.Key);
                 }
                 else
                 {
@@ -426,7 +425,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 if (Controllers.ContainsKey(_inputConfig.ControllerType))
                 {
-                    Controller = Controllers.Keys.IndexOf(_inputConfig.ControllerType);
+                    Controller = Controllers.Keys.ToList().IndexOf(_inputConfig.ControllerType);
                 }
             }
         }
@@ -490,7 +489,6 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             return path;
         }
-
 
         private void LoadProfiles()
         {
@@ -692,18 +690,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             if (config != null)
             {
-                List<InputConfig> newConfig = new();
-
-                newConfig.AddRange(ConfigurationState.Instance.Hid.InputConfig.Value);
-
-                if (newConfig.FindIndex(x => x.PlayerIndex == _playerId) > -1)
-                {
-                    newConfig.Remove(newConfig.Find(x => x.PlayerIndex == _playerId));
-                }
-
-                newConfig.Add(config);
-
-                ConfigurationState.Instance.Hid.InputConfig.Value = newConfig;
+                LoadConfiguration(config);
 
                 NotifyChanges();
             }
@@ -747,6 +734,47 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             LoadProfiles();
 
+        }
+
+        public async void SaveProfile()
+        {
+            if (Device == 0)
+            {
+                return;
+            }
+
+            if (InputConfig == null)
+            {
+                return;
+            }
+
+            string activeProfile = Profiles.Keys.ToArray()[Profile];
+
+            if (activeProfile == "default")
+            {
+                ContentDialogHelper.CreateErrorDialog(_owner.GetVisualRoot() as StyleableWindow, "Default Profile can not be overwritten");
+
+                return;
+            }
+            else
+            {
+                string path = Path.Combine(GetProfileBasePath(), activeProfile);
+
+                InputConfig config = null;
+
+                if (IsKeyboard)
+                {
+                    config = (InputConfig as InputConfiguration<Key, ConfigStickInputId>).GetConfig();
+                }
+                else if (IsController)
+                {
+                    config = (InputConfig as InputConfiguration<GamepadInputId, ConfigStickInputId>).GetConfig();
+                }
+
+                string jsonString = JsonHelper.Serialize(config, true);
+
+                await File.WriteAllTextAsync(path, jsonString);
+            }
         }
 
         public async void RemoveProfile()

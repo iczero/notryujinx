@@ -12,6 +12,7 @@ namespace Ryujinx.Ava.Ui.Controls
         {
             PrimaryText.Text = primaryText;
             SecondaryText.Text = secondaryText;
+            WindowStartupLocation = WindowStartupLocation.CenterOwner;
         }
 
         public UpdateWaitWindow()
