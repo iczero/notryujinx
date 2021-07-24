@@ -81,7 +81,7 @@
                         <StackPanel Orientation="Horizontal">
                             <ComboBox
                                 Name="DeviceBox"
-                                Width="452"
+                                Width="350"
                                 Items="{Binding Devices}"
                                 SelectedIndex="{Binding Device}">
                                 <ComboBox.ItemTemplate>
@@ -203,7 +203,7 @@
             <Border BorderBrush="{DynamicResource ThemeControlBorderColor}" BorderThickness="0,1,0,0">
                 <DockPanel
                     Name="SettingButtons"
-                    MinHeight="576"
+                    MinHeight="450"
                     IsVisible="{Binding ShowSettings}">
 
                     <!--  Triggers / Plus / Minus  -->
@@ -816,22 +816,24 @@
                                         <StackPanel Orientation="Horizontal">
                                             <TextBlock VerticalAlignment="Center"
                                                        Text="{locale:Locale ControllerSettingsMotionControllerSlot}" />
-                                            <NumericUpDown
+                                            <ui:NumberBox
                                                 Name="CemuHookSlotUpDown"
                                                 MaxWidth="50"
                                                 Margin="5"
-                                                Increment="1"
+                                                SmallChange="1"
+                                                LargeChange="1"
                                                 Maximum="4"
                                                 Minimum="0"
                                                 Value="{Binding InputConfig.Slot}" />
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock VerticalAlignment="Center"
                                                            Text="{locale:Locale ControllerSettingsMotionRightJoyConSlot}" />
-                                                <NumericUpDown
+                                                <ui:NumberBox
                                                     Name="CemuHookRightJoyConSlotUpDown"
                                                     MaxWidth="50"
                                                     Margin="5"
-                                                    Increment="1"
+                                                    SmallChange="1"
+                                                    LargeChange="1"
                                                     Maximum="4"
                                                     Minimum="0"
                                                     Value="{Binding InputConfig.AltSlot}" />
@@ -1272,7 +1274,7 @@
                                             Orientation="Horizontal">
                                             <ToggleButton
                                                 Width="80"
-                                                Height="25"
+                                                Height="30"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch">
                                                 <TextBlock
@@ -1752,62 +1754,6 @@
                         Source="{Binding Image}" />
                 </DockPanel>
             </Border>
-            <Expander   IsVisible="{Binding IsController}"
-                Header="Extra">
-                <StackPanel Orientation="Horizontal" Margin="5">
-                    <Expander Header="Motion" IsExpanded="True">
-                        <StackPanel Orientation="Vertical" Spacing="10">
-                            <TextBlock HorizontalAlignment="Center" Text="{locale:Locale ControllerSettingsMotion}" />
-                            <CheckBox IsChecked="{Binding InputConfig.EnableMotion}">
-                                <TextBlock Text="{locale:Locale ControllerSettingsMotionEnableMotionControls}" />
-                            </CheckBox>
-                            <CheckBox IsChecked="{Binding IsCemuHookMotionController}">
-                                <TextBlock Text="{locale:Locale ControllerSettingsMotionUseCemuhookCompatibleMotion}" />
-                            </CheckBox>
-                            <StackPanel Spacing="10" IsVisible="{Binding IsCemuHookMotionController}">
-                                <StackPanel Orientation="Horizontal" Spacing="20">
-                                    <TextBlock Text="{locale:Locale ControllerSettingsMotionControllerSlot}"
-                                               VerticalAlignment="Center" />
-                                    <NumericUpDown Increment="1" Minimum="0" Maximum="4"
-                                                   Value="{Binding InputConfig.Slot}" />
-                                </StackPanel>
-                                <CheckBox IsChecked="{Binding InputConfig.MirrorInput}">
-                                    <TextBlock Text="{locale:Locale ControllerSettingsMotionMirrorInput}" />
-                                </CheckBox>
-                                <StackPanel Orientation="Horizontal" Spacing="20">
-                                    <TextBlock Text="{locale:Locale ControllerSettingsMotionRightJoyConSlot}"
-                                               VerticalAlignment="Center" />
-                                    <NumericUpDown Value="{Binding InputConfig.AltSlot}" Increment="1" Minimum="0"
-                                                   Maximum="4" />
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal" Spacing="20">
-                                    <TextBlock Text="{locale:Locale ControllerSettingsMotionServerHost}"
-                                               VerticalAlignment="Center" />
-                                    <TextBox Text="{Binding InputConfig.DsuServerHost}" MinWidth="200" />
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal" Spacing="20">
-                                    <TextBlock Text="{locale:Locale ControllerSettingsMotionServerPort}"
-                                               VerticalAlignment="Center" />
-                                    <NumericUpDown Value="{Binding InputConfig.DsuServerPort}" Increment="1"
-                                                   Minimum="0" Maximum="36656" />
-                                </StackPanel>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Spacing="20">
-                                <TextBlock Text="{locale:Locale ControllerSettingsMotionGyroSensitivity}"
-                                           VerticalAlignment="Center" />
-                                <NumericUpDown Value="{Binding InputConfig.Sensitivity}" Increment="1" Minimum="0"
-                                               Maximum="100" />
-                            </StackPanel>
-                            <StackPanel Spacing="0">
-                                <TextBlock Text="{locale:Locale ControllerSettingsMotionGyroDeadzone}" />
-                                <Slider Maximum="100" Minimum="0"
-                                        Value="{Binding InputConfig.GyroDeadzone, Mode=TwoWay}" />
-                                <TextBlock Text="{Binding InputConfig.GyroDeadzone}" />
-                            </StackPanel>
-                        </StackPanel>
-                    </Expander>
-                </StackPanel>
-            </Expander>
         </StackPanel>
     </Border>
 </UserControl>
