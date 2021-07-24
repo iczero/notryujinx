@@ -36,7 +36,6 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private string _cacheLoadHeading;
         private string _cacheLoadStatus;
         private string _searchText;
-        private int _count;
         private string _dockedStatusText;
         private string _fifoStatusText;
         private string _gameStatusText;
@@ -56,6 +55,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private Brush _vsyncColor;
         private byte[] _selectedIcon;
         private bool _isAppletMenuActive;
+        private int _statusBarProgressMaximum;
+        private int _statusBarProgressValue;
 
         public MainWindowViewModel(MainWindow owner) : this()
         {
@@ -261,6 +262,28 @@ namespace Ryujinx.Ava.Ui.ViewModels
             set
             {
                 _progressValue = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public int StatusBarProgressMaximum
+        {
+            get => _statusBarProgressMaximum;
+            set
+            {
+                _statusBarProgressMaximum = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public int StatusBarProgressValue
+        {
+            get => _statusBarProgressValue;
+            set
+            {
+                _statusBarProgressValue = value;
 
                 OnPropertyChanged();
             }
@@ -536,11 +559,13 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         private void ApplicationLibrary_ApplicationCountUpdated(object sender, ApplicationCountUpdatedEventArgs e)
         {
-            _count = e.NumAppsFound;
+            StatusBarProgressValue = e.NumAppsLoaded;
+            StatusBarProgressMaximum = e.NumAppsFound;
+            LocaleManager.Instance.UpdateDynamicValue("StatusBarGamesLoaded", StatusBarProgressValue, StatusBarProgressMaximum);
 
             Dispatcher.UIThread.Post(() =>
             {
-                if (_count == 0)
+                if (e.NumAppsFound == 0)
                 {
                     _owner.LoadProgressBar.IsVisible = false;
                 }
@@ -552,14 +577,6 @@ namespace Ryujinx.Ava.Ui.ViewModels
             Dispatcher.UIThread.Post(() =>
             {
                 Applications.Add(applicationData);
-                _owner.LoadProgressBar.Value = Applications.Count;
-                _owner.LoadProgressBar.Maximum = _count;
-                LocaleManager.Instance.UpdateDynamicValue("StatusBarGamesLoaded", Applications.Count, _count);
-
-                if (_count >= Applications.Count || _count == 0)
-                {
-                    _owner.LoadProgressBar.IsVisible = false;
-                }
             });
         }
 
@@ -568,14 +585,10 @@ namespace Ryujinx.Ava.Ui.ViewModels
             await Dispatcher.UIThread.InvokeAsync(() =>
             {
                 Applications.Clear();
-
-                _count = 0;
-
                 _owner.LoadProgressBar.IsVisible = true;
-                _owner.LoadProgressBar.Maximum = _count;
-                _owner.LoadProgressBar.Minimum = 0;
-                _owner.LoadProgressBar.Value   = 0;
-                LocaleManager.Instance.UpdateDynamicValue("StatusBarGamesLoaded", 0, _count);
+                StatusBarProgressMaximum = 0;
+                StatusBarProgressValue = 0;
+                LocaleManager.Instance.UpdateDynamicValue("StatusBarGamesLoaded", 0, 0);
             });
 
             ReloadGameList();
