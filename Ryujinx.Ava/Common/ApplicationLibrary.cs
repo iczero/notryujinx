@@ -625,7 +625,7 @@ namespace Ryujinx.Ava.Common
             }
             catch {}
 
-            return applicationIcon;
+            return applicationIcon ?? _ncaIcon;
         }
 
         internal static ApplicationMetadata ReloadMetadata(string titleId)
