@@ -333,7 +333,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 var item = Devices.FirstOrDefault(x => x.Key == $"{ident}/{_inputConfig.Id}");
                 if (item.Key != null)
                 {
-                    Device = Devices.IndexOf(item);
+                    Device = Devices.Keys.IndexOf(item.Key);
                 }
                 else
                 {

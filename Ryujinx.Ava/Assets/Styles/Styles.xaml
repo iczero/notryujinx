@@ -3,7 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:sys="clr-namespace:System;assembly=netstandard">
     <Design.PreviewWith>
-        <Border Padding="20">
+        <Border Padding="20" Height="2000">
             <StackPanel Spacing="5">
                 <TextBlock Text="Code Font Family" />
                 <Grid RowDefinitions="*,Auto">
@@ -83,6 +83,11 @@
       <Setter Property="Margin" Value="0,10,0,10" />
       <Setter Property="BorderThickness" Value="1" />
     </Style>
+
+  <Style Selector="MenuItem">
+    <Setter Property="Height" Value="{DynamicResource MenuItemHeight}" />
+    <Setter Property="Padding" Value="{DynamicResource MenuItemPadding}" />
+  </Style>
     <Style Selector="MenuItem:selected /template/ Border#root">
       <Setter Property="Background" Value="{DynamicResource ThemeControlBorderColor}" />
       <Setter Property="BorderBrush" Value="{DynamicResource ThemeControlBorderColor}" />
@@ -126,6 +131,7 @@
         <SolidColorBrush x:Key="DataGridSelectionBackgroundBrush" Color="{DynamicResource DataGridSelectionColor}" />
         <Thickness x:Key="PageMargin">40 0 40 0</Thickness>
         <Thickness x:Key="Margin">0 5 0 5</Thickness>
+      <Thickness x:Key="MenuItemPadding">5 0 5 0</Thickness>
         <Color x:Key="DataGridSelectionColor">#FF00FABB</Color>
         <Color x:Key="DarkBackgroundColor">#FF2D2D2D</Color>
         <Color x:Key="ThemeControlBorderColor">#FF505050</Color>
@@ -133,5 +139,6 @@
         <sys:Double x:Key="FontSizeSmall">10</sys:Double>
         <sys:Double x:Key="FontSizeNormal">12</sys:Double>
         <sys:Double x:Key="FontSizeLarge">17</sys:Double>
+        <x:Double x:Key="MenuItemHeight">26</x:Double>
     </Styles.Resources>
 </Styles>

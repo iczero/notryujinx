@@ -56,12 +56,13 @@
         <DockPanel HorizontalAlignment="Stretch">
           <Menu
               Name="Menu"
-              Height="45"
+              Margin="0"
+              Height="30"
               HorizontalAlignment="Left"
               IsVisible="{Binding ShowMenuAndStatusBar}">
             <Menu.ItemsPanel>
               <ItemsPanelTemplate>
-                <DockPanel HorizontalAlignment="Stretch" />
+                <DockPanel HorizontalAlignment="Stretch" Margin="0" />
               </ItemsPanelTemplate>
             </Menu.ItemsPanel>
             <MenuItem
@@ -191,7 +192,7 @@
               IsVisible="{Binding !IsGameRunning}">
             <TextBox
                 Name="SearchBox"
-                Height="26"
+                Height="20"
                 MinWidth="200"
                 Margin="0"
                 HorizontalAlignment="Right"
@@ -204,8 +205,6 @@
       <ContentControl
           Name="Content"
           Grid.Row="1"
-          MinWidth="1280"
-          MinHeight="720"
           Padding="0"
           HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch"
