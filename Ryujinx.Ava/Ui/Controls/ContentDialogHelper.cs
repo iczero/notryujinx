@@ -124,9 +124,9 @@ namespace Ryujinx.Ava.Ui.Controls
             return content;
         }
 
-        public static async Task<UserResult> CreateInfoDialog(StyleableWindow window, string primary, string secondaryText, string title = "Ryujinx - Info")
+        public static async Task<UserResult> CreateInfoDialog(StyleableWindow window, string primary, string secondaryText, string acceptButton = "Ok", string closeButton = "Close", string title = "Ryujinx - Info")
         {
-            return await ShowContentDialog(window, title, primary, secondaryText, "OK", "", "Close",
+            return await ShowContentDialog(window, title, primary, secondaryText, acceptButton, "", closeButton,
                 0xF4A3);
         }
 

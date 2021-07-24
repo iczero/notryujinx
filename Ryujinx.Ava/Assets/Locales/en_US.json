@@ -287,5 +287,6 @@
   "AvatarClose": "Close",
   "ControllerSettingsLoadProfileToolTip": "Load Profile",
   "ControllerSettingsAddProfileToolTip": "Add Profile",
-  "ControllerSettingsRemoveProfileToolTip": "Remove Profile"
+  "ControllerSettingsRemoveProfileToolTip": "Remove Profile",
+  "ControllerSettingsSaveProfileToolTip": "Save Profile"
 }
