@@ -3,6 +3,7 @@ using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -24,6 +25,7 @@ using Ryujinx.HLE.HOS;
 using Ryujinx.HLE.HOS.Services.Account.Acc;
 using Ryujinx.Input.Avalonia;
 using Ryujinx.Input.SDL2;
+using Ryujinx.Modules;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -37,6 +39,8 @@ namespace Ryujinx.Ava.Ui.Windows
 {
     public class MainWindow : StyleableWindow
     {
+        public static bool ShowKeyErrorOnLoad;
+
         private bool _canUpdate;
         private bool _isClosing;
         private bool _isLoading;
@@ -44,7 +48,9 @@ namespace Ryujinx.Ava.Ui.Windows
         private Control _mainViewContent;
 
         private UserChannelPersistence _userChannelPersistence;
-
+        private static bool _deferLoad;
+        private static string _launchPath;
+        private static bool _startFullscreen;
         internal readonly AvaHostUiHandler UiHandler;
 
         public VirtualFileSystem VirtualFileSystem { get; private set; }
@@ -189,8 +195,15 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
+        internal static void DeferLoadApplication(string launchPathArg, bool startFullscreenArg)
+        {
+            _deferLoad = true;
+            _launchPath = launchPathArg;
+            _startFullscreen = startFullscreenArg;
+        }
+
 #pragma warning disable CS1998
-        public async void LoadApplication(string path)
+        public async void LoadApplication(string path, bool startFullscreen = false)
 #pragma warning restore CS1998
         {
             if (AppHost != null)
@@ -214,17 +227,22 @@ namespace Ryujinx.Ava.Ui.Windows
             GlRenderer.WindowCreated += GlRenderer_Created;
             GlRenderer.Start();
 
-            ShowGuestRendering();
+            ShowGuestRendering(startFullscreen);
 
             AppHost.StatusUpdatedEvent += Update_StatusBar;
             AppHost.AppExit            += AppHost_AppExit;
         }
 
-        public void ShowGuestRendering()
+        public void ShowGuestRendering(bool startFullscreen = false)
         {
             Dispatcher.UIThread.InvokeAsync(() =>
             {
                 ContentFrame.Content = GlRenderer;
+
+                if(startFullscreen && WindowState != WindowState.FullScreen)
+                {
+                    ViewModel.ToggleFullscreen();
+                }
             });
         }
 
@@ -284,6 +302,33 @@ namespace Ryujinx.Ava.Ui.Windows
             ApplicationHelper.Initialize(VirtualFileSystem, this);
 
             RefreshFirmwareStatus();
+        }
+
+        protected async override void OnAttachedToLogicalTree(LogicalTreeAttachmentEventArgs e)
+        {
+            base.OnAttachedToLogicalTree(e);
+
+            if(ShowKeyErrorOnLoad)
+            {
+                ShowKeyErrorOnLoad = false;
+
+                UserErrorDialog.CreateUserErrorDialog(UserError.NoKeys, this);
+            }
+
+            if(_deferLoad)
+            {
+                _deferLoad = false;
+
+                LoadApplication(_launchPath, _startFullscreen);
+            }
+
+            if (ConfigurationState.Instance.CheckUpdatesOnStart.Value && Updater.CanUpdate(false, this))
+            {
+                await Updater.BeginParse(this, false).ContinueWith(task =>
+                {
+                    Logger.Error?.Print(LogClass.Application, $"Updater Error: {task.Exception}");
+                }, TaskContinuationOptions.OnlyOnFaulted);
+            }
         }
 
         public void RefreshFirmwareStatus()
