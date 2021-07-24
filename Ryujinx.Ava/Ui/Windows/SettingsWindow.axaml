@@ -8,8 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.Ui.ViewModels"
     xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
-    SizeToContent="Width"
-    MinWidth="900"
+    Width="1130"
     Height="700"
     d:DesignWidth="800"
     d:DesignHeight="950"
@@ -112,12 +111,11 @@
                         <StackPanel
                             Margin="10"
                             HorizontalAlignment="Stretch"
-                            Orientation="Vertical"
-                            Spacing="10">
+                            Orientation="Vertical">
                             <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabSystemCore}" />
                             <StackPanel Margin="10,0,10,0" Orientation="Vertical">
                                 <StackPanel
-                                    Margin="0,10"
+                                    Margin="0,5"
                                     Orientation="Horizontal"
                                     Spacing="20">
                                     <TextBlock VerticalAlignment="Center"
@@ -317,7 +315,7 @@
                     VerticalScrollBarVisibility="Auto">
                     <Border>
                         <StackPanel
-                            Margin="10"
+                            Margin="10, 5"
                             HorizontalAlignment="Stretch"
                             Orientation="Vertical"
                             Spacing="5">
@@ -327,7 +325,7 @@
                             </CheckBox>
                             <StackPanel Margin="10,0,10,0" Orientation="Vertical">
                                 <StackPanel
-                                    Margin="0,10"
+                                    Margin="0,5"
                                     Orientation="Horizontal"
                                     Spacing="20">
                                     <TextBlock VerticalAlignment="Center"
@@ -353,7 +351,7 @@
                                     </ComboBox>
                                 </StackPanel>
                                 <StackPanel
-                                    Margin="0,10"
+                                    Margin="0,5"
                                     Orientation="Horizontal"
                                     Spacing="20">
                                     <TextBlock VerticalAlignment="Center"
@@ -384,7 +382,7 @@
                                         Value="{Binding CustomResolutionScale}" />
                                 </StackPanel>
                                 <StackPanel
-                                    Margin="0,10"
+                                    Margin="0,5"
                                     Orientation="Horizontal"
                                     Spacing="20">
                                     <TextBlock VerticalAlignment="Center"
@@ -533,7 +531,6 @@
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <CheckBox Grid.Column="0" Margin="5,0" IsChecked="{Binding EnableDockedMode}">
@@ -543,6 +540,9 @@
                                 <CheckBox Grid.Column="1" Margin="5,0" IsChecked="{Binding EnableKeyboard}">
                                     <TextBlock Text="{locale:Locale SettingsTabInputDirectKeyboardAccess}" />
                                 </CheckBox>
+                              <CheckBox Grid.Column="2" Margin="5,0" IsChecked="{Binding EnableMouse}">
+                                <TextBlock Text="{locale:Locale SettingsTabInputDirectMouseAccess}" />
+                              </CheckBox>
                             </Grid>
                             <window:ControllerSettingsWindow Name="ControllerSettings" Margin="0,0,0,0"/>
                         </StackPanel>
