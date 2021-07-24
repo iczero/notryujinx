@@ -1,6 +1,7 @@
 using ARMeilleure.Translation.PTC;
 using Avalonia;
 using FFmpeg.AutoGen;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using Ryujinx.Ava.Application.Module;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Ui.Controls;
@@ -231,6 +232,8 @@ namespace Ryujinx.Ava
             PtcProfiler.Dispose();
 
             Logger.Shutdown();
+
+            GLFW.Terminate();
         }
     }
 }

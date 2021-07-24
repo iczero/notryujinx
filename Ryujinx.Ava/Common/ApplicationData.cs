@@ -5,7 +5,23 @@ namespace Ryujinx.Ava.Common
 {
     public class ApplicationData
     {
-        public bool Favorite { get; set; }
+        private bool _favorite;
+
+        public bool Favorite
+        {
+            get => _favorite; set
+            {
+                _favorite = value;
+
+                if (!string.IsNullOrWhiteSpace(TitleId))
+                {
+                    ApplicationLibrary.LoadAndSaveMetaData(TitleId, appMetadata =>
+                    {
+                        appMetadata.Favorite = value;
+                    });
+                }
+            }
+        }
         public byte[] Icon { get; set; }
         public string TitleName { get; set; }
         public string TitleId { get; set; }

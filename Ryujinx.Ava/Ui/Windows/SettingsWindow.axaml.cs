@@ -162,12 +162,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
         private void SaveButton_Clicked(object sender, RoutedEventArgs e)
         {
-            ViewModel.SaveSettings();
-
-            if (Owner is MainWindow window)
-            {
-                window.ViewModel.LoadApplications();
-            }
+            SaveSettings();
 
             Close();
         }
@@ -179,17 +174,19 @@ namespace Ryujinx.Ava.Ui.Windows
 
         private void ApplyButton_Clicked(object sender, RoutedEventArgs e)
         {
+            SaveSettings();
+        }
+
+        private void SaveSettings()
+        {
             ViewModel.SaveSettings();
+
+            _controllerSettings?.SaveCurrentProfile();
 
             if (Owner is MainWindow window)
             {
                 window.ViewModel.LoadApplications();
             }
-        }
-
-        private void InputSaveButton_Clicked(object? sender, RoutedEventArgs e)
-        {
-            _controllerSettings?.SaveCurrentProfile();
         }
     }
 }
