@@ -5,6 +5,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using Ryujinx.Ava.Application.Module;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Ui.Controls;
+using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.GraphicsDriver;
 using Ryujinx.Common.Logging;
@@ -148,11 +149,15 @@ namespace Ryujinx.Ava
             bool hasCommonProdKeys = AppDataManager.Mode == AppDataManager.LaunchMode.UserProfile && File.Exists(Path.Combine(AppDataManager.KeysDirPathUser, "prod.keys"));
             if (!hasSystemProdKeys && !hasCommonProdKeys)
             {
-                // TODO Defer prompt
-                //UserErrorDialog.CreateUserErrorDialog(UserError.NoKeys);
+                MainWindow.ShowKeyErrorOnLoad = true;
             }
-            
-            // TODO add direct lauch and updater
+
+            GLFW.Init();
+
+            if (launchPathArg != null)
+            {
+                MainWindow.DeferLoadApplication(launchPathArg, startFullscreenArg);
+            }
         }
 
         private static void ReloadConfig()
