@@ -219,6 +219,13 @@ namespace Ryujinx.Ava.Ui.Windows
 
             Logger.RestartTime();
 
+            if(ViewModel.SelectedIcon == null)
+            {
+                ViewModel.SelectedIcon = ApplicationLibrary.GetApplicationIcon(path);
+            }
+
+            PrepareLoadScreen();
+
             _mainViewContent = ContentFrame.Content as Control;
 
             GlRenderer = new OpenGlEmbeddedWindow(3, 3, ConfigurationState.Instance.Logger.GraphicsDebugLevel, PlatformImpl.DesktopScaling);
@@ -226,6 +233,8 @@ namespace Ryujinx.Ava.Ui.Windows
 
             GlRenderer.WindowCreated += GlRenderer_Created;
             GlRenderer.Start();
+
+            ContentDialogHelper.UseModalOverlay = true;
 
             ShowGuestRendering(startFullscreen);
 
@@ -281,6 +290,10 @@ namespace Ryujinx.Ava.Ui.Windows
             GlRenderer.Destroy();
 
             AppHost = null;
+
+            ViewModel.SelectedIcon = null;
+
+            ContentDialogHelper.UseModalOverlay = false;
 
             Dispatcher.UIThread.InvokeAsync(() =>
             {
@@ -422,26 +435,29 @@ namespace Ryujinx.Ava.Ui.Windows
             {
                 ViewModel.SelectedIcon = data.Icon;
 
-                using MemoryStream stream      = new MemoryStream(data.Icon);
-                using var          gameIconBmp = new System.Drawing.Bitmap(stream);
-
-                var dominantColor = IconColorPicker.GetFilteredColor(gameIconBmp);
-
-                const int ColorDivisor = 4;
-
-                Color progressFgColor = Color.FromRgb(dominantColor.R, dominantColor.G, dominantColor.B);
-                Color progressBgColor = Color.FromRgb(
-                    (byte)(dominantColor.R / ColorDivisor),
-                    (byte)(dominantColor.G / ColorDivisor),
-                    (byte)(dominantColor.B / ColorDivisor));
-
-                ViewModel.ProgressBarForegroundColor = new SolidColorBrush(progressFgColor);
-                ViewModel.ProgressBarBackgroundColor = new SolidColorBrush(progressBgColor);
-
                 string path = new FileInfo(data.Path).FullName;
 
                 LoadApplication(path);
             }
+        }
+
+        private void PrepareLoadScreen()
+        {
+            using MemoryStream stream = new MemoryStream(ViewModel.SelectedIcon);
+            using var gameIconBmp = new System.Drawing.Bitmap(stream);
+
+            var dominantColor = IconColorPicker.GetFilteredColor(gameIconBmp);
+
+            const int ColorDivisor = 4;
+
+            Color progressFgColor = Color.FromRgb(dominantColor.R, dominantColor.G, dominantColor.B);
+            Color progressBgColor = Color.FromRgb(
+                (byte)(dominantColor.R / ColorDivisor),
+                (byte)(dominantColor.G / ColorDivisor),
+                (byte)(dominantColor.B / ColorDivisor));
+
+            ViewModel.ProgressBarForegroundColor = new SolidColorBrush(progressFgColor);
+            ViewModel.ProgressBarBackgroundColor = new SolidColorBrush(progressBgColor);
         }
 
         private void GameList_OnTapped(object sender, RoutedEventArgs e)
@@ -454,9 +470,9 @@ namespace Ryujinx.Ava.Ui.Windows
             ViewModel.SearchText = SearchBox.Text;
         }
 
-        private void StopEmulation_Click(object sender, RoutedEventArgs e)
+        private async void StopEmulation_Click(object sender, RoutedEventArgs e)
         {
-            Task.Run(() =>
+            await Task.Run(() =>
             {
                 AppHost?.Exit();
             });
@@ -491,6 +507,15 @@ namespace Ryujinx.Ava.Ui.Windows
 
         protected override void OnClosing(CancelEventArgs e)
         {
+            if (!_isClosing && AppHost != null)
+            {
+                e.Cancel = true;
+
+                ConfirmExit();
+
+                return;
+            }
+
             _isClosing = true;
             
             AppHost?.Exit();
@@ -498,6 +523,19 @@ namespace Ryujinx.Ava.Ui.Windows
             Program.Exit();
 
             base.OnClosing(e);
+        }
+
+        private void ConfirmExit()
+        {
+            Dispatcher.UIThread.InvokeAsync(async () =>
+           {
+               _isClosing = await ContentDialogHelper.CreateExitDialog(this);
+
+               if(_isClosing)
+               {
+                   Close();
+               }    
+           });
         }
     }
 }

@@ -80,7 +80,6 @@
         <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
     <Style Selector="CheckBox">
-      <Setter Property="Margin" Value="0,10,0,10" />
       <Setter Property="BorderThickness" Value="1" />
     </Style>
 
@@ -98,6 +97,7 @@
     </Style>
     <Style Selector="TabItem &gt; ScrollViewer &gt; Border">
       <Setter Property="BorderThickness" Value="0,1,0,0" />
+      <Setter Property="Background" Value="{DynamicResource ThemeBackgroundColor}" />
       <Setter Property="BorderBrush" Value="{DynamicResource HighlightBrush}" />
     </Style>
     <Style Selector="TabItem">
@@ -140,5 +140,6 @@
         <sys:Double x:Key="FontSizeNormal">12</sys:Double>
         <sys:Double x:Key="FontSizeLarge">17</sys:Double>
         <x:Double x:Key="MenuItemHeight">26</x:Double>
+        <x:Double x:Key="TabItemMinHeight">28</x:Double>
     </Styles.Resources>
 </Styles>

@@ -257,7 +257,7 @@
                                                 Text="{locale:Locale ControllerSettingsTriggerL}"
                                                 TextAlignment="Center" />
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch">
@@ -286,7 +286,7 @@
                                                 Text="{locale:Locale ControllerSettingsTriggerZL}"
                                                 TextAlignment="Center" />
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch">
@@ -335,7 +335,7 @@
                                                 Text="{locale:Locale ControllerSettingsButtonMinus}"
                                                 TextAlignment="Center" />
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch">
@@ -384,7 +384,7 @@
                                                 Text="{locale:Locale ControllerSettingsLeftSL}"
                                                 TextAlignment="Center" />
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch">
@@ -404,7 +404,7 @@
                                             Background="{DynamicResource ThemeDarkColor}"
                                             Orientation="Horizontal">
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2,2,4,2"
                                                 HorizontalAlignment="Stretch">
@@ -462,7 +462,7 @@
                                                 Text="{locale:Locale ControllerSettingsRightSL}"
                                                 TextAlignment="Center" />
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch">
@@ -482,7 +482,7 @@
                                             Background="{DynamicResource ThemeDarkColor}"
                                             Orientation="Horizontal">
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2,2,4,2"
                                                 HorizontalAlignment="Stretch">
@@ -532,7 +532,7 @@
                                             Background="{DynamicResource ThemeDarkColor}"
                                             Orientation="Horizontal">
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2,2,4,2"
                                                 HorizontalAlignment="Stretch">
@@ -585,7 +585,7 @@
                                             Background="{DynamicResource ThemeDarkColor}"
                                             Orientation="Horizontal">
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2,2,4,2"
                                                 HorizontalAlignment="Stretch">
@@ -614,7 +614,7 @@
                                             Background="{DynamicResource ThemeDarkColor}"
                                             Orientation="Horizontal">
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2,2,4,2"
                                                 HorizontalAlignment="Stretch">
@@ -890,16 +890,16 @@
                                             Background="{DynamicResource ThemeDarkColor}"
                                             Orientation="Horizontal">
                                             <TextBlock
-                                                Width="70"
-                                                MinWidth="70"
-                                                MaxWidth="70"
+                                                Width="80"
+                                                MinWidth="80"
+                                                MaxWidth="80"
                                                 Margin="2"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 Text="{locale:Locale ControllerSettingsLStickButton}"
                                                 TextAlignment="Center" />
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch">
@@ -922,16 +922,16 @@
                                             Background="{DynamicResource ThemeDarkColor}"
                                             Orientation="Horizontal">
                                             <TextBlock
-                                                Width="70"
-                                                MinWidth="70"
-                                                MaxWidth="70"
+                                                Width="80"
+                                                MinWidth="80"
+                                                MaxWidth="80"
                                                 Margin="2"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 Text="{locale:Locale ControllerSettingsLStickUp}"
                                                 TextAlignment="Center" />
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch">
@@ -955,16 +955,16 @@
                                                 Background="{DynamicResource ThemeDarkColor}"
                                                 Orientation="Horizontal">
                                                 <TextBlock
-                                                    Width="70"
-                                                    MinWidth="70"
-                                                    MaxWidth="70"
+                                                    Width="80"
+                                                    MinWidth="80"
+                                                    MaxWidth="80"
                                                     Margin="2"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
                                                     Text="{locale:Locale ControllerSettingsLStickLeft}"
                                                     TextAlignment="Center" />
                                                 <ToggleButton
-                                                    Width="70"
+                                                    Width="80"
                                                     Height="30"
                                                     Margin="2"
                                                     HorizontalAlignment="Stretch">
@@ -987,7 +987,7 @@
                                                 Background="{DynamicResource ThemeDarkColor}"
                                                 Orientation="Horizontal">
                                                 <ToggleButton
-                                                    Width="70"
+                                                    Width="80"
                                                     Height="30"
                                                     Margin="2"
                                                     HorizontalAlignment="Stretch">
@@ -996,9 +996,9 @@
                                                         TextAlignment="Center" />
                                                 </ToggleButton>
                                                 <TextBlock
-                                                    Width="70"
-                                                    MinWidth="70"
-                                                    MaxWidth="70"
+                                                    Width="80"
+                                                    MinWidth="80"
+                                                    MaxWidth="80"
                                                     Margin="2"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
@@ -1020,7 +1020,7 @@
                                             Background="{DynamicResource ThemeDarkColor}"
                                             Orientation="Horizontal">
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch">
@@ -1029,9 +1029,9 @@
                                                     TextAlignment="Center" />
                                             </ToggleButton>
                                             <TextBlock
-                                                Width="70"
-                                                MinWidth="70"
-                                                MaxWidth="70"
+                                                Width="80"
+                                                MinWidth="80"
+                                                MaxWidth="80"
                                                 Margin="2"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
@@ -1056,16 +1056,16 @@
                                             Background="{DynamicResource ThemeDarkColor}"
                                             Orientation="Horizontal">
                                             <TextBlock
-                                                Width="70"
-                                                MinWidth="70"
-                                                MaxWidth="70"
+                                                Width="80"
+                                                MinWidth="80"
+                                                MaxWidth="80"
                                                 Margin="2"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 Text="{locale:Locale ControllerSettingsLStickButton}"
                                                 TextAlignment="Center" />
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch">
@@ -1088,16 +1088,16 @@
                                             Background="{DynamicResource ThemeDarkColor}"
                                             Orientation="Horizontal">
                                             <TextBlock
-                                                Width="70"
-                                                MinWidth="70"
-                                                MaxWidth="70"
+                                                Width="80"
+                                                MinWidth="80"
+                                                MaxWidth="80"
                                                 Margin="2"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 Text="{locale:Locale ControllerSettingsLStickStick}"
                                                 TextAlignment="Center" />
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch"
@@ -1173,16 +1173,16 @@
                                             Background="{DynamicResource ThemeDarkColor}"
                                             Orientation="Horizontal">
                                             <TextBlock
-                                                Width="70"
-                                                MinWidth="70"
-                                                MaxWidth="70"
+                                                Width="80"
+                                                MinWidth="80"
+                                                MaxWidth="80"
                                                 Margin="2"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 Text="{locale:Locale ControllerSettingsDPadUp}"
                                                 TextAlignment="Center" />
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch">
@@ -1206,16 +1206,16 @@
                                                 Background="{DynamicResource ThemeDarkColor}"
                                                 Orientation="Horizontal">
                                                 <TextBlock
-                                                    Width="70"
-                                                    MinWidth="70"
-                                                    MaxWidth="70"
+                                                    Width="80"
+                                                    MinWidth="80"
+                                                    MaxWidth="80"
                                                     Margin="2"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
                                                     Text="{locale:Locale ControllerSettingsDPadLeft}"
                                                     TextAlignment="Center" />
                                                 <ToggleButton
-                                                    Width="70"
+                                                    Width="80"
                                                     Height="30"
                                                     Margin="2"
                                                     HorizontalAlignment="Stretch">
@@ -1238,7 +1238,7 @@
                                                 Background="{DynamicResource ThemeDarkColor}"
                                                 Orientation="Horizontal">
                                                 <ToggleButton
-                                                    Width="70"
+                                                    Width="80"
                                                     Height="30"
                                                     Margin="2"
                                                     HorizontalAlignment="Stretch">
@@ -1247,9 +1247,9 @@
                                                         TextAlignment="Center" />
                                                 </ToggleButton>
                                                 <TextBlock
-                                                    Width="70"
-                                                    MinWidth="70"
-                                                    MaxWidth="70"
+                                                    Width="80"
+                                                    MinWidth="80"
+                                                    MaxWidth="80"
                                                     Margin="2"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
@@ -1271,7 +1271,7 @@
                                             Background="{DynamicResource ThemeDarkColor}"
                                             Orientation="Horizontal">
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="25"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch">
@@ -1280,9 +1280,9 @@
                                                     TextAlignment="Center" />
                                             </ToggleButton>
                                             <TextBlock
-                                                Width="70"
-                                                MinWidth="70"
-                                                MaxWidth="70"
+                                                Width="80"
+                                                MinWidth="80"
+                                                MaxWidth="80"
                                                 Margin="2"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
@@ -1335,16 +1335,16 @@
                                             Background="{DynamicResource ThemeDarkColor}"
                                             Orientation="Horizontal">
                                             <TextBlock
-                                                Width="70"
-                                                MinWidth="70"
-                                                MaxWidth="70"
+                                                Width="80"
+                                                MinWidth="80"
+                                                MaxWidth="80"
                                                 Margin="2"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 Text="{locale:Locale ControllerSettingsButtonX}"
                                                 TextAlignment="Center" />
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch">
@@ -1368,16 +1368,16 @@
                                                 Background="{DynamicResource ThemeDarkColor}"
                                                 Orientation="Horizontal">
                                                 <TextBlock
-                                                    Width="70"
-                                                    MinWidth="70"
-                                                    MaxWidth="70"
+                                                    Width="80"
+                                                    MinWidth="80"
+                                                    MaxWidth="80"
                                                     Margin="2"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
                                                     Text="{locale:Locale ControllerSettingsButtonY}"
                                                     TextAlignment="Center" />
                                                 <ToggleButton
-                                                    Width="70"
+                                                    Width="80"
                                                     Height="30"
                                                     Margin="2"
                                                     HorizontalAlignment="Stretch">
@@ -1400,7 +1400,7 @@
                                                 Background="{DynamicResource ThemeDarkColor}"
                                                 Orientation="Horizontal">
                                                 <ToggleButton
-                                                    Width="70"
+                                                    Width="80"
                                                     Height="30"
                                                     Margin="2"
                                                     HorizontalAlignment="Stretch">
@@ -1409,9 +1409,9 @@
                                                         TextAlignment="Center" />
                                                 </ToggleButton>
                                                 <TextBlock
-                                                    Width="70"
-                                                    MinWidth="70"
-                                                    MaxWidth="70"
+                                                    Width="80"
+                                                    MinWidth="80"
+                                                    MaxWidth="80"
                                                     Margin="2"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
@@ -1433,7 +1433,7 @@
                                             Background="{DynamicResource ThemeDarkColor}"
                                             Orientation="Horizontal">
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch">
@@ -1442,9 +1442,9 @@
                                                     TextAlignment="Center" />
                                             </ToggleButton>
                                             <TextBlock
-                                                Width="70"
-                                                MinWidth="70"
-                                                MaxWidth="70"
+                                                Width="80"
+                                                MinWidth="80"
+                                                MaxWidth="80"
                                                 Margin="2"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
@@ -1492,16 +1492,16 @@
                                             Background="{DynamicResource ThemeDarkColor}"
                                             Orientation="Horizontal">
                                             <TextBlock
-                                                Width="70"
-                                                MinWidth="70"
-                                                MaxWidth="70"
+                                                Width="80"
+                                                MinWidth="80"
+                                                MaxWidth="80"
                                                 Margin="2"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 Text="{locale:Locale ControllerSettingsRStickButton}"
                                                 TextAlignment="Center" />
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch">
@@ -1524,16 +1524,16 @@
                                             Background="{DynamicResource ThemeDarkColor}"
                                             Orientation="Horizontal">
                                             <TextBlock
-                                                Width="70"
-                                                MinWidth="70"
-                                                MaxWidth="70"
+                                                Width="80"
+                                                MinWidth="80"
+                                                MaxWidth="80"
                                                 Margin="2"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 Text="{locale:Locale ControllerSettingsRStickUp}"
                                                 TextAlignment="Center" />
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch">
@@ -1557,16 +1557,16 @@
                                                 Background="{DynamicResource ThemeDarkColor}"
                                                 Orientation="Horizontal">
                                                 <TextBlock
-                                                    Width="70"
-                                                    MinWidth="70"
-                                                    MaxWidth="70"
+                                                    Width="80"
+                                                    MinWidth="80"
+                                                    MaxWidth="80"
                                                     Margin="2"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
                                                     Text="{locale:Locale ControllerSettingsRStickLeft}"
                                                     TextAlignment="Center" />
                                                 <ToggleButton
-                                                    Width="70"
+                                                    Width="80"
                                                     Height="30"
                                                     Margin="2"
                                                     HorizontalAlignment="Stretch">
@@ -1589,7 +1589,7 @@
                                                 Background="{DynamicResource ThemeDarkColor}"
                                                 Orientation="Horizontal">
                                                 <ToggleButton
-                                                    Width="70"
+                                                    Width="80"
                                                     Height="30"
                                                     Margin="2"
                                                     HorizontalAlignment="Stretch">
@@ -1598,9 +1598,9 @@
                                                         TextAlignment="Center" />
                                                 </ToggleButton>
                                                 <TextBlock
-                                                    Width="70"
-                                                    MinWidth="70"
-                                                    MaxWidth="70"
+                                                    Width="80"
+                                                    MinWidth="80"
+                                                    MaxWidth="80"
                                                     Margin="2"
                                                     HorizontalAlignment="Center"
                                                     VerticalAlignment="Center"
@@ -1622,7 +1622,7 @@
                                             Background="{DynamicResource ThemeDarkColor}"
                                             Orientation="Horizontal">
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch">
@@ -1631,9 +1631,9 @@
                                                     TextAlignment="Center" />
                                             </ToggleButton>
                                             <TextBlock
-                                                Width="70"
-                                                MinWidth="70"
-                                                MaxWidth="70"
+                                                Width="80"
+                                                MinWidth="80"
+                                                MaxWidth="80"
                                                 Margin="2"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
@@ -1658,16 +1658,16 @@
                                             Background="{DynamicResource ThemeDarkColor}"
                                             Orientation="Horizontal">
                                             <TextBlock
-                                                Width="70"
-                                                MinWidth="70"
-                                                MaxWidth="70"
+                                                Width="80"
+                                                MinWidth="80"
+                                                MaxWidth="80"
                                                 Margin="2"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 Text="{locale:Locale ControllerSettingsRStickButton}"
                                                 TextAlignment="Center" />
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch">
@@ -1690,16 +1690,16 @@
                                             Background="{DynamicResource ThemeDarkColor}"
                                             Orientation="Horizontal">
                                             <TextBlock
-                                                Width="70"
-                                                MinWidth="70"
-                                                MaxWidth="70"
+                                                Width="80"
+                                                MinWidth="80"
+                                                MaxWidth="80"
                                                 Margin="2"
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 Text="{locale:Locale ControllerSettingsRStickStick}"
                                                 TextAlignment="Center" />
                                             <ToggleButton
-                                                Width="70"
+                                                Width="80"
                                                 Height="30"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch"

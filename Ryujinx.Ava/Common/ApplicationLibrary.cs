@@ -451,10 +451,181 @@ namespace Ryujinx.Ava.Common
             {
                 NumAppsFound = numApplicationsFound, NumAppsLoaded = numApplicationsLoaded
             });
+        }
 
-            if (_loadingError)
+        internal static byte[] GetApplicationIcon (string applicationPath)
+        {
+            byte[] applicationIcon = null;
+
+            try
             {
+                if (Directory.Exists(applicationPath))
+                {
+
+                }
+                else
+                {
+                    using (FileStream file = new(applicationPath, FileMode.Open, FileAccess.Read))
+                    {
+                        if (Path.GetExtension(applicationPath).ToLower() == ".nsp" ||
+                            Path.GetExtension(applicationPath).ToLower() == ".pfs0" ||
+                            Path.GetExtension(applicationPath).ToLower() == ".xci")
+                        {
+                            try
+                            {
+                                PartitionFileSystem pfs;
+
+                                bool isExeFs = false;
+
+                                if (Path.GetExtension(applicationPath).ToLower() == ".xci")
+                                {
+                                    Xci xci = new(_virtualFileSystem.KeySet, file.AsStorage());
+
+                                    pfs = xci.OpenPartition(XciPartitionType.Secure);
+                                }
+                                else
+                                {
+                                    pfs = new PartitionFileSystem(file.AsStorage());
+
+                                    foreach (DirectoryEntryEx fileEntry in pfs.EnumerateEntries("/", "*"))
+                                    {
+                                        if (Path.GetFileNameWithoutExtension(fileEntry.FullPath) == "main")
+                                        {
+                                            isExeFs = true;
+                                        }
+                                    }
+                                }
+
+                                if (isExeFs)
+                                {
+                                    applicationIcon = _nspIcon;
+                                }
+                                else
+                                {
+                                    // Store the ControlFS in variable called controlFs
+                                    GetControlFsAndTitleId(pfs, out IFileSystem controlFs, out _);
+
+                                    // Creates NACP class from the NACP file
+                                    controlFs.OpenFile(out IFile controlNacpFile, "/control.nacp".ToU8Span(),
+                                        OpenMode.Read).ThrowIfFailure();
+
+                                    // Read the icon from the ControlFS and store it as a byte array
+                                    try
+                                    {
+                                        controlFs.OpenFile(out IFile icon,
+                                                $"/icon_{_desiredTitleLanguage}.dat".ToU8Span(), OpenMode.Read)
+                                            .ThrowIfFailure();
+
+                                        using (MemoryStream stream = new())
+                                        {
+                                            icon.AsStream().CopyTo(stream);
+                                            applicationIcon = stream.ToArray();
+                                        }
+                                    }
+                                    catch (HorizonResultException)
+                                    {
+                                        foreach (DirectoryEntryEx entry in controlFs.EnumerateEntries("/", "*"))
+                                        {
+                                            if (entry.Name == "control.nacp")
+                                            {
+                                                continue;
+                                            }
+
+                                            controlFs.OpenFile(out IFile icon, entry.FullPath.ToU8Span(), OpenMode.Read)
+                                                .ThrowIfFailure();
+
+                                            using (MemoryStream stream = new())
+                                            {
+                                                icon.AsStream().CopyTo(stream);
+                                                applicationIcon = stream.ToArray();
+                                            }
+
+                                            if (applicationIcon != null)
+                                            {
+                                                break;
+                                            }
+                                        }
+
+                                        if (applicationIcon == null)
+                                        {
+                                            applicationIcon = Path.GetExtension(applicationPath).ToLower() == ".xci"
+                                                ? _xciIcon
+                                                : _nspIcon;
+                                        }
+                                    }
+                                }
+                            }
+                            catch (MissingKeyException exception)
+                            {
+                                applicationIcon = Path.GetExtension(applicationPath).ToLower() == ".xci"
+                                    ? _xciIcon
+                                    : _nspIcon;
+                            }
+                            catch (InvalidDataException)
+                            {
+                                applicationIcon = Path.GetExtension(applicationPath).ToLower() == ".xci"
+                                    ? _xciIcon
+                                    : _nspIcon;
+                            }
+                            catch (Exception exception)
+                            {
+                                Logger.Warning?.Print(LogClass.Application,
+                                    $"The file encountered was not of a valid type. File: '{applicationPath}' Error: {exception}");
+                            }
+                        }
+                        else if (Path.GetExtension(applicationPath).ToLower() == ".nro")
+                        {
+                            BinaryReader reader = new(file);
+
+                            byte[] Read(long position, int size)
+                            {
+                                file.Seek(position, SeekOrigin.Begin);
+
+                                return reader.ReadBytes(size);
+                            }
+
+                            try
+                            {
+                                file.Seek(24, SeekOrigin.Begin);
+
+                                int assetOffset = reader.ReadInt32();
+
+                                if (Encoding.ASCII.GetString(Read(assetOffset, 4)) == "ASET")
+                                {
+                                    byte[] iconSectionInfo = Read(assetOffset + 8, 0x10);
+
+                                    long iconOffset = BitConverter.ToInt64(iconSectionInfo, 0);
+                                    long iconSize = BitConverter.ToInt64(iconSectionInfo, 8);
+
+                                    // Reads and stores game icon as byte array
+                                    applicationIcon = Read(assetOffset + iconOffset, (int)iconSize);
+                                }
+                                else
+                                {
+                                    applicationIcon = _nroIcon;
+                                }
+                            }
+                            catch
+                            {
+                                Logger.Warning?.Print(LogClass.Application,
+                                    $"The file encountered was not of a valid type. Errored File: {applicationPath}");
+                            }
+                        }
+                        else if (Path.GetExtension(applicationPath).ToLower() == ".nca")
+                        {
+                            applicationIcon = _ncaIcon;
+                        }
+                        // If its an NSO we just set defaults
+                        else if (Path.GetExtension(applicationPath).ToLower() == ".nso")
+                        {
+                            applicationIcon = _nsoIcon;
+                        }
+                    }
+                }
             }
+            catch {}
+
+            return applicationIcon;
         }
 
         internal static ApplicationMetadata ReloadMetadata(string titleId)
