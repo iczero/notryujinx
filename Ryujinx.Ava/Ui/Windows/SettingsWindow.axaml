@@ -524,6 +524,7 @@
                 <ScrollViewer
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
+                    Padding="0,0,2,0"
                     HorizontalScrollBarVisibility="Disabled"
                     VerticalScrollBarVisibility="Auto">
                     <Border>
@@ -543,12 +544,6 @@
                                 <CheckBox Grid.Column="1" Margin="5,0" IsChecked="{Binding EnableKeyboard}">
                                     <TextBlock Text="{locale:Locale SettingsTabInputDirectKeyboardAccess}" />
                                 </CheckBox>
-                                <ui:CommandBar Grid.Column="3" HorizontalAlignment="Right">
-                                    <ui:CommandBar.PrimaryCommands>
-                                        <ui:CommandBarButton Icon="Save" Label="{locale:Locale SettingsButtonSave}"
-                                                             Click="InputSaveButton_Clicked" />
-                                    </ui:CommandBar.PrimaryCommands>
-                                </ui:CommandBar>
                             </Grid>
                             <window:ControllerSettingsWindow Name="ControllerSettings" Margin="0,0,0,0"/>
                         </StackPanel>
