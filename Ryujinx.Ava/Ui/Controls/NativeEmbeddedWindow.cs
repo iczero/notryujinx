@@ -18,6 +18,8 @@ namespace Ryujinx.Ava.Ui.Controls
 {
     public class NativeEmbeddedWindow : NativeControlHost
     {
+        private static bool _glfwInitialized;
+
         public event EventHandler<KeyEventArgs> KeyPressed;
         public event EventHandler<KeyEventArgs> KeyReleased;
         public event EventHandler<MouseButtonEventArgs> MouseDown;
@@ -60,7 +62,13 @@ namespace Ryujinx.Ava.Ui.Controls
 
             resizeObserverable.Subscribe(Resized);
 
-            GLFW.Init();
+            if (!_glfwInitialized)
+            {
+                GLFW.Init();
+
+                _glfwInitialized = true;
+            }
+
         }
 
         private void Resized(Rect rect)
@@ -148,8 +156,6 @@ namespace Ryujinx.Ava.Ui.Controls
                 GLFWWindow.Dispose();
 
                 OnWindowDestroyed();
-
-                GLFW.Terminate();
             });
         }
 

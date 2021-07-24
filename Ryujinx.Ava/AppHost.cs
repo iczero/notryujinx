@@ -17,6 +17,7 @@ using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
+using Ryujinx.Common.System;
 using Ryujinx.Configuration;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Gpu;
@@ -26,7 +27,6 @@ using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.FileSystem.Content;
 using Ryujinx.HLE.HOS;
 using Ryujinx.HLE.HOS.Services.Account.Acc;
-using Ryujinx.HLE.HOS.Services.Hid;
 using Ryujinx.HLE.HOS.SystemState;
 using Ryujinx.Input;
 using Ryujinx.Input.Avalonia;
@@ -38,13 +38,13 @@ using SixLabors.ImageSharp.Processing;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+
 using InputManager = Ryujinx.Input.HLE.InputManager;
 using Key = Ryujinx.Input.Key;
 using MouseButton = Ryujinx.Input.MouseButton;
-using Point = Avalonia.Point;
 using Size = Avalonia.Size;
 using Switch = Ryujinx.HLE.Switch;
 using WindowState = Avalonia.Controls.WindowState;
@@ -90,6 +90,7 @@ namespace Ryujinx.Ava
         private bool _toggleDockedMode;
         private bool _toggleFullscreen;
         private bool _isMouseInClient;
+        private WindowsMultimediaTimerResolution _windowsMultimediaTimerResolution;
 
         public event EventHandler AppExit;
         public event EventHandler<StatusUpdatedEventArgs> StatusUpdatedEvent;
@@ -237,6 +238,13 @@ namespace Ryujinx.Ava
         {
             if (LoadGuestApplication().Result)
             {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    _windowsMultimediaTimerResolution = new WindowsMultimediaTimerResolution(1);
+                }
+
+                DisplaySleep.Prevent();
+
                 NpadManager.Initialize(Device, ConfigurationState.Instance.Hid.InputConfig, ConfigurationState.Instance.Hid.EnableKeyboard, ConfigurationState.Instance.Hid.EnableMouse);
                 TouchScreenManager.Initialize(Device);
                 
@@ -294,15 +302,22 @@ namespace Ryujinx.Ava
                 return;
             }
 
+            _windowsMultimediaTimerResolution?.Dispose();
+            _windowsMultimediaTimerResolution = null;
+            DisplaySleep.Restore();
+
             _isActive = false;
 
             _mainThread.Join();
             _renderingThread.Join();
 
-            Device.DisposeGpu();
+            Ptc.Close();
+            PtcProfiler.Stop();
             NpadManager.Dispose();
             TouchScreenManager.Dispose();
             Device.Dispose();
+
+            Device.DisposeGpu();
 
             AppExit?.Invoke(this, EventArgs.Empty);
         }
@@ -559,7 +574,6 @@ namespace Ryujinx.Ava
                         Logger.Warning?.Print(LogClass.Audio, "Found SoundIO, changing configuration.");
 
                         ConfigurationState.Instance.System.AudioBackend.Value = AudioBackend.SoundIo;
-
                         MainWindow.SaveConfig();
 
                         deviceDriver = new SoundIoHardwareDeviceDriver();
@@ -571,10 +585,10 @@ namespace Ryujinx.Ava
                 }
             }
 
-            MemoryConfiguration memoryConfiguration = ConfigurationState.Instance.System.ExpandRam.Value
-                ? MemoryConfiguration.MemoryConfiguration6GB
-                : MemoryConfiguration.MemoryConfiguration4GB;
-            
+            var memoryConfiguration = ConfigurationState.Instance.System.ExpandRam.Value
+                ? HLE.MemoryConfiguration.MemoryConfiguration6GB
+                : HLE.MemoryConfiguration.MemoryConfiguration4GB;
+
             IntegrityCheckLevel fsIntegrityCheckLevel = ConfigurationState.Instance.System.EnableFsIntegrityChecks ? IntegrityCheckLevel.ErrorOnInvalid : IntegrityCheckLevel.None;
             
             HLE.HLEConfiguration configuration = new HLE.HLEConfiguration(VirtualFileSystem,
