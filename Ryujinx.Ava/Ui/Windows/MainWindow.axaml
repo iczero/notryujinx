@@ -322,13 +322,16 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTextColumn
-                            Binding="{Binding ApplicationName}"
-                            CellStyleClasses="Left">
-                            <DataGridTextColumn.Header>
-                                <TextBlock Text="{locale:Locale GameListHeaderApplication}" />
-                            </DataGridTextColumn.Header>
-                        </DataGridTextColumn>
+                      <DataGridTemplateColumn Width="350" CellStyleClasses="Left">
+                            <DataGridTemplateColumn.Header>
+                                <TextBlock Text="{locale:Locale GameListHeaderApplication}" TextWrapping="Wrap"/>
+                            </DataGridTemplateColumn.Header>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>                                    
+                                  <TextBlock Margin="15" Text="{Binding ApplicationName}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                         <DataGridTextColumn Width="*" Binding="{Binding Developer}">
                             <DataGridTextColumn.Header>
                                 <TextBlock Text="{locale:Locale GameListHeaderDeveloper}" />
