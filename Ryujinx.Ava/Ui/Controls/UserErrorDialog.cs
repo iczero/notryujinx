@@ -1,11 +1,5 @@
-﻿using Avalonia.Controls;
-using MessageBox.Avalonia;
-using MessageBox.Avalonia.BaseWindows.Base;
-using MessageBox.Avalonia.DTO;
-using MessageBox.Avalonia.Enums;
-using MessageBox.Avalonia.Models;
-using Ryujinx.Ava.Common;
-using System.Collections.Generic;
+﻿using Ryujinx.Ava.Common;
+using Ryujinx.Ava.Ui.Windows;
 
 namespace Ryujinx.Ava.Ui.Controls
 {
@@ -13,46 +7,13 @@ namespace Ryujinx.Ava.Ui.Controls
     {
         private const string SetupGuideUrl =
             "https://github.com/Ryujinx/Ryujinx/wiki/Ryujinx-Setup-&-Configuration-Guide";
-        
-        private readonly IMsBoxWindow<string> _messageBox;
-        private readonly Window _owner;
 
-        private readonly UserError _userError;
-
-        private UserErrorDialog(UserError error, Window owner)
-        {
-            _userError = error;
-            _owner = owner;
-            string errorCode = GetErrorCode(error);
-
-            bool isInSetupGuide = IsCoveredBySetupGuide(error);
-            List<ButtonDefinition> buttonDefs = new() {new() {Name = "OK"}};
-
-            if (isInSetupGuide)
-            {
-                buttonDefs.Add(new ButtonDefinition {Name = "Open the Setup Guide"});
-            }
-
-            _messageBox =
-                MessageBoxManager.GetMessageBoxCustomWindow(new MessageBoxCustomParams
-                {
-                    Icon = Icon.Error,
-                    ContentTitle = $"Ryujinx error ({errorCode})",
-                    ContentHeader = $"{errorCode}: {GetErrorTitle(error)}",
-                    ContentMessage =
-                        GetErrorDescription(error) + (isInSetupGuide
-                            ? "\nFor more information on how to fix this error, follow our Setup Guide."
-                            : ""),
-                    ButtonDefinitions = buttonDefs
-                });
-        }
-
-        private string GetErrorCode(UserError error)
+        private static string GetErrorCode(UserError error)
         {
             return $"RYU-{(uint)error:X4}";
         }
 
-        private string GetErrorTitle(UserError error)
+        private static string GetErrorTitle(UserError error)
         {
             return error switch
             {
@@ -65,7 +26,7 @@ namespace Ryujinx.Ava.Ui.Controls
             };
         }
 
-        private string GetErrorDescription(UserError error)
+        private static string GetErrorDescription(UserError error)
         {
             return error switch
             {
@@ -105,19 +66,22 @@ namespace Ryujinx.Ava.Ui.Controls
             };
         }
 
-        public async void Run()
+        public static async void ShowUserErrorDialog(UserError error, StyleableWindow owner)
         {
-            string result = await _messageBox.ShowDialog(_owner);
+            string errorCode = GetErrorCode(error);
 
-            if (result == "Open the Setup Guide")
+            bool isInSetupGuide = IsCoveredBySetupGuide(error);
+
+            string setupButtonLabel = isInSetupGuide ? "Open the Setup Guide" : "";
+
+            var result = await ContentDialogHelper.CreateInfoDialog(owner, $"{errorCode}: {GetErrorTitle(error)}", GetErrorDescription(error) + (isInSetupGuide
+                            ? "\nFor more information on how to fix this error, follow our Setup Guide."
+                            : ""), setupButtonLabel, "OK", $"Ryujinx error ({errorCode})");
+
+            if(result == UserResult.Ok)
             {
-                OpenHelper.OpenUrl(GetSetupGuideUrl(_userError));
+                OpenHelper.OpenUrl(GetSetupGuideUrl(error));
             }
-        }
-
-        public static void CreateUserErrorDialog(UserError error, Window owner)
-        {
-            new UserErrorDialog(error, owner).Run();
         }
     }
 }

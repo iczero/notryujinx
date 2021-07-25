@@ -13,7 +13,7 @@ namespace Ryujinx.Input.Avalonia
 
         public string Id => "0";
 
-        public string Name => "GTKMouse";
+        public string Name => "AvaloniaMouse";
 
         public bool IsConnected => true;
 

@@ -4,14 +4,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         x:Class="Ryujinx.Ava.Ui.Controls.SwkbdAppletWindow"
+        SizeToContent="Height"
         Width="400"
-        Height="240"
+        Height="200"
         Title="Profile Window">
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="20">
+    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="70" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
@@ -21,8 +22,8 @@
         </Grid.ColumnDefinitions>
         <Image Grid.Row="1" Margin="5, 10, 20 , 10" Source="resm:Ryujinx.Ava.Assets.Images.Logo_Ryujinx.png" Height="80"
                MinWidth="50" />
-        <TextBlock Grid.Row="0" Margin="10" Grid.Column="1" Text="{Binding MainText}" />
-        <TextBlock Grid.Row="1" Margin="10" Grid.Column="1" Text="{Binding SecondaryText}" />
+        <TextBlock Grid.Row="0" Margin="10" Grid.Column="1" Text="{Binding MainText}" TextWrapping="Wrap" />
+        <TextBlock Grid.Row="1" Margin="10" Grid.Column="1" Text="{Binding SecondaryText}"  TextWrapping="Wrap" />
         <TextBox Name="Input" KeyUp="Message_KeyUp" TextInput="Message_TextInput" Text="{Binding Message}" Grid.Row="1"
                  Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextWrapping="Wrap" />
         <TextBlock Name="Error" Margin="10" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch"
