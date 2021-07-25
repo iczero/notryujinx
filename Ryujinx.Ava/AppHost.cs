@@ -122,7 +122,6 @@ namespace Ryujinx.Ava
             _inputManager           = inputManager;
             _accountManager         = accountManager;
             _userChannelPersistence = userChannelPersistence;
-            _keyboardInterface      = (IKeyboard)_inputManager.KeyboardDriver.GetGamepad("0");
             _renderingThread        = new Thread(RenderLoop) { Name = "GUI.RenderThread" };
             _chrono                 = new Stopwatch();
             _hideCursorOnIdle       = ConfigurationState.Instance.HideCursorOnIdle;
@@ -132,6 +131,7 @@ namespace Ryujinx.Ava
 
             _inputManager.SetMouseDriver(new AvaloniaMouseDriver(window));
             NpadManager = _inputManager.CreateNpadManager();
+            _keyboardInterface = (IKeyboard)_inputManager.KeyboardDriver.GetGamepad("0");
             TouchScreenManager = _inputManager.CreateTouchScreenManager();
             
             Window            = window;
