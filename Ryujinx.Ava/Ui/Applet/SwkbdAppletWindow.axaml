@@ -4,6 +4,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         x:Class="Ryujinx.Ava.Ui.Controls.SwkbdAppletWindow"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
         SizeToContent="Height"
         Width="400"
         Height="200"
