@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Threading;
+using FluentAvalonia.UI.Controls;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.HLE;
@@ -12,9 +13,9 @@ namespace Ryujinx.Ava.Ui.Applet
 {
     internal class AvaHostUiHandler : IHostUiHandler
     {
-        private readonly StyleableWindow _parent;
+        private readonly MainWindow _parent;
 
-        public AvaHostUiHandler(StyleableWindow parent)
+        public AvaHostUiHandler(MainWindow parent)
         {
             _parent = parent;
         }
@@ -25,11 +26,11 @@ namespace Ryujinx.Ava.Ui.Applet
                 ? $"exactly {args.PlayerCountMin}"
                 : $"{args.PlayerCountMin}-{args.PlayerCountMax}";
 
-            string message = $"Application requests <b>{playerCount}</b> player(s) with:\n\n"
-                             + $"<tt><b>TYPES:</b> {args.SupportedStyles}</tt>\n\n"
-                             + $"<tt><b>PLAYERS:</b> {string.Join(", ", args.SupportedPlayers)}</tt>\n\n"
-                             + (args.IsDocked ? "Docked mode set. <tt>Handheld</tt> is also invalid.\n\n" : "")
-                             + "<i>Please reconfigure Input now and then press OK.</i>";
+            string message = $"Application requests {playerCount} player(s) with:\n\n"
+                             + $"TYPES: {args.SupportedStyles}\n\n"
+                             + $"PLAYERS: {string.Join(", ", args.SupportedPlayers)}\n\n"
+                             + (args.IsDocked ? "Docked mode set. Handheld is also invalid.\n\n" : "")
+                             + "Please open Settings and reconfigure Input now or press Close.";
 
             return DisplayMessageDialog("Controller Applet", message);
         }
@@ -44,7 +45,15 @@ namespace Ryujinx.Ava.Ui.Applet
             {
                 try
                 {
-                    UserResult response = await ContentDialogHelper.CreateConfirmationDialog(_parent, message, "", "Ok", title);
+                    ManualResetEvent deferEvent = new(false);
+
+                    UserResult response = await ContentDialogHelper.ShowDeferredContentDialog(_parent, title, message, "", "Open Settings Window", "", "Close", 0xF4A3, deferEvent,
+                       async  (window) =>
+                        {
+                            SettingsWindow settingsWindow = new SettingsWindow(_parent.VirtualFileSystem, _parent.ContentManager);
+
+                            await settingsWindow.ShowDialog(window);
+                        });
 
                     if (response == UserResult.Ok)
                     {
@@ -78,13 +87,12 @@ namespace Ryujinx.Ava.Ui.Applet
             {
                 try
                 {
-                    SwkbdAppletWindow swkbdDialog = new(args.HeaderText, args.SubtitleText)
+                    SwkbdAppletWindow swkbdDialog = new(args.HeaderText, args.SubtitleText, args.GuideText)
                     {
                         Title = "Software Keyboard", Message = inputText
                     };
 
                     swkbdDialog.Input.Text = inputText;
-                    swkbdDialog.Input.Watermark = args.GuideText;
                     swkbdDialog.OkButton.Content = args.SubmitText;
 
                     swkbdDialog.SetInputLengthValidation(args.StringLengthMin, args.StringLengthMax);
