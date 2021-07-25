@@ -1,18 +1,18 @@
 <window:StyleableWindow xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
-        x:Class="Ryujinx.Ava.Ui.Windows.UserProfileWindow"
-        xmlns:Locale="clr-namespace:Ryujinx.Ava.Common.Locale"
-        xmlns:viewModels="clr-namespace:Ryujinx.Ava.Ui.ViewModels"
-        xmlns:controls="clr-namespace:Ryujinx.Ava.Ui.Controls"
-        xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
-        CanResize="False"
-        Width="850" MinHeight="550" Height="550"
-        WindowStartupLocation="CenterOwner"
-        SizeToContent="Manual"
-        MinWidth="700">
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
+                        x:Class="Ryujinx.Ava.Ui.Windows.UserProfileWindow"
+                        xmlns:Locale="clr-namespace:Ryujinx.Ava.Common.Locale"
+                        xmlns:viewModels="clr-namespace:Ryujinx.Ava.Ui.ViewModels"
+                        xmlns:controls="clr-namespace:Ryujinx.Ava.Ui.Controls"
+                        xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
+                        CanResize="False"
+                        Width="850" MinHeight="550" Height="550"
+                        WindowStartupLocation="CenterOwner"
+                        SizeToContent="Manual"
+                        MinWidth="700">
     <Design.DataContext>
         <viewModels:UserProfileViewModel />
     </Design.DataContext>
@@ -47,7 +47,8 @@
                 </StackPanel>
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Grid.Column="2" Spacing="10"
                             Margin="5">
-                    <Button Content="{Locale:Locale UserProfilesSaveProfileName}" Name="SetNameButton" Click="SetNameButton_OnClick" />
+                    <Button Content="{Locale:Locale UserProfilesSaveProfileName}" Name="SetNameButton"
+                            Click="SetNameButton_OnClick" />
                     <Button Name="SelectProfileImage" Command="{Binding ChooseProfileImage}"
                             Content="{Locale:Locale UserProfilesChangeProfileImage}" />
                 </StackPanel>
@@ -85,8 +86,10 @@
         </Grid>
         <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Stretch">
             <Button Content="{Locale:Locale UserProfilesAddNewProfile}" Command="{Binding AddUser}" />
-            <Button IsEnabled="{Binding IsSelectedProfileDeletable}" Content="{Locale:Locale UserProfilesDeleteSelectedProfile}" Command="{Binding DeleteUser}" />
-            <Button HorizontalAlignment="Right" Content="{Locale:Locale UserProfilesClose}" Click="CloseButton_OnClick" Name="CloseButton" />
+            <Button IsEnabled="{Binding IsSelectedProfileDeletable}"
+                    Content="{Locale:Locale UserProfilesDeleteSelectedProfile}" Command="{Binding DeleteUser}" />
+            <Button HorizontalAlignment="Right" Content="{Locale:Locale UserProfilesClose}" Click="CloseButton_OnClick"
+                    Name="CloseButton" />
         </StackPanel>
     </Grid>
 </window:StyleableWindow>

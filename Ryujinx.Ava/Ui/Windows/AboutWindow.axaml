@@ -62,7 +62,7 @@
                             Click="Button_OnClick">
                         <Image Source="resm:Ryujinx.Ava.Assets.Images.Logo_Patreon.png" />
                     </Button>
-                    <TextBlock Text="Patreon" HorizontalAlignment="Center"  />
+                    <TextBlock Text="Patreon" HorizontalAlignment="Center" />
                 </StackPanel>
                 <StackPanel Orientation="Vertical"
                             ToolTip.Tip="Click to open the Ryujinx GitHub page in your default browser.">
@@ -70,7 +70,7 @@
                             Click="Button_OnClick">
                         <Image Source="resm:Ryujinx.Ava.Assets.Images.Logo_GitHub.png" />
                     </Button>
-                    <TextBlock Text="GitHub"  HorizontalAlignment="Center" />
+                    <TextBlock Text="GitHub" HorizontalAlignment="Center" />
                 </StackPanel>
                 <StackPanel Orientation="Vertical"
                             ToolTip.Tip="Click to open an invite to the Ryujinx Discord server in your default browser.">
