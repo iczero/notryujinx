@@ -174,16 +174,16 @@
                                     FontSize="15"
                                     Height="20" />
                             </Button>
-                          <Button
-                              Margin="5,0,0,0"
-                              VerticalAlignment="Center"
-                              ToolTip.Tip="{locale:Locale ControllerSettingsSaveProfileToolTip}"
-                              Command="{Binding SaveProfile}">
-                            <ui:SymbolIcon
-                                Symbol="Save"
-                                FontSize="15"
-                                Height="20" />
-                          </Button>
+                            <Button
+                                Margin="5,0,0,0"
+                                VerticalAlignment="Center"
+                                ToolTip.Tip="{locale:Locale ControllerSettingsSaveProfileToolTip}"
+                                Command="{Binding SaveProfile}">
+                                <ui:SymbolIcon
+                                    Symbol="Save"
+                                    FontSize="15"
+                                    Height="20" />
+                            </Button>
                             <Button
                                 Margin="5,0,0,0"
                                 VerticalAlignment="Center"
@@ -222,6 +222,7 @@
                         <StackPanel
                             Grid.Column="0"
                             MinWidth="325"
+                            HorizontalAlignment="Stretch"
                             IsVisible="{Binding IsRight}" />
                         <Border
                             Grid.Column="0"
@@ -230,8 +231,9 @@
                             BorderThickness="1"
                             IsVisible="{Binding !IsRight}">
                             <StackPanel
-                                HorizontalAlignment="Center"
+                                HorizontalAlignment="Stretch"
                                 VerticalAlignment="Center"
+                                Width="240"
                                 Orientation="Vertical">
                                 <TextBlock
                                     Margin="0,2"
@@ -257,7 +259,7 @@
                                                 Text="{locale:Locale ControllerSettingsTriggerL}"
                                                 TextAlignment="Center" />
                                             <ToggleButton
-                                                Width="80"
+                                                Width="85"
                                                 Height="30"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch">
@@ -286,7 +288,7 @@
                                                 Text="{locale:Locale ControllerSettingsTriggerZL}"
                                                 TextAlignment="Center" />
                                             <ToggleButton
-                                                Width="80"
+                                                Width="85"
                                                 Height="30"
                                                 Margin="2"
                                                 HorizontalAlignment="Stretch">
@@ -569,6 +571,7 @@
                             <StackPanel
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
+                                Width="240"
                                 Orientation="Vertical">
                                 <TextBlock
                                     Margin="0,2"
@@ -585,7 +588,7 @@
                                             Background="{DynamicResource ThemeDarkColor}"
                                             Orientation="Horizontal">
                                             <ToggleButton
-                                                Width="80"
+                                                Width="85"
                                                 Height="30"
                                                 Margin="2,2,4,2"
                                                 HorizontalAlignment="Stretch">
@@ -614,7 +617,7 @@
                                             Background="{DynamicResource ThemeDarkColor}"
                                             Orientation="Horizontal">
                                             <ToggleButton
-                                                Width="80"
+                                                Width="85"
                                                 Height="30"
                                                 Margin="2,2,4,2"
                                                 HorizontalAlignment="Stretch">

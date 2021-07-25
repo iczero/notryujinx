@@ -80,58 +80,65 @@
         <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
     <Style Selector="CheckBox">
-      <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderThickness" Value="1" />
     </Style>
 
-  <Style Selector="MenuItem">
-    <Setter Property="Height" Value="{DynamicResource MenuItemHeight}" />
-    <Setter Property="Padding" Value="{DynamicResource MenuItemPadding}" />
-  </Style>
+    <Style Selector="MenuItem">
+        <Setter Property="Height" Value="{DynamicResource MenuItemHeight}" />
+        <Setter Property="Padding" Value="{DynamicResource MenuItemPadding}" />
+    </Style>
     <Style Selector="MenuItem:selected /template/ Border#root">
-      <Setter Property="Background" Value="{DynamicResource ThemeControlBorderColor}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeControlBorderColor}" />
+        <Setter Property="Background" Value="{DynamicResource ThemeControlBorderColor}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeControlBorderColor}" />
     </Style>
     <Style Selector="TabItem &gt; ScrollViewer">
-      <Setter Property="Background" Value="{DynamicResource ThemeBackgroundColor}" />
-      <Setter Property="Margin" Value="0,-5,0,0" />
+        <Setter Property="Background" Value="{DynamicResource ThemeBackgroundColor}" />
+        <Setter Property="Margin" Value="0,-5,0,0" />
     </Style>
     <Style Selector="TabItem &gt; ScrollViewer &gt; Border">
-      <Setter Property="BorderThickness" Value="0,1,0,0" />
-      <Setter Property="Background" Value="{DynamicResource ThemeBackgroundColor}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource HighlightBrush}" />
+        <Setter Property="BorderThickness" Value="0,1,0,0" />
+        <Setter Property="Background" Value="{DynamicResource ThemeBackgroundColor}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource HighlightBrush}" />
     </Style>
     <Style Selector="TabItem">
-      <Setter Property="FontSize" Value="14" />
-      <Setter Property="BorderThickness" Value="0,0,1,0" />
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeButtonForegroundColor}" />
-      <Setter Property="Background" Value="{DynamicResource ThemeControlBorderColor}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="BorderThickness" Value="0,0,1,0" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeButtonForegroundColor}" />
+        <Setter Property="Background" Value="{DynamicResource ThemeControlBorderColor}" />
     </Style>
     <Style Selector="TabItem:pointerover">
-      <Setter Property="Foreground" Value="{DynamicResource ThemeButtonForegroundColor}" />
+        <Setter Property="Foreground" Value="{DynamicResource ThemeButtonForegroundColor}" />
     </Style>
     <Style Selector="TabItem:selected">
-      <Setter Property="Background" Value="{DynamicResource HighlightColor}" />
-      <Setter Property="Foreground" Value="{DynamicResource ThemeBackgroundColor}" />
+        <Setter Property="Background" Value="{DynamicResource HighlightColor}" />
+        <Setter Property="Foreground" Value="{DynamicResource ThemeBackgroundColor}" />
     </Style>
     <Style Selector="Separator">
-      <Setter Property="Background" Value="{DynamicResource ThemeControlBorderColor}" />
-      <Setter Property="Foreground" Value="{DynamicResource ThemeControlBorderColor}" />
-      <Setter Property="MinHeight" Value="1" />
-      <Setter Property="Margin" Value="5" />
+        <Setter Property="Background" Value="{DynamicResource ThemeControlBorderColor}" />
+        <Setter Property="Foreground" Value="{DynamicResource ThemeControlBorderColor}" />
+        <Setter Property="MinHeight" Value="1" />
+        <Setter Property="Margin" Value="5" />
     </Style>
     <Style Selector=":is(Button).DateTimeFlyoutButtonStyle">
-      <Setter Property="Background" Value="{DynamicResource HighlightColor}" />
-      <Setter Property="Foreground" Value="{DynamicResource ThemeBackgroundColor}" />
+        <Setter Property="Background" Value="{DynamicResource HighlightColor}" />
+        <Setter Property="Foreground" Value="{DynamicResource ThemeBackgroundColor}" />
     </Style>
     <Style Selector="DatePickerPresenter">
-      <Setter Property="BorderThickness" Value="1" />
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeButtonForegroundColor}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeButtonForegroundColor}" />
     </Style>
     <Styles.Resources>
         <SolidColorBrush x:Key="DataGridSelectionBackgroundBrush" Color="{DynamicResource DataGridSelectionColor}" />
         <Thickness x:Key="PageMargin">40 0 40 0</Thickness>
         <Thickness x:Key="Margin">0 5 0 5</Thickness>
-      <Thickness x:Key="MenuItemPadding">5 0 5 0</Thickness>
+        <Thickness x:Key="MenuItemPadding">5 0 5 0</Thickness>
+        <Color x:Key="SystemAccentColor">#FF00C3E3</Color>
+        <Color x:Key="SystemAccentColorDark1">#FF00C3E3</Color>
+        <Color x:Key="SystemAccentColorDark2">#FF00C3E3</Color>
+        <Color x:Key="SystemAccentColorDark3">#FF00C3E3</Color>
+        <Color x:Key="SystemAccentColorLight1">#FF00C3E3</Color>
+        <Color x:Key="SystemAccentColorLight2">#FF00C3E3</Color>
+        <Color x:Key="SystemAccentColorLight3">#FF00C3E3</Color>
         <Color x:Key="DataGridSelectionColor">#FF00FABB</Color>
         <Color x:Key="DarkBackgroundColor">#FF2D2D2D</Color>
         <Color x:Key="ThemeControlBorderColor">#FF505050</Color>

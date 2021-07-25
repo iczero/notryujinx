@@ -152,8 +152,6 @@ namespace Ryujinx.Ava
                 MainWindow.ShowKeyErrorOnLoad = true;
             }
 
-            GLFW.Init();
-
             if (launchPathArg != null)
             {
                 MainWindow.DeferLoadApplication(launchPathArg, startFullscreenArg);
