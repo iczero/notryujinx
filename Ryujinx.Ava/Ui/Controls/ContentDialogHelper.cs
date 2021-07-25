@@ -24,7 +24,6 @@ namespace Ryujinx.Ava.Ui.Controls
         {
             UserResult result = UserResult.None;
 
-            Popup popup = null;
             Window overlay = null;
 
             ContentDialog contentDialog = window.ContentDialog;
@@ -86,12 +85,40 @@ namespace Ryujinx.Ava.Ui.Controls
             return result;
         }
 
-        private async static Task<UserResult> ShowDeferredContentDialog(StyleableWindow window, string title, string primaryText, string secondaryText, string primaryButton,
-            string secondaryButton, string closeButton, int iconSymbol, ManualResetEvent deferResetEvent)
+        public async static Task<UserResult> ShowDeferredContentDialog(StyleableWindow window, string title, string primaryText, string secondaryText, string primaryButton,
+            string secondaryButton, string closeButton, int iconSymbol, ManualResetEvent deferResetEvent, Func<Window, Task> doWhileDeferred = null)
         {
+            bool startedDeferring = false;
+
             UserResult result = UserResult.None;
 
             ContentDialog contentDialog = window.ContentDialog;
+
+            Window overlay = window;
+
+            if (UseModalOverlay)
+            {
+                var windowClientLocation = window.PointToScreen(new Point());
+
+                contentDialog = new ContentDialog();
+
+                overlay = new Window
+                {
+                    Content = contentDialog,
+                    ExtendClientAreaToDecorationsHint = true,
+                    TransparencyLevelHint = WindowTransparencyLevel.Transparent,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    SystemDecorations = SystemDecorations.None,
+                    ExtendClientAreaTitleBarHeightHint = 0,
+                    Background = new SolidColorBrush(Colors.Transparent, 0),
+                    Height = window.Bounds.Height,
+                    Width = window.Bounds.Width,
+                    CanResize = false,
+                    Position = windowClientLocation
+                };
+
+                overlay.ShowDialog(window);
+            }
 
             contentDialog.PrimaryButtonClick += DeferClose;
 
@@ -118,19 +145,44 @@ namespace Ryujinx.Ava.Ui.Controls
                 await contentDialog.ShowAsync(ContentDialogPlacement.Popup);
             };
 
+            if (UseModalOverlay)
+            {
+                overlay.Content = null;
+                overlay.Close();
+            }
+
             return result;
 
-            void DeferClose(ContentDialog sender, ContentDialogButtonClickEventArgs args)
+            async void DeferClose(ContentDialog sender, ContentDialogButtonClickEventArgs args)
             {
+                if(startedDeferring)
+                {
+                    return;
+                }
+
+                startedDeferring = true;
+
                 var deferral = args.GetDeferral();
+
+                result = primaryButton.ToLower() == "yes" ? UserResult.Yes : UserResult.Ok;
 
                 contentDialog.PrimaryButtonClick -= DeferClose;
 
                 Task.Run(()=>{
                     deferResetEvent.WaitOne();
 
-                    deferral.Complete();
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        deferral.Complete();
+                    });
                 });
+
+                if(doWhileDeferred != null)
+                {
+                   await doWhileDeferred(overlay);
+
+                    deferResetEvent.Set();
+                }
             }
         }
 
