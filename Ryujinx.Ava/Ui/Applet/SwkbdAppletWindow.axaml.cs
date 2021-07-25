@@ -14,8 +14,9 @@ namespace Ryujinx.Ava.Ui.Controls
         private Predicate<int> _checkLength;
         private int _inputMax;
         private int _inputMin;
+        private string _placeholder;
 
-        public SwkbdAppletWindow(string mainText, string secondaryText)
+        public SwkbdAppletWindow(string mainText, string secondaryText, string placeholder)
         {
             MainText = mainText;
             SecondaryText = secondaryText;
@@ -51,6 +52,10 @@ namespace Ryujinx.Ava.Ui.Controls
             Error = this.FindControl<TextBlock>("Error");
             OkButton = this.FindControl<Button>("OkButton");
             Input = this.FindControl<TextBox>("Input");
+
+            Input.Watermark = _placeholder;
+
+            Input.AddHandler(TextInputEvent, Message_TextInput, RoutingStrategies.Tunnel, true);
         }
 
 

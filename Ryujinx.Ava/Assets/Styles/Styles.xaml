@@ -27,7 +27,7 @@
                             Name="btnRem"
                             HorizontalAlignment="Right"
                             Content="Add" />
-                        <TextBox Width="100" VerticalAlignment="Center" />
+                        <TextBox Width="100" VerticalAlignment="Center" Text="Rrrrr" Watermark="Hello" UseFloatingWatermark="True"/>
                         <CheckBox>Test Check</CheckBox>
                     </StackPanel>
                 </Grid>
