@@ -93,7 +93,7 @@ namespace Ryujinx.Input.Avalonia
             return size;
         }
 
-        public string DriverName => "GTK3";
+        public string DriverName => "Avalonia";
         
         public event Action<string> OnGamepadConnected
         {

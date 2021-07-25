@@ -36,9 +36,9 @@ namespace Ryujinx.Ava.Ui.Controls
 #endif
         }
 
-        public string Message { get; set; }
-        public string MainText { get; set; }
-        public string SecondaryText { get; set; }
+        public string Message { get; set; } = "";
+        public string MainText { get; set; } = "";
+        public string SecondaryText { get; set; } = "";
         public bool IsOkPressed { get; set; }
 
         public TextBlock Error { get; private set; }
@@ -72,7 +72,7 @@ namespace Ryujinx.Ava.Ui.Controls
             _inputMax = Math.Max(min, max);
 
             Error.IsVisible = false;
-            Error.TextDecorations = TextDecorationCollection.Parse("Italics");
+            Error.FontStyle = FontStyle.Italic;
 
             if (_inputMin <= 0 && _inputMax == int.MaxValue) // Disable.
             {

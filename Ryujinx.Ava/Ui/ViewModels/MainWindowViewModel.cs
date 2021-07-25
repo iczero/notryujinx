@@ -1098,7 +1098,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             catch (MissingKeyException ex)
             {
                 Logger.Error?.Print(LogClass.Application, ex.ToString());
-                UserErrorDialog.CreateUserErrorDialog(UserError.NoKeys, _owner);
+                UserErrorDialog.ShowUserErrorDialog(UserError.NoKeys, _owner);
             }
             catch (Exception ex)
             {
