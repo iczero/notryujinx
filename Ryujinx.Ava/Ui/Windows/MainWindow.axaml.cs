@@ -325,7 +325,7 @@ namespace Ryujinx.Ava.Ui.Windows
             {
                 ShowKeyErrorOnLoad = false;
 
-                UserErrorDialog.CreateUserErrorDialog(UserError.NoKeys, this);
+                UserErrorDialog.ShowUserErrorDialog(UserError.NoKeys, this);
             }
 
             if(_deferLoad)
@@ -507,7 +507,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            if (!_isClosing && AppHost != null)
+            if (!_isClosing && AppHost != null && ConfigurationState.Instance.ShowConfirmExit)
             {
                 e.Cancel = true;
 

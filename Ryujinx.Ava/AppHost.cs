@@ -101,7 +101,6 @@ namespace Ryujinx.Ava
         public Switch               Device  { get; set; }
         public NpadManager          NpadManager       { get; }
         public TouchScreenManager   TouchScreenManager { get; }
-        public AvaloniaMouseDriver  MouseDriver { get; set; }
 
         public int    Width   { get; private set; }
         public int    Height  { get; private set; }
@@ -119,8 +118,6 @@ namespace Ryujinx.Ava
             UserChannelPersistence userChannelPersistence,
             MainWindow             parent)
         {
-            MouseDriver = new AvaloniaMouseDriver(window);
-            
             _parent                 = parent;
             _inputManager           = inputManager;
             _accountManager         = accountManager;
@@ -133,7 +130,7 @@ namespace Ryujinx.Ava
             _ticksPerFrame          = Stopwatch.Frequency / TargetFps;
             _glLogLevel             = ConfigurationState.Instance.Logger.GraphicsDebugLevel;
 
-            _inputManager.SetMouseDriver(MouseDriver);
+            _inputManager.SetMouseDriver(new AvaloniaMouseDriver(window));
             NpadManager = _inputManager.CreateNpadManager();
             TouchScreenManager = _inputManager.CreateTouchScreenManager();
             
@@ -329,7 +326,7 @@ namespace Ryujinx.Ava
 
         private void Window_MouseMove(object sender, (double X, double Y) e)
         {
-            MouseDriver.SetPosition(e.X, e.Y);
+            (_inputManager.MouseDriver as AvaloniaMouseDriver).SetPosition(e.X, e.Y);
 
             if (_hideCursorOnIdle)
             {
@@ -339,12 +336,12 @@ namespace Ryujinx.Ava
 
         private void Window_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            MouseDriver.SetMouseReleased((MouseButton) e.Button);
+            (_inputManager.MouseDriver as AvaloniaMouseDriver).SetMouseReleased((MouseButton) e.Button);
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            MouseDriver.SetMousePressed((MouseButton) e.Button);
+            (_inputManager.MouseDriver as AvaloniaMouseDriver).SetMousePressed((MouseButton) e.Button);
         }
 
         private void HideCursorState_Changed(object sender, ReactiveEventArgs<bool> state)
@@ -393,7 +390,7 @@ namespace Ryujinx.Ava
 
                         if (result != UserResult.Yes)
                         {
-                            UserErrorDialog.CreateUserErrorDialog(userError, _parent);
+                            UserErrorDialog.ShowUserErrorDialog(userError, _parent);
 
                             Device.Dispose();
 
@@ -403,7 +400,7 @@ namespace Ryujinx.Ava
 
                     if (!SetupValidator.TryFixStartApplication(ContentManager, Path, userError, out _))
                     {
-                        UserErrorDialog.CreateUserErrorDialog(userError, _parent);
+                        UserErrorDialog.ShowUserErrorDialog(userError, _parent);
 
                         Device.Dispose();
 
@@ -424,7 +421,7 @@ namespace Ryujinx.Ava
                 }
                 else
                 {
-                    UserErrorDialog.CreateUserErrorDialog(userError, _parent);
+                    UserErrorDialog.ShowUserErrorDialog(userError, _parent);
 
                     Device.Dispose();
 
@@ -876,7 +873,7 @@ namespace Ryujinx.Ava
 
             // Get screen touch position from left mouse click
             // Get screen touch position
-            if (_parent.IsActive && !ConfigurationState.Instance.Hid.EnableMouse)
+            if ((_parent.IsActive || Window.RendererFocused) && !ConfigurationState.Instance.Hid.EnableMouse)
             {
                 hasTouch = TouchScreenManager.Update(true, (_inputManager.MouseDriver as AvaloniaMouseDriver).IsButtonPressed(MouseButton.Button1), ConfigurationState.Instance.Graphics.AspectRatio.Value.ToFloat());
             }
