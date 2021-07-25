@@ -22,13 +22,13 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <Image Grid.Row="1" Margin="5, 10, 20 , 10" Source="resm:Ryujinx.Ava.Assets.Images.Logo_Ryujinx.png" Height="80"
+        <Image Grid.Row="0" VerticalAlignment="Center" Grid.RowSpan="5" Margin="5, 10, 20 , 10" Source="resm:Ryujinx.Ava.Assets.Images.Logo_Ryujinx.png" Height="80"
                MinWidth="50" />
-        <TextBlock Grid.Row="0" Margin="10" Grid.Column="1" Text="{Binding MainText}" TextWrapping="Wrap" />
-        <TextBlock Grid.Row="1" Margin="10" Grid.Column="1" Text="{Binding SecondaryText}"  TextWrapping="Wrap" />
+        <TextBlock Grid.Row="0" Margin="5" Grid.Column="1" Text="{Binding MainText}" TextWrapping="Wrap" />
+        <TextBlock Grid.Row="1" Margin="5" Grid.Column="1" Text="{Binding SecondaryText}"  TextWrapping="Wrap" />
         <TextBox Name="Input" KeyUp="Message_KeyUp" TextInput="Message_TextInput" Text="{Binding Message}" Grid.Row="1"
                  Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextWrapping="Wrap" />
-        <TextBlock Name="Error" Margin="10" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch"
+        <TextBlock Name="Error" Margin="5" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Stretch"
                    TextWrapping="Wrap" />
         <StackPanel Margin="10" Spacing="10" Grid.Row="4" Grid.Column="1" HorizontalAlignment="Right"
                     Orientation="Horizontal">

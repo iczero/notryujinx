@@ -7,7 +7,7 @@
         WindowStartupLocation="CenterOwner"
         CanResize="False"
         SizeToContent="Height"
-        Width="400"
+        Width="450"
         Height="340"
         Title="Error Window">
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="20">
@@ -23,6 +23,6 @@
                Source="resm:Ryujinx.Ava.Assets.Images.Logo_Ryujinx.png" Height="80" MinWidth="50" />
         <TextBlock Grid.Row="0" Margin="10" Grid.Column="1" VerticalAlignment="Stretch" TextWrapping="Wrap" Text="{Binding Message}" />
         <StackPanel Name="ButtonStack" Margin="10" Spacing="10" Grid.Row="1" Grid.Column="1"
-                    HorizontalAlignment="Center" Orientation="Horizontal" />
+                    HorizontalAlignment="Right" Orientation="Horizontal" />
     </Grid>
 </Window>
