@@ -18,6 +18,8 @@ namespace Ryujinx.Ava.Ui.Controls
 {
     public class NativeEmbeddedWindow : NativeControlHost
     {
+        private static bool _glfwInitilized;
+
         public event EventHandler<KeyEventArgs> KeyPressed;
         public event EventHandler<KeyEventArgs> KeyReleased;
         public event EventHandler<MouseButtonEventArgs> MouseDown;
@@ -60,6 +62,12 @@ namespace Ryujinx.Ava.Ui.Controls
 
             resizeObserverable.Subscribe(Resized);
 
+            if(!_glfwInitilized)
+            {
+                _glfwInitilized = true;
+
+                GLFW.Init();
+            }
         }
 
         private void Resized(Rect rect)
@@ -75,9 +83,12 @@ namespace Ryujinx.Ava.Ui.Controls
             }
             set
             {
-                _isFullScreen = value;
+                if (_isFullScreen != value)
+                {
+                    _isFullScreen = value;
 
-                UpdateSizes(_scale);
+                    UpdateSizes(_scale);
+                }
             }
         }
 
@@ -102,8 +113,6 @@ namespace Ryujinx.Ava.Ui.Controls
                         var position = this.PointToScreen(Bounds.Position);
                         GLFWWindow.Location = new Vector2i(position.X, position.Y);
                     }
-
-                    Bounds = Bounds;
                 }
             }
         }
