@@ -771,6 +771,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
                     config = (InputConfig as InputConfiguration<GamepadInputId, ConfigStickInputId>).GetConfig();
                 }
 
+                config.ControllerType = Controllers.Keys.ToArray()[_controller];
+
                 string jsonString = JsonHelper.Serialize(config, true);
 
                 await File.WriteAllTextAsync(path, jsonString);
@@ -831,6 +833,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
             
             var config = !IsController ? (InputConfig as InputConfiguration<Key, ConfigStickInputId>).GetConfig() : (InputConfig as InputConfiguration<GamepadInputId, ConfigStickInputId>).GetConfig();
+            config.ControllerType = Controllers.Keys.ToArray()[_controller];
+            config.PlayerIndex    = _playerId;
 
             int i = newConfig.FindIndex(x => x.PlayerIndex ==  this.PlayerId);
             if (i == -1)

@@ -1,6 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using FluentAvalonia.UI.Controls;
 using System;
@@ -42,10 +43,14 @@ namespace Ryujinx.Ava.Ui.Windows
             Icon = new WindowIcon(stream);
         }
 
+        public void Initialize()
+        {
+            ContentDialog = this.FindControl<ContentDialog>("ContentDialog");
+        }
+
         protected override void OnOpened(EventArgs e)
         {
             base.OnOpened(e);
-
             ContentDialog = this.FindControl<ContentDialog>("ContentDialog");
         }
 
