@@ -322,7 +322,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                      <DataGridTemplateColumn Width="350" CellStyleClasses="Left">
+                      <DataGridTemplateColumn Width="350" CellStyleClasses="Left"  SortMemberPath="ApplicationName">
                             <DataGridTemplateColumn.Header>
                                 <TextBlock Text="{locale:Locale GameListHeaderApplication}" TextWrapping="Wrap"/>
                             </DataGridTemplateColumn.Header>
