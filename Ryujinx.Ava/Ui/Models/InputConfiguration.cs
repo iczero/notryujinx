@@ -31,14 +31,12 @@ namespace Ryujinx.Ava.Ui.Models
         ///  Player's Index for the controller
         /// </summary>
         public PlayerIndex PlayerIndex { get; set; }
-        
-        
+
         public Stick LeftJoystick { get; set; }
         public bool LeftInvertStickX { get; set; }
         public bool LeftInvertStickY { get; set; }
         public Key LeftControllerStickButton { get; set; }
-        
-        
+
         public Stick RightJoystick { get; set; }
         public bool RightInvertStickX { get; set; }
         public bool RightInvertStickY { get; set; }

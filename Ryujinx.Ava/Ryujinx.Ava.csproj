@@ -155,6 +155,9 @@
       <DependentUpon>InputDialog.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Ui\Windows\ContentDialogOverlay.xaml.cs">
+      <DependentUpon>ContentDialogOverlay.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Update="THIRDPARTY.md">
