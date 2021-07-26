@@ -655,6 +655,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 _owner.LoadApplication(folder);
             }
         }
+
+        public async void TakeScreenshot()
+        {
+            _owner.AppHost.ScreenshotRequested = true;
+        }
         
         public async void OpenMiiApplet()
         {

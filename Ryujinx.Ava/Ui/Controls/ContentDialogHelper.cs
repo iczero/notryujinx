@@ -54,14 +54,23 @@ namespace Ryujinx.Ava.Ui.Controls
                 overlay.Initialize();
 
                 contentDialog = overlay.ContentDialog;
-                
+
+                bool opened = false;
+
                 overlay.Activated += OverlayOnActivated;
                 
                 async void OverlayOnActivated(object? sender, EventArgs e)
                 {
+                    if(opened)
+                    {
+                        return;
+                    }
+
+                    opened = true;
+
                     await Task.Delay(100);
 
-                    overlay.Position = window.Position;
+                    overlay.Position = window.PointToScreen(new Point());
                     
                     await ShowDialog();
                 }
@@ -97,6 +106,8 @@ namespace Ryujinx.Ava.Ui.Controls
                     });
                     
                     await contentDialog.ShowAsync(ContentDialogPlacement.Popup);
+
+                    overlay?.Close();
                 };   
             }
 
