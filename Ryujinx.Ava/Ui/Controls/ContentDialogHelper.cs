@@ -24,19 +24,14 @@ namespace Ryujinx.Ava.Ui.Controls
         {
             UserResult result = UserResult.None;
 
-            Window overlay = null;
+            ContentDialogOverlay overlay = null;
 
-            ContentDialog contentDialog = window.ContentDialog;
+            ContentDialog contentDialog = null;
 
             if (UseModalOverlay)
             {
-                var windowClientLocation = window.PointToScreen(new Point());
-
-                contentDialog = new ContentDialog();
-
-                overlay = new Window
+                overlay = new ContentDialogOverlay()
                 {
-                    Content = contentDialog,
                     ExtendClientAreaToDecorationsHint = true,
                     TransparencyLevelHint = WindowTransparencyLevel.Transparent,
                     WindowStartupLocation = WindowStartupLocation.Manual,
@@ -46,35 +41,64 @@ namespace Ryujinx.Ava.Ui.Controls
                     Height = window.Bounds.Height,
                     Width = window.Bounds.Width,
                     CanResize = false,
-                    Position = windowClientLocation
+                    Position = window.PointToScreen(new Point())
                 };
+                
+                window.PositionChanged += OverlayOnPositionChanged;
+                
+                void OverlayOnPositionChanged(object? sender, PixelPointEventArgs e)
+                {
+                    overlay.Position = window.PointToScreen(new Point());;
+                }
+                
+                overlay.Initialize();
 
-                overlay.ShowDialog(window);
+                contentDialog = overlay.ContentDialog;
+                
+                overlay.Activated += OverlayOnActivated;
+                
+                async void OverlayOnActivated(object? sender, EventArgs e)
+                {
+                    await Task.Delay(100);
+
+                    overlay.Position = window.Position;
+                    
+                    await ShowDialog();
+                }
+                
+                await overlay.ShowDialog(window);
+            }
+            else
+            {
+                await ShowDialog();
             }
 
-            if (contentDialog != null)
+            async Task ShowDialog()
             {
-                contentDialog.Title = title;
-                contentDialog.PrimaryButtonText = primaryButton;
-                contentDialog.SecondaryButtonText = secondaryButton;
-                contentDialog.CloseButtonText = closeButton;
-                contentDialog.Content = CreateDialogTextContent(primaryText, secondaryText, iconSymbol);
-                // Todo check proper responses
-                contentDialog.PrimaryButtonCommand = MiniCommand.Create(() =>
+                if (contentDialog != null)
                 {
-                    result = primaryButton.ToLower() == "yes" ? UserResult.Yes : UserResult.Ok;
-                });
-                contentDialog.SecondaryButtonCommand = MiniCommand.Create(() =>
-                {
-                    result = UserResult.No;
-                });
-                contentDialog.CloseButtonCommand = MiniCommand.Create(() =>
-                {
-                    result = UserResult.Cancel;
-                });
-
-                await contentDialog.ShowAsync(ContentDialogPlacement.Popup);
-            };
+                    contentDialog.Title = title;
+                    contentDialog.PrimaryButtonText = primaryButton;
+                    contentDialog.SecondaryButtonText = secondaryButton;
+                    contentDialog.CloseButtonText = closeButton;
+                    contentDialog.Content = CreateDialogTextContent(primaryText, secondaryText, iconSymbol);
+                    // Todo check proper responses
+                    contentDialog.PrimaryButtonCommand = MiniCommand.Create(() =>
+                    {
+                        result = primaryButton.ToLower() == "yes" ? UserResult.Yes : UserResult.Ok;
+                    });
+                    contentDialog.SecondaryButtonCommand = MiniCommand.Create(() =>
+                    {
+                        result = UserResult.No;
+                    });
+                    contentDialog.CloseButtonCommand = MiniCommand.Create(() =>
+                    {
+                        result = UserResult.Cancel;
+                    });
+                    
+                    await contentDialog.ShowAsync(ContentDialogPlacement.Popup);
+                };   
+            }
 
             if(UseModalOverlay)
             {
