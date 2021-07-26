@@ -43,6 +43,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         private InputConfig _inputConfig;
         private object      _inputConfiguration;
+        private bool _isLoaded;
         private readonly UserControl _owner;
 
         public IGamepadDriver AvaloniaKeyboardDriver { get; }
@@ -94,6 +95,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 LoadConfiguration();
                 LoadDevice();
                 LoadProfiles();
+
+                _isLoaded = true;
 
                 OnPropertyChanged();
             }
@@ -214,6 +217,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 }
 
                 LoadControllers();
+
+                if (_isLoaded)
+                {
+                    LoadConfiguration(LoadDefaultConfiguration());
+                }
 
                 OnPropertyChanged();
                 NotifyChanges();

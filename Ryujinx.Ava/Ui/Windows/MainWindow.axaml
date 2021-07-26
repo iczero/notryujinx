@@ -10,9 +10,8 @@
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.Ui.ViewModels"
     xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
     Title="Ryujinx"
-    MinWidth="1280"
-    MinHeight="700"
     Height="780"
+    Width="1280"
     d:DesignHeight="720"
     d:DesignWidth="1280"
     WindowStartupLocation="CenterScreen"
@@ -177,6 +176,9 @@
                                 Command="{Binding OpenAmiiboWindow}"
                                 Header="{locale:Locale MenuBarActionsScanAmiibo}"
                                 IsEnabled="{Binding IsAmiiboRequested}" />
+                          <MenuItem Command="{Binding TakeScreenshot}"
+                                    IsEnabled="{Binding IsGameRunning}"
+                                    Header="{locale:Locale MenuBarFileToolsTakeScreenshot}" />
                         </MenuItem>
                         <MenuItem
                             VerticalAlignment="Center"
