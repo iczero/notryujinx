@@ -26,7 +26,7 @@ namespace Ryujinx.Ava.Ui.Controls
 
             ContentDialogOverlay overlay = null;
 
-            ContentDialog contentDialog = null;
+            ContentDialog contentDialog = window.ContentDialog;
 
             if (UseModalOverlay)
             {

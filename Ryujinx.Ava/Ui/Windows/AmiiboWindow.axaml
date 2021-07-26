@@ -9,6 +9,7 @@
                         xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
                         xmlns:viewModels="clr-namespace:Ryujinx.Ava.Ui.ViewModels"
                         CanResize="False"
+                        WindowStartupLocation="CenterOwner"
                         Width="800" MinHeight="650" Height="650"
                         SizeToContent="Manual"
                         MinWidth="600">

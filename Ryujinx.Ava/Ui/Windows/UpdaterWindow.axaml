@@ -9,6 +9,7 @@
                         CanResize="False"
                         SizeToContent="Height"
                         Width="500" MinHeight="500" Height="500"
+                        WindowStartupLocation="CenterOwner"
                         MinWidth="500"
                         Title="Ryujinx Updater">
     <Grid Margin="20" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
