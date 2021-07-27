@@ -198,7 +198,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             float anisotropy = config.Graphics.MaxAnisotropy;
 
-            MaxAnisotropy = anisotropy == -1 ? 0 : (int)(MathF.Sqrt(anisotropy) - 1);
+            MaxAnisotropy = anisotropy == -1 ? 0 : (int)(MathF.Log2(anisotropy));
             AspectRatio   = (int)config.Graphics.AspectRatio.Value;
 
             int resolution = config.Graphics.ResScale;
@@ -256,7 +256,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             config.System.FsGlobalAccessLogMode.Value = FsGlobalAccessLogMode;
             config.System.MemoryManagerMode.Value     = (MemoryManagerMode)MemoryMode;
 
-            float anisotropy = MaxAnisotropy == 0 ? -1 : MathF.Pow(MaxAnisotropy, 2);
+            float anisotropy = MaxAnisotropy == 0 ? -1 : MathF.Pow(2, MaxAnisotropy);
 
             config.Graphics.MaxAnisotropy.Value  = anisotropy;
             config.Graphics.AspectRatio.Value    = (AspectRatio)AspectRatio;

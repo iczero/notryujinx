@@ -847,20 +847,22 @@ namespace Ryujinx.Ava.Ui.ViewModels
                     var inputConfig = InputConfig as InputConfiguration<GamepadInputId, ConfigStickInputId>;
                     inputConfig.Id = selected.Split("/")[1].Split(" ")[0];
                 }
-            }
-            
-            var config = !IsController ? (InputConfig as InputConfiguration<Key, ConfigStickInputId>).GetConfig() : (InputConfig as InputConfiguration<GamepadInputId, ConfigStickInputId>).GetConfig();
-            config.ControllerType = Controllers.Keys.ToArray()[_controller];
-            config.PlayerIndex    = _playerId;
 
-            int i = newConfig.FindIndex(x => x.PlayerIndex ==  this.PlayerId);
-            if (i == -1)
-            {
-                newConfig.Add(config);
-            }
-            else
-            {
-                newConfig[i] = config;
+                var config = !IsController
+                    ? (InputConfig as InputConfiguration<Key, ConfigStickInputId>).GetConfig()
+                    : (InputConfig as InputConfiguration<GamepadInputId, ConfigStickInputId>).GetConfig();
+                config.ControllerType = Controllers.Keys.ToArray()[_controller];
+                config.PlayerIndex = _playerId;
+
+                int i = newConfig.FindIndex(x => x.PlayerIndex == this.PlayerId);
+                if (i == -1)
+                {
+                    newConfig.Add(config);
+                }
+                else
+                {
+                    newConfig[i] = config;
+                }
             }
 
             if (_mainWindow.AppHost != null)
