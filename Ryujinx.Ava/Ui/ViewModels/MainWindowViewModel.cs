@@ -133,6 +133,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
         }
 
         public bool EnableNonGameRunningControls => !IsGameRunning;
+        
+        public bool ShowFirmwareStatus => !ShowLoadProgress;
 
         public bool IsGameRunning
         {
@@ -143,6 +145,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(EnableNonGameRunningControls));
+                OnPropertyChanged(nameof(ShowFirmwareStatus));
             }
         }
 
@@ -165,6 +168,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 _showLoadProgress = value;
 
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(ShowFirmwareStatus));
             }
         }
 
