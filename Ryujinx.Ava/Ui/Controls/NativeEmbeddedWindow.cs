@@ -113,6 +113,8 @@ namespace Ryujinx.Ava.Ui.Controls
                         GLFWWindow.Location = new Vector2i(position.X, position.Y);
                     }
                 }
+                
+                Focus();
             }
         }
 
@@ -126,6 +128,13 @@ namespace Ryujinx.Ava.Ui.Controls
 
         public virtual void OnWindowCreated()
         {
+        }
+
+        protected override void OnGotFocus(GotFocusEventArgs e)
+        {
+            base.OnGotFocus(e);
+            
+            GLFWWindow.Focus();
         }
 
         public void Start()
