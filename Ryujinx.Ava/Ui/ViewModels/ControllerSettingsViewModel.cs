@@ -13,6 +13,7 @@ using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Configuration.Hid.Controller;
 using Ryujinx.Common.Configuration.Hid.Controller.Motion;
 using Ryujinx.Common.Configuration.Hid.Keyboard;
+using Ryujinx.Common.Logging;
 using Ryujinx.Common.Utilities;
 using Ryujinx.Configuration;
 using Ryujinx.Input;
@@ -694,6 +695,14 @@ namespace Ryujinx.Ava.Ui.ViewModels
                     }
                 }
                 catch (JsonException) { }
+                catch (InvalidOperationException)
+                {
+                    ContentDialogHelper.CreateErrorDialog(_owner.GetVisualRoot() as StyleableWindow,
+                        $"Profile {activeProfile} is incompatible with the current input configuration system.");
+                    Logger.Error?.Print(LogClass.Configuration, $"Profile {activeProfile} is incompatible with the current input configuration system.");
+                    
+                    return;
+                }
             }
 
             if (config != null)
@@ -794,7 +803,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 return;
             }
 
-            UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_mainWindow, "Deleting Profile", "This action is irreversible, are your sure you want to continue?");
+            UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_owner.GetVisualRoot() as StyleableWindow, "Deleting Profile", "This action is irreversible, are your sure you want to continue?");
 
             if (result == UserResult.Yes)
             {
