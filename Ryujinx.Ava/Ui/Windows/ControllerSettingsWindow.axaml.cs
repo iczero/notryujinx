@@ -275,7 +275,11 @@ namespace Ryujinx.Ava.Ui.Windows
                     ViewModel.PlayerId = key;
                 }
             }
+        }
 
+        public void Dispose()
+        {
+            ViewModel.Dispose();
         }
     }
 }
