@@ -35,10 +35,16 @@
         <Grid.RowDefinitions>
             <RowDefinition />
         </Grid.RowDefinitions>
-        <ui:ContentDialog Name="ContentDialog"
-                          IsPrimaryButtonEnabled="True"
-                          IsSecondaryButtonEnabled="True"
-                          IsVisible="False" />
+        <ContentControl 
+            Focusable="False"
+            IsVisible="False"
+            KeyboardNavigation.IsTabStop = "False">
+            <ui:ContentDialog Name="ContentDialog"
+                              KeyboardNavigation.IsTabStop = "False"
+                              IsPrimaryButtonEnabled="True"
+                              IsSecondaryButtonEnabled="True"
+                              IsVisible="True" />
+        </ContentControl>
         <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
