@@ -149,6 +149,10 @@ namespace Ryujinx.Ava
 
             _parent.PointerEnter += Parent_PointerEntered;
             _parent.PointerLeave += Parent_PointerLeft;
+            
+            ConfigurationState.Instance.System.IgnoreMissingServices.Event += UpdateIgnoreMissingServicesState;
+            ConfigurationState.Instance.Graphics.AspectRatio.Event         += UpdateAspectRatioState;
+            ConfigurationState.Instance.System.EnableDockedMode.Event      += UpdateDockedModeState;
         }
 
         private void Parent_PointerLeft(object? sender, PointerEventArgs e)
@@ -289,6 +293,30 @@ namespace Ryujinx.Ava
                 nvStutterWorkaround.Start();
             }
         }
+        
+        private void UpdateIgnoreMissingServicesState(object sender, ReactiveEventArgs<bool> args)
+        {
+            if (Device != null)
+            {
+                Device.Configuration.IgnoreMissingServices = args.NewValue;
+            }
+        }
+
+        private void UpdateAspectRatioState(object sender, ReactiveEventArgs<AspectRatio> args)
+        {
+            if (Device != null)
+            {
+                Device.Configuration.AspectRatio = args.NewValue;
+            }
+        }
+
+        private void UpdateDockedModeState(object sender, ReactiveEventArgs<bool> e)
+        {
+            if (Device != null)
+            {
+                Device.System.ChangeDockedModeState(e.NewValue);
+            }
+        }
 
         public void Exit()
         {
@@ -304,6 +332,10 @@ namespace Ryujinx.Ava
             DisplaySleep.Restore();
 
             _isActive = false;
+            
+            ConfigurationState.Instance.System.IgnoreMissingServices.Event += UpdateIgnoreMissingServicesState;
+            ConfigurationState.Instance.Graphics.AspectRatio.Event         += UpdateAspectRatioState;
+            ConfigurationState.Instance.System.EnableDockedMode.Event      += UpdateDockedModeState;
 
             _mainThread.Join();
             _renderingThread.Join();
