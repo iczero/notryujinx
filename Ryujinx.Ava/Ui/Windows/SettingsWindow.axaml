@@ -62,7 +62,7 @@
                                     <TextBlock Text="{locale:Locale SettingsTabGeneralHideCursorOnIdle}" />
                                 </CheckBox>
                             </StackPanel>
-                            <Separator />
+                            <Separator Height="1"/>
                             <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGeneralGameDirectories}" />
                             <StackPanel
                                 Margin="10,0,10,0"
@@ -295,7 +295,7 @@
                                     </ComboBox>
                                 </StackPanel>
                             </StackPanel>
-                            <Separator />
+                            <Separator Height="1" Margin="0,20"/>
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabSystemHacks}" />
                                 <TextBlock Text="{locale:Locale SettingsTabSystemHacksNote}" />
@@ -417,7 +417,7 @@
                                     </ComboBox>
                                 </StackPanel>
                             </StackPanel>
-                            <Separator />
+                            <Separator Height="1" Margin="0,5"/>
                             <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGraphicsDeveloperOptions}" />
                             <StackPanel
                                 Margin="10,0,10,0"
@@ -488,7 +488,7 @@
                                         Value="{Binding FsGlobalAccessLogMode}" />
                                 </StackPanel>
                             </StackPanel>
-                            <Separator />
+                            <Separator Height="1"/>
                             <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabLoggingDeveloperOptions}" />
                             <StackPanel
                                 Margin="10,0,10,0"
