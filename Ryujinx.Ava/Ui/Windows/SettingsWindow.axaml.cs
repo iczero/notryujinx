@@ -188,5 +188,11 @@ namespace Ryujinx.Ava.Ui.Windows
                 window.ViewModel.LoadApplications();
             }
         }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            _controllerSettings.Dispose();
+            base.OnClosed(e);
+        }
     }
 }
