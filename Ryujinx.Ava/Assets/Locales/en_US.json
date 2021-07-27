@@ -278,5 +278,6 @@
   "ControllerSettingsAddProfileToolTip": "Add Profile",
   "ControllerSettingsRemoveProfileToolTip": "Remove Profile",
   "ControllerSettingsSaveProfileToolTip": "Save Profile",
-  "MenuBarFileToolsTakeScreenshot" :  "Take Screenshot"
+  "MenuBarFileToolsTakeScreenshot" :  "Take Screenshot",
+  "MenuBarFileToolsHideUi" : "Hide Ui"
 }
