@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
+using Avalonia.Layout;
 using Avalonia.Platform;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -50,10 +51,8 @@ namespace Ryujinx.Ava.Ui.Controls
             _scale = scale;
 
             IObservable<Rect> stateObservable = this.GetObservable(BoundsProperty);
-
-            MinHeight = 720;
-            MinWidth = 1280;
-
+            HorizontalAlignment = HorizontalAlignment.Stretch;
+            VerticalAlignment = VerticalAlignment.Stretch;
             Margin = new Thickness();
 
             stateObservable.Subscribe(StateChanged);

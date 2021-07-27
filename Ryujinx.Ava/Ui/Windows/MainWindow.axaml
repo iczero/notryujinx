@@ -384,7 +384,6 @@
                 Grid.Row="1"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                Margin="0"
                 Background="{DynamicResource DarkBackgroundColor}"
                 IsVisible="{Binding ShowLoadProgress}"
                 ZIndex="1000">
@@ -456,6 +455,7 @@
                 Name="StatusBar"
                 Grid.Row="2"
                 Height="30"
+                Margin="0"
                 HorizontalAlignment="Stretch"
                 Background="{DynamicResource DarkBackgroundColor}"
                 VerticalAlignment="Bottom"
@@ -467,7 +467,7 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0">
+                <StackPanel Grid.Column="0" VerticalAlignment="Center">
                     <Grid Margin="0" IsVisible="{Binding EnableNonGameRunningControls}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
@@ -553,11 +553,12 @@
                         Text="{Binding GpuStatusText}"
                         TextAlignment="Left" />
                 </StackPanel>
-                <StackPanel IsVisible="{Binding EnableNonGameRunningControls}" Grid.Column="3" Orientation="Horizontal" Margin="5, 0, 5, 5">
+                <StackPanel VerticalAlignment="Center" IsVisible="{Binding ShowFirmwareStatus}" Grid.Column="3" Orientation="Horizontal" Margin="0">
                     <TextBlock
                         Name="FirmwareStatus"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
+                        Margin="5,0"
                         Text="{locale:Locale StatusBarSystemVersion}" />
                 </StackPanel>
             </Grid>
