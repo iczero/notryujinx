@@ -414,7 +414,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         {
             Controllers.Clear();
 
-            if (_inputConfig == null || _inputConfig.Backend == InputBackendType.Invalid)
+            if (_inputConfig == null)
             {
                 return;
             }
