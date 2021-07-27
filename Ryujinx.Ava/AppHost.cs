@@ -819,7 +819,6 @@ namespace Ryujinx.Ava
             }
 
             Window.IsFullscreen                    = fullScreenToggled;
-            _parent.ViewModel.ShowMenuAndStatusBar = !fullScreenToggled;
             _toggleFullscreen                      = toggleFullscreen;
 
             bool toggleDockedMode = keyboard.IsPressed(Key.F9);
@@ -896,6 +895,12 @@ namespace Ryujinx.Ava
 
                     _renderer.Screenshot();
                 }
+                
+                if ((currentHotkeyState.HasFlag(KeyboardHotkeyState.ShowUi) &&
+                     !_prevHotkeyState.HasFlag(KeyboardHotkeyState.ShowUi)))
+                {
+                    _parent.ViewModel.ShowMenuAndStatusBar = true;
+                }
 
                 _prevHotkeyState = currentHotkeyState;
             }
@@ -932,6 +937,11 @@ namespace Ryujinx.Ava
             if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.Screenshot))
             {
                 state |= KeyboardHotkeyState.Screenshot;
+            }
+            
+            if (_keyboardInterface.IsPressed(Key.AltLeft))
+            {
+                state |= KeyboardHotkeyState.ShowUi;
             }
 
             return state;

@@ -665,6 +665,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
             _owner.AppHost.ScreenshotRequested = true;
         }
         
+        public async void HideUi()
+        {
+            ShowMenuAndStatusBar = false;
+        }
+        
         public async void OpenMiiApplet()
         {
             string contentPath = _owner.ContentManager.GetInstalledContentPath(0x0100000000001009, StorageId.NandSystem, NcaContentType.Program);
