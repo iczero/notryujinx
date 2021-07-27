@@ -307,7 +307,7 @@ namespace Ryujinx.Ava.Ui.Controls
         
         internal static async Task<bool> CreateExitDialog(StyleableWindow owner)
         {
-            return await CreateChoiceDialog(owner, "Ryujinx - Exit", "Are you sure you want to stop emulation?",
+            return await CreateChoiceDialog(owner, "Ryujinx - Exit", "Are you sure you want to close Ryujinx?",
                 "All unsaved data will be lost!");
         }
 
