@@ -250,14 +250,6 @@ namespace Ryujinx.Ava.Ui.Controls
             GLFWWindow.KeyUp += Window_KeyUp;
         }
 
-        private void RefocusMainWindow()
-        {
-            if (Avalonia.Application.Current.ApplicationLifetime is ClassicDesktopStyleApplicationLifetime desktop)
-            {
-                desktop.MainWindow.Activate();
-            }
-        }
-
         private void Window_KeyUp(KeyboardKeyEventArgs obj)
         {
             GlfwKey key = Enum.Parse<GlfwKey>(obj.Key.ToString());
@@ -290,8 +282,6 @@ namespace Ryujinx.Ava.Ui.Controls
         private void Window_MouseUp(MouseButtonEventArgs obj)
         {
             MouseUp?.Invoke(this, obj);
-
-            RefocusMainWindow();
         }
 
         private void Window_MouseDown(MouseButtonEventArgs obj)
