@@ -553,7 +553,7 @@
                         Text="{Binding GpuStatusText}"
                         TextAlignment="Left" />
                 </StackPanel>
-                <StackPanel Grid.Column="3" Orientation="Horizontal">
+                <StackPanel IsVisible="{Binding EnableNonGameRunningControls}" Grid.Column="3" Orientation="Horizontal" Margin="5, 0, 5, 5">
                     <TextBlock
                         Name="FirmwareStatus"
                         HorizontalAlignment="Right"
