@@ -414,11 +414,6 @@ namespace Ryujinx.Ava.Ui.ViewModels
         {
             Controllers.Clear();
 
-            if (_inputConfig == null)
-            {
-                return;
-            }
-
             if (_playerId == PlayerIndex.Handheld)
             {
                 Controllers.Add(ControllerType.Handheld, LocaleManager.Instance["ControllerSettingsControllerTypeHandheld"]);
@@ -432,9 +427,13 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 Controllers.Add(ControllerType.JoyconLeft,    LocaleManager.Instance["ControllerSettingsControllerTypeJoyConLeft"]);
                 Controllers.Add(ControllerType.JoyconRight,   LocaleManager.Instance["ControllerSettingsControllerTypeJoyConRight"]);
 
-                if (Controllers.ContainsKey(_inputConfig.ControllerType))
+                if (_inputConfig != null && Controllers.ContainsKey(_inputConfig.ControllerType))
                 {
                     Controller = Controllers.Keys.ToList().IndexOf(_inputConfig.ControllerType);
+                }
+                else
+                {
+                    Controller = 0;
                 }
             }
         }
