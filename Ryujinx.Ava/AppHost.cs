@@ -129,7 +129,7 @@ namespace Ryujinx.Ava
             _ticksPerFrame          = Stopwatch.Frequency / TargetFps;
             _glLogLevel             = ConfigurationState.Instance.Logger.GraphicsDebugLevel;
 
-            _inputManager.SetMouseDriver(new AvaloniaMouseDriver(window));
+            _inputManager.SetMouseDriver(new AvaloniaMouseDriver(parent));
             NpadManager = _inputManager.CreateNpadManager();
             _keyboardInterface = (IKeyboard)_inputManager.KeyboardDriver.GetGamepad("0");
             TouchScreenManager = _inputManager.CreateTouchScreenManager();
