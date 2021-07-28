@@ -234,7 +234,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 BorderBrush="{DynamicResource ThemeControlBorderColor}"
-                BorderThickness="0,0,0,1"
+                BorderThickness="0,0,0,0"
                 DockPanel.Dock="Top">
                 <DataGrid
                     Name="GameList"
