@@ -346,9 +346,21 @@ namespace Ryujinx.Ava.Ui.Windows
 
         public void RefreshFirmwareStatus()
         {
-            LocaleManager.Instance.UpdateDynamicValue("StatusBarSystemVersion", ContentManager.GetCurrentFirmwareVersion().VersionString);
+            SystemVersion version = ContentManager.GetCurrentFirmwareVersion();
             
-            bool hasApplet = ContentManager.GetCurrentFirmwareVersion() != null && ContentManager.GetCurrentFirmwareVersion().Major > 3;
+            bool hasApplet = false;
+
+            if (version != null)
+            {
+                LocaleManager.Instance.UpdateDynamicValue("StatusBarSystemVersion",
+                    version.VersionString);
+
+                hasApplet = version.Major > 3;
+            }
+            else
+            {
+                LocaleManager.Instance.UpdateDynamicValue("StatusBarSystemVersion", "0.0");
+            }
 
             ViewModel.IsAppletMenuActive = hasApplet;
         }
