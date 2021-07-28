@@ -818,8 +818,8 @@ namespace Ryujinx.Ava
                 }
             }
 
-            Window.IsFullscreen                    = fullScreenToggled;
-            _toggleFullscreen                      = toggleFullscreen;
+            Window.IsFullscreen = fullScreenToggled;
+            _toggleFullscreen   = toggleFullscreen;
 
             bool toggleDockedMode = keyboard.IsPressed(Key.F9);
 
@@ -858,7 +858,7 @@ namespace Ryujinx.Ava
                 return false;
             }
 
-            if (_parent.IsActive)
+            if (_parent.IsActive || Window.RendererFocused)
             {
                 Dispatcher.UIThread.Post(() =>
                 {
@@ -878,26 +878,26 @@ namespace Ryujinx.Ava
 
             NpadManager.Update(ConfigurationState.Instance.Graphics.AspectRatio.Value.ToFloat());
 
-            if (_parent.IsActive)
+            if (_parent.IsActive || Window.RendererFocused)
             {
                 KeyboardHotkeyState currentHotkeyState = GetHotkeyState();
 
-                if (currentHotkeyState.HasFlag(KeyboardHotkeyState.ToggleVSync) &&
-                    !_prevHotkeyState.HasFlag(KeyboardHotkeyState.ToggleVSync))
+                if (currentHotkeyState == KeyboardHotkeyState.ToggleVSync &&
+                    _prevHotkeyState != KeyboardHotkeyState.ToggleVSync)
                 {
                     Device.EnableDeviceVsync = !Device.EnableDeviceVsync;
                 }
 
-                if ((currentHotkeyState.HasFlag(KeyboardHotkeyState.Screenshot) &&
-                     !_prevHotkeyState.HasFlag(KeyboardHotkeyState.Screenshot)) || ScreenshotRequested)
+                if ((currentHotkeyState == KeyboardHotkeyState.Screenshot &&
+                     _prevHotkeyState != KeyboardHotkeyState.Screenshot) || ScreenshotRequested)
                 {
                     ScreenshotRequested = false;
 
                     _renderer.Screenshot();
                 }
                 
-                if ((currentHotkeyState.HasFlag(KeyboardHotkeyState.ShowUi) &&
-                     !_prevHotkeyState.HasFlag(KeyboardHotkeyState.ShowUi)))
+                if (currentHotkeyState == KeyboardHotkeyState.ShowUi &&
+                     _prevHotkeyState != KeyboardHotkeyState.ShowUi)
                 {
                     _parent.ViewModel.ShowMenuAndStatusBar = true;
                 }
@@ -931,17 +931,17 @@ namespace Ryujinx.Ava
 
             if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.ToggleVsync))
             {
-                state |= KeyboardHotkeyState.ToggleVSync;
+                state = KeyboardHotkeyState.ToggleVSync;
             }
             
             if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.Screenshot))
             {
-                state |= KeyboardHotkeyState.Screenshot;
+                state = KeyboardHotkeyState.Screenshot;
             }
             
-            if (_keyboardInterface.IsPressed(Key.AltLeft))
+            if (_keyboardInterface.IsPressed(Key.F4))
             {
-                state |= KeyboardHotkeyState.ShowUi;
+                state = KeyboardHotkeyState.ShowUi;
             }
 
             return state;
