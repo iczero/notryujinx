@@ -1,5 +1,7 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml.Styling;
+using FluentAvalonia.Styling;
 using System;
 using System.Collections.Generic;
 
@@ -13,6 +15,8 @@ namespace Ryujinx.Ava.Common
 
         public StyleManager()
         {
+            AvaloniaLocator.Current.GetService<FluentAvaloniaTheme>().RequestedTheme = "Dark";
+
             _windows = new List<Window>();
         }
 
