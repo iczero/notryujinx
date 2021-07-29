@@ -1,5 +1,6 @@
 ﻿using LibHac.Common;
 using LibHac.Ns;
+using Ryujinx.Ava.Ui.Models;
 
 namespace Ryujinx.Ava.Common
 {
