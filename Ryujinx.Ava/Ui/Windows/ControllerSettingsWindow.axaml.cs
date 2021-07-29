@@ -32,7 +32,7 @@ namespace Ryujinx.Ava.Ui.Windows
         private bool _middleMousePressed;
         private bool _dialogOpen;
 
-        public DockPanel                   SettingButtons       { get; set; }
+        public Grid                   SettingButtons       { get; set; }
         public ToggleButton                CurrentToggledButton { get; set; }
         public ControllerSettingsViewModel ViewModel            { get; set; }
 
@@ -56,7 +56,7 @@ namespace Ryujinx.Ava.Ui.Windows
         {
             AvaloniaXamlLoader.Load(this);
 
-            SettingButtons = this.FindControl<DockPanel>("SettingButtons");
+            SettingButtons = this.FindControl<Grid>("SettingButtons");
         }
 
         protected override void OnPointerReleased(PointerReleasedEventArgs e)
