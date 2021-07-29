@@ -119,8 +119,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 {
                     ControllerType controller = Controllers.Keys.ToArray()[_controller];
 
-                    IsLeft  = false;
-                    IsRight = false;
+                    IsLeft  = true;
+                    IsRight = true;
 
                     switch (controller)
                     {
@@ -135,11 +135,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
                             break;
                         case ControllerType.JoyconLeft:
                             ControllerImage = "Ryujinx.Ava.Assets.Images.Controller_JoyConLeft.svg";
-                            IsLeft = true;
+                            IsRight = false;
                             break;
                         case ControllerType.JoyconRight:
                             ControllerImage = "Ryujinx.Ava.Assets.Images.Controller_JoyConRight.svg";
-                            IsRight = true;
+                            IsLeft = false;
                             break;
                     }
 
