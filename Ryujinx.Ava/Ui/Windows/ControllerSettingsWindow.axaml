@@ -1322,11 +1322,9 @@
                             </StackPanel>
                             <StackPanel
                                 Grid.Row="1"
-                                Margin="5"
                                 HorizontalAlignment="Center"
                                 Orientation="Vertical">
                                 <CheckBox
-                                    Margin="5"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     IsChecked="{Binding IsMotionController}">
