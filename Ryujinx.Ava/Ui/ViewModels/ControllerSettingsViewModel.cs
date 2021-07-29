@@ -708,6 +708,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
             {
                 LoadConfiguration(config);
 
+                LoadDevice();
+
                 NotifyChanges();
             }
         }
