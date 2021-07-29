@@ -587,7 +587,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
             else if (activeDevice.StartsWith("controller"))
             {
-                bool isNintendoStyle = activeDevice.Contains("Nintendo");
+                bool isNintendoStyle = Devices[activeDevice].Contains("Nintendo");
                 
                 string id = activeDevice.Split("/")[1].Split(" ")[0];
 
