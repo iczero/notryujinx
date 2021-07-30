@@ -38,10 +38,12 @@
     <Style Selector="DataGridColumnHeader">
         <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{DynamicResource ThemeControlBorderColor}" />
         <Setter Property="SeparatorBrush" Value="{DynamicResource ThemeControlBorderColor}" />
         <Setter Property="Padding" Value="5" />
-        <Setter Property="Background" Value="{DynamicResource ThemeCardColor}" />
+        <Setter Property="Background" Value="{DynamicResource DarkBackgroundColor}" />
         <Setter Property="Template">
             <ControlTemplate>
                 <Grid Background="{TemplateBinding Background}" ColumnDefinitions="*,Auto">
@@ -73,6 +75,13 @@
             </ControlTemplate>
         </Setter>
     </Style>
+    <Style Selector="DataGrid">
+      <Setter Property="RowBackground" Value="{DynamicResource ThemeAccentBrush4}" />
+      <Setter Property="AlternatingRowBackground" Value="#00FFFFFF" />
+      <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderLowColor}"/>
+      <Setter Property="BorderThickness" Value="{DynamicResource ThemeBorderThickness}" />
+    </Style>
     <Style Selector="DataGridCell">
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -101,6 +110,9 @@
         <Setter Property="Background" Value="{DynamicResource ThemeBackgroundColor}" />
         <Setter Property="BorderBrush" Value="{DynamicResource HighlightBrush}" />
     </Style>
+  <Style Selector="Button">
+    <Setter Property="MinWidth" Value="80" />
+  </Style>
     <Style Selector="TabItem">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="BorderThickness" Value="0,0,1,0" />
@@ -138,6 +150,7 @@
     </Style>
     <Styles.Resources>
         <SolidColorBrush x:Key="DataGridSelectionBackgroundBrush" Color="{DynamicResource DataGridSelectionColor}" />
+      <SolidColorBrush x:Key="ThemeAccentBrush4" Color="{DynamicResource ThemeAccentColor4}"></SolidColorBrush>
         <Thickness x:Key="PageMargin">40 0 40 0</Thickness>
         <Thickness x:Key="Margin">0 5 0 5</Thickness>
         <Thickness x:Key="TextMargin">0</Thickness>
@@ -149,9 +162,12 @@
         <Color x:Key="SystemAccentColorLight1">#FF00C3E3</Color>
         <Color x:Key="SystemAccentColorLight2">#FF00C3E3</Color>
         <Color x:Key="SystemAccentColorLight3">#FF00C3E3</Color>
+        <Color x:Key="ThemeAccentColor4">#FF2e2e2e</Color>
         <Color x:Key="DataGridSelectionColor">#FF00FABB</Color>
         <Color x:Key="DarkBackgroundColor">#FF2D2D2D</Color>
         <Color x:Key="ThemeControlBorderColor">#FF505050</Color>
+      <Color x:Key="TextOnAccentFillColorPrimary">#FFFFFFFF</Color>
+      <Color x:Key="SystemChromeWhiteColor">#FFFFFFFF</Color>
         <sys:Double x:Key="ScrollBarThickness">15</sys:Double>
         <sys:Double x:Key="FontSizeSmall">8</sys:Double>
         <sys:Double x:Key="FontSizeNormal">10</sys:Double>
