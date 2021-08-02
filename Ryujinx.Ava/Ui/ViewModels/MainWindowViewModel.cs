@@ -619,7 +619,10 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public async void OpenFile()
         {
-            OpenFileDialog dialog = new();
+            OpenFileDialog dialog = new()
+            {
+                Title = "Select a supported file to open"
+            };
             dialog.Filters.Add(new FileDialogFilter
             {
                 Name = "All Supported Formats",
@@ -650,7 +653,10 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public async void OpenFolder()
         {
-            OpenFolderDialog dialog = new();
+            OpenFolderDialog dialog = new()
+            {
+                Title = "Select a folder with an unpacked game"
+            };;
 
             string folder = await dialog.ShowAsync(_owner);
 
