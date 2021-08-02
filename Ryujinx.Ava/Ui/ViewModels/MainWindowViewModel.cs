@@ -785,6 +785,18 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 OpenSaveDirectory(filter, data);
             }
         }
+        
+        public void ToggleFavorite()
+        {
+            object selection = _owner.GameList.SelectedItem;
+
+            if (selection != null && selection is ApplicationData data)
+            {
+                data.Favorite = !data.Favorite;
+                
+                AppsCollection.Refresh();
+            }
+        }
 
         public void OpenModsDirectory()
         {

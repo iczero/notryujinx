@@ -150,16 +150,15 @@ namespace Ryujinx.Ava.Ui.Windows
 
         public void UpdateGridColumns()
         {
-            GameList.Columns[0].IsVisible = ViewModel.ShowFavoriteColumn;
-            GameList.Columns[1].IsVisible = ViewModel.ShowIconColumn;
-            GameList.Columns[2].IsVisible = ViewModel.ShowTitleColumn;
-            GameList.Columns[3].IsVisible = ViewModel.ShowDeveloperColumn;
-            GameList.Columns[4].IsVisible = ViewModel.ShowVersionColumn;
-            GameList.Columns[5].IsVisible = ViewModel.ShowTimePlayedColumn;
-            GameList.Columns[6].IsVisible = ViewModel.ShowLastPlayedColumn;
-            GameList.Columns[7].IsVisible = ViewModel.ShowFileExtColumn;
-            GameList.Columns[8].IsVisible = ViewModel.ShowFileSizeColumn;
-            GameList.Columns[9].IsVisible = ViewModel.ShowFilePathColumn;
+            GameList.Columns[0].IsVisible = ViewModel.ShowIconColumn;
+            GameList.Columns[1].IsVisible = ViewModel.ShowTitleColumn;
+            GameList.Columns[2].IsVisible = ViewModel.ShowDeveloperColumn;
+            GameList.Columns[3].IsVisible = ViewModel.ShowVersionColumn;
+            GameList.Columns[4].IsVisible = ViewModel.ShowTimePlayedColumn;
+            GameList.Columns[5].IsVisible = ViewModel.ShowLastPlayedColumn;
+            GameList.Columns[6].IsVisible = ViewModel.ShowFileExtColumn;
+            GameList.Columns[7].IsVisible = ViewModel.ShowFileSizeColumn;
+            GameList.Columns[8].IsVisible = ViewModel.ShowFilePathColumn;
         }
 
         public async Task PerformanceCheck()
@@ -418,9 +417,9 @@ namespace Ryujinx.Ava.Ui.Windows
                     bool canHaveDeviceSave = !Utilities.IsEmpty(data.ControlHolder.ByteSpan) && data.ControlHolder.Value.DeviceSaveDataSize > 0;
                     bool canHaveBcatSave   = !Utilities.IsEmpty(data.ControlHolder.ByteSpan) && data.ControlHolder.Value.BcatDeliveryCacheStorageSize > 0;
 
-                    ((menu.Items as AvaloniaList<object>)[0] as MenuItem).IsEnabled = canHaveUserSave;
-                    ((menu.Items as AvaloniaList<object>)[1] as MenuItem).IsEnabled = canHaveDeviceSave;
-                    ((menu.Items as AvaloniaList<object>)[2] as MenuItem).IsEnabled = canHaveBcatSave;
+                    ((menu.Items as AvaloniaList<object>)[2] as MenuItem).IsEnabled = canHaveUserSave;
+                    ((menu.Items as AvaloniaList<object>)[3] as MenuItem).IsEnabled = canHaveDeviceSave;
+                    ((menu.Items as AvaloniaList<object>)[4] as MenuItem).IsEnabled = canHaveBcatSave;
                 }
             }
         }

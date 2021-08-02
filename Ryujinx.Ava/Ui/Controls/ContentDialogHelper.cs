@@ -256,9 +256,9 @@ namespace Ryujinx.Ava.Ui.Controls
                 0xF4A3);
         }
 
-        internal static async Task<UserResult> CreateConfirmationDialog(StyleableWindow window, string primary, string secondaryText, string acceptButtonText = "Yes", string cancelButtonText = "No", string title = "Ryujinx - Confirmation")
+        internal static async Task<UserResult> CreateConfirmationDialog(StyleableWindow window, string primaryText, string secondaryText, string acceptButtonText = "Yes", string cancelButtonText = "No", string title = "Ryujinx - Confirmation")
         {
-            return await ShowContentDialog(window, "Ryujinx - Confirmation", primary, secondaryText, acceptButtonText, "",
+            return await ShowContentDialog(window, "Ryujinx - Confirmation", primaryText, secondaryText, acceptButtonText, "",
                 cancelButtonText,
                 (int) Symbol.Help);
         }
