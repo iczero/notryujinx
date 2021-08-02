@@ -174,7 +174,7 @@
         <sys:Double x:Key="ScrollBarThickness">15</sys:Double>
         <sys:Double x:Key="FontSizeSmall">8</sys:Double>
         <sys:Double x:Key="FontSizeNormal">10</sys:Double>
-        <sys:Double x:Key="FontSize">11</sys:Double>
+        <sys:Double x:Key="FontSize">12</sys:Double>
         <sys:Double x:Key="FontSizeLarge">15</sys:Double>
         <sys:Double x:Key="ControlContentThemeFontSize">13</sys:Double>
         <x:Double x:Key="MenuItemHeight">26</x:Double>
