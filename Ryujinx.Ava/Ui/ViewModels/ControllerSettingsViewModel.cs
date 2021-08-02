@@ -726,13 +726,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 return;
             }
 
-            ProfileWindow profileDialog = new();
+            string name = await ProfileDialog.ShowProfileDialog(_owner.GetVisualRoot() as StyleableWindow);
 
-            await profileDialog.ShowDialog(_mainWindow);
-
-            if (profileDialog.IsOkPressed)
+            if (!string.IsNullOrWhiteSpace(name))
             {
-                string path = Path.Combine(GetProfileBasePath(), profileDialog.FileName);
+                string path = Path.Combine(GetProfileBasePath(), name);
 
                 InputConfig config = null;
 
