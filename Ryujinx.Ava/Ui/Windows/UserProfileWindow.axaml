@@ -13,7 +13,7 @@
                         Width="850" MinHeight="550" Height="550"
                         WindowStartupLocation="CenterOwner"
                         SizeToContent="Manual"
-                        MinWidth="700">
+                        MinWidth="600">
     <Design.DataContext>
         <viewModels:UserProfileViewModel />
     </Design.DataContext>
@@ -94,7 +94,7 @@
                 </ListBox.ItemTemplate>
             </ListBox>
         </Grid>
-        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Stretch">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="10,0" Spacing="10" HorizontalAlignment="Stretch">
             <Button Content="{Locale:Locale UserProfilesAddNewProfile}" Command="{Binding AddUser}" />
             <Button IsEnabled="{Binding IsSelectedProfileDeletable}"
                     Content="{Locale:Locale UserProfilesDeleteSelectedProfile}" Command="{Binding DeleteUser}" />

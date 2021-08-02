@@ -21,21 +21,21 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <ListBox BorderThickness="0" SelectedIndex="{Binding SelectedIndex}" MaxWidth="700" Height="500"
+        <ListBox  BorderThickness="0" SelectedIndex="{Binding SelectedIndex}" Width="600" Height="500"
                  Items="{Binding Images}" HorizontalAlignment="Stretch" VerticalAlignment="Center">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapPanel Orientation="Horizontal" MaxWidth="700" Margin="0" HorizontalAlignment="Center" />
+                    <WrapPanel Orientation="Horizontal" MaxWidth="600" Margin="0" HorizontalAlignment="Center" />
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Image Margin="10" Height="96" Width="96"
+                    <Image Margin="5" Height="96" Width="96"
                            Source="{Binding Value, Converter={StaticResource ByteImage}}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" Margin="10" HorizontalAlignment="Left">
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" Margin="10" HorizontalAlignment="Center">
             <Button Content="{Locale:Locale AvatarChoose}" Width="200" Name="ChooseButton" Click="ChooseButton_OnClick" />
             <Button Content="{Locale:Locale AvatarSetBackgroundColor}" Width="200" Name="ColorButton" Click="ColorButton_OnClick" />
             <Button HorizontalAlignment="Right" Content="{Locale:Locale AvatarClose}" Click="CloseButton_OnClick" Name="CloseButton"

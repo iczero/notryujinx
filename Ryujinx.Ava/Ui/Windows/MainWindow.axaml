@@ -11,7 +11,7 @@
     xmlns:viewModels="clr-namespace:Ryujinx.Ava.Ui.ViewModels"
     xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
     Title="Ryujinx"
-    Height="780"
+    Height="785"
     Width="1280"
     d:DesignHeight="720"
     d:DesignWidth="1280"
@@ -69,7 +69,7 @@
                     <Menu
                         Name="Menu"
                         Margin="0"
-                        Height="30"
+                        Height="38"
                         HorizontalAlignment="Left">
                         <Menu.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -115,11 +115,6 @@
                                           Header="Brazilian Portuguese" />
                             </MenuItem>
                             <MenuItem Header="Enable GUI Columns">
-                                <MenuItem Header="Enable Favorites Column">
-                                    <MenuItem.Icon>
-                                        <CheckBox Margin="0" IsChecked="{Binding ShowFavoriteColumn, Mode=TwoWay}" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
                                 <MenuItem Header="Enable Icon Column">
                                     <MenuItem.Icon>
                                         <CheckBox Margin="0" IsChecked="{Binding ShowIconColumn, Mode=TwoWay}" />
@@ -237,6 +232,7 @@
                 Padding="0"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
+                Height="720"
                 BorderBrush="{DynamicResource ThemeControlBorderColor}"
                 BorderThickness="0,0,0,0"
                 DockPanel.Dock="Top">
@@ -254,6 +250,11 @@
                     Tapped="GameList_OnTapped">
                     <DataGrid.ContextMenu>
                         <ContextMenu MenuOpened="MenuBase_OnMenuOpened">
+                            <MenuItem
+                                Command="{Binding ToggleFavorite}"
+                                Header="{locale:Locale GameListContextMenuToggleFavorite}"
+                                ToolTip.Tip="{locale:Locale GameListContextMenuToggleFavoriteToolTip}" />
+                            <Separator />
                             <MenuItem
                                 Command="{Binding OpenUserSaveDirectory}"
                                 Header="{locale:Locale GameListContextMenuOpenUserSaveDirectory}"
@@ -315,27 +316,20 @@
                         </ContextMenu>
                     </DataGrid.ContextMenu>
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Width="70" SortMemberPath="Favorite">
-                            <DataGridTemplateColumn.Header>
-                                <TextBlock Text="{locale:Locale GameListHeaderFavorite}" />
-                            </DataGridTemplateColumn.Header>
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <CheckBox IsChecked="{Binding Favorite}" Margin="15,0,0,0" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
                         <DataGridTemplateColumn>
                             <DataGridTemplateColumn.Header>
                                 <TextBlock Text="{locale:Locale GameListHeaderIcon}" />
                             </DataGridTemplateColumn.Header>
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Image
-                                        Width="80"
-                                        Height="80"
-                                        Margin="15"
-                                        Source="{Binding Icon, Converter={StaticResource ByteImage}}" />
+                                    <Grid>
+                                        <Image
+                                            Width="80"
+                                            Height="80"
+                                            Margin="15"
+                                            Source="{Binding Icon, Converter={StaticResource ByteImage}}" />
+                                        <ui:SymbolIcon Symbol="Star" UseFilled="True" Foreground="Yellow" IsVisible="{Binding Favorite}" Margin="10" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                                    </Grid>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

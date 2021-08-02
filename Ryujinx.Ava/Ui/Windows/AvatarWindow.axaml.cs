@@ -33,7 +33,10 @@ namespace Ryujinx.Ava.Ui.Windows
 #if DEBUG
             this.AttachDevTools();
 #endif
-            Title = $"Ryujinx {Program.Version} - Manage Accounts - Avatar";
+            if (Program.PreviewerDetached)
+            {
+                Title = $"Ryujinx {Program.Version} - Manage Accounts - Avatar";
+            }
         }
         
         public ContentManager ContentManager { get; }
