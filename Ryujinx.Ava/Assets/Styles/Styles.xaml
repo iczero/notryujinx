@@ -148,6 +148,9 @@
     <Style Selector="DataGridCell">
         <Setter Property="FontSize" Value="14" />
     </Style>
+    <Style Selector="CheckBox TextBlock">
+        <Setter Property="Margin" Value="0,5,0,0" />
+    </Style>
     <Styles.Resources>
         <SolidColorBrush x:Key="DataGridSelectionBackgroundBrush" Color="{DynamicResource DataGridSelectionColor}" />
       <SolidColorBrush x:Key="ThemeAccentBrush4" Color="{DynamicResource ThemeAccentColor4}"></SolidColorBrush>
@@ -171,7 +174,7 @@
         <sys:Double x:Key="ScrollBarThickness">15</sys:Double>
         <sys:Double x:Key="FontSizeSmall">8</sys:Double>
         <sys:Double x:Key="FontSizeNormal">10</sys:Double>
-        <sys:Double x:Key="FontSize">13</sys:Double>
+        <sys:Double x:Key="FontSize">11</sys:Double>
         <sys:Double x:Key="FontSizeLarge">15</sys:Double>
         <sys:Double x:Key="ControlContentThemeFontSize">13</sys:Double>
         <x:Double x:Key="MenuItemHeight">26</x:Double>
