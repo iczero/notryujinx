@@ -155,10 +155,10 @@ namespace Ryujinx.Ava.Ui.Controls
                 overlay.ShowDialog(window);
             }
 
-            contentDialog.PrimaryButtonClick += DeferClose;
 
             if (contentDialog != null)
             {
+                contentDialog.PrimaryButtonClick += DeferClose;
                 contentDialog.Title = title;
                 contentDialog.PrimaryButtonText = primaryButton;
                 contentDialog.SecondaryButtonText = secondaryButton;
