@@ -123,7 +123,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             _tempUserName = String.Empty;
         }
 
-        public void DeleteUser()
+        public async void DeleteUser()
         {
             if (_selectedProfile != null)
             {
@@ -132,10 +132,26 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 if (_selectedProfile.UserId == lastUserId)
                 {
                     // If we are deleting the currently open profile, then we must open something else before deleting.
-                    _owner.AccountManager.OpenUser(Profiles.First(x => x.UserId != lastUserId).UserId);
+                    var profile = Profiles.FirstOrDefault(x => x.UserId != lastUserId);
+
+                    if (profile == null)
+                    {
+                        ContentDialogHelper.CreateErrorDialog(_owner,
+                            "There would be no other profiles to be opened if selected profile is deleted");
+                        return;
+                    }
+
+                    _owner.AccountManager.OpenUser(profile.UserId);
                 }
 
-                _owner.AccountManager.DeleteUser(_selectedProfile.UserId);
+                var result =
+                    await ContentDialogHelper.CreateConfirmationDialog(_owner,
+                        "Do you want to delete the selected profile", "");
+
+                if (result == UserResult.Yes)
+                {
+                    _owner.AccountManager.DeleteUser(_selectedProfile.UserId);
+                }
             }
 
             LoadProfiles();
