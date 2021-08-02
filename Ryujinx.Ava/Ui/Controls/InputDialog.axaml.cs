@@ -1,11 +1,15 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using FluentAvalonia.UI.Controls;
+using Ryujinx.Ava.Ui.Models;
 using Ryujinx.Ava.Ui.Windows;
+using System.Threading.Tasks;
 
 namespace Ryujinx.Ava.Ui.Controls
 {
-    public class InputDialog : StyleableWindow
+    public class InputDialog : UserControl
     {
         public string Message { get; set; }
         public string Input { get; set; }
@@ -13,28 +17,21 @@ namespace Ryujinx.Ava.Ui.Controls
 
         public uint MaxLength { get; }
 
-        public InputDialog(string title, string message, string input = "", string subMessage = "", uint maxLength = int.MaxValue)
+        public InputDialog(string message, string input = "", string subMessage = "", uint maxLength = int.MaxValue)
         {
             Message = message;
             Input = input;
             SubMessage = subMessage;
-            Title = title;
             MaxLength = maxLength;
 
             DataContext = this;
 
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
         public InputDialog()
         {
             InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
         }
 
         private void InitializeComponent()
@@ -42,14 +39,30 @@ namespace Ryujinx.Ava.Ui.Controls
             AvaloniaXamlLoader.Load(this);
         }
 
-        private void OKButton_OnClick(object sender, RoutedEventArgs e)
+        public static async Task<(UserResult Result, string Input)> ShowInputDialog(StyleableWindow window, string title, string message, string input = "", string subMessage = "",  uint maxLength = int.MaxValue)
         {
-            Close(UserResult.Ok);
-        }
+            ContentDialog contentDialog = window.ContentDialog;
 
-        private void CancelButton_OnClick(object sender, RoutedEventArgs e)
-        {
-            Close(UserResult.Cancel);
+            UserResult result = UserResult.Cancel;
+            
+            InputDialog content = new InputDialog(message, input = "", subMessage = "", maxLength);
+
+            if (contentDialog != null)
+            {
+                contentDialog.Title = title;
+                contentDialog.PrimaryButtonText = "OK";
+                contentDialog.SecondaryButtonText = "";
+                contentDialog.CloseButtonText = "Cancel";
+                contentDialog.Content = content;
+                contentDialog.PrimaryButtonCommand = MiniCommand.Create(() =>
+                {
+                    result = UserResult.Ok;
+                    input = content.Input;
+                });
+                await contentDialog.ShowAsync();
+            }
+
+            return (result, input);
         }
     }
 }

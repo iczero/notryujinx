@@ -312,13 +312,13 @@ namespace Ryujinx.Ava.Ui.Controls
         }
 
         internal static async Task<string> CreateInputDialog(string title, string mainText, string subText,
-            Window owner, uint maxLength = Int32.MaxValue, string input = "")
+            StyleableWindow owner, uint maxLength = Int32.MaxValue, string input = "")
         {
-            InputDialog dialog = new(title, mainText, input, subText, maxLength);
+            var result = await InputDialog.ShowInputDialog(owner, title,mainText, input, subText, maxLength);
 
-            if (await dialog.ShowDialog<UserResult>(owner) == UserResult.Ok)
+            if (result.Result == UserResult.Ok)
             {
-                return dialog.Input;
+                return result.Input;
             }
 
             return string.Empty;
