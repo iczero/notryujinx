@@ -69,7 +69,8 @@ namespace Ryujinx.Ava.Ui.Windows
         {
             ColorPickerWindow dialog = new()
             {
-                Color = Colors.White
+                Color = Colors.White,
+                Title = "Choose Background Color"
             };
 
             Color? res = await dialog.ShowDialog(this);
