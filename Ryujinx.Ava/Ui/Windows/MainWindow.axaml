@@ -232,7 +232,6 @@
                 Padding="0"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                Height="720"
                 BorderBrush="{DynamicResource ThemeControlBorderColor}"
                 BorderThickness="0,0,0,0"
                 DockPanel.Dock="Top">
