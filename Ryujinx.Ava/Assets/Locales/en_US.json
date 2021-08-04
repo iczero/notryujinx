@@ -278,8 +278,15 @@
   "ControllerSettingsAddProfileToolTip": "Add Profile",
   "ControllerSettingsRemoveProfileToolTip": "Remove Profile",
   "ControllerSettingsSaveProfileToolTip": "Save Profile",
-  "MenuBarFileToolsTakeScreenshot" :  "Take Screenshot",
-  "MenuBarFileToolsHideUi" : "Hide Ui",
-  "GameListContextMenuToggleFavorite" : "Toggle Favorite",
-  "GameListContextMenuToggleFavoriteToolTip" : "Toggle Favorite status of Game"
+  "MenuBarFileToolsTakeScreenshot": "Take Screenshot",
+  "MenuBarFileToolsHideUi": "Hide Ui",
+  "GameListContextMenuToggleFavorite": "Toggle Favorite",
+  "GameListContextMenuToggleFavoriteToolTip": "Toggle Favorite status of Game",
+  "SettingsTabGeneralTheme": "Theme",
+  "SettingsTabGeneralThemeCustomTheme": "Custom Theme Path",
+  "SettingsTabGeneralThemeBaseStyle": "Base Style",
+  "SettingsTabGeneralThemeBaseStyleDark": "Dark",
+  "SettingsTabGeneralThemeBaseStyleLight": "Light",
+  "SettingsTabGeneralThemeEnableCustomTheme": "Enable Custom Theme",
+  "ButtonBrowse": "Browse"
 }

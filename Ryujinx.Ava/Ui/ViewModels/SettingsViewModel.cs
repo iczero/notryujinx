@@ -1,4 +1,5 @@
 using Avalonia.Collections;
+using Avalonia.Controls;
 using LibHac.FsSystem;
 using Ryujinx.Audio.Backends.OpenAL;
 using Ryujinx.Audio.Backends.SDL2;
@@ -21,6 +22,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
     {
         private readonly VirtualFileSystem      _virtualFileSystem;
         private readonly ContentManager         _contentManager;
+        private readonly Window _owner;
         private          TimeZoneContentManager _timeZoneContentManager;
 
         private readonly List<string> _validTzRegions;
@@ -75,10 +77,12 @@ namespace Ryujinx.Ava.Ui.ViewModels
         public bool IsOpenAlEnabled          { get; set; }
         public bool IsSoundIoEnabled         { get; set; }
         public bool IsSDL2Enabled            { get; set; }
+        public bool EnableCustomTheme        { get; set; }
         public bool IsResolutionScaleActive => _resolutionScale == 0;
 
         public string TimeZone       { get; set; }
         public string ShaderDumpPath { get; set; }
+        public string CustomThemePath { get; set; }
 
         public int Language              { get; set; }
         public int Region                { get; set; }
@@ -88,6 +92,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         public int AspectRatio           { get; set; }
         public int OpenglDebugLevel      { get; set; }
         public int MemoryMode            { get; set; }
+        public int BaseStyleIndex        { get; set; }
 
         public DateTimeOffset         DateOffset { get; set; }
         public TimeSpan               TimeOffset { get; set; }
@@ -95,11 +100,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public AvaloniaList<string> GameDirectories { get; set; }
 
-        public SettingsViewModel(VirtualFileSystem virtualFileSystem, ContentManager contentManager) : this()
+        public SettingsViewModel(VirtualFileSystem virtualFileSystem, ContentManager contentManager, Window owner) : this()
         {
             _virtualFileSystem = virtualFileSystem;
             _contentManager    = contentManager;
-
+            _owner = owner;
             if (Program.PreviewerDetached)
             {
                 LoadTimeZones();
@@ -156,6 +161,25 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
         }
 
+        public async void BrowseTheme()
+        {
+            var dialog = new OpenFileDialog()
+            {
+                Title = "Select Theme File",
+                AllowMultiple = false
+            };
+
+            dialog.Filters.Add(new FileDialogFilter() { Extensions = { "xaml" }, Name = "Xaml Theme File" });
+
+           var file = await dialog.ShowAsync(_owner);
+
+            if(file.Length > 0)
+            {
+                CustomThemePath = file[0];
+                OnPropertyChanged(nameof(CustomThemePath));
+            }
+        }
+
         public void LoadCurrentConfiguration()
         {
             ConfigurationState config = ConfigurationState.Instance;
@@ -184,11 +208,14 @@ namespace Ryujinx.Ava.Ui.ViewModels
             EnableGuest              = config.Logger.EnableGuest;
             EnableDebug              = config.Logger.EnableDebug;
             EnableFsAccessLog        = config.Logger.EnableFsAccessLog;
+            EnableCustomTheme        = config.Ui.EnableCustomTheme;
 
             OpenglDebugLevel = (int)config.Logger.GraphicsDebugLevel.Value;
 
-            TimeZone       = config.System.TimeZone;
-            ShaderDumpPath = config.Graphics.ShadersDumpPath;
+            TimeZone        = config.System.TimeZone;
+            ShaderDumpPath  = config.Graphics.ShadersDumpPath;
+            CustomThemePath = config.Ui.CustomThemePath;
+            BaseStyleIndex  = config.Ui.BaseStyle == "Light" ? 0 : 1;
 
             Language              = (int)config.System.Language.Value;
             Region                = (int)config.System.Region.Value;
@@ -245,6 +272,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
             config.System.ExpandRam.Value               = ExpandDramSize;
             config.Hid.EnableKeyboard.Value             = EnableKeyboard;
             config.Hid.EnableMouse.Value                = EnableKeyboard;
+            config.Ui.CustomThemePath.Value             = CustomThemePath;
+            config.Ui.EnableCustomTheme.Value           = EnableCustomTheme;
+            config.Ui.BaseStyle.Value                   = BaseStyleIndex == 0 ? "Light" : "Dark";
             config.System.Language.Value                = (Language)Language;
             config.System.Region.Value                  = (Region)Region;
 

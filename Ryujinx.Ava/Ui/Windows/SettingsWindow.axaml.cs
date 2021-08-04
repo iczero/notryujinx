@@ -30,7 +30,7 @@ namespace Ryujinx.Ava.Ui.Windows
         {
             Title = $"Ryujinx {Program.Version} - {LocaleManager.Instance["Settings"]}";
 
-            ViewModel   = new SettingsViewModel(virtualFileSystem, contentManager);
+            ViewModel   = new SettingsViewModel(virtualFileSystem, contentManager, this);
             DataContext = ViewModel;
 
             InitializeComponent();

@@ -1399,6 +1399,13 @@
       "description": "A list of directories containing games to be used to load games into the games list",
       "default": []
     },
+    "base_theme_style": {
+      "$id": "#/properties/base_theme_style",
+      "type": "string",
+      "title": "Chooses the base style",
+      "description": "Chooses the base style",
+      "default": "Dark"
+    },
     "enable_custom_theme": {
       "$id": "#/properties/enable_custom_theme",
       "type": "boolean",
@@ -1456,7 +1463,7 @@
       "title": "Hotkey Controls",
       "required": [
         "toggle_vsync",
-        "screenshot"        
+        "screenshot"
       ],
       "properties": {
         "toggle_vsync": {
