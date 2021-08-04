@@ -34,10 +34,21 @@
     </AvaloniaResource>
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Assets\Styles\BaseDark.xaml" />
+    <None Remove="Assets\Styles\BaseLight.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\Styles\BaseLight.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaResource>
+    <AvaloniaResource Include="Assets\Styles\BaseDark.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AvaloniaResource>
     <AvaloniaResource Include="Assets\Styles\Styles.xaml" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia.Controls.DataGrid" Version="0.10.6" />
+    <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="0.10.6" />
     <PackageReference Include="Avalonia.Svg.Skia" Version="0.10.6.2" />
     <PackageReference Include="AvaloniaColorPicker" Version="1.0.6.1" />
     <PackageReference Include="DiscordRichPresence" Version="1.0.175" />

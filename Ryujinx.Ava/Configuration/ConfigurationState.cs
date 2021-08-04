@@ -83,6 +83,11 @@ namespace Ryujinx.Configuration
             public ReactiveObject<string> CustomThemePath { get; private set; }
 
             /// <summary>
+            /// Selects the base style
+            /// </summary>
+            public ReactiveObject<string> BaseStyle { get; private set; }
+
+            /// <summary>
             /// Start games in fullscreen mode
             /// </summary>
             public ReactiveObject<bool> StartFullscreen { get; private set; }
@@ -94,6 +99,7 @@ namespace Ryujinx.Configuration
                 GameDirs          = new ReactiveObject<List<string>>();
                 EnableCustomTheme = new ReactiveObject<bool>();
                 CustomThemePath   = new ReactiveObject<string>();
+                BaseStyle         = new ReactiveObject<string>();
                 StartFullscreen   = new ReactiveObject<bool>();
             }
         }
@@ -475,6 +481,7 @@ namespace Ryujinx.Configuration
                 GameDirs                  = Ui.GameDirs,
                 EnableCustomTheme         = Ui.EnableCustomTheme,
                 CustomThemePath           = Ui.CustomThemePath,
+                BaseStyle                 = Ui.BaseStyle,
                 StartFullscreen           = Ui.StartFullscreen,
                 EnableKeyboard            = Hid.EnableKeyboard,
                 EnableMouse               = Hid.EnableMouse,
@@ -537,6 +544,7 @@ namespace Ryujinx.Configuration
             Ui.GameDirs.Value                      = new List<string>();
             Ui.EnableCustomTheme.Value             = false;
             Ui.CustomThemePath.Value               = "";
+            Ui.BaseStyle.Value                     = "Dark";
             Ui.StartFullscreen.Value               = false;
             Hid.EnableKeyboard.Value               = false;
             Hid.EnableMouse.Value                  = false;
@@ -859,6 +867,16 @@ namespace Ryujinx.Configuration
                 configurationFileUpdated = true;
             }
 
+
+            if (configurationFileFormat.Version < 29)
+            {
+                Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 28.");
+
+                configurationFileFormat.BaseStyle = "Dark";
+
+                configurationFileUpdated = true;
+            }
+
             Logger.EnableFileLog.Value             = configurationFileFormat.EnableFileLog;
             Graphics.ResScale.Value                = configurationFileFormat.ResScale;
             Graphics.ResScaleCustom.Value          = configurationFileFormat.ResScaleCustom;
@@ -907,6 +925,7 @@ namespace Ryujinx.Configuration
             Ui.GameDirs.Value                      = configurationFileFormat.GameDirs;
             Ui.EnableCustomTheme.Value             = configurationFileFormat.EnableCustomTheme;
             Ui.CustomThemePath.Value               = configurationFileFormat.CustomThemePath;
+            Ui.BaseStyle.Value                     = configurationFileFormat.BaseStyle;
             Ui.StartFullscreen.Value               = configurationFileFormat.StartFullscreen;
             Hid.EnableKeyboard.Value               = configurationFileFormat.EnableKeyboard;
             Hid.EnableMouse.Value                  = configurationFileFormat.EnableMouse;
