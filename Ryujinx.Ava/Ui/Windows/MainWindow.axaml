@@ -389,7 +389,7 @@
                 Grid.Row="1"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
-                Background="{DynamicResource DarkBackgroundColor}"
+                Background="{DynamicResource DatagridBackgroundColor}"
                 IsVisible="{Binding ShowLoadProgress}"
                 ZIndex="1000">
                 <Grid.ColumnDefinitions>
@@ -462,7 +462,7 @@
                 Height="30"
                 Margin="0"
                 HorizontalAlignment="Stretch"
-                Background="{DynamicResource DarkBackgroundColor}"
+                Background="{DynamicResource DatagridBackgroundColor}"
                 VerticalAlignment="Bottom"
                 DockPanel.Dock="Bottom"
                 IsVisible="{Binding ShowMenuAndStatusBar}">
