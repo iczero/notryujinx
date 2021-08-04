@@ -9,6 +9,5 @@
         <FluentTheme Mode="Dark" />
         <sty:FluentAvaloniaTheme RequestedTheme="Dark"/>
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
-        <StyleInclude Source="avares://Ryujinx.Ava/Assets/Styles/Styles.xaml" />
     </Application.Styles>
 </Application>

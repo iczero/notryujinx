@@ -79,7 +79,7 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <Grid Grid.Column="0" Background="DarkGreen" Grid.ColumnSpan="2"
+                            <Grid Grid.Column="0" Background="{DynamicResource ThemeAccentColorBrush}" Grid.ColumnSpan="2"
                                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="5" MinWidth="5"
                                   IsVisible="{Binding IsOpened}" />
                             <Image Grid.Column="0" Height="96" Width="96"
