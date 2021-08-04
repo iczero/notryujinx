@@ -43,7 +43,7 @@
         <Setter Property="Background" Value="{DynamicResource ThemeControlBorderColor}" />
         <Setter Property="SeparatorBrush" Value="{DynamicResource ThemeControlBorderColor}" />
         <Setter Property="Padding" Value="5" />
-        <Setter Property="Background" Value="{DynamicResource DarkBackgroundColor}" />
+        <Setter Property="Background" Value="{DynamicResource DatagridBackgroundColor}" />
         <Setter Property="Template">
             <ControlTemplate>
                 <Grid Background="{TemplateBinding Background}" ColumnDefinitions="*,Auto">
@@ -153,7 +153,8 @@
     </Style>
     <Styles.Resources>
         <SolidColorBrush x:Key="DataGridSelectionBackgroundBrush" Color="{DynamicResource DataGridSelectionColor}" />
-      <SolidColorBrush x:Key="ThemeAccentBrush4" Color="{DynamicResource ThemeAccentColor4}"></SolidColorBrush>
+        <SolidColorBrush x:Key="ThemeAccentColorBrush" Color="{DynamicResource SystemAccentColor}" />
+        <SolidColorBrush x:Key="ThemeAccentBrush4" Color="{DynamicResource ThemeAccentColor4}"></SolidColorBrush>
         <Thickness x:Key="PageMargin">40 0 40 0</Thickness>
         <Thickness x:Key="Margin">0 5 0 5</Thickness>
         <Thickness x:Key="TextMargin">0</Thickness>
@@ -165,9 +166,8 @@
         <Color x:Key="SystemAccentColorLight1">#FF00C3E3</Color>
         <Color x:Key="SystemAccentColorLight2">#FF00C3E3</Color>
         <Color x:Key="SystemAccentColorLight3">#FF00C3E3</Color>
-        <Color x:Key="ThemeAccentColor4">#FF2e2e2e</Color>
         <Color x:Key="DataGridSelectionColor">#FF00FABB</Color>
-        <Color x:Key="DarkBackgroundColor">#FF2D2D2D</Color>
+        <Color x:Key="DatagridBackgroundColor">#FF2D2D2D</Color>
         <Color x:Key="ThemeControlBorderColor">#FF505050</Color>
       <Color x:Key="TextOnAccentFillColorPrimary">#FFFFFFFF</Color>
       <Color x:Key="SystemChromeWhiteColor">#FFFFFFFF</Color>
