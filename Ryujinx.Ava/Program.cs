@@ -53,7 +53,6 @@ namespace Ryujinx.Ava
                 .With(new X11PlatformOptions
                 {
                     EnableMultiTouch = true,
-                    UseDBusMenu      = true,
                     EnableIme        = true,
                     UseEGL           = false,
                     UseGpu           = false
