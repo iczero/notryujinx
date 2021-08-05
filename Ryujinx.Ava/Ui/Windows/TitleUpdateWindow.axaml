@@ -58,7 +58,6 @@
                 </ItemsControl>
             </ScrollViewer>
         </Border>
-        <Separator HorizontalAlignment="Stretch" />
         <DockPanel
             Grid.Row="2"
             Margin="0"
