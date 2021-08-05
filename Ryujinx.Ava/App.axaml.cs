@@ -3,21 +3,22 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Styling;
+using Avalonia.Threading;
 using FluentAvalonia.Styling;
 using IX.System.IO;
 using Ryujinx.Ava.Common;
+using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.Common;
 using Ryujinx.Configuration;
 using System;
 using System.Linq;
+using System.Diagnostics;
 
 namespace Ryujinx.Ava
 {
     public class App : Avalonia.Application
     {
-        public static StyleManager StyleManager { get; set; }
-
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
@@ -27,7 +28,6 @@ namespace Ryujinx.Ava
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                StyleManager       = new StyleManager();
                 desktop.MainWindow = new MainWindow();
             }
 
@@ -46,12 +46,49 @@ namespace Ryujinx.Ava
 
         private void CustomThemeChanged_Event(object sender, ReactiveEventArgs<bool> e)
         {
-            ApplyConfiguredTheme();
+            try
+            {
+                ApplyConfiguredTheme();
+            }
+            catch (Exception)
+            {
+                ShowRestartDialog();
+            }
+        }
+
+        private async void ShowRestartDialog()
+        {
+            Dispatcher.UIThread.InvokeAsync(async () =>
+            {
+                if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+                {
+                    var result = await ContentDialogHelper.CreateConfirmationDialog(
+                        (desktop.MainWindow as MainWindow).SettingsWindow,
+                        "Theme have been saved. A restart is needed to apply the theme.",
+                        "Do you want to restart", "Yes", "No", "Restart Required");
+
+                    if (result == UserResult.Yes)
+                    {
+                        var path = Process.GetCurrentProcess().MainModule.FileName;
+                        var info = new ProcessStartInfo() {FileName = path, UseShellExecute = false};
+                        var proc = Process.Start(info);
+                        desktop.Shutdown();
+                        Environment.Exit(0);
+                    }
+                }
+            });
         }
 
         private void ThemeChanged_Event(object sender, ReactiveEventArgs<string> e)
         {
-            ApplyConfiguredTheme();
+            try
+            {
+                ApplyConfiguredTheme();
+            }
+            catch (Exception)
+            {
+                ShowRestartDialog();
+            }
         }
 
         private void ApplyConfiguredTheme()
@@ -68,21 +105,19 @@ namespace Ryujinx.Ava
             }
 
             var theme = AvaloniaLocator.Current.GetService<FluentAvaloniaTheme>();
+            
+            theme.RequestedTheme = baseStyle;
+            
             var currentStyles = this.Styles;
+
+            if (currentStyles.Count > 3)
+            {
+                currentStyles.RemoveRange(3, currentStyles.Count - 3);
+            }
 
             IStyle newStyles = null;
 
-            switch (baseStyle.ToLower())
-            {
-                case "dark":
-                    theme.RequestedTheme = "Dark";
-                    newStyles = (Styles)AvaloniaXamlLoader.Load(new Uri($"avares://Ryujinx.Ava/Assets/Styles/BaseDark.xaml", UriKind.Absolute));
-                    break;
-                case "light":
-                    theme.RequestedTheme = "Light";
-                    newStyles = (Styles)AvaloniaXamlLoader.Load(new Uri($"avares://Ryujinx.Ava/Assets/Styles/BaseLight.xaml", UriKind.Absolute));
-                    break;
-            }
+            newStyles = (Styles)AvaloniaXamlLoader.Load(new Uri($"avares://Ryujinx.Ava/Assets/Styles/Base{baseStyle}.xaml", UriKind.Absolute));
 
             if (currentStyles.Count == 4)
             {
@@ -117,8 +152,6 @@ namespace Ryujinx.Ava
                     }
                 }
             }
-
-            theme.Owner?.NotifyHostedResourcesChanged(ResourcesChangedEventArgs.Empty);
         }
     }
 }

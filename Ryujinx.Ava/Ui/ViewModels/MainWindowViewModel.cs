@@ -716,9 +716,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public async void OpenSettings()
         {
-            SettingsWindow window = new(_owner.VirtualFileSystem, _owner.ContentManager);
+            _owner.SettingsWindow = new(_owner.VirtualFileSystem, _owner.ContentManager);
 
-            await window.ShowDialog(_owner);
+            await _owner.SettingsWindow.ShowDialog(_owner);
         }
 
         public async void ManageProfiles()

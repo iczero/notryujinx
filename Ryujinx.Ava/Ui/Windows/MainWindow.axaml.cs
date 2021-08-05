@@ -52,7 +52,9 @@ namespace Ryujinx.Ava.Ui.Windows
         private static string _launchPath;
         private static bool _startFullscreen;
         internal readonly AvaHostUiHandler UiHandler;
-
+        
+        public SettingsWindow SettingsWindow { get; set; }
+        
         public VirtualFileSystem VirtualFileSystem { get; private set; }
         public ContentManager    ContentManager    { get; private set; }
         public AccountManager    AccountManager    { get; private set; }
