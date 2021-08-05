@@ -48,7 +48,7 @@
         <Color x:Key="SystemAccentColorLight2">#FF00C3E3</Color>
         <Color x:Key="SystemAccentColorLight3">#FF00C3E3</Color>
         <Color x:Key="DataGridSelectionColor">#FF00FABB</Color>
-        <Color x:Key="DatagridBackgroundColor">#FF2D2D2D</Color>
+        <Color x:Key="ThemeContentBackgroundColor">#FF2D2D2D</Color>
         <Color x:Key="ThemeControlBorderColor">#FF505050</Color>
         <Color x:Key="TextOnAccentFillColorPrimary">#FFFFFFFF</Color>
         <Color x:Key="SystemChromeWhiteColor">#FFFFFFFF</Color>
