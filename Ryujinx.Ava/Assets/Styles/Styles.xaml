@@ -135,7 +135,7 @@
         <Setter Property="Background" Value="{DynamicResource ThemeControlBorderColor}" />
         <Setter Property="Foreground" Value="{DynamicResource ThemeControlBorderColor}" />
         <Setter Property="MinHeight" Value="1" />
-        <Setter Property="Margin" Value="5" />
+        <Setter Property="Margin" Value="5,5,5,5" />
     </Style>
     <Style Selector=":is(Button).DateTimeFlyoutButtonStyle">
         <Setter Property="Background" Value="{DynamicResource HighlightColor}" />
@@ -157,7 +157,7 @@
         <SolidColorBrush x:Key="ThemeAccentBrush4" Color="{DynamicResource ThemeAccentColor4}"></SolidColorBrush>
         <Thickness x:Key="PageMargin">40 0 40 0</Thickness>
         <Thickness x:Key="Margin">0 5 0 5</Thickness>
-        <Thickness x:Key="TextMargin">0</Thickness>
+        <Thickness x:Key="TextMargin">0 0 0 0</Thickness>
         <Thickness x:Key="MenuItemPadding">5 0 5 0</Thickness>
         <Color x:Key="SystemAccentColor">#FF00C3E3</Color>
         <Color x:Key="SystemAccentColorDark1">#FF00C3E3</Color>
