@@ -288,5 +288,6 @@
   "SettingsTabGeneralThemeBaseStyleDark": "Dark",
   "SettingsTabGeneralThemeBaseStyleLight": "Light",
   "SettingsTabGeneralThemeEnableCustomTheme": "Enable Custom Theme",
-  "ButtonBrowse": "Browse"
+  "ButtonBrowse": "Browse",
+  "ControllerSettingsMotionConfigureCemuHookSettings" : "Configure CemuHook Motion"
 }
