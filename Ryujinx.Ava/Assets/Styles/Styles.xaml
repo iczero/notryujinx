@@ -154,6 +154,7 @@
     <Styles.Resources>
         <SolidColorBrush x:Key="DataGridSelectionBackgroundBrush" Color="{DynamicResource DataGridSelectionColor}" />
         <SolidColorBrush x:Key="ThemeAccentColorBrush" Color="{DynamicResource SystemAccentColor}" />
+        <SolidColorBrush x:Key="ListBoxBackground" Color="{DynamicResource ThemeContentBackgroundColor}" />
         <SolidColorBrush x:Key="ThemeAccentBrush4" Color="{DynamicResource ThemeAccentColor4}"></SolidColorBrush>
         <Thickness x:Key="PageMargin">40 0 40 0</Thickness>
         <Thickness x:Key="Margin">0 5 0 5</Thickness>
@@ -169,8 +170,8 @@
         <Color x:Key="DataGridSelectionColor">#FF00FABB</Color>
         <Color x:Key="ThemeContentBackgroundColor">#FF2D2D2D</Color>
         <Color x:Key="ThemeControlBorderColor">#FF505050</Color>
-      <Color x:Key="TextOnAccentFillColorPrimary">#FFFFFFFF</Color>
-      <Color x:Key="SystemChromeWhiteColor">#FFFFFFFF</Color>
+        <Color x:Key="TextOnAccentFillColorPrimary">#FFFFFFFF</Color>
+        <Color x:Key="SystemChromeWhiteColor">#FFFFFFFF</Color>
         <sys:Double x:Key="ScrollBarThickness">15</sys:Double>
         <sys:Double x:Key="FontSizeSmall">8</sys:Double>
         <sys:Double x:Key="FontSizeNormal">10</sys:Double>
