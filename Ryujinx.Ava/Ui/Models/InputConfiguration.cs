@@ -133,13 +133,16 @@ namespace Ryujinx.Ava.Ui.Models
         }
         
         public bool EnableMotion { get; set; }
-
         public bool EnableCemuHookMotion { get; set; }
         public int Slot { get; set; }
         public int AltSlot { get; set; }
         public bool MirrorInput { get; set; }
         public string DsuServerHost { get; set; }
         public int DsuServerPort { get; set; }
+        
+        public bool  EnableRumble { get; set; }
+        public float WeakRumble   { get; set; }
+        public float StrongRumble { get; set; }
 
         public InputConfiguration(InputConfig config)
         {
@@ -233,6 +236,13 @@ namespace Ryujinx.Ava.Ui.Models
                         Slot                 = cemuHook.Slot;
                         AltSlot              = cemuHook.AltSlot;
                         MirrorInput          = cemuHook.MirrorInput;
+                    }
+
+                    if (controllerConfig.Rumble != null)
+                    {
+                        EnableRumble = controllerConfig.Rumble.EnableRumble;
+                        WeakRumble   = controllerConfig.Rumble.WeakRumble;
+                        StrongRumble = controllerConfig.Rumble.StrongRumble;
                     }
                 }
             }
@@ -337,6 +347,12 @@ namespace Ryujinx.Ava.Ui.Models
                         InvertStickX = RightInvertStickX,
                         InvertStickY = RightInvertStickY,
                         StickButton  = (GamepadInputId)(object)RightControllerStickButton,
+                    },
+                    Rumble =  new RumbleConfigController()
+                    {
+                        EnableRumble =  EnableRumble,
+                        WeakRumble =  WeakRumble,
+                        StrongRumble = StrongRumble
                     },
                     Version          = InputConfig.CurrentVersion,
                     DeadzoneLeft     = DeadzoneLeft,

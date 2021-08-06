@@ -289,5 +289,9 @@
   "SettingsTabGeneralThemeBaseStyleLight": "Light",
   "SettingsTabGeneralThemeEnableCustomTheme": "Enable Custom Theme",
   "ButtonBrowse": "Browse",
-  "ControllerSettingsMotionConfigureCemuHookSettings" : "Configure CemuHook Motion"
+  "ControllerSettingsMotionConfigureCemuHookSettings" : "Configure CemuHook Motion",
+  "ControllerSettingsRumble" : "Rumble",
+  "ControllerSettingsRumbleEnable" : "Enable Rumble",
+  "ControllerSettingsRumbleStrongMultiplier" : "Strong Rumble Multiplier",
+  "ControllerSettingsRumbleWeakMultiplier" : "Weak Rumble Multiplier"
 }
