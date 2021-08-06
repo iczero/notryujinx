@@ -204,7 +204,23 @@ namespace Ryujinx.Ava.Ui.Windows
         {
             var list = TitleUpdates.ToList();
 
-            list.Sort((x, y) => x.Control.DisplayVersion.ToString().CompareTo(y.Control.DisplayVersion.ToString()));
+            list.Sort((x, y) =>
+            {
+                var v = x.Control.DisplayVersion.ToString();
+                var u = y.Control.DisplayVersion.ToString();
+
+                if (string.IsNullOrEmpty(v))
+                {
+                    return -1;
+                }
+                else if (string.IsNullOrEmpty(u))
+                {
+                    return 1;
+                }
+                
+                return Version.Parse(x.Control.DisplayVersion.ToString())
+                    .CompareTo(Version.Parse(y.Control.DisplayVersion.ToString())) * -1;
+            });
             
             TitleUpdates.Clear();
             
