@@ -111,11 +111,13 @@ namespace Ryujinx.Ava.Ui.Windows
                     selected.IsEnabled = true;
                 }
             }
+            
+            SortUpdates();
         }
 
         private void AddUpdate(string path)
         {
-            if (File.Exists(path))
+            if (File.Exists(path) && TitleUpdates.FirstOrDefault(x=> x.Path == path) == null)
             {
                 using (FileStream file = new(path, FileMode.Open, FileAccess.Read))
                 {
@@ -166,6 +168,8 @@ namespace Ryujinx.Ava.Ui.Windows
             {
                 TitleUpdates.Clear();
             }
+            
+            SortUpdates();
         }
 
         public void RemoveSelected()
@@ -193,6 +197,18 @@ namespace Ryujinx.Ava.Ui.Windows
                     AddUpdate(file);
                 }
             }
+            SortUpdates();
+        }
+
+        private void SortUpdates()
+        {
+            var list = TitleUpdates.ToList();
+
+            list.Sort((x, y) => x.Control.DisplayVersion.ToString().CompareTo(y.Control.DisplayVersion.ToString()));
+            
+            TitleUpdates.Clear();
+            
+            TitleUpdates.AddRange(list);
         }
 
         public void Save()
