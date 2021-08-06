@@ -75,7 +75,6 @@
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
-        <Separator HorizontalAlignment="Stretch" />
         <DockPanel
             Grid.Row="2"
             Margin="0"
