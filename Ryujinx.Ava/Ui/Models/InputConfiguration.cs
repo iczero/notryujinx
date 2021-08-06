@@ -133,6 +133,8 @@ namespace Ryujinx.Ava.Ui.Models
         }
         
         public bool EnableMotion { get; set; }
+
+        public bool EnableCemuHookMotion { get; set; }
         public int Slot { get; set; }
         public int AltSlot { get; set; }
         public bool MirrorInput { get; set; }
@@ -225,11 +227,12 @@ namespace Ryujinx.Ava.Ui.Models
 
                     if (controllerConfig.Motion is CemuHookMotionConfigController cemuHook)
                     {
-                        DsuServerHost = cemuHook.DsuServerHost;
-                        DsuServerPort = cemuHook.DsuServerPort;
-                        Slot          = cemuHook.Slot;
-                        AltSlot       = cemuHook.AltSlot;
-                        MirrorInput   = cemuHook.MirrorInput;
+                        EnableCemuHookMotion = true;
+                        DsuServerHost        = cemuHook.DsuServerHost;
+                        DsuServerPort        = cemuHook.DsuServerPort;
+                        Slot                 = cemuHook.Slot;
+                        AltSlot              = cemuHook.AltSlot;
+                        MirrorInput          = cemuHook.MirrorInput;
                     }
                 }
             }
@@ -339,7 +342,7 @@ namespace Ryujinx.Ava.Ui.Models
                     DeadzoneLeft     = DeadzoneLeft,
                     DeadzoneRight    = DeadzoneRight,
                     TriggerThreshold = TriggerThreshold,
-                    Motion = MotionBackend == MotionInputBackendType.CemuHook
+                    Motion = MotionBackend == MotionInputBackendType.CemuHook || EnableCemuHookMotion
                            ? new CemuHookMotionConfigController()
                            {
                                DsuServerHost = DsuServerHost,

@@ -43,7 +43,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private bool        _isCemuHookMotionController;
 
         private InputConfig _inputConfig;
-        private object      _inputConfiguration;
+        private object      _configuration;
         private bool _isLoaded;
         private readonly UserControl _owner;
 
@@ -64,12 +64,12 @@ namespace Ryujinx.Ava.Ui.ViewModels
         
         public bool IsModified { get; set; }
 
-        public object InputConfig
+        public object Configuration
         {
-            get => _inputConfiguration;
+            get => _configuration;
             set
             {
-                _inputConfiguration = value;
+                _configuration = value;
 
                 OnPropertyChanged();
             }
@@ -258,6 +258,12 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
         }
 
+        public InputConfig Config
+        {
+            get => _inputConfig;
+            set => _inputConfig = value;
+        }
+
         public ControllerSettingsViewModel(UserControl owner) : this()
         {
             _owner = owner;
@@ -305,22 +311,22 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         private void LoadConfiguration(InputConfig inputConfig = null)
         {
-            _inputConfig = inputConfig ?? ConfigurationState.Instance.Hid.InputConfig.Value.Find(inputConfig => inputConfig.PlayerIndex == _playerId);
+            Config = inputConfig ?? ConfigurationState.Instance.Hid.InputConfig.Value.Find(inputConfig => inputConfig.PlayerIndex == _playerId);
 
-            if (_inputConfig is StandardKeyboardInputConfig)
+            if (Config is StandardKeyboardInputConfig)
             {
-                _inputConfiguration = new InputConfiguration<Key, ConfigStickInputId>(_inputConfig as StandardKeyboardInputConfig);
+                _configuration = new InputConfiguration<Key, ConfigStickInputId>(Config as StandardKeyboardInputConfig);
             }
 
-            if (_inputConfig is StandardControllerInputConfig)
+            if (Config is StandardControllerInputConfig)
             {
-                _inputConfiguration = new InputConfiguration<ConfigGamepadInputId, ConfigStickInputId>(_inputConfig as StandardControllerInputConfig);
+                _configuration = new InputConfiguration<ConfigGamepadInputId, ConfigStickInputId>(Config as StandardControllerInputConfig);
             }
         }
 
         public void LoadDevice()
         {
-            if (_inputConfig == null || _inputConfig.Backend == InputBackendType.Invalid)
+            if (Config == null || Config.Backend == InputBackendType.Invalid)
             {
                 Device = 0;
             }
@@ -328,17 +334,17 @@ namespace Ryujinx.Ava.Ui.ViewModels
             {
                 string ident = "";
 
-                if (_inputConfig is StandardKeyboardInputConfig)
+                if (Config is StandardKeyboardInputConfig)
                 {
                     ident = "keyboard";
                 }
 
-                if (_inputConfig is StandardControllerInputConfig)
+                if (Config is StandardControllerInputConfig)
                 {
                     ident = "controller";
                 }
 
-                var item = Devices.FirstOrDefault(x => x.Key == $"{ident}/{_inputConfig.Id}");
+                var item = Devices.FirstOrDefault(x => x.Key == $"{ident}/{Config.Id}");
                 if (item.Key != null)
                 {
                     Device = Devices.Keys.ToList().IndexOf(item.Key);
@@ -348,6 +354,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
                     Device = 0;
                 }
             }
+        }
+
+        public async void ShowCemuHookConfig()
+        {
+            await CemuHookMotionSettingsWindow.Show(this, _owner.GetVisualRoot() as StyleableWindow);
         }
 
         private void LoadInputDriver()
@@ -427,9 +438,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 Controllers.Add(ControllerType.JoyconLeft,    LocaleManager.Instance["ControllerSettingsControllerTypeJoyConLeft"]);
                 Controllers.Add(ControllerType.JoyconRight,   LocaleManager.Instance["ControllerSettingsControllerTypeJoyConRight"]);
 
-                if (_inputConfig != null && Controllers.ContainsKey(_inputConfig.ControllerType))
+                if (Config != null && Controllers.ContainsKey(Config.ControllerType))
                 {
-                    Controller = Controllers.Keys.ToList().IndexOf(_inputConfig.ControllerType);
+                    Controller = Controllers.Keys.ToList().IndexOf(Config.ControllerType);
                 }
                 else
                 {
@@ -721,7 +732,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 return;
             }
 
-            if (InputConfig == null)
+            if (Configuration == null)
             {
                 return;
             }
@@ -736,11 +747,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 if (IsKeyboard)
                 {
-                    config = (InputConfig as InputConfiguration<Key, ConfigStickInputId>).GetConfig();
+                    config = (Configuration as InputConfiguration<Key, ConfigStickInputId>).GetConfig();
                 }
                 else if (IsController)
                 {
-                    config = (InputConfig as InputConfiguration<GamepadInputId, ConfigStickInputId>).GetConfig();
+                    config = (Configuration as InputConfiguration<GamepadInputId, ConfigStickInputId>).GetConfig();
                 }
 
                 string jsonString = JsonHelper.Serialize(config, true);
@@ -759,7 +770,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 return;
             }
 
-            if (InputConfig == null)
+            if (Configuration == null)
             {
                 return;
             }
@@ -780,11 +791,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 if (IsKeyboard)
                 {
-                    config = (InputConfig as InputConfiguration<Key, ConfigStickInputId>).GetConfig();
+                    config = (Configuration as InputConfiguration<Key, ConfigStickInputId>).GetConfig();
                 }
                 else if (IsController)
                 {
-                    config = (InputConfig as InputConfiguration<GamepadInputId, ConfigStickInputId>).GetConfig();
+                    config = (Configuration as InputConfiguration<GamepadInputId, ConfigStickInputId>).GetConfig();
                 }
 
                 config.ControllerType = Controllers.Keys.ToArray()[_controller];
@@ -838,18 +849,18 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 if (selected.StartsWith("keyboard"))
                 {
-                    var inputConfig = InputConfig as InputConfiguration<Key, ConfigStickInputId>;
+                    var inputConfig = Configuration as InputConfiguration<Key, ConfigStickInputId>;
                     inputConfig.Id = selected.Split("/")[1];
                 }
                 else
                 {
-                    var inputConfig = InputConfig as InputConfiguration<GamepadInputId, ConfigStickInputId>;
+                    var inputConfig = Configuration as InputConfiguration<GamepadInputId, ConfigStickInputId>;
                     inputConfig.Id = selected.Split("/")[1].Split(" ")[0];
                 }
 
                 var config = !IsController
-                    ? (InputConfig as InputConfiguration<Key, ConfigStickInputId>).GetConfig()
-                    : (InputConfig as InputConfiguration<GamepadInputId, ConfigStickInputId>).GetConfig();
+                    ? (Configuration as InputConfiguration<Key, ConfigStickInputId>).GetConfig()
+                    : (Configuration as InputConfiguration<GamepadInputId, ConfigStickInputId>).GetConfig();
                 config.ControllerType = Controllers.Keys.ToArray()[_controller];
                 config.PlayerIndex = _playerId;
 
@@ -883,7 +894,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public void NotifyChanges()
         {
-            OnPropertyChanged(nameof(InputConfig));
+            OnPropertyChanged(nameof(Configuration));
             OnPropertyChanged(nameof(IsController));
             OnPropertyChanged(nameof(ShowSettings));
             OnPropertyChanged(nameof(IsKeyboard));
