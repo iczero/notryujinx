@@ -17,7 +17,6 @@
                                 Text="{locale:Locale ControllerSettingsMotionUseCemuhookCompatibleMotion}" />
                 </CheckBox>
                 <Border Grid.Row="1"
-                        Margin="10"
                         Padding="20,5"
                         BorderBrush="{DynamicResource ThemeControlBorderColor}"
                         BorderThickness="1"
@@ -29,7 +28,6 @@
                             </Grid.RowDefinitions>
                             <StackPanel
                                 Grid.Row="1"
-                                Margin="5"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 Orientation="Vertical">
@@ -48,7 +46,7 @@
                                         MaxWidth="100"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
-                                        Text="{Binding DsuServerHost}"
+                                        Text="{Binding DsuServerHost, Mode=TwoWay}"
                                         Watermark="127.0.0.1" />
                                     <TextBlock
                                         Margin="5"
@@ -59,7 +57,7 @@
                                         Height="30"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
-                                        Text="{Binding DsuServerPort}"
+                                        Text="{Binding DsuServerPort, Mode=TwoWay}"
                                         Watermark="26760" />
                                 </StackPanel>
                                 <StackPanel Orientation="Vertical">
@@ -90,11 +88,10 @@
                                                        Maximum="4"
                                                        Minimum="0"
                                                        Value="{Binding AltSlot}" />
-
                                     </Grid>
                                 </StackPanel>
                                 <CheckBox HorizontalAlignment="Center"
-                                          IsChecked="{Binding MirrorInput}">
+                                          IsChecked="{Binding MirrorInput, Mode=TwoWay}">
                                     <TextBlock HorizontalAlignment="Center"
                                                Text="{locale:Locale ControllerSettingsMotionMirrorInput}" />
                                 </CheckBox>
