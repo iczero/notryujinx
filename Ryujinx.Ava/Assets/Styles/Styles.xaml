@@ -82,6 +82,10 @@
       <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderLowColor}"/>
       <Setter Property="BorderThickness" Value="{DynamicResource ThemeBorderThickness}" />
     </Style>
+  <Style Selector="DataGridRow:selected:focus /template/ Rectangle#BackgroundRectangle">
+    <Setter Property="Fill" Value="{DynamicResource SystemAccentColor}" />
+    <Setter Property="Opacity" Value="{DynamicResource DataGridRowSelectedBackgroundOpacity}" />
+  </Style>
     <Style Selector="DataGridCell">
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -151,15 +155,25 @@
     <Style Selector="CheckBox TextBlock">
         <Setter Property="Margin" Value="0,5,0,0" />
     </Style>
+    <Style Selector="ContextMenu">
+      <Setter Property="BorderBrush" Value="{DynamicResource MenuFlyoutPresenterBorderBrush}"/>
+      <Setter Property="BorderThickness" Value="{DynamicResource MenuFlyoutPresenterBorderThemeThickness}"/>
+    </Style>
     <Styles.Resources>
+      <SolidColorBrush x:Key="DataGridGridLinesBrush"
+                     Color="{DynamicResource SystemBaseMediumLowColor}"
+                     Opacity="0.4" />
         <SolidColorBrush x:Key="DataGridSelectionBackgroundBrush" Color="{DynamicResource DataGridSelectionColor}" />
+        <SolidColorBrush x:Key="MenuFlyoutPresenterBorderBrush" Color="{DynamicResource MenuFlyoutPresenterBorderColor}" />
         <SolidColorBrush x:Key="ThemeAccentColorBrush" Color="{DynamicResource SystemAccentColor}" />
         <SolidColorBrush x:Key="ListBoxBackground" Color="{DynamicResource ThemeContentBackgroundColor}" />
+        <SolidColorBrush x:Key="ThemeForegroundBrush" Color="{DynamicResource ThemeForegroundColor}"></SolidColorBrush>
         <SolidColorBrush x:Key="ThemeAccentBrush4" Color="{DynamicResource ThemeAccentColor4}"></SolidColorBrush>
         <Thickness x:Key="PageMargin">40 0 40 0</Thickness>
         <Thickness x:Key="Margin">0 5 0 5</Thickness>
         <Thickness x:Key="TextMargin">0 4 0 0</Thickness>
         <Thickness x:Key="MenuItemPadding">5 0 5 0</Thickness>
+        <Color x:Key="MenuFlyoutPresenterBorderColor">#00000000</Color>
         <Color x:Key="SystemAccentColor">#FF00C3E3</Color>
         <Color x:Key="SystemAccentColorDark1">#FF00C3E3</Color>
         <Color x:Key="SystemAccentColorDark2">#FF00C3E3</Color>
@@ -172,6 +186,8 @@
         <Color x:Key="ThemeControlBorderColor">#FF505050</Color>
         <Color x:Key="TextOnAccentFillColorPrimary">#FFFFFFFF</Color>
         <Color x:Key="SystemChromeWhiteColor">#FFFFFFFF</Color>
+        <Color x:Key="ThemeForegroundColor">#99FFFFFF</Color>
+         <Color x:Key="SystemBaseMediumLowColor">#66FFFFFF</Color>
         <sys:Double x:Key="ScrollBarThickness">15</sys:Double>
         <sys:Double x:Key="FontSizeSmall">8</sys:Double>
         <sys:Double x:Key="FontSizeNormal">10</sys:Double>
