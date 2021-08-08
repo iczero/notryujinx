@@ -248,6 +248,10 @@ namespace Ryujinx.Ava.Ui.Models
             }
         }
 
+        public InputConfiguration()
+        {
+        }
+
         public InputConfig GetConfig()
         {
             if (Backend == InputBackendType.WindowKeyboard)

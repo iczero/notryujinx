@@ -22,9 +22,17 @@ namespace Ryujinx.Ava.Ui.Windows
 
         public CemuHookMotionSettingsWindow(ControllerSettingsViewModel viewmodel)
         {
-            _viewmodel =
-                new InputConfiguration<GamepadInputId, StickInputId>(
-                    viewmodel.Config as StandardControllerInputConfig);
+            var config = viewmodel.Configuration as InputConfiguration<GamepadInputId, StickInputId>;
+
+            _viewmodel = new InputConfiguration<GamepadInputId, StickInputId>()
+            {
+                Slot = config.Slot,
+                AltSlot = config.AltSlot,
+                DsuServerHost = config.DsuServerHost,
+                DsuServerPort = config.DsuServerPort,
+                MirrorInput = config.MirrorInput,
+                EnableCemuHookMotion = config.EnableCemuHookMotion
+            };
             
             InitializeComponent();
         }

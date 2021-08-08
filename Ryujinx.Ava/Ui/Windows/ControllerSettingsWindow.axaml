@@ -600,7 +600,8 @@
                     BorderBrush="{DynamicResource ThemeControlBorderColor}"
                     BorderThickness="1"
                     Padding="8"
-                    VerticalAlignment="Top">
+                    VerticalAlignment="Top"
+                    IsVisible="{Binding IsController}">
                     <StackPanel
                         HorizontalAlignment="Center"
                         VerticalAlignment="Top"
@@ -616,16 +617,16 @@
                         <TextBlock
                                    Text="{locale:Locale ControllerSettingsRumbleStrongMultiplier}" />
                         <Slider
-                            Width="150"
-                            MaxWidth="150"
+                            Width="200"
+                            MaxWidth="200"
                             Maximum="10"
                             Minimum="0"
                             Value="{Binding Configuration.StrongRumble, Mode=TwoWay}" />
                         <TextBlock 
                                    Text="{locale:Locale ControllerSettingsRumbleWeakMultiplier}" />
                         <Slider
-                            Width="150"
-                            MaxWidth="150"
+                            Width="200"
+                            MaxWidth="200"
                             Maximum="10"
                             Minimum="0"
                             Value="{Binding Configuration.WeakRumble, Mode=TwoWay}" />
@@ -1437,7 +1438,6 @@
                                             Text="{Binding Configuration.GyroDeadzone, StringFormat=\{0:0.000\}}" />
                                     </StackPanel>
                                 </StackPanel>
-                                <Separator />
                                 <Button Margin="5,0" HorizontalAlignment="Center"
                                         Command="{Binding ShowCemuHookConfig}">
                                     <TextBlock
