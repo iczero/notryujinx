@@ -7,6 +7,7 @@ using LibHac.Fs;
 using LibHac.Fs.Fsa;
 using LibHac.FsSystem;
 using LibHac.FsSystem.NcaUtils;
+using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Models;
 using Ryujinx.Common.Configuration;
@@ -116,7 +117,9 @@ namespace Ryujinx.Ava.Ui.Windows
             }
             catch (Exception ex)
             {
-                ContentDialogHelper.CreateErrorDialog(this, $"{ex.Message}. Errored File: {containerPath}");
+                ContentDialogHelper.CreateErrorDialog(this,
+                    string.Format(LocaleManager.Instance[
+                        "DialogDlcLoadNcaErrorMessage"], ex.Message, containerPath));
             }
 
             return null;
@@ -163,7 +166,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
                 if (!containsDlc)
                 {
-                    ContentDialogHelper.CreateErrorDialog(this, "The specified file does not contain a DLC for the selected title!");
+                    ContentDialogHelper.CreateErrorDialog(this, LocaleManager.Instance["DialogDlcNoDlcErrorMessage"]);
                 }
             }
         }

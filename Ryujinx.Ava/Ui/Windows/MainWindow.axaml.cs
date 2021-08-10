@@ -167,8 +167,8 @@ namespace Ryujinx.Ava.Ui.Windows
         {
             if (ConfigurationState.Instance.Logger.EnableDebug.Value)
             {
-                string mainMessage      = "You have debug logging enabled, which is designed to be used by developers only.";
-                string secondaryMessage = "For optimal performance, it's recommended to disable debug logging. Would you like to disable debug logging now?";
+                string mainMessage      = LocaleManager.Instance["DialogPerformanceCheckLoggingEnabledMessage"];
+                string secondaryMessage = LocaleManager.Instance["DialogPerformanceCheckLoggingEnabledConfirmMessage"];
 
                 UserResult result = await ContentDialogHelper.CreateConfirmationDialog(this, mainMessage, secondaryMessage);
 
@@ -182,8 +182,8 @@ namespace Ryujinx.Ava.Ui.Windows
 
             if (!string.IsNullOrWhiteSpace(ConfigurationState.Instance.Graphics.ShadersDumpPath.Value))
             {
-                string mainMessage      = "You have shader dumping enabled, which is designed to be used by developers only.";
-                string secondaryMessage = "For optimal performance, it's recommended to disable shader dumping. Would you like to disable shader dumping now?";
+                string mainMessage      = LocaleManager.Instance["DialogPerformanceCheckShaderDumpEnabledMessage"];
+                string secondaryMessage = LocaleManager.Instance["DialogPerformanceCheckShaderDumpEnabledConfirmMessage"];
 
                 UserResult result = await ContentDialogHelper.CreateConfirmationDialog(this, mainMessage, secondaryMessage);
 
@@ -209,7 +209,9 @@ namespace Ryujinx.Ava.Ui.Windows
         {
             if (AppHost != null)
             {
-                ContentDialogHelper.CreateInfoDialog(this, "A game has already been loaded", "Please stop emulation or close the emulator before launching another game.");
+                ContentDialogHelper.CreateInfoDialog(this,
+                    LocaleManager.Instance["DialogLoadAppGameAlreadyLoadedMessage"],
+                    LocaleManager.Instance["DialogLoadAppGameAlreadyLoadedSubMessage"]);
 
                 return;
             }

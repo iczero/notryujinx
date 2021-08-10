@@ -849,7 +849,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 DirectoryInfo backupDir = new(Path.Combine(AppDataManager.GamesDirPath, data.TitleId, "cache", "cpu", "1"));
 
                 // FIXME: Found a way to reproduce the bold effect on the title name (fork?).
-                UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_owner, "Warning", $"You are about to delete the PPTC cache for :\n\n{data.TitleName}\n\nAre you sure you want to proceed?");
+                UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_owner, LocaleManager.Instance["DialogWarning"],
+                    string.Format(LocaleManager.Instance["DialogPPTCDeletionMessage"], data.TitleName));
 
                 List<FileInfo> cacheFiles = new();
 
@@ -873,7 +874,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                         }
                         catch (Exception e)
                         {
-                            ContentDialogHelper.CreateErrorDialog(_owner, $"Error purging PPTC cache at {file.Name}: {e}");
+                            ContentDialogHelper.CreateErrorDialog(_owner, string.Format(LocaleManager.Instance["DialogPPTCDeletionErrorMessage"],file.Name, e));
                         }
                     }
                 }
@@ -911,7 +912,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 DirectoryInfo shaderCacheDir = new(Path.Combine(AppDataManager.GamesDirPath, data.TitleId, "cache", "shader"));
 
                 // FIXME: Found a way to reproduce the bold effect on the title name (fork?).
-                UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_owner, "Warning", $"You are about to delete the shader cache for :\n\n{data.TitleName}\n\nAre you sure you want to proceed?");
+                UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_owner, LocaleManager.Instance["DialogWarning"],
+                    string.Format(LocaleManager.Instance["DialogShaderDeletionMessage"], data.TitleName));
 
                 List<DirectoryInfo> cacheDirectory = new();
 
@@ -930,7 +932,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
                         }
                         catch (Exception e)
                         {
-                            ContentDialogHelper.CreateErrorDialog(_owner, $"Error purging shader cache at {directory.Name}: {e}");
+                            ContentDialogHelper.CreateErrorDialog(_owner,
+                                string.Format(LocaleManager.Instance["DialogPPTCDeletionErrorMessage"], directory.Name,
+                                    e));
                         }
                     }
                 }
@@ -1000,7 +1004,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 out ulong titleIdNumber))
             {
                 ContentDialogHelper.CreateErrorDialog(_owner,
-                    "Ryujinx has encountered an error", "UI error: The selected game did not have a valid title ID");
+                    LocaleManager.Instance["DialogRyujinxErrorMessage"], LocaleManager.Instance["DialogInvalidTitleIdErrorMessage"]);
 
                 return;
             }
@@ -1047,31 +1051,36 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 string filename = path;
 
                 SystemVersion firmwareVersion = _owner.ContentManager.VerifyFirmwarePackage(filename);
-
-                string dialogTitle = $"Install Firmware {firmwareVersion.VersionString}";
-
+                
                 if (firmwareVersion == null)
                 {
-                    ContentDialogHelper.CreateErrorDialog(_owner, $"A valid system firmware was not found in {filename}.");
+                    ContentDialogHelper.CreateErrorDialog(_owner, string.Format(LocaleManager.Instance["DialogFirmwareInstallerFirmwareNotFoundErrorMessage"], filename));
 
                     return;
                 }
 
+                string dialogTitle =
+                    string.Format(LocaleManager.Instance["DialogFirmwareInstallerFirmwareInstallTitle"],
+                        firmwareVersion.VersionString);
+
+
                 SystemVersion currentVersion = _owner.ContentManager.GetCurrentFirmwareVersion();
 
-                string dialogMessage = $"System version {firmwareVersion.VersionString} will be installed.";
+                string dialogMessage = string.Format(LocaleManager.Instance["DialogFirmwareInstallerFirmwareInstallMessage"],
+                    firmwareVersion.VersionString);
 
                 if (currentVersion != null)
                 {
                     dialogMessage +=
-                        $"\n\nThis will replace the current system version {currentVersion.VersionString}. ";
+                        string.Format(LocaleManager.Instance["DialogFirmwareInstallerFirmwareInstallSubMessage"],
+                            currentVersion.VersionString);
                 }
 
-                dialogMessage += "\n\nDo you want to continue?";
+                dialogMessage += LocaleManager.Instance["DialogFirmwareInstallerFirmwareInstallConfirmMessage"];
 
                 UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_owner, dialogTitle, dialogMessage);
 
-                UpdateWaitWindow waitingDialog = ContentDialogHelper.CreateWaitingDialog(dialogTitle, "Installing firmware...");
+                UpdateWaitWindow waitingDialog = ContentDialogHelper.CreateWaitingDialog(dialogTitle, LocaleManager.Instance["DialogFirmwareInstallerFirmwareInstallWaitMessage"]);
 
                 if (result == UserResult.Yes)
                 {
@@ -1092,8 +1101,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
                             {
                                 waitingDialog.Close();
 
-                                string message =
-                                    $"System version {firmwareVersion.VersionString} successfully installed.";
+                                string message = string.Format(
+                                    LocaleManager.Instance["DialogFirmwareInstallerFirmwareInstallSuccessMessage"],
+                                    firmwareVersion.VersionString);
 
                                 await ContentDialogHelper.CreateInfoDialog(_owner, dialogTitle, message, "", "Ok");
                                 Logger.Info?.Print(LogClass.Application, message);
