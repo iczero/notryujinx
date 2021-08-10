@@ -3,6 +3,7 @@ using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
+using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Models;
 using Ryujinx.Ava.Ui.Windows;
@@ -386,7 +387,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 return amiiboJsonString;
             }
 
-            await ContentDialogHelper.CreateInfoDialog(_owner, "Amiibo API", "An error occured while fetching informations from the API.");
+            await ContentDialogHelper.CreateInfoDialog(_owner, LocaleManager.Instance["DialogAmiiboApiTitle"], LocaleManager.Instance["DialogAmiiboApiFailFetchMessage"]);
 
             Close();
 
@@ -432,8 +433,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         private async void ShowInfoDialog()
         {
-            await ContentDialogHelper.CreateInfoDialog(_owner, "Amiibo API",
-                "Unable to connect to Amiibo API server. The service may be down or you may need to verify your internet connection is online.");
+            await ContentDialogHelper.CreateInfoDialog(_owner, LocaleManager.Instance["DialogAmiiboApiTitle"],
+                LocaleManager.Instance["DialogAmiiboApiConnectErrorMessage"]);
         }
     }
 }
