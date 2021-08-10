@@ -137,7 +137,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                     if (profile == null)
                     {
                         ContentDialogHelper.CreateErrorDialog(_owner,
-                            "There would be no other profiles to be opened if selected profile is deleted");
+                            LocaleManager.Instance["DialogUserProfileDeletionWarningMessage"]);
                         return;
                     }
 
@@ -146,7 +146,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 var result =
                     await ContentDialogHelper.CreateConfirmationDialog(_owner,
-                        "Do you want to delete the selected profile", "");
+                        LocaleManager.Instance["DialogUserProfileDeletionConfirmMessage"], "");
 
                 if (result == UserResult.Yes)
                 {

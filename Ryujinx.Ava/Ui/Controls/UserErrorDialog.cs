@@ -1,4 +1,5 @@
 ﻿using Ryujinx.Ava.Common;
+using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.Windows;
 
 namespace Ryujinx.Ava.Ui.Controls
@@ -74,9 +75,12 @@ namespace Ryujinx.Ava.Ui.Controls
 
             string setupButtonLabel = isInSetupGuide ? "Open the Setup Guide" : "";
 
-            var result = await ContentDialogHelper.CreateInfoDialog(owner, $"{errorCode}: {GetErrorTitle(error)}", GetErrorDescription(error) + (isInSetupGuide
-                            ? "\nFor more information on how to fix this error, follow our Setup Guide."
-                            : ""), setupButtonLabel, "OK", $"Ryujinx error ({errorCode})");
+            var result = await ContentDialogHelper.CreateInfoDialog(owner,
+                string.Format(LocaleManager.Instance["DialogUserErrorDialogMessage"], errorCode, GetErrorTitle(error)),
+                GetErrorDescription(error) + (isInSetupGuide
+                    ? LocaleManager.Instance["DialogUserErrorDialogInfoMessage"]
+                    : ""), setupButtonLabel, "OK",
+                string.Format(LocaleManager.Instance["DialogUserErrorDialogTitle"], errorCode));
 
             if(result == UserResult.Ok)
             {

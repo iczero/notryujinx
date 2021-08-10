@@ -714,7 +714,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 catch (InvalidOperationException)
                 {
                     ContentDialogHelper.CreateErrorDialog(_owner.GetVisualRoot() as StyleableWindow,
-                        $"Profile {activeProfile} is incompatible with the current input configuration system.");
+                        String.Format( LocaleManager.Instance["DialogProfileInvalidProfileErrorMessage"],activeProfile));
                     Logger.Error?.Print(LogClass.Configuration, $"Profile {activeProfile} is incompatible with the current input configuration system.");
                     
                     return;
@@ -785,7 +785,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             if (activeProfile == "default")
             {
-                ContentDialogHelper.CreateErrorDialog(_owner.GetVisualRoot() as StyleableWindow, "Default Profile can not be overwritten");
+                ContentDialogHelper.CreateErrorDialog(_owner.GetVisualRoot() as StyleableWindow, LocaleManager.Instance["DialogProfileDefaultProfileOverwriteErrorMessage"]);
 
                 return;
             }
@@ -819,7 +819,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 return;
             }
 
-            UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_owner.GetVisualRoot() as StyleableWindow, "Deleting Profile", "This action is irreversible, are your sure you want to continue?");
+            UserResult result = await ContentDialogHelper.CreateConfirmationDialog(
+                _owner.GetVisualRoot() as StyleableWindow, LocaleManager.Instance["DialogProfileDeleteProfileTitle"],
+                LocaleManager.Instance["DialogProfileDeleteProfileMessage"]);
 
             if (result == UserResult.Yes)
             {

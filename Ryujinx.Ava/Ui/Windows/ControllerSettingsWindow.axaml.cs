@@ -7,6 +7,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.VisualTree;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Models;
 using Ryujinx.Ava.Ui.ViewModels;
@@ -256,9 +257,10 @@ namespace Ryujinx.Ava.Ui.Windows
             if (ViewModel.IsModified && !_dialogOpen)
             {
                 _dialogOpen = true;
-                
-                var result = await ContentDialogHelper.CreateConfirmationDialog(this.GetVisualRoot() as StyleableWindow, "The current controller settings has been updated.",
-                    "Do you want to save?");
+
+                var result = await ContentDialogHelper.CreateConfirmationDialog(this.GetVisualRoot() as StyleableWindow,
+                    LocaleManager.Instance["DialogControllerSettingsModifiedConfirmMessage"],
+                    LocaleManager.Instance["DialogControllerSettingsModifiedConfirmSubMessage"]);
 
                 if (result == UserResult.Yes)
                 {

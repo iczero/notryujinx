@@ -1,6 +1,7 @@
 ﻿<Styles
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
     xmlns:sys="clr-namespace:System;assembly=netstandard">
     <Design.PreviewWith>
         <Border Padding="20" Height="2000">
@@ -32,6 +33,7 @@
                         <CheckBox>Test Check</CheckBox>
                     </StackPanel>
                 </Grid>
+                <ui:NumberBox Value="1"/>
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -159,6 +161,9 @@
       <Setter Property="BorderBrush" Value="{DynamicResource MenuFlyoutPresenterBorderBrush}"/>
       <Setter Property="BorderThickness" Value="{DynamicResource MenuFlyoutPresenterBorderThemeThickness}"/>
     </Style>
+    <Style Selector="TextBox.NumberBoxTextBoxStyle">
+		<Setter Property="Foreground" Value="{DynamicResource ThemeForegroundColor}" />
+	</Style>
     <Styles.Resources>
       <SolidColorBrush x:Key="DataGridGridLinesBrush"
                      Color="{DynamicResource SystemBaseMediumLowColor}"

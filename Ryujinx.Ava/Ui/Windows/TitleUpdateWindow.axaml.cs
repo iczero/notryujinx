@@ -8,6 +8,7 @@ using LibHac.Fs.Fsa;
 using LibHac.FsSystem;
 using LibHac.FsSystem.NcaUtils;
 using LibHac.Ns;
+using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Models;
 using Ryujinx.Common.Configuration;
@@ -142,12 +143,13 @@ namespace Ryujinx.Ava.Ui.Windows
                         }
                         else
                         {
-                            ContentDialogHelper.CreateErrorDialog(this, "The specified file does not contain an update for the selected title!");
+                            ContentDialogHelper.CreateErrorDialog(this, LocaleManager.Instance["DialogUpdateAddUpdateErrorMessage"]);
                         }
                     }
                     catch (Exception ex)
                     {
-                        ContentDialogHelper.CreateErrorDialog(this, $"{ex.Message}. Errored File: {path}");
+                        ContentDialogHelper.CreateErrorDialog(this,
+                            string.Format(LocaleManager.Instance["DialogDlcLoadNcaErrorMessage"], ex.Message, path));
                     }
                 }
             }

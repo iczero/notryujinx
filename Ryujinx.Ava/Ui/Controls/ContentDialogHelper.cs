@@ -5,6 +5,7 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using FluentAvalonia.UI.Controls;
 using IX.System.Threading;
+using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.Models;
 using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.Common.Logging;
@@ -258,7 +259,7 @@ namespace Ryujinx.Ava.Ui.Controls
 
         internal static async Task<UserResult> CreateConfirmationDialog(StyleableWindow window, string primaryText, string secondaryText, string acceptButtonText = "Yes", string cancelButtonText = "No", string title = "Ryujinx - Confirmation")
         {
-            return await ShowContentDialog(window, "Ryujinx - Confirmation", primaryText, secondaryText, acceptButtonText, "",
+            return await ShowContentDialog(window, LocaleManager.Instance["DialogConfirmationTitle"], primaryText, secondaryText, acceptButtonText, "",
                 cancelButtonText,
                 (int) Symbol.Help);
         }
@@ -271,13 +272,13 @@ namespace Ryujinx.Ava.Ui.Controls
 
         internal static async void CreateUpdaterInfoDialog(StyleableWindow window, string primary, string secondaryText)
         {
-            await ShowContentDialog(window, "Ryujinx - Updater", primary, secondaryText, "", "", "OK",
+            await ShowContentDialog(window, LocaleManager.Instance["DialogUpdaterTitle"], primary, secondaryText, "", "", "OK",
                 0xF4A3);
         }
         
         internal static async void CreateWarningDialog(StyleableWindow window, string primary, string secondaryText)
         {
-            await ShowContentDialog(window, "Ryujinx - Warning", primary, secondaryText, "", "", "OK",
+            await ShowContentDialog(window, LocaleManager.Instance["DialogWarningTitle"], primary, secondaryText, "", "", "OK",
                 0xF4A3);
         }
 
@@ -285,7 +286,7 @@ namespace Ryujinx.Ava.Ui.Controls
         {
             Logger.Error?.Print(LogClass.Application, errorMessage);
 
-            await ShowContentDialog(owner, "Ryujinx - Error", "Ryujinx has encountered an error", errorMessage, secondaryErrorMessage, "", "OK", 0xF3F2);
+            await ShowContentDialog(owner, LocaleManager.Instance["DialogErrorTitle"], LocaleManager.Instance["DialogErrorMessage"], errorMessage, secondaryErrorMessage, "", "OK", 0xF3F2);
         }
 
         internal static async Task<bool> CreateChoiceDialog(StyleableWindow window, string title, string primary, string secondaryText)
@@ -307,8 +308,8 @@ namespace Ryujinx.Ava.Ui.Controls
         
         internal static async Task<bool> CreateExitDialog(StyleableWindow owner)
         {
-            return await CreateChoiceDialog(owner, "Ryujinx - Exit", "Are you sure you want to close Ryujinx?",
-                "All unsaved data will be lost!");
+            return await CreateChoiceDialog(owner, LocaleManager.Instance["DialogExitTitle"], LocaleManager.Instance["DialogExitMessage"],
+                LocaleManager.Instance["DialogExitSubMessage"]);
         }
 
         internal static async Task<string> CreateInputDialog(string title, string mainText, string subText,

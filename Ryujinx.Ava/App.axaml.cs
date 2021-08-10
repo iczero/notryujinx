@@ -7,6 +7,7 @@ using Avalonia.Threading;
 using FluentAvalonia.Styling;
 using IX.System.IO;
 using Ryujinx.Ava.Common;
+using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.Common;
@@ -64,8 +65,8 @@ namespace Ryujinx.Ava
                 {
                     var result = await ContentDialogHelper.CreateConfirmationDialog(
                         (desktop.MainWindow as MainWindow).SettingsWindow,
-                        "Theme have been saved. A restart is needed to apply the theme.",
-                        "Do you want to restart", "Yes", "No", "Restart Required");
+                        LocaleManager.Instance["DialogThemeRestartMessage"],
+                        LocaleManager.Instance["DialogThemeRestartSubMessage"], "Yes", "No", LocaleManager.Instance["DialogRestartRequiredMessage"]);
 
                     if (result == UserResult.Yes)
                     {
