@@ -11,6 +11,7 @@ using Ryujinx.Audio.Backends.SoundIo;
 using Ryujinx.Audio.Integration;
 using Ryujinx.Ava.Application.Module;
 using Ryujinx.Ava.Common;
+using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Models;
 using Ryujinx.Ava.Ui.Windows;
@@ -416,9 +417,10 @@ namespace Ryujinx.Ava
                 {
                     if (userError == UserError.NoFirmware)
                     {
-                        string message = $"Would you like to install the firmware embedded in this game? (Firmware {firmwareVersion.VersionString})";
+                        string message = string.Format(LocaleManager.Instance["DialogFirmwareInstallEmbeddedMessage"], firmwareVersion.VersionString);
 
-                        UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_parent, "No Firmware Installed", message);
+                        UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_parent, 
+                            LocaleManager.Instance["DialogFirmwareNoFirmwareInstalledMessage"], message);
 
                         if (result != UserResult.Yes)
                         {
@@ -446,9 +448,9 @@ namespace Ryujinx.Ava
 
                         _parent.RefreshFirmwareStatus();
 
-                        string message = $"No installed firmware was found but Ryujinx was able to install firmware {firmwareVersion.VersionString} from the provided game.\nThe emulator will now start.";
+                        string message = String.Format(LocaleManager.Instance["DialogFirmwareInstallEmbeddedSuccessMessage"],firmwareVersion.VersionString);
 
-                        ContentDialogHelper.CreateInfoDialog(_parent, $"Firmware {firmwareVersion.VersionString} was installed", message);
+                        ContentDialogHelper.CreateInfoDialog(_parent, string.Format(LocaleManager.Instance["DialogFirmwareInstalledMessage"], firmwareVersion.VersionString), message);
                     }
                 }
                 else

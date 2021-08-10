@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Threading;
 using FluentAvalonia.UI.Controls;
+using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.HLE;
@@ -32,7 +33,7 @@ namespace Ryujinx.Ava.Ui.Applet
                              + (args.IsDocked ? "Docked mode set. Handheld is also invalid.\n\n" : "")
                              + "Please open Settings and reconfigure Input now or press Close.";
 
-            return DisplayMessageDialog("Controller Applet", message);
+            return DisplayMessageDialog(LocaleManager.Instance["DialogControllerAppletTitle"], message);
         }
 
         public bool DisplayMessageDialog(string title, string message)
@@ -47,7 +48,8 @@ namespace Ryujinx.Ava.Ui.Applet
                 {
                     ManualResetEvent deferEvent = new(false);
 
-                    UserResult response = await ContentDialogHelper.ShowDeferredContentDialog(_parent, title, message, "", "Open Settings Window", "", "Close", 0xF4A3, deferEvent,
+                    UserResult response = await ContentDialogHelper.ShowDeferredContentDialog(_parent, title, message, "", 
+                        LocaleManager.Instance["DialogOpenSettingsWindow"], "", "Close", 0xF4A3, deferEvent,
                        async  (window) =>
                         {
                             _parent.SettingsWindow = new SettingsWindow(_parent.VirtualFileSystem, _parent.ContentManager);
@@ -64,7 +66,7 @@ namespace Ryujinx.Ava.Ui.Applet
                 }
                 catch (Exception ex)
                 {
-                    ContentDialogHelper.CreateErrorDialog(_parent, $"Error displaying Message Dialog: {ex}");
+                    ContentDialogHelper.CreateErrorDialog(_parent, string.Format(LocaleManager.Instance["DialogMessageDialogErrorExceptionMessage"], ex));
 
                     dialogCloseEvent.Set();
                 }
@@ -108,7 +110,7 @@ namespace Ryujinx.Ava.Ui.Applet
                 catch (Exception ex)
                 {
                     error = true;
-                    ContentDialogHelper.CreateErrorDialog(_parent, $"Error displaying Software Keyboard: {ex}");
+                    ContentDialogHelper.CreateErrorDialog(_parent, string.Format(LocaleManager.Instance["DialogSoftwareKeyboardErrorExceptionMessage"], ex));
                 }
                 finally
                 {
@@ -165,7 +167,7 @@ namespace Ryujinx.Ava.Ui.Applet
                 catch (Exception ex)
                 {
                     dialogCloseEvent.Set();
-                    ContentDialogHelper.CreateErrorDialog(_parent, $"Error displaying ErrorApplet Dialog: {ex}");
+                    ContentDialogHelper.CreateErrorDialog(_parent, string.Format(LocaleManager.Instance["DialogErrorAppletErrorExceptionMessage"], ex));
                 }
             });
 
