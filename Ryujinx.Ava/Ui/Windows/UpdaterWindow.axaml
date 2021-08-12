@@ -4,7 +4,6 @@
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
                         x:Class="Ryujinx.Ava.Ui.Windows.UpdaterWindow"
-                        xmlns:Locale="clr-namespace:Ryujinx.Ava.Common.Locale"
                         xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
                         CanResize="False"
                         SizeToContent="Height"

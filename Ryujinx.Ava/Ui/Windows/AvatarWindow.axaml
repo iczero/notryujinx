@@ -21,7 +21,7 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <ListBox  BorderThickness="0" SelectedIndex="{Binding SelectedIndex}" Width="600" Height="500"
+        <ListBox BorderThickness="0" SelectedIndex="{Binding SelectedIndex}" Width="600" Height="500"
                  Items="{Binding Images}" HorizontalAlignment="Stretch" VerticalAlignment="Center">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -37,8 +37,10 @@
         </ListBox>
         <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" Margin="10" HorizontalAlignment="Center">
             <Button Content="{Locale:Locale AvatarChoose}" Width="200" Name="ChooseButton" Click="ChooseButton_OnClick" />
-            <Button Content="{Locale:Locale AvatarSetBackgroundColor}" Width="200" Name="ColorButton" Click="ColorButton_OnClick" />
-            <Button HorizontalAlignment="Right" Content="{Locale:Locale AvatarClose}" Click="CloseButton_OnClick" Name="CloseButton"
+            <Button Content="{Locale:Locale AvatarSetBackgroundColor}" Width="200" Name="ColorButton"
+                    Click="ColorButton_OnClick" />
+            <Button HorizontalAlignment="Right" Content="{Locale:Locale AvatarClose}" Click="CloseButton_OnClick"
+                    Name="CloseButton"
                     Width="200" />
         </StackPanel>
     </Grid>

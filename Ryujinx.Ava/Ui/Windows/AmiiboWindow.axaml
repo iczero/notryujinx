@@ -4,8 +4,6 @@
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
                         x:Class="Ryujinx.Ava.Ui.Windows.AmiiboWindow"
-                        xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Avalonia.Svg.Skia"
-                        xmlns:Locale="clr-namespace:Ryujinx.Ava.Common.Locale"
                         xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
                         xmlns:viewModels="clr-namespace:Ryujinx.Ava.Ui.ViewModels"
                         CanResize="False"

@@ -31,10 +31,10 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <ContentControl 
+            <ContentControl
                 Focusable="False"
                 IsVisible="False"
-                KeyboardNavigation.IsTabStop = "False">
+                KeyboardNavigation.IsTabStop="False">
                 <ui:ContentDialog Name="ContentDialog"
                                   IsPrimaryButtonEnabled="True"
                                   IsSecondaryButtonEnabled="True"
@@ -79,7 +79,8 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <Grid Grid.Column="0" Background="{DynamicResource ThemeAccentColorBrush}" Grid.ColumnSpan="2"
+                            <Grid Grid.Column="0" Background="{DynamicResource ThemeAccentColorBrush}"
+                                  Grid.ColumnSpan="2"
                                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="5" MinWidth="5"
                                   IsVisible="{Binding IsOpened}" />
                             <Image Grid.Column="0" Height="96" Width="96"
