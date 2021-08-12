@@ -51,5 +51,6 @@
         <Color x:Key="ThemeControlBorderColor">#FF505050</Color>
         <Color x:Key="TextOnAccentFillColorPrimary">#FFFFFFFF</Color>
         <Color x:Key="SystemChromeWhiteColor">#FFFFFFFF</Color>
+        <Color x:Key="ThemeForegroundColor">#FFFFFFFF</Color>
     </Styles.Resources>
 </Styles>

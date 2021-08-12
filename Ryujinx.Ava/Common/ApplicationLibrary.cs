@@ -744,8 +744,8 @@ namespace Ryujinx.Ava.Common
         private static string ConvertSecondsToReadableString(double seconds)
         {
             const int secondsPerMinute = 60;
-            const int secondsPerHour = secondsPerMinute * 60;
-            const int secondsPerDay = secondsPerHour * 24;
+            const int secondsPerHour   = secondsPerMinute * 60;
+            const int secondsPerDay    = secondsPerHour   * 24;
 
             string readableString;
 
@@ -755,15 +755,15 @@ namespace Ryujinx.Ava.Common
             }
             else if (seconds < secondsPerHour)
             {
-                readableString = $"{Math.Round(seconds / secondsPerMinute, 2, MidpointRounding.AwayFromZero)}m";
+                readableString = $"{Math.Round(seconds / secondsPerMinute, 2, MidpointRounding.AwayFromZero)} mins";
             }
             else if (seconds < secondsPerDay)
             {
-                readableString = $"{Math.Round(seconds / secondsPerHour, 2, MidpointRounding.AwayFromZero)}h";
+                readableString = $"{Math.Round(seconds / secondsPerHour, 2, MidpointRounding.AwayFromZero)} hrs";
             }
             else
             {
-                readableString = $"{Math.Round(seconds / secondsPerDay, 2, MidpointRounding.AwayFromZero)}d";
+                readableString = $"{Math.Round(seconds / secondsPerDay, 2, MidpointRounding.AwayFromZero)} days";
             }
 
             return readableString;
