@@ -2,12 +2,10 @@
     x:Class="Ryujinx.Ava.App"
     xmlns="https://github.com/avaloniaui"
     xmlns:sty="using:FluentAvalonia.Styling"
-    xmlns:ui="using:FluentAvalonia.UI.Controls"
-    xmlns:uip="using:FluentAvalonia.UI.Controls.Primitives"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Application.Styles>
         <FluentTheme Mode="Dark" />
-        <sty:FluentAvaloniaTheme RequestedTheme="Dark"/>
+        <sty:FluentAvaloniaTheme RequestedTheme="Dark" />
         <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
     </Application.Styles>
 </Application>

@@ -33,7 +33,7 @@
                         <CheckBox>Test Check</CheckBox>
                     </StackPanel>
                 </Grid>
-                <ui:NumberBox Value="1"/>
+                <ui:NumberBox Value="1" />
             </StackPanel>
         </Border>
     </Design.PreviewWith>
@@ -78,16 +78,16 @@
         </Setter>
     </Style>
     <Style Selector="DataGrid">
-      <Setter Property="RowBackground" Value="{DynamicResource ThemeAccentBrush4}" />
-      <Setter Property="AlternatingRowBackground" Value="#00FFFFFF" />
-      <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}" />
-      <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderLowColor}"/>
-      <Setter Property="BorderThickness" Value="{DynamicResource ThemeBorderThickness}" />
+        <Setter Property="RowBackground" Value="{DynamicResource ThemeAccentBrush4}" />
+        <Setter Property="AlternatingRowBackground" Value="#00FFFFFF" />
+        <Setter Property="Background" Value="{DynamicResource ThemeBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ThemeBorderLowColor}" />
+        <Setter Property="BorderThickness" Value="{DynamicResource ThemeBorderThickness}" />
     </Style>
-  <Style Selector="DataGridRow:selected:focus /template/ Rectangle#BackgroundRectangle">
-    <Setter Property="Fill" Value="{DynamicResource SystemAccentColor}" />
-    <Setter Property="Opacity" Value="{DynamicResource DataGridRowSelectedBackgroundOpacity}" />
-  </Style>
+    <Style Selector="DataGridRow:selected:focus /template/ Rectangle#BackgroundRectangle">
+        <Setter Property="Fill" Value="{DynamicResource SystemAccentColor}" />
+        <Setter Property="Opacity" Value="{DynamicResource DataGridRowSelectedBackgroundOpacity}" />
+    </Style>
     <Style Selector="DataGridRow:pointerover /template/ Rectangle#BackgroundRectangle">
         <Setter Property="Fill" Value="{DynamicResource SystemListLowColor}" />
     </Style>
@@ -131,9 +131,9 @@
         <Setter Property="Background" Value="{DynamicResource ThemeBackgroundColor}" />
         <Setter Property="BorderBrush" Value="{DynamicResource HighlightBrush}" />
     </Style>
-  <Style Selector="Button">
-    <Setter Property="MinWidth" Value="80" />
-  </Style>
+    <Style Selector="Button">
+        <Setter Property="MinWidth" Value="80" />
+    </Style>
     <Style Selector="TabItem">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="BorderThickness" Value="0,0,1,0" />
@@ -173,22 +173,23 @@
         <Setter Property="Margin" Value="0,5,0,0" />
     </Style>
     <Style Selector="ContextMenu">
-      <Setter Property="BorderBrush" Value="{DynamicResource MenuFlyoutPresenterBorderBrush}"/>
-      <Setter Property="BorderThickness" Value="{DynamicResource MenuFlyoutPresenterBorderThemeThickness}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource MenuFlyoutPresenterBorderBrush}" />
+        <Setter Property="BorderThickness" Value="{DynamicResource MenuFlyoutPresenterBorderThemeThickness}" />
     </Style>
     <Style Selector="TextBox.NumberBoxTextBoxStyle">
-		<Setter Property="Foreground" Value="{DynamicResource ThemeForegroundColor}" />
-	</Style>
+        <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundColor}" />
+    </Style>
     <Styles.Resources>
-      <SolidColorBrush x:Key="DataGridGridLinesBrush"
-                     Color="{DynamicResource SystemBaseMediumLowColor}"
-                     Opacity="0.4" />
+        <SolidColorBrush x:Key="DataGridGridLinesBrush"
+                         Color="{DynamicResource SystemBaseMediumLowColor}"
+                         Opacity="0.4" />
         <SolidColorBrush x:Key="DataGridSelectionBackgroundBrush" Color="{DynamicResource DataGridSelectionColor}" />
-        <SolidColorBrush x:Key="MenuFlyoutPresenterBorderBrush" Color="{DynamicResource MenuFlyoutPresenterBorderColor}" />
+        <SolidColorBrush x:Key="MenuFlyoutPresenterBorderBrush"
+                         Color="{DynamicResource MenuFlyoutPresenterBorderColor}" />
         <SolidColorBrush x:Key="ThemeAccentColorBrush" Color="{DynamicResource SystemAccentColor}" />
         <SolidColorBrush x:Key="ListBoxBackground" Color="{DynamicResource ThemeContentBackgroundColor}" />
-        <SolidColorBrush x:Key="ThemeForegroundBrush" Color="{DynamicResource ThemeForegroundColor}"></SolidColorBrush>
-        <SolidColorBrush x:Key="ThemeAccentBrush4" Color="{DynamicResource ThemeAccentColor4}"></SolidColorBrush>
+        <SolidColorBrush x:Key="ThemeForegroundBrush" Color="{DynamicResource ThemeForegroundColor}" />
+        <SolidColorBrush x:Key="ThemeAccentBrush4" Color="{DynamicResource ThemeAccentColor4}" />
         <Thickness x:Key="PageMargin">40 0 40 0</Thickness>
         <Thickness x:Key="Margin">0 5 0 5</Thickness>
         <Thickness x:Key="TextMargin">0 4 0 0</Thickness>
@@ -207,7 +208,7 @@
         <Color x:Key="TextOnAccentFillColorPrimary">#FFFFFFFF</Color>
         <Color x:Key="SystemChromeWhiteColor">#FFFFFFFF</Color>
         <Color x:Key="ThemeForegroundColor">#99FFFFFF</Color>
-         <Color x:Key="SystemBaseMediumLowColor">#66FFFFFF</Color>
+        <Color x:Key="SystemBaseMediumLowColor">#66FFFFFF</Color>
         <sys:Double x:Key="ScrollBarThickness">15</sys:Double>
         <sys:Double x:Key="FontSizeSmall">8</sys:Double>
         <sys:Double x:Key="FontSizeNormal">10</sys:Double>

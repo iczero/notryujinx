@@ -4,7 +4,6 @@
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
                         x:Class="Ryujinx.Ava.Ui.Windows.AboutWindow"
-                        xmlns:Locale="clr-namespace:Ryujinx.Ava.Common.Locale"
                         xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
                         CanResize="False"
                         WindowStartupLocation="CenterOwner"
@@ -37,7 +36,8 @@
                 </Grid.RowDefinitions>
                 <Image Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Margin="5, 10, 20 , 10"
                        Source="resm:Ryujinx.Ava.Assets.Images.Logo_Ryujinx.png" Height="110" MinWidth="50" />
-                <TextBlock FontSize="35" TextAlignment="Left" Grid.Row="0" Grid.Column="1" Text="Ryujinx" Margin="0,20,0,0" />
+                <TextBlock FontSize="35" TextAlignment="Left" Grid.Row="0" Grid.Column="1" Text="Ryujinx"
+                           Margin="0,20,0,0" />
                 <TextBlock FontSize="16" TextAlignment="Left" Grid.Row="1" Grid.Column="1" Text="(REE-YOU-JI-NX)"
                            Margin="0,0,0,0" />
                 <Button Grid.Column="1" Background="Transparent" Margin="0" Grid.Row="2" Tag="https://www.ryujinx.org/"
@@ -63,8 +63,8 @@
                             Click="Button_OnClick">
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition Height="Auto"/>
+                                <RowDefinition />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <Image Source="resm:Ryujinx.Ava.Assets.Images.Logo_Patreon.png" />
                             <TextBlock Grid.Row="1" Margin="0,5,0,0" Text="Patreon" HorizontalAlignment="Center" />
@@ -73,12 +73,12 @@
                 </StackPanel>
                 <StackPanel Orientation="Vertical"
                             ToolTip.Tip="Click to open the Ryujinx GitHub page in your default browser.">
-                    <Button  Height="65" Background="Transparent" Tag="https://github.com/Ryujinx/Ryujinx"
-                             Click="Button_OnClick">
+                    <Button Height="65" Background="Transparent" Tag="https://github.com/Ryujinx/Ryujinx"
+                            Click="Button_OnClick">
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition Height="Auto"/>
+                                <RowDefinition />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <Image Source="resm:Ryujinx.Ava.Assets.Images.Logo_GitHub.png" />
                             <TextBlock Grid.Row="1" Margin="0,5,0,0" Text="GitHub" HorizontalAlignment="Center" />
@@ -87,29 +87,29 @@
                 </StackPanel>
                 <StackPanel Orientation="Vertical"
                             ToolTip.Tip="Click to open an invite to the Ryujinx Discord server in your default browser.">
-                    <Button  Height="65" Background="Transparent" Tag="https://discordapp.com/invite/N2FmfVc"
-                             Click="Button_OnClick">
+                    <Button Height="65" Background="Transparent" Tag="https://discordapp.com/invite/N2FmfVc"
+                            Click="Button_OnClick">
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition Height="Auto"/>
+                                <RowDefinition />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <Image Source="resm:Ryujinx.Ava.Assets.Images.Logo_Discord.png" />
-                        <TextBlock Grid.Row="1" Margin="0,5,0,0" Text="Discord" HorizontalAlignment="Center" />
+                            <TextBlock Grid.Row="1" Margin="0,5,0,0" Text="Discord" HorizontalAlignment="Center" />
                         </Grid>
                     </Button>
                 </StackPanel>
                 <StackPanel Orientation="Vertical"
                             ToolTip.Tip="Click to open the Ryujinx Twitter page in your default browser.">
-                    <Button  Height="65" Background="Transparent" Tag="https://twitter.com/RyujinxEmu"
-                             Click="Button_OnClick">
+                    <Button Height="65" Background="Transparent" Tag="https://twitter.com/RyujinxEmu"
+                            Click="Button_OnClick">
                         <Grid>
                             <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition Height="Auto"/>
+                                <RowDefinition />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <Image Source="resm:Ryujinx.Ava.Assets.Images.Logo_Twitter.png" />
-                    <TextBlock Grid.Row="1" Margin="0,5,0,0" Text="Twitter" HorizontalAlignment="Center" />
+                            <TextBlock Grid.Row="1" Margin="0,5,0,0" Text="Twitter" HorizontalAlignment="Center" />
                         </Grid>
                     </Button>
                 </StackPanel>
@@ -141,7 +141,8 @@
                        TextDecorations="Underline" />
             <Border Width="460" Grid.Row="6" VerticalAlignment="Stretch" Height="200" BorderThickness="1" Margin="20,5"
                     BorderBrush="White" Padding="5">
-                <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Name="SupportersTextBlock" Text="{Binding Supporters}" />
+                <TextBlock TextWrapping="Wrap" VerticalAlignment="Top" Name="SupportersTextBlock"
+                           Text="{Binding Supporters}" />
             </Border>
         </Grid>
     </Grid>
