@@ -16,7 +16,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" Text="{Locale:Locale ProfileImageSelectionHeader}" />
+        <TextBlock FontWeight="Bold" FontSize="18" HorizontalAlignment="Center"
+                   Text="{Locale:Locale ProfileImageSelectionHeader}" />
         <TextBlock FontWeight="Bold" Grid.Row="1" Margin="10" MaxWidth="400" TextWrapping="Wrap"
                    HorizontalAlignment="Center" TextAlignment="Center" Text="{Locale:Locale ProfileImageSelectionNote}" />
         <StackPanel Margin="5,0" Spacing="10" Grid.Row="3" HorizontalAlignment="Center"
