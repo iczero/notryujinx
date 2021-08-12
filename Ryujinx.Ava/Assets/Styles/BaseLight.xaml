@@ -40,11 +40,12 @@
         <SolidColorBrush x:Key="ThemeAccentColorBrush" Color="{DynamicResource SystemAccentColor}" />
         <SolidColorBrush x:Key="ThemeAccentBrush4" Color="{DynamicResource ThemeAccentColor4}" />
         <Color x:Key="SystemAccentColor">#FF00C3E3</Color>
-        <Color x:Key="ThemeAccentColor4">#FF2e2e2e</Color>
+        <Color x:Key="ThemeAccentColor4">#FFe8e8e8</Color>
         <Color x:Key="DataGridSelectionColor">#FF00FABB</Color>
-        <Color x:Key="ThemeContentBackgroundColor">#FF2D2D2D</Color>
-        <Color x:Key="ThemeControlBorderColor">#FF505050</Color>
+        <Color x:Key="ThemeContentBackgroundColor">#FFF0F0F0</Color>
+        <Color x:Key="ThemeControlBorderColor">#FFd6d6d6</Color>
         <Color x:Key="TextOnAccentFillColorPrimary">#FFFFFFFF</Color>
         <Color x:Key="SystemChromeWhiteColor">#FFFFFFFF</Color>
+        <Color x:Key="ThemeForegroundColor">#FF000000</Color>
     </Styles.Resources>
 </Styles>

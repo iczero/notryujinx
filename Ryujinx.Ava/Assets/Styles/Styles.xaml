@@ -205,10 +205,6 @@
         <Color x:Key="DataGridSelectionColor">#FF00FABB</Color>
         <Color x:Key="ThemeContentBackgroundColor">#FF2D2D2D</Color>
         <Color x:Key="ThemeControlBorderColor">#FF505050</Color>
-        <Color x:Key="TextOnAccentFillColorPrimary">#FFFFFFFF</Color>
-        <Color x:Key="SystemChromeWhiteColor">#FFFFFFFF</Color>
-        <Color x:Key="ThemeForegroundColor">#99FFFFFF</Color>
-        <Color x:Key="SystemBaseMediumLowColor">#66FFFFFF</Color>
         <sys:Double x:Key="ScrollBarThickness">15</sys:Double>
         <sys:Double x:Key="FontSizeSmall">8</sys:Double>
         <sys:Double x:Key="FontSizeNormal">10</sys:Double>
