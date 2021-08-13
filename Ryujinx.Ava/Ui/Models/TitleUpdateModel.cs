@@ -6,7 +6,7 @@ namespace Ryujinx.Ava.Ui.Models
     {
         public bool IsEnabled { get; set; }
         public bool IsNoUpdate { get; }
-        public ApplicationControlProperty Control { get; set; }
+        public ApplicationControlProperty Control { get; }
         public string Path { get; }
         public string Label => IsNoUpdate ? "No Update" : $"Version {Control.DisplayVersion.ToString()} - {Path}";
         

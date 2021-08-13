@@ -24,17 +24,20 @@ namespace Ryujinx.Ava.Ui.Controls
         {
             object key = null;
 
-            if (targetType == typeof(Key))
+            if (value != null)
             {
-                key = Enum.Parse<Key>(value.ToString());
-            }
-            else if (targetType == typeof(GamepadInputId))
-            {
-                key = Enum.Parse<GamepadInputId>(value.ToString());
-            }
-            else if (targetType == typeof(StickInputId))
-            {
-                key = Enum.Parse<StickInputId>(value.ToString());
+                if (targetType == typeof(Key))
+                {
+                    key = Enum.Parse<Key>(value.ToString());
+                }
+                else if (targetType == typeof(GamepadInputId))
+                {
+                    key = Enum.Parse<GamepadInputId>(value.ToString());
+                }
+                else if (targetType == typeof(StickInputId))
+                {
+                    key = Enum.Parse<StickInputId>(value.ToString());
+                }
             }
 
             return key;

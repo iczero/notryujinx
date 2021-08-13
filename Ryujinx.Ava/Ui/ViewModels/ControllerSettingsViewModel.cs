@@ -193,11 +193,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 }
 
                 return _isMotionController;
-                //return (_inputConfig as StandardControllerInputConfig).Motion.MotionBackend == MotionInputBackendType.CemuHook;
             }
             set
             {
-                //(_inputConfig as StandardControllerInputConfig).Motion.MotionBackend = value ? MotionInputBackendType.CemuHook : MotionInputBackendType.GamepadDriver;
                 _isMotionController = value;
                 OnPropertyChanged();
             }
@@ -236,24 +234,6 @@ namespace Ryujinx.Ava.Ui.ViewModels
             {
                 _profile = value;
 
-                OnPropertyChanged();
-            }
-        }
-
-        public bool IsCemuHookMotionController
-        {
-            get
-            {
-                if (!IsController)
-                {
-                    return false;
-                }
-
-                return _isCemuHookMotionController;
-            }
-            set
-            {
-                _isCemuHookMotionController = value;
                 OnPropertyChanged();
             }
         }
@@ -473,7 +453,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 if (gamepad != null)
                 {
-                    Devices.Add($"keyboard/{id}", $"{gamepad.Name} ({id})");
+                    Devices.Add($"keyboard/{id}", $"{GetShrinkedGamepadName(gamepad.Name)} ({id})");
 
                     gamepad.Dispose();
                 }
@@ -485,7 +465,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 if (gamepad != null)
                 {
-                    Devices.Add($"controller/{id}", $"{gamepad.Name} ({id})");
+                    Devices.Add($"controller/{id}", $"{GetShrinkedGamepadName(gamepad.Name)} ({id})");
 
                     gamepad.Dispose();
                 }
