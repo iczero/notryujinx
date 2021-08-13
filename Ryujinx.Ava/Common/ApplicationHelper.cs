@@ -27,14 +27,16 @@ namespace Ryujinx.Ava.Common
 {
     public static class ApplicationHelper
     {
+        private static HorizonClient _horizonClient;
         private static VirtualFileSystem _virtualFileSystem;
         private static StyleableWindow _owner;
         private static bool _cancel;
 
-        public static void Initialize(VirtualFileSystem virtualFileSystem, StyleableWindow owner)
+        public static void Initialize(VirtualFileSystem virtualFileSystem,HorizonClient horizonClient, StyleableWindow owner)
         {
             _owner = owner;
             _virtualFileSystem = virtualFileSystem;
+            _horizonClient = horizonClient;
         }
 
         private static bool TryFindSaveData(string titleName, ulong titleId,
@@ -42,8 +44,8 @@ namespace Ryujinx.Ava.Common
         {
             saveDataId = default;
 
-            Result result = _virtualFileSystem.FsClient.FindSaveDataWithFilter(out SaveDataInfo saveDataInfo,
-                SaveDataSpaceId.User, ref filter);
+            Result result = _horizonClient.Fs.FindSaveDataWithFilter(out SaveDataInfo saveDataInfo,
+                SaveDataSpaceId.User, in filter);
 
             if (ResultFs.TargetNotFound.Includes(result))
             {
@@ -64,7 +66,7 @@ namespace Ryujinx.Ava.Common
 
                 ref ApplicationControlProperty control = ref controlHolder.Value;
 
-                if (Utilities.IsEmpty(controlHolder.ByteSpan))
+                if (Utilities.IsZeros(controlHolder.ByteSpan))
                 {
                     // If the current application doesn't have a loaded control property, create a dummy one
                     // and set the savedata sizes so a user savedata will be created.
@@ -80,7 +82,7 @@ namespace Ryujinx.Ava.Common
 
                 Uid user = new(1, 0); // TODO: Remove Hardcoded value.
 
-                result = EnsureApplicationSaveData(_virtualFileSystem.FsClient, out _, new ApplicationId(titleId),
+                result = EnsureApplicationSaveData(_horizonClient.Fs, out _, new ApplicationId(titleId),
                     ref control, ref user);
 
                 if (result.IsFailure())
@@ -91,8 +93,8 @@ namespace Ryujinx.Ava.Common
                 }
 
                 // Try to find the savedata again after creating it
-                result = _virtualFileSystem.FsClient.FindSaveDataWithFilter(out saveDataInfo, SaveDataSpaceId.User,
-                    ref filter);
+                result = _horizonClient.Fs.FindSaveDataWithFilter(out saveDataInfo, SaveDataSpaceId.User,
+                    in filter);
             }
 
             if (result.IsSuccess())
@@ -248,7 +250,7 @@ namespace Ryujinx.Ava.Common
                             ? mainNca.OpenFileSystemWithPatch(patchNca, index, IntegrityCheckLevel.ErrorOnInvalid)
                             : mainNca.OpenFileSystem(index, IntegrityCheckLevel.ErrorOnInvalid);
 
-                        FileSystemClient fsClient = _virtualFileSystem.FsClient;
+                        FileSystemClient fsClient = _horizonClient.Fs;
 
                         string source = DateTime.Now.ToFileTime().ToString()[10..];
                         string output = DateTime.Now.ToFileTime().ToString()[10..];
@@ -382,7 +384,7 @@ namespace Ryujinx.Ava.Common
                                 return rc;
                             }
 
-                            rc = fs.WriteFile(destHandle, offset, buf);
+                            rc = fs.WriteFile(destHandle, offset, buf, WriteOption.None);
                             if (rc.IsFailure())
                             {
                                 return rc;
