@@ -138,6 +138,39 @@
                     </Border>
                 </ScrollViewer>
             </TabItem>
+            
+            <TabItem Header="{locale:Locale SettingsTabInput}">
+                <ScrollViewer
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    Padding="0,0,2,0"
+                    HorizontalScrollBarVisibility="Disabled"
+                    VerticalScrollBarVisibility="Auto">
+                    <Border>
+                        <StackPanel Margin="4" Orientation="Vertical">
+                            <Grid
+                                HorizontalAlignment="Stretch">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <CheckBox Grid.Column="0" Margin="5,0" IsChecked="{Binding EnableDockedMode}">
+                                    <TextBlock VerticalAlignment="Center"
+                                               Text="{locale:Locale SettingsTabInputEnableDockedMode}" />
+                                </CheckBox>
+                                <CheckBox Grid.Column="1" Margin="5,0" IsChecked="{Binding EnableKeyboard}">
+                                    <TextBlock Text="{locale:Locale SettingsTabInputDirectKeyboardAccess}" />
+                                </CheckBox>
+                                <CheckBox Grid.Column="2" Margin="5,0" IsChecked="{Binding EnableMouse}">
+                                    <TextBlock Text="{locale:Locale SettingsTabInputDirectMouseAccess}" />
+                                </CheckBox>
+                            </Grid>
+                            <window:ControllerSettingsWindow Name="ControllerSettings" Margin="0,0,0,0" />
+                        </StackPanel>
+                    </Border>
+                </ScrollViewer>
+            </TabItem>
             <TabItem Header="{locale:Locale SettingsTabSystem}">
                 <ScrollViewer
                     HorizontalAlignment="Stretch"
@@ -552,38 +585,6 @@
                                     <TextBlock Text="{locale:Locale SettingsTabLoggingEnableDebugLogs}" />
                                 </CheckBox>
                             </StackPanel>
-                        </StackPanel>
-                    </Border>
-                </ScrollViewer>
-            </TabItem>
-            <TabItem Header="{locale:Locale SettingsTabInput}">
-                <ScrollViewer
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    Padding="0,0,2,0"
-                    HorizontalScrollBarVisibility="Disabled"
-                    VerticalScrollBarVisibility="Auto">
-                    <Border>
-                        <StackPanel Margin="4" Orientation="Vertical">
-                            <Grid
-                                HorizontalAlignment="Stretch">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-                                <CheckBox Grid.Column="0" Margin="5,0" IsChecked="{Binding EnableDockedMode}">
-                                    <TextBlock VerticalAlignment="Center"
-                                               Text="{locale:Locale SettingsTabInputEnableDockedMode}" />
-                                </CheckBox>
-                                <CheckBox Grid.Column="1" Margin="5,0" IsChecked="{Binding EnableKeyboard}">
-                                    <TextBlock Text="{locale:Locale SettingsTabInputDirectKeyboardAccess}" />
-                                </CheckBox>
-                                <CheckBox Grid.Column="2" Margin="5,0" IsChecked="{Binding EnableMouse}">
-                                    <TextBlock Text="{locale:Locale SettingsTabInputDirectMouseAccess}" />
-                                </CheckBox>
-                            </Grid>
-                            <window:ControllerSettingsWindow Name="ControllerSettings" Margin="0,0,0,0" />
                         </StackPanel>
                     </Border>
                 </ScrollViewer>
