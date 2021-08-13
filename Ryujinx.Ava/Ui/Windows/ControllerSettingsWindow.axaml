@@ -260,7 +260,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
@@ -268,8 +268,7 @@
                                         TextAlignment="Center" />
                                 </ToggleButton>
                             </StackPanel>
-
-
+                            
                             <!--  Left Joystick Up  -->
                             <StackPanel
                                 HorizontalAlignment="Center"
@@ -287,7 +286,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
@@ -313,7 +312,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
@@ -339,7 +338,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
@@ -366,7 +365,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
@@ -396,7 +395,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
@@ -423,7 +422,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch"
                                     Tag="stick">
@@ -500,7 +499,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
@@ -525,7 +524,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
@@ -551,7 +550,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
@@ -578,7 +577,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
@@ -594,7 +593,7 @@
                     Margin="2,0,2,2"
                     BorderBrush="{DynamicResource ThemeControlBorderColor}"
                     BorderThickness="1"
-                    Padding="8"
+                    Padding="4"
                     VerticalAlignment="Top"
                     IsVisible="{Binding IsController}">
                     <StackPanel
@@ -602,7 +601,7 @@
                         VerticalAlignment="Top"
                         Orientation="Vertical">
                         <TextBlock
-                            Margin="0,2"
+                            Margin="0,1"
                             HorizontalAlignment="Center"
                             Text="{locale:Locale ControllerSettingsRumble}" />
                         <CheckBox HorizontalAlignment="Center" IsChecked="{Binding Configuration.EnableRumble}">
@@ -667,7 +666,7 @@
                                 TextAlignment="Center" />
                             <ToggleButton
                                 Width="90"
-                               Height="25"
+                               Height="27"
                                 Margin="2"
                                 HorizontalAlignment="Stretch">
                                 <TextBlock
@@ -694,7 +693,7 @@
                                 TextAlignment="Center" />
                             <ToggleButton
                                 Width="90"
-                               Height="25"
+                               Height="27"
                                 Margin="2"
                                 HorizontalAlignment="Stretch">
                                 <TextBlock
@@ -721,7 +720,7 @@
                                 TextAlignment="Center" />
                             <ToggleButton
                                 Width="90"
-                               Height="25"
+                               Height="27"
                                 Margin="2,2,4,2"
                                 HorizontalAlignment="Stretch">
                                 <TextBlock
@@ -748,7 +747,7 @@
                                 TextAlignment="Center" />
                             <ToggleButton
                                 Width="90"
-                               Height="25"
+                               Height="27"
                                 Margin="2"
                                 HorizontalAlignment="Stretch">
                                 <TextBlock
@@ -793,7 +792,7 @@
                                 TextAlignment="Center" />
                             <ToggleButton
                                 Width="90"
-                               Height="25"
+                               Height="27"
                                 Margin="2"
                                 HorizontalAlignment="Stretch">
                                 <TextBlock
@@ -820,7 +819,7 @@
                                 TextAlignment="Center" />
                             <ToggleButton
                                 Width="90"
-                               Height="25"
+                               Height="27"
                                 Margin="2,2,4,2"
                                 HorizontalAlignment="Stretch">
                                 <TextBlock
@@ -847,7 +846,7 @@
                                 TextAlignment="Center" />
                             <ToggleButton
                                 Width="90"
-                               Height="25"
+                               Height="27"
                                 Margin="2,2,4,2"
                                 HorizontalAlignment="Stretch">
                                 <TextBlock
@@ -874,7 +873,7 @@
                                 TextAlignment="Center" />
                             <ToggleButton
                                 Width="90"
-                               Height="25"
+                               Height="27"
                                 Margin="2"
                                 HorizontalAlignment="Stretch">
                                 <TextBlock
@@ -901,7 +900,7 @@
                                 TextAlignment="Center" />
                             <ToggleButton
                                 Width="90"
-                               Height="25"
+                               Height="27"
                                 Margin="2,2,4,2"
                                 HorizontalAlignment="Stretch">
                                 <TextBlock
@@ -928,7 +927,7 @@
                                 TextAlignment="Center" />
                             <ToggleButton
                                 Width="90"
-                               Height="25"
+                               Height="27"
                                 Margin="2,2,4,2"
                                 HorizontalAlignment="Stretch">
                                 <TextBlock
@@ -1002,7 +1001,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
@@ -1029,7 +1028,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
@@ -1056,7 +1055,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
@@ -1083,7 +1082,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
@@ -1130,7 +1129,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
@@ -1156,7 +1155,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
@@ -1182,7 +1181,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
@@ -1208,7 +1207,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
@@ -1235,7 +1234,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
@@ -1265,7 +1264,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
@@ -1292,7 +1291,7 @@
                                     TextAlignment="Center" />
                                 <ToggleButton
                                     Width="90"
-                                   Height="25"
+                                   Height="27"
                                     Margin="2"
                                     HorizontalAlignment="Stretch"
                                     Tag="stick">
@@ -1433,7 +1432,7 @@
                                             Text="{Binding Configuration.GyroDeadzone, StringFormat=\{0:0.000\}}" />
                                     </StackPanel>
                                 </StackPanel>
-                                <Button Margin="5,0" HorizontalAlignment="Center"
+                                <Button Margin="5,5" HorizontalAlignment="Center"
                                         Command="{Binding ShowCemuHookConfig}">
                                     <TextBlock
                                         Text="{locale:Locale ControllerSettingsMotionConfigureCemuHookSettings}" />
