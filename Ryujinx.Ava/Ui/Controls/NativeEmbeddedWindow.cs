@@ -19,7 +19,7 @@ namespace Ryujinx.Ava.Ui.Controls
 {
     public class NativeEmbeddedWindow : NativeControlHost
     {
-        private static bool _glfwInitilized;
+        private static bool _glfwInitialized;
 
         public event EventHandler<KeyEventArgs> KeyPressed;
         public event EventHandler<KeyEventArgs> KeyReleased;
@@ -30,21 +30,21 @@ namespace Ryujinx.Ava.Ui.Controls
         public event EventHandler<Size> SizeChanged;
 
         private bool _init;
-        private double _scale;
         private bool _isFullScreen;
+        private double _scale;
 
-        protected int Major { get; set; }
-        protected int Minor { get; set; }
-        protected GraphicsDebugLevel DebugLevel { get; set; }
+        protected int Major { get; init; }
+        protected int Minor { get; init; }
+        protected GraphicsDebugLevel DebugLevel { get; init; }
 
         protected IntPtr WindowHandle { get; set; }
         protected IntPtr X11Display { get; set; }
 
-        public GameWindow GLFWWindow { get; set; }
+        public GameWindow GlfwWindow { get; private set; }
 
         private IPlatformHandle _handle;
 
-        public bool RendererFocused => GLFWWindow.IsFocused;
+        public bool RendererFocused => GlfwWindow.IsFocused;
 
         public NativeEmbeddedWindow(double scale)
         {
@@ -57,13 +57,13 @@ namespace Ryujinx.Ava.Ui.Controls
 
             stateObservable.Subscribe(StateChanged);
 
-            IObservable<Rect> resizeObserverable = this.GetObservable(BoundsProperty);
+            IObservable<Rect> resizeObservable = this.GetObservable(BoundsProperty);
 
-            resizeObserverable.Subscribe(Resized);
+            resizeObservable.Subscribe(Resized);
 
-            if(!_glfwInitilized)
+            if(!_glfwInitialized)
             {
-                _glfwInitilized = true;
+                _glfwInitialized = true;
 
                 GLFW.Init();
             }
@@ -91,26 +91,26 @@ namespace Ryujinx.Ava.Ui.Controls
             }
         }
 
-        public unsafe void UpdateSizes(double scale)
+        private unsafe void UpdateSizes(double scale)
         {
             _scale = scale;
 
-            if (GLFWWindow != null)
+            if (GlfwWindow != null)
             {
                 if (!_isFullScreen)
                 {
-                    GLFWWindow.Size = new Vector2i((int)(Bounds.Width * scale), (int)(Bounds.Height * scale));
+                    GlfwWindow.Size = new Vector2i((int)(Bounds.Width * scale), (int)(Bounds.Height * scale));
                 }
                 else
                 {
                     var mode = GLFW.GetVideoMode(GLFW.GetPrimaryMonitor());
 
-                    GLFWWindow.Size = new Vector2i(mode->Width, mode->Height);
+                    GlfwWindow.Size = new Vector2i(mode->Width, mode->Height);
 
                     if (VisualRoot != null)
                     {
                         var position = this.PointToScreen(Bounds.Position);
-                        GLFWWindow.Location = new Vector2i(position.X, position.Y);
+                        GlfwWindow.Location = new Vector2i(position.X, position.Y);
                     }
                 }
                 
@@ -126,15 +126,13 @@ namespace Ryujinx.Ava.Ui.Controls
             X11Display = IntPtr.Zero;
         }
 
-        public virtual void OnWindowCreated()
-        {
-        }
+        public virtual void OnWindowCreated() { }
 
         protected override void OnGotFocus(GotFocusEventArgs e)
         {
             base.OnGotFocus(e);
             
-            GLFWWindow.Focus();
+            GlfwWindow.Focus();
         }
 
         public void Start()
@@ -161,7 +159,7 @@ namespace Ryujinx.Ava.Ui.Controls
                     await Task.Delay(2000);
                 }
 
-                GLFWWindow.Dispose();
+                GlfwWindow.Dispose();
 
                 OnWindowDestroyed();
             });
@@ -206,8 +204,8 @@ namespace Ryujinx.Ava.Ui.Controls
         {
             CreateWindow();
 
-            WindowHandle = (IntPtr)GLFW.GetX11Window(GLFWWindow.WindowPtr);
-            X11Display = (IntPtr)GlfwGetX11Display(GLFWWindow.WindowPtr);
+            WindowHandle = (IntPtr)GLFW.GetX11Window(GlfwWindow.WindowPtr);
+            X11Display = (IntPtr)GlfwGetX11Display(GlfwWindow.WindowPtr);
 
             return new PlatformHandle(WindowHandle, "X11");
         }
@@ -216,7 +214,7 @@ namespace Ryujinx.Ava.Ui.Controls
         {
             CreateWindow();
 
-            WindowHandle = GLFW.GetWin32Window(GLFWWindow.WindowPtr);
+            WindowHandle = GLFW.GetWin32Window(GlfwWindow.WindowPtr);
 
             return new PlatformHandle(WindowHandle, "HWND");
         }
@@ -230,7 +228,7 @@ namespace Ryujinx.Ava.Ui.Controls
                 ? ContextFlags.Debug
                 : ContextFlags.ForwardCompatible;
             flags |= ContextFlags.ForwardCompatible;
-            GLFWWindow = new GameWindow(
+            GlfwWindow = new GameWindow(
                 new GameWindowSettings {IsMultiThreaded = true, RenderFrequency = 60, UpdateFrequency = 60},
                 new NativeWindowSettings
                 {
@@ -245,17 +243,17 @@ namespace Ryujinx.Ava.Ui.Controls
                     Title = "Renderer"
                 });
 
-            GLFWWindow.WindowBorder = WindowBorder.Hidden;
+            GlfwWindow.WindowBorder = WindowBorder.Hidden;
 
             GLFW.MakeContextCurrent(null);
 
-            GLFWWindow.MouseDown += Window_MouseDown;
-            GLFWWindow.MouseUp += Window_MouseUp;
-            GLFWWindow.MouseMove += Window_MouseMove;
+            GlfwWindow.MouseDown += Window_MouseDown;
+            GlfwWindow.MouseUp += Window_MouseUp;
+            GlfwWindow.MouseMove += Window_MouseMove;
 
             // Glfw Mouse Passthrough doesn't work on linux, so we pass events to the keyboard driver the hard way
-            GLFWWindow.KeyDown += Window_KeyDown;
-            GLFWWindow.KeyUp += Window_KeyUp;
+            GlfwWindow.KeyDown += Window_KeyDown;
+            GlfwWindow.KeyUp += Window_KeyUp;
         }
 
         private void Window_KeyUp(KeyboardKeyEventArgs obj)
@@ -278,7 +276,7 @@ namespace Ryujinx.Ava.Ui.Controls
         {
             while (WindowHandle != IntPtr.Zero)
             {
-                GLFWWindow.ProcessEvents();
+                GlfwWindow.ProcessEvents();
             }
         }
 

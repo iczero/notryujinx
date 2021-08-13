@@ -52,7 +52,7 @@ namespace Ryujinx.Ava.Ui.Controls
                     overlay.Position = window.PointToScreen(new Point());;
                 }
                 
-                overlay.Initialize();
+                overlay.LoadDialog();
 
                 contentDialog = overlay.ContentDialog;
 
@@ -155,7 +155,6 @@ namespace Ryujinx.Ava.Ui.Controls
 
                 overlay.ShowDialog(window);
             }
-
 
             if (contentDialog != null)
             {

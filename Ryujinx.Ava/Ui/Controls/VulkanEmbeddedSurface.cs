@@ -9,7 +9,7 @@ namespace Ryujinx.Ava.Ui.Controls
 
         public unsafe SurfaceKHR CreateSurface(Instance instance, Vk vk)
         {
-            GLFW.CreateWindowSurface(new VkHandle(instance.Handle), GLFWWindow.WindowPtr, null, out VkHandle surface);
+            GLFW.CreateWindowSurface(new VkHandle(instance.Handle), GlfwWindow.WindowPtr, null, out VkHandle surface);
 
             return new SurfaceKHR((ulong)surface.Handle.ToInt64());
         }

@@ -22,7 +22,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
     {
         private readonly VirtualFileSystem      _virtualFileSystem;
         private readonly ContentManager         _contentManager;
-        private readonly Window _owner;
+        private readonly Window                 _owner;
         private          TimeZoneContentManager _timeZoneContentManager;
 
         private readonly List<string> _validTzRegions;

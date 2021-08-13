@@ -21,6 +21,7 @@ namespace Ryujinx.Ava.Ui.Controls
             MainText = mainText;
             SecondaryText = secondaryText;
             DataContext = this;
+            _placeholder = placeholder;
             InitializeComponent();
 #if DEBUG
             this.AttachDevTools();

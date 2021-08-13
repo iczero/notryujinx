@@ -27,7 +27,7 @@ namespace Ryujinx.Ava.Ui.Controls
         {
             base.OnWindowCreated();
 
-            GLFWWindow.MakeCurrent();
+            GlfwWindow.MakeCurrent();
 
             GL.LoadBindings(new OpenToolkitBindingsContext());
             GLFW.MakeContextCurrent(null);
@@ -35,7 +35,7 @@ namespace Ryujinx.Ava.Ui.Controls
 
         public void MakeCurrent()
         {
-            GLFWWindow.MakeCurrent();
+            GlfwWindow.MakeCurrent();
         }
 
         public unsafe void MakeCurrent(Window* window)
@@ -45,7 +45,7 @@ namespace Ryujinx.Ava.Ui.Controls
 
         public override void Present()
         {
-            GLFWWindow.SwapBuffers();
+            GlfwWindow.SwapBuffers();
         }
     }
 }

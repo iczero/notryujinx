@@ -33,7 +33,10 @@ namespace Ryujinx.Ava.Ui.Windows
 #if DEBUG
             this.AttachDevTools();
 #endif
-            Title = $"Ryujinx {Program.Version} - Amiibo";
+            if (Program.PreviewerDetached)
+            {
+                Title = $"Ryujinx {Program.Version} - Amiibo";
+            }
         }
 
         public bool IsScanned { get; set; }

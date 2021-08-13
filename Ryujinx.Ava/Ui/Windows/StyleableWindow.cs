@@ -43,7 +43,7 @@ namespace Ryujinx.Ava.Ui.Windows
             Icon = new WindowIcon(stream);
         }
 
-        public void Initialize()
+        public void LoadDialog()
         {
             ContentDialog = this.FindControl<ContentDialog>("ContentDialog");
         }

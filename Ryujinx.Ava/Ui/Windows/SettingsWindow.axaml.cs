@@ -18,10 +18,10 @@ namespace Ryujinx.Ava.Ui.Windows
 {
     public class SettingsWindow : StyleableWindow
     {
-        private TabControl      _tabs;
-        private ListBox         _gameList;
-        private TextBox         _pathBox;
-        private AutoCompleteBox _timeZoneBox;
+        private TabControl              _tabs;
+        private ListBox                 _gameList;
+        private TextBox                 _pathBox;
+        private AutoCompleteBox          _timeZoneBox;
         private ControllerSettingsWindow _controllerSettings;
 
         public SettingsViewModel ViewModel { get; set; }
