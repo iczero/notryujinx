@@ -221,7 +221,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                             nonOverlappingLength = gap;
                         }
 
-                        Buffer.BlockCopy(output, (int)position, output, (int)outputOffset, (int)nonOverlappingLength);
+                        System.Buffer.BlockCopy(output, (int)position, output, (int)outputOffset, (int)nonOverlappingLength);
                         outputOffset += nonOverlappingLength;
                         position += nonOverlappingLength;
                         length -= nonOverlappingLength;

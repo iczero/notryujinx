@@ -562,7 +562,7 @@ namespace Ryujinx.Ava
 
         private void InitializeSwitchInstance()
         {
-            VirtualFileSystem.Reload();
+            VirtualFileSystem.ReloadKeySet();
 
             IRenderer             renderer     = new Renderer();
             IHardwareDeviceDriver deviceDriver = new DummyHardwareDeviceDriver();
@@ -622,6 +622,7 @@ namespace Ryujinx.Ava
             IntegrityCheckLevel fsIntegrityCheckLevel = ConfigurationState.Instance.System.EnableFsIntegrityChecks ? IntegrityCheckLevel.ErrorOnInvalid : IntegrityCheckLevel.None;
             
             HLE.HLEConfiguration configuration = new HLE.HLEConfiguration(VirtualFileSystem,
+                                                                          _parent.LibHacHorizonManager,
                                                                           ContentManager,
                                                                           _accountManager,
                                                                           _userChannelPersistence,
