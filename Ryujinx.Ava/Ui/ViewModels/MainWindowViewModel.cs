@@ -514,8 +514,6 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
         }
 
-        public bool IsRefreshing { get; private set; }
-
         public async void OpenAmiiboWindow()
         {
             if (!_isAmiiboRequested)

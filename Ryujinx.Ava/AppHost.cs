@@ -54,7 +54,6 @@ namespace Ryujinx.Ava
 {
     public class AppHost : IDisposable
     {
-        private const int SwitchPanelHeight  = 720;
         private const int TargetFps          = 60;
         private const int CursorHideIdleTime = 8; // Hide Cursor seconds
 
@@ -707,7 +706,7 @@ namespace Ryujinx.Ava
 
             if (Window is OpenGlEmbeddedWindow openGlEmbeddedWindow)
             {
-                (_renderer as Renderer).InitializeBackgroundContext(AvaloniaOpenGLContextHelper.CreateBackgroundContext(Window.GLFWWindow.WindowPtr, _glLogLevel != GraphicsDebugLevel.None));
+                (_renderer as Renderer).InitializeBackgroundContext(AvaloniaOpenGLContextHelper.CreateBackgroundContext(Window.GlfwWindow.WindowPtr, _glLogLevel != GraphicsDebugLevel.None));
 
                 openGlEmbeddedWindow.MakeCurrent();
             }

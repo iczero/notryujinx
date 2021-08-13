@@ -31,8 +31,6 @@ namespace Ryujinx.Ava.Common
 
         private static VirtualFileSystem _virtualFileSystem;
         private static Language _desiredTitleLanguage;
-        private static bool _loadingError;
-        public static List<ApplicationData> Applications { get; set; } = new();
         public static event EventHandler<ApplicationAddedEventArgs> ApplicationAdded;
         public static event EventHandler<ApplicationCountUpdatedEventArgs> ApplicationCountUpdated;
 
@@ -93,11 +91,8 @@ namespace Ryujinx.Ava.Common
             int numApplicationsFound = 0;
             int numApplicationsLoaded = 0;
 
-            _loadingError = false;
             _virtualFileSystem = virtualFileSystem;
             _desiredTitleLanguage = desiredTitleLanguage;
-
-            Applications.Clear();
 
             // Builds the applications list with paths to found applications
             List<string> applications = new();
@@ -300,7 +295,6 @@ namespace Ryujinx.Ava.Common
                                     $"The file encountered was not of a valid type. File: '{applicationPath}' Error: {exception}");
 
                                 numApplicationsFound--;
-                                _loadingError = true;
 
                                 continue;
                             }
@@ -389,7 +383,6 @@ namespace Ryujinx.Ava.Common
                                     $"The file encountered was not of a valid type. Errored File: {applicationPath}");
 
                                 numApplicationsFound--;
-                                _loadingError = true;
 
                                 continue;
                             }
@@ -410,7 +403,6 @@ namespace Ryujinx.Ava.Common
                     Logger.Warning?.Print(LogClass.Application, exception.Message);
 
                     numApplicationsFound--;
-                    _loadingError = true;
 
                     continue;
                 }
@@ -436,8 +428,6 @@ namespace Ryujinx.Ava.Common
                 };
 
                 numApplicationsLoaded++;
-
-                Applications.Add(data);
 
                 OnApplicationAdded(new ApplicationAddedEventArgs {AppData = data});
 

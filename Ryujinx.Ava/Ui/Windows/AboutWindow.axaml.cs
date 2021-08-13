@@ -16,7 +16,10 @@ namespace Ryujinx.Ava.Ui.Windows
     {
         public AboutWindow()
         {
-            Title = $"Ryujinx {Program.Version} - About";
+            if (Program.PreviewerDetached)
+            {
+                Title = $"Ryujinx {Program.Version} - About";
+            }
 
             DataContext = this;
 
@@ -24,12 +27,9 @@ namespace Ryujinx.Ava.Ui.Windows
 #if DEBUG
             this.AttachDevTools();
 #endif
-           // Title = $"Ryujinx {Program.Version} - About";
 
             _ = DownloadPatronsJson();
         }
-
-        public string Version => Program.Version;
 
         public string Supporters { get; set; }
 
