@@ -20,10 +20,11 @@
                         </MenuItem>
                     </Menu>
                     <StackPanel Orientation="Horizontal">
-                        <Button
+                        <ToggleButton
                             Name="btnAdd"
                             HorizontalAlignment="Right"
-                            Content="Add" />
+                            Height="28"
+                            Content="Addy" />
                         <Button
                             Name="btnRem"
                             HorizontalAlignment="Right"
@@ -133,6 +134,9 @@
     </Style>
     <Style Selector="Button">
         <Setter Property="MinWidth" Value="80" />
+    </Style>
+    <Style Selector="ToggleButton">
+        <Setter Property="Padding" Value="0,-5,0,0" />
     </Style>
     <Style Selector="TabItem">
         <Setter Property="FontSize" Value="14" />
