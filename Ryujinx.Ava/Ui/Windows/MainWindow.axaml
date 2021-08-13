@@ -310,7 +310,7 @@
                         </ContextMenu>
                     </DataGrid.ContextMenu>
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn>
+                        <DataGridTemplateColumn  SortMemberPath="Favorite">
                             <DataGridTemplateColumn.Header>
                                 <TextBlock Text="{locale:Locale GameListHeaderIcon}" />
                             </DataGridTemplateColumn.Header>
