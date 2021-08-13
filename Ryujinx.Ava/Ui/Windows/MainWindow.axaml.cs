@@ -59,6 +59,8 @@ namespace Ryujinx.Ava.Ui.Windows
         public ContentManager    ContentManager    { get; private set; }
         public AccountManager    AccountManager    { get; private set; }
 
+        public LibHacHorizonManager LibHacHorizonManager { get; private set; }
+
         public AppHost      AppHost      { get; private set; }
         public InputManager InputManager { get; private set; }
 
@@ -310,12 +312,26 @@ namespace Ryujinx.Ava.Ui.Windows
 
             _userChannelPersistence = new UserChannelPersistence();
             VirtualFileSystem       = VirtualFileSystem.CreateInstance();
+            LibHacHorizonManager    = new LibHacHorizonManager();
             ContentManager          = new ContentManager(VirtualFileSystem);
-            AccountManager          = new AccountManager(VirtualFileSystem);
 
-            VirtualFileSystem.Reload();
+            LibHacHorizonManager.InitializeFsServer(VirtualFileSystem);
+            LibHacHorizonManager.InitializeArpServer();
+            LibHacHorizonManager.InitializeBcatServer();
+            LibHacHorizonManager.InitializeSystemClients();
+            
+            // Save data created before we supported extra data in directory save data will not work properly if
+            // given empty extra data. Luckily some of that extra data can be created using the data from the
+            // save data indexer, which should be enough to check access permissions for user saves.
+            // Every single save data's extra data will be checked and fixed if needed each time the emulator is opened.
+            // Consider removing this at some point in the future when we don't need to worry about old saves.
+            VirtualFileSystem.FixExtraData(LibHacHorizonManager.RyujinxClient);
+            
+            AccountManager = new AccountManager(LibHacHorizonManager.RyujinxClient);
 
-            ApplicationHelper.Initialize(VirtualFileSystem, this);
+            VirtualFileSystem.ReloadKeySet();
+
+            ApplicationHelper.Initialize(VirtualFileSystem, LibHacHorizonManager.RyujinxClient, this);
 
             RefreshFirmwareStatus();
         }
@@ -417,9 +433,9 @@ namespace Ryujinx.Ava.Ui.Windows
             {
                 if (sender is ContextMenu menu)
                 {
-                    bool canHaveUserSave   = !Utilities.IsEmpty(data.ControlHolder.ByteSpan) && data.ControlHolder.Value.UserAccountSaveDataSize > 0;
-                    bool canHaveDeviceSave = !Utilities.IsEmpty(data.ControlHolder.ByteSpan) && data.ControlHolder.Value.DeviceSaveDataSize > 0;
-                    bool canHaveBcatSave   = !Utilities.IsEmpty(data.ControlHolder.ByteSpan) && data.ControlHolder.Value.BcatDeliveryCacheStorageSize > 0;
+                    bool canHaveUserSave   = !Utilities.IsZeros(data.ControlHolder.ByteSpan) && data.ControlHolder.Value.UserAccountSaveDataSize > 0;
+                    bool canHaveDeviceSave = !Utilities.IsZeros(data.ControlHolder.ByteSpan) && data.ControlHolder.Value.DeviceSaveDataSize > 0;
+                    bool canHaveBcatSave   = !Utilities.IsZeros(data.ControlHolder.ByteSpan) && data.ControlHolder.Value.BcatDeliveryCacheStorageSize > 0;
 
                     ((menu.Items as AvaloniaList<object>)[2] as MenuItem).IsEnabled = canHaveUserSave;
                     ((menu.Items as AvaloniaList<object>)[3] as MenuItem).IsEnabled = canHaveDeviceSave;
