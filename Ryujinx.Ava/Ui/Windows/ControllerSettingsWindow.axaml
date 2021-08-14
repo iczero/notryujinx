@@ -226,7 +226,7 @@
                 <!--  Left Joystick  -->
                 <Border
                     Grid.Row="0"
-                    Padding="20, 10"
+                    Padding="20,5,20,0"
                     Margin="2,0,2,2"
                     BorderBrush="{DynamicResource ThemeControlBorderColor}"
                     BorderThickness="1"
@@ -366,7 +366,7 @@
                                 <ToggleButton
                                     Width="90"
                                    Height="27"
-                                    Margin="2"
+                                    Margin="2,2,2,5"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
                                         Text="{Binding Configuration.LeftStickRight, Mode=TwoWay, Converter={StaticResource Key}}"
@@ -441,11 +441,11 @@
                                                Text="{locale:Locale ControllerSettingsLStickInvertXAxis}" />
                                 </CheckBox>
                                 <CheckBox IsChecked="{Binding Configuration.LeftInvertStickY}">
-                                    <TextBlock Text="{locale:Locale ControllerSettingsLStickInvertYAxis}" />
+                                  <TextBlock Margin="0" Text="{locale:Locale ControllerSettingsLStickInvertYAxis}" />
                                 </CheckBox>
                             </StackPanel>
-                            <Separator Height="1" Margin="0,10" />
-                            <StackPanel Margin="5" Orientation="Vertical">
+                            <Separator Height="1" Margin="0,5" />
+                            <StackPanel Margin="0" Orientation="Vertical">
                                 <TextBlock Margin="2" Text="{locale:Locale ControllerSettingsLStickDeadzone}" />
                                 <StackPanel
                                     HorizontalAlignment="Center"
@@ -457,6 +457,8 @@
                                         Minimum="0"
                                         Value="{Binding Configuration.DeadzoneLeft, Mode=TwoWay}" />
                                     <TextBlock
+                                      VerticalAlignment="Center"
+                                      Margin="5, 0"
                                         Text="{Binding Configuration.DeadzoneLeft, StringFormat=\{0:0.000\}}" />
                                 </StackPanel>
                             </StackPanel>
@@ -593,7 +595,7 @@
                     Margin="2,0,2,2"
                     BorderBrush="{DynamicResource ThemeControlBorderColor}"
                     BorderThickness="1"
-                    Padding="4"
+                    Padding="2"
                     VerticalAlignment="Top"
                     IsVisible="{Binding IsController}">
                     <StackPanel
@@ -601,15 +603,16 @@
                         VerticalAlignment="Top"
                         Orientation="Vertical">
                         <TextBlock
-                            Margin="0,1"
+                            Margin="0"
                             HorizontalAlignment="Center"
                             Text="{locale:Locale ControllerSettingsRumble}" />
                         <CheckBox HorizontalAlignment="Center" IsChecked="{Binding Configuration.EnableRumble}">
                             <TextBlock Margin="0,0,20,0"
                                        Text="{locale:Locale ControllerSettingsRumbleEnable}" />
                         </CheckBox>
-                        <TextBlock
+                        <TextBlock  Margin="0"
                             Text="{locale:Locale ControllerSettingsRumbleStrongMultiplier}" />
+                      <StackPanel Orientation="Horizontal" Margin="0">
                         <Slider
                             Width="200"
                             MaxWidth="200"
@@ -617,13 +620,24 @@
                             Minimum="0"
                             Value="{Binding Configuration.StrongRumble, Mode=TwoWay}" />
                         <TextBlock
+                            VerticalAlignment="Center"
+                            Margin="5,0"
+                              Text="{Binding Configuration.StrongRumble, StringFormat=\{0:0.000\}}" />
+                      </StackPanel>
+                        <TextBlock
                             Text="{locale:Locale ControllerSettingsRumbleWeakMultiplier}" />
+                      <StackPanel Orientation="Horizontal" Margin="0">
                         <Slider
                             Width="200"
                             MaxWidth="200"
                             Maximum="10"
                             Minimum="0"
                             Value="{Binding Configuration.WeakRumble, Mode=TwoWay}" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Margin="5,0"
+                              Text="{Binding Configuration.WeakRumble, StringFormat=\{0:0.000\}}" />
+                      </StackPanel>
                     </StackPanel>
                 </Border>
             </Grid>
@@ -1096,7 +1110,7 @@
                 <Border
                     Grid.Row="1"
                     Margin="2,0,2,2"
-                    Padding="20, 10"
+                    Padding="20,5,20,0"
                     BorderBrush="{DynamicResource ThemeControlBorderColor}"
                     BorderThickness="1"
                     IsVisible="{Binding IsRight}">
@@ -1235,7 +1249,7 @@
                                 <ToggleButton
                                     Width="90"
                                    Height="27"
-                                    Margin="2"
+                                    Margin="2,2,2,5"
                                     HorizontalAlignment="Stretch">
                                     <TextBlock
                                         Text="{Binding Configuration.RightStickRight, Mode=TwoWay, Converter={StaticResource Key}}"
@@ -1310,11 +1324,11 @@
                                                Text="{locale:Locale ControllerSettingsRStickInvertXAxis}" />
                                 </CheckBox>
                                 <CheckBox IsChecked="{Binding Configuration.RightInvertStickY}">
-                                    <TextBlock Text="{locale:Locale ControllerSettingsRStickInvertYAxis}" />
+                                    <TextBlock  Margin="0" Text="{locale:Locale ControllerSettingsRStickInvertYAxis}" />
                                 </CheckBox>
                             </StackPanel>
                             <Separator Margin="-16,0" />
-                            <StackPanel Margin="5" Orientation="Vertical">
+                            <StackPanel Margin="0" Orientation="Vertical">
                                 <TextBlock Margin="2" Text="{locale:Locale ControllerSettingsRStickDeadzone}" />
                                 <StackPanel
                                     HorizontalAlignment="Center"
@@ -1323,9 +1337,13 @@
                                     <Slider
                                         Width="200"
                                         Maximum="1"
+                                        Padding="0"
+                                        VerticalAlignment="Center"
                                         Minimum="0"
                                         Value="{Binding Configuration.DeadzoneRight, Mode=TwoWay}" />
-                                    <TextBlock
+                                  <TextBlock
+                                    VerticalAlignment="Center"
+                                    Margin="5, 0"
                                         Text="{Binding Configuration.DeadzoneRight, StringFormat=\{0:0.000\}}" />
                                 </StackPanel>
                             </StackPanel>
@@ -1344,39 +1362,6 @@
                         <Grid VerticalAlignment="Top">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-                            <StackPanel
-                                Grid.Row="0"
-                                Margin="0,0,0,5"
-                                HorizontalAlignment="Center"
-                                Orientation="Vertical">
-                                <TextBlock Text="{locale:Locale ControllerSettingsMisc}" />
-                            </StackPanel>
-                            <StackPanel
-                                Grid.Row="1"
-                                HorizontalAlignment="Center"
-                                Orientation="Vertical">
-                                <CheckBox
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    IsChecked="{Binding IsMotionController}">
-                                    <TextBlock
-                                        Text="{locale:Locale ControllerSettingsMotionEnableMotionControls}" />
-                                </CheckBox>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-
-                    <!--  Motion  -->
-                    <Border
-                        Margin="0,0,2,2"
-                        BorderBrush="{DynamicResource ThemeControlBorderColor}"
-                        BorderThickness="1"
-                        HorizontalAlignment="Stretch"
-                        IsVisible="{Binding IsMotionController}">
-                        <Grid VerticalAlignment="Top">
-                            <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
@@ -1385,59 +1370,84 @@
                                 Margin="0,0,0,5"
                                 HorizontalAlignment="Center"
                                 Orientation="Vertical">
-                                <TextBlock Text="{locale:Locale ControllerSettingsMotion}" />
+                              <TextBlock Text="{locale:Locale ControllerSettingsMotion}" />
                             </StackPanel>
                             <StackPanel
                                 Grid.Row="1"
                                 HorizontalAlignment="Center"
                                 Orientation="Vertical">
+                                <CheckBox
+                                  Margin="0,1"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    IsChecked="{Binding IsMotionController}">
+                                    <TextBlock
+                                        Text="{locale:Locale ControllerSettingsMotionEnableMotionControls}" />
+                                </CheckBox>
+                            </StackPanel>
+                          <!--  Motion  -->
+                          <Border
+                              Margin="0"
+                              Grid.Row="2"
+                              Padding="0"
+                              BorderBrush="{DynamicResource ThemeControlBorderColor}"
+                              HorizontalAlignment="Stretch"
+                              IsVisible="{Binding IsMotionController}">
+                              <StackPanel
+                                  Grid.Row="1"
+                                  HorizontalAlignment="Center"
+                                  Orientation="Vertical">
                                 <StackPanel
-                                    Margin="2"
+                                    Margin="0"
                                     HorizontalAlignment="Center"
                                     Orientation="Vertical">
-                                    <TextBlock
-                                        Margin="2"
-                                        HorizontalAlignment="Center"
-                                        Text="{locale:Locale ControllerSettingsMotionGyroSensitivity}" />
-                                    <StackPanel
-                                        Margin="0"
-                                        VerticalAlignment="Center"
-                                        Orientation="Horizontal">
-                                        <Slider
-                                            Width="150"
-                                            MaxWidth="150"
-                                            Maximum="100"
-                                            Minimum="0"
-                                            Value="{Binding Configuration.Sensitivity, Mode=TwoWay}" />
-                                        <TextBlock
-                                            Text="{Binding Configuration.Sensitivity, StringFormat=\{0:0\}%}" />
-                                    </StackPanel>
+                                  <TextBlock
+                                      Margin="0"
+                                      HorizontalAlignment="Center"
+                                      Text="{locale:Locale ControllerSettingsMotionGyroSensitivity}" />
+                                  <StackPanel
+                                      Margin="0"
+                                      VerticalAlignment="Center"
+                                      Orientation="Horizontal">
+                                    <Slider
+                                        Width="150"
+                                        MaxWidth="150"
+                                        Maximum="100"
+                                        Minimum="0"
+                                        Value="{Binding Configuration.Sensitivity, Mode=TwoWay}" />
+                                    <TextBlock HorizontalAlignment="Center"
+                                  Margin="5, 0"
+                                        Text="{Binding Configuration.Sensitivity, StringFormat=\{0:0\}%}" />
+                                  </StackPanel>
                                 </StackPanel>
                                 <StackPanel
-                                    Margin="2"
+                                    Margin="0"
                                     HorizontalAlignment="Center"
                                     Orientation="Vertical">
+                                  <TextBlock
+                                      Margin="0"
+                                      HorizontalAlignment="Center"
+                                      Text="{locale:Locale ControllerSettingsMotionGyroDeadzone}" />
+                                  <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
+                                    <Slider
+                                        Width="150"
+                                        MaxWidth="150"
+                                        Maximum="1"
+                                        Minimum="0"
+                                        Value="{Binding Configuration.GyroDeadzone, Mode=TwoWay}" />
                                     <TextBlock
-                                        Margin="2"
-                                        HorizontalAlignment="Center"
-                                        Text="{locale:Locale ControllerSettingsMotionGyroDeadzone}" />
-                                    <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
-                                        <Slider
-                                            Width="150"
-                                            MaxWidth="150"
-                                            Maximum="1"
-                                            Minimum="0"
-                                            Value="{Binding Configuration.GyroDeadzone, Mode=TwoWay}" />
-                                        <TextBlock
-                                            Text="{Binding Configuration.GyroDeadzone, StringFormat=\{0:0.000\}}" />
-                                    </StackPanel>
+                                  VerticalAlignment="Center"
+                                  Margin="5, 0"
+                                          Text="{Binding Configuration.GyroDeadzone, StringFormat=\{0:0.000\}}" />
+                                  </StackPanel>
                                 </StackPanel>
                                 <Button Margin="5,5" HorizontalAlignment="Center"
                                         Command="{Binding ShowCemuHookConfig}">
-                                    <TextBlock
-                                        Text="{locale:Locale ControllerSettingsMotionConfigureCemuHookSettings}" />
+                                  <TextBlock
+                                      Text="{locale:Locale ControllerSettingsMotionConfigureCemuHookSettings}" />
                                 </Button>
-                            </StackPanel>
+                              </StackPanel>
+                          </Border>
                         </Grid>
                     </Border>
                 </StackPanel>
