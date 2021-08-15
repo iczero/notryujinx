@@ -1338,6 +1338,7 @@
                                     VerticalAlignment="Center"
                                     Orientation="Horizontal">
                                     <Slider
+                                        Margin="0,-10,0,-5"
                                         Width="200"
                                         Maximum="1"
                                         Padding="0"
