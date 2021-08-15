@@ -1374,18 +1374,20 @@
                                 Margin="0,0,0,5"
                                 HorizontalAlignment="Center"
                                 Orientation="Vertical">
-                              <TextBlock Text="{locale:Locale ControllerSettingsMotion}" />
+                              <TextBlock
+                                  Text="{locale:Locale ControllerSettingsMotion}"
+                                  Margin="0" />
                             </StackPanel>
                             <StackPanel
                                 Grid.Row="1"
                                 HorizontalAlignment="Center"
                                 Orientation="Vertical">
                                 <CheckBox
-                                  Margin="0,1"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     IsChecked="{Binding IsMotionController}">
                                     <TextBlock
+                                        Margin="0,0,20,0"
                                         Text="{locale:Locale ControllerSettingsMotionEnableMotionControls}" />
                                 </CheckBox>
                             </StackPanel>
@@ -1414,6 +1416,7 @@
                                       VerticalAlignment="Center"
                                       Orientation="Horizontal">
                                     <Slider
+                                        Margin="0,-5,0,-5"
                                         Width="150"
                                         MaxWidth="150"
                                         Maximum="100"
@@ -1434,6 +1437,7 @@
                                       Text="{locale:Locale ControllerSettingsMotionGyroDeadzone}" />
                                   <StackPanel VerticalAlignment="Center" Orientation="Horizontal">
                                     <Slider
+                                        Margin="0,-5,0,-5"
                                         Width="150"
                                         MaxWidth="150"
                                         Maximum="1"
@@ -1445,7 +1449,8 @@
                                           Text="{Binding Configuration.GyroDeadzone, StringFormat=\{0:0.000\}}" />
                                   </StackPanel>
                                 </StackPanel>
-                                <Button Margin="5,5" HorizontalAlignment="Center"
+                                <Separator Margin="-16,0" />
+                                <Button Margin="0,8,0,0" HorizontalAlignment="Center"
                                         Command="{Binding ShowCemuHookConfig}">
                                   <TextBlock
                                       Text="{locale:Locale ControllerSettingsMotionConfigureCemuHookSettings}" />
