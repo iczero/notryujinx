@@ -630,6 +630,7 @@
                             Text="{locale:Locale ControllerSettingsRumbleWeakMultiplier}" />
                       <StackPanel Orientation="Horizontal" Margin="0">
                         <Slider
+                            Margin="0,-5,0,-5"
                             Width="200"
                             MaxWidth="200"
                             Maximum="10"
