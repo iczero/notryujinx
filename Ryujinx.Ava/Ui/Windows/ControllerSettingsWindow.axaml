@@ -956,8 +956,8 @@
                 </Border>
                 <!--  Controller Picture  -->
                 <Image
-                    Width="340"
-                    MinWidth="260"
+                    Height ="400"
+                    Margin="0,10,0,0"
                     HorizontalAlignment="Stretch"
                     VerticalAlignment="Stretch"
                     Source="{Binding Image}" />
