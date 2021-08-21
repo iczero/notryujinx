@@ -271,7 +271,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             config.System.IgnoreMissingServices.Value   = IgnoreMissingServices;
             config.System.ExpandRam.Value               = ExpandDramSize;
             config.Hid.EnableKeyboard.Value             = EnableKeyboard;
-            config.Hid.EnableMouse.Value                = EnableKeyboard;
+            config.Hid.EnableMouse.Value                = EnableMouse;
             config.Ui.CustomThemePath.Value             = CustomThemePath;
             config.Ui.EnableCustomTheme.Value           = EnableCustomTheme;
             config.Ui.BaseStyle.Value                   = BaseStyleIndex == 0 ? "Light" : "Dark";
