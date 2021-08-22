@@ -23,7 +23,6 @@ using Ryujinx.Configuration;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Gpu;
 using Ryujinx.Graphics.OpenGL;
-using Ryujinx.HLE;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.FileSystem.Content;
 using Ryujinx.HLE.HOS;
@@ -129,7 +128,7 @@ namespace Ryujinx.Ava
             _ticksPerFrame          = Stopwatch.Frequency / TargetFps;
             _glLogLevel             = ConfigurationState.Instance.Logger.GraphicsDebugLevel;
 
-            _inputManager.SetMouseDriver(new AvaloniaMouseDriver(parent));
+            _inputManager.SetMouseDriver(new AvaloniaMouseDriver(window));
             NpadManager = _inputManager.CreateNpadManager();
             _keyboardInterface = (IKeyboard)_inputManager.KeyboardDriver.GetGamepad("0");
             TouchScreenManager = _inputManager.CreateTouchScreenManager();
