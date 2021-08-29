@@ -493,6 +493,33 @@
                                     Orientation="Horizontal"
                                     Spacing="20">
                                     <TextBlock VerticalAlignment="Center"
+                                               Text="{locale:Locale SettingsTabGraphicsBackendMultithreading}" />
+                                    <ComboBox Grid.Column="1" Grid.Row="2" Margin="10,10" MinWidth="100"
+                                          SelectedIndex="{Binding GraphicsBackendMultithreadingIndex}">
+                                      <ComboBoxItem>
+                                        <TextBlock Text="{locale:Locale CommonAuto}" />
+                                      </ComboBoxItem>
+                                      <ComboBoxItem>
+                                        <TextBlock Text="{locale:Locale CommonOff}" />
+                                      </ComboBoxItem>
+                                      <ComboBoxItem>
+                                        <TextBlock Text="{locale:Locale CommonOn}" />
+                                      </ComboBoxItem>
+                                    </ComboBox>
+                                </StackPanel>
+                            </StackPanel>
+                            <Separator Height="1" Margin="0,5" />
+                            <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGraphicsDeveloperOptions}" />
+                            <StackPanel
+                                Margin="10,0,10,0"
+                                HorizontalAlignment="Stretch"
+                                Orientation="Vertical"
+                                Spacing="10">
+                                <StackPanel
+                                    Margin="0,5"
+                                    Orientation="Horizontal"
+                                    Spacing="20">
+                                    <TextBlock VerticalAlignment="Center"
                                                Text="{locale:Locale SettingsTabGraphicsShaderDumpPath}" />
                                     <TextBox MinWidth="350" Text="{Binding ShaderDumpPath}" />
                                 </StackPanel>

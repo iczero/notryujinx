@@ -128,7 +128,7 @@ namespace Ryujinx.Ava.Ui.Applet
         public void ExecuteProgram(Switch device, ProgramSpecifyKind kind, ulong value)
         {
             device.Configuration.UserChannelPersistence.ExecuteProgram(kind, value);
-            ((MainWindow)_parent).AppHost?.Exit();
+            ((MainWindow)_parent).AppHost?.Dispose();
         }
 
         public bool DisplayErrorAppletDialog(string title, string message, string[] buttons)

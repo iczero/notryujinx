@@ -1,11 +1,15 @@
 using Avalonia.Collections;
 using Avalonia.Controls;
+using Avalonia.Threading;
 using LibHac.FsSystem;
 using Ryujinx.Audio.Backends.OpenAL;
 using Ryujinx.Audio.Backends.SDL2;
 using Ryujinx.Audio.Backends.SoundIo;
+using Ryujinx.Ava.Common.Locale;
+using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.Common.Configuration;
+using Ryujinx.Common.GraphicsDriver;
 using Ryujinx.Common.Logging;
 using Ryujinx.Configuration;
 using Ryujinx.Configuration.System;
@@ -22,13 +26,14 @@ namespace Ryujinx.Ava.Ui.ViewModels
     {
         private readonly VirtualFileSystem      _virtualFileSystem;
         private readonly ContentManager         _contentManager;
-        private readonly Window                 _owner;
+        private readonly StyleableWindow        _owner;
         private          TimeZoneContentManager _timeZoneContentManager;
 
         private readonly List<string> _validTzRegions;
 
         private float _customResolutionScale;
         private int   _resolutionScale;
+        private int   _graphicsBackendMultithreadingIndex;
 
         public int ResolutionScale
         {
@@ -39,6 +44,32 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 OnPropertyChanged(nameof(CustomResolutionScale));
                 OnPropertyChanged(nameof(IsResolutionScaleActive));
+            }
+        }
+        public int GraphicsBackendMultithreadingIndex
+        {
+            get => _graphicsBackendMultithreadingIndex;
+            set
+            {
+                _graphicsBackendMultithreadingIndex = value;
+
+                if (_owner != null)
+                {
+                    if (_graphicsBackendMultithreadingIndex != (int)ConfigurationState.Instance.Graphics.BackendThreading.Value)
+                    {
+                        Dispatcher.UIThread.Post(async () =>
+                        {
+                            await ContentDialogHelper.CreateInfoDialog(_owner,
+                                                                       LocaleManager.Instance["DialogSettingsBackendThreadingWarningMessage"],
+                                                                       "",
+                                                                       "",
+                                                                       LocaleManager.Instance["InputDialogOk"],
+                                                                       LocaleManager.Instance["DialogSettingsBackendThreadingWarningTitle"]);
+                        });
+                    }
+                }
+
+                OnPropertyChanged();
             }
         }
 
@@ -100,11 +131,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public AvaloniaList<string> GameDirectories { get; set; }
 
-        public SettingsViewModel(VirtualFileSystem virtualFileSystem, ContentManager contentManager, Window owner) : this()
+        public SettingsViewModel(VirtualFileSystem virtualFileSystem, ContentManager contentManager, StyleableWindow owner) : this()
         {
             _virtualFileSystem = virtualFileSystem;
             _contentManager    = contentManager;
-            _owner = owner;
+            _owner             = owner;
             if (Program.PreviewerDetached)
             {
                 LoadTimeZones();
@@ -210,6 +241,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
             EnableFsAccessLog        = config.Logger.EnableFsAccessLog;
             EnableCustomTheme        = config.Ui.EnableCustomTheme;
 
+            GraphicsBackendMultithreadingIndex = (int)config.Graphics.BackendThreading.Value;
+
             OpenglDebugLevel = (int)config.Logger.GraphicsDebugLevel.Value;
 
             TimeZone        = config.System.TimeZone;
@@ -277,6 +310,13 @@ namespace Ryujinx.Ava.Ui.ViewModels
             config.Ui.BaseStyle.Value                   = BaseStyleIndex == 0 ? "Light" : "Dark";
             config.System.Language.Value                = (Language)Language;
             config.System.Region.Value                  = (Region)Region;
+
+            if (ConfigurationState.Instance.Graphics.BackendThreading != (BackendThreading)GraphicsBackendMultithreadingIndex)
+            {
+                DriverUtilities.ToggleOGLThreading(GraphicsBackendMultithreadingIndex == (int)BackendThreading.Off);
+            }
+
+            config.Graphics.BackendThreading.Value = (BackendThreading)GraphicsBackendMultithreadingIndex;
 
             TimeSpan systemTimeOffset = DateOffset - DateTime.Now;
 

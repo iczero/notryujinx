@@ -34,10 +34,7 @@ namespace Ryujinx.Input.Avalonia
             _buttonsUserMapping = new List<ButtonMappingEntry>();
         }
 
-        public void Dispose()
-        {
-            // No operations
-        }
+        public void Dispose() { }
 
         public KeyboardStateSnapshot GetKeyboardStateSnapshot()
         {
@@ -156,22 +153,11 @@ namespace Ryujinx.Input.Avalonia
             }
         }
 
-        public void SetTriggerThreshold(float triggerThreshold)
-        {
-            // No operations
-        }
+        public void SetTriggerThreshold(float triggerThreshold) { }
 
-        public void Rumble(float lowFrequency, float highFrequency, uint durationMs)
-        {
-            // No operations
-        }
+        public void Rumble(float lowFrequency, float highFrequency, uint durationMs) { }
 
-        public Vector3 GetMotionData(MotionInputId inputId)
-        {
-            // No operations
-
-            return Vector3.Zero;
-        }
+        public Vector3 GetMotionData(MotionInputId inputId) => Vector3.Zero;
 
         private static float ConvertRawStickValue(short value)
         {
@@ -180,8 +166,7 @@ namespace Ryujinx.Input.Avalonia
             return value * ConvertRate;
         }
 
-        private static (short, short) GetStickValues(ref KeyboardStateSnapshot snapshot,
-            JoyconConfigKeyboardStick<ConfigKey> stickConfig)
+        private static (short, short) GetStickValues(ref KeyboardStateSnapshot snapshot, JoyconConfigKeyboardStick<ConfigKey> stickConfig)
         {
             short stickX = 0;
             short stickY = 0;
