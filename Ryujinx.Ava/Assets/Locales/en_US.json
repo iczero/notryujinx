@@ -350,7 +350,7 @@
   "DialogProfileInvalidProfileErrorMessage": "Profile {0} is incompatible with the current input configuration system.",
   "DialogProfileDefaultProfileOverwriteErrorMessage": "Default Profile can not be overwritten",
   "DialogProfileDeleteProfileTitle": "Deleting Profile",
-  "DialogProfileDeleteProfileMessage": "This action is irreversible, are your sure you want to continue?",
+  "DialogProfileDeleteProfileMessage": "This action is irreversible, are you sure you want to continue?",
   "DialogWarning": "Warning",
   "DialogPPTCDeletionMessage": "You are about to delete the PPTC cache for :\n\n{0}\n\nAre you sure you want to proceed?",
   "DialogPPTCDeletionErrorMessage": "Error purging PPTC cache at {0}: {1}",
