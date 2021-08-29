@@ -308,6 +308,11 @@ namespace Ryujinx.Configuration
         public class GraphicsSection
         {
             /// <summary>
+            /// Whether or not backend threading is enabled. The "Auto" setting will determine whether threading should be enabled at runtime.
+            /// </summary>
+            public ReactiveObject<BackendThreading> BackendThreading { get; private set; }
+
+            /// <summary>
             /// Max Anisotropy. Values range from 0 - 16. Set to -1 to let the game decide.
             /// </summary>
             public ReactiveObject<float> MaxAnisotropy { get; private set; }
@@ -344,6 +349,8 @@ namespace Ryujinx.Configuration
 
             public GraphicsSection()
             {
+                BackendThreading        = new ReactiveObject<BackendThreading>();
+                BackendThreading.Event  += static (sender, e) => LogValueChange(sender, e, nameof(BackendThreading));
                 ResScale                = new ReactiveObject<int>();
                 ResScale.Event          += static (sender, e) => LogValueChange(sender, e, nameof(ResScale));
                 ResScaleCustom          = new ReactiveObject<float>();
@@ -428,6 +435,7 @@ namespace Ryujinx.Configuration
             ConfigurationFileFormat configurationFile = new ConfigurationFileFormat
             {
                 Version                   = ConfigurationFileFormat.CurrentVersion,
+                BackendThreading          = Graphics.BackendThreading,
                 EnableFileLog             = Logger.EnableFileLog,
                 ResScale                  = Graphics.ResScale,
                 ResScaleCustom            = Graphics.ResScaleCustom,
@@ -498,6 +506,7 @@ namespace Ryujinx.Configuration
         public void LoadDefault()
         {
             Logger.EnableFileLog.Value             = true;
+            Graphics.BackendThreading.Value        = BackendThreading.Auto;
             Graphics.ResScale.Value                = 1;
             Graphics.ResScaleCustom.Value          = 1.0f;
             Graphics.MaxAnisotropy.Value           = -1.0f;
@@ -526,7 +535,7 @@ namespace Ryujinx.Configuration
             System.EnablePtc.Value                 = true;
             System.EnableFsIntegrityChecks.Value   = true;
             System.FsGlobalAccessLogMode.Value     = 0;
-            System.AudioBackend.Value              = AudioBackend.OpenAl;
+            System.AudioBackend.Value              = AudioBackend.SDL2;
             System.MemoryManagerMode.Value         = MemoryManagerMode.HostMappedUnsafe;
             System.ExpandRam.Value                 = false;
             System.IgnoreMissingServices.Value     = false;
@@ -904,6 +913,15 @@ namespace Ryujinx.Configuration
             {
                 Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 31.");
 
+                configurationFileFormat.BackendThreading = BackendThreading.Auto;
+
+                configurationFileUpdated = true;
+            }
+
+            if (configurationFileFormat.Version < 32)
+            {
+                Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 31.");
+
                 configurationFileFormat.BaseStyle = "Dark";
 
                 configurationFileUpdated = true;
@@ -915,6 +933,7 @@ namespace Ryujinx.Configuration
             Graphics.MaxAnisotropy.Value           = configurationFileFormat.MaxAnisotropy;
             Graphics.AspectRatio.Value             = configurationFileFormat.AspectRatio;
             Graphics.ShadersDumpPath.Value         = configurationFileFormat.GraphicsShadersDumpPath;
+            Graphics.BackendThreading.Value        = configurationFileFormat.BackendThreading;
             Logger.EnableDebug.Value               = configurationFileFormat.LoggingEnableDebug;
             Logger.EnableStub.Value                = configurationFileFormat.LoggingEnableStub;
             Logger.EnableInfo.Value                = configurationFileFormat.LoggingEnableInfo;

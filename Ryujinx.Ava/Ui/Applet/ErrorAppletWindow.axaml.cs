@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.Windows;
 using System.Threading.Tasks;
 
@@ -33,7 +34,7 @@ namespace Ryujinx.Ava.Ui.Applet
             }
             else
             {
-                AddButton("OK", 0);
+                AddButton(LocaleManager.Instance["InputDialogOk"], 0);
             }
         }
 

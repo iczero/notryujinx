@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using FluentAvalonia.UI.Controls;
+using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.Models;
 using Ryujinx.Ava.Ui.Windows;
 using System.Threading.Tasks;
@@ -50,9 +51,9 @@ namespace Ryujinx.Ava.Ui.Controls
             if (contentDialog != null)
             {
                 contentDialog.Title = title;
-                contentDialog.PrimaryButtonText = "OK";
+                contentDialog.PrimaryButtonText = LocaleManager.Instance["InputDialogOk"];
                 contentDialog.SecondaryButtonText = "";
-                contentDialog.CloseButtonText = "Cancel";
+                contentDialog.CloseButtonText = LocaleManager.Instance["InputDialogCancel"];
                 contentDialog.Content = content;
                 contentDialog.PrimaryButtonCommand = MiniCommand.Create(() =>
                 {

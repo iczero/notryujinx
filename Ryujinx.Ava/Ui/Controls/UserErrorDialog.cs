@@ -79,7 +79,7 @@ namespace Ryujinx.Ava.Ui.Controls
                 string.Format(LocaleManager.Instance["DialogUserErrorDialogMessage"], errorCode, GetErrorTitle(error)),
                 GetErrorDescription(error) + (isInSetupGuide
                     ? LocaleManager.Instance["DialogUserErrorDialogInfoMessage"]
-                    : ""), setupButtonLabel, "OK",
+                    : ""), setupButtonLabel, LocaleManager.Instance["InputDialogOk"],
                 string.Format(LocaleManager.Instance["DialogUserErrorDialogTitle"], errorCode));
 
             if(result == UserResult.Ok)

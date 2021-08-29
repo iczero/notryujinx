@@ -31,7 +31,6 @@ namespace Ryujinx.Input.Avalonia
             AvaKey.None
         };
 
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static AvaKey ToKey(Key key)
         {

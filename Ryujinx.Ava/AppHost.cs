@@ -21,6 +21,7 @@ using Ryujinx.Common.Logging;
 using Ryujinx.Common.System;
 using Ryujinx.Configuration;
 using Ryujinx.Graphics.GAL;
+using Ryujinx.Graphics.GAL.Multithreading;
 using Ryujinx.Graphics.Gpu;
 using Ryujinx.Graphics.OpenGL;
 using Ryujinx.HLE.FileSystem;
@@ -83,6 +84,7 @@ namespace Ryujinx.Ava
 
         private IRenderer _renderer;
         private readonly Thread _renderingThread;
+        private Thread _nvStutterWorkaround;
 
         private long _ticks;
 
@@ -154,14 +156,14 @@ namespace Ryujinx.Ava
             ConfigurationState.Instance.System.EnableDockedMode.Event      += UpdateDockedModeState;
         }
 
-        private void Parent_PointerLeft(object? sender, PointerEventArgs e)
+        private void Parent_PointerLeft(object sender, PointerEventArgs e)
         {
             Window.Cursor = ConfigurationState.Instance.Hid.EnableMouse ? InvisibleCursor : Cursor.Default;
             
             _isMouseInClient = false;
         }
 
-        private void Parent_PointerEntered(object? sender, PointerEventArgs e)
+        private void Parent_PointerEntered(object sender, PointerEventArgs e)
         {
             _isMouseInClient = true;
         }
@@ -285,11 +287,16 @@ namespace Ryujinx.Ava
                 };
                 _mainThread.Start();
 
-                Thread nvStutterWorkaround = new Thread(NVStutterWorkaround)
+                _nvStutterWorkaround = null;
+
+                if (_renderer is Graphics.OpenGL.Renderer)
                 {
-                    Name = "GUI.NVStutterWorkaround"
-                };
-                nvStutterWorkaround.Start();
+                    _nvStutterWorkaround = new Thread(NVStutterWorkaround)
+                    {
+                        Name = "GUI.NVStutterWorkaround"
+                    };
+                    _nvStutterWorkaround.Start();
+                }
             }
         }
         
@@ -317,7 +324,7 @@ namespace Ryujinx.Ava
             }
         }
 
-        public void Exit()
+        public void Dispose()
         {
             ((AvaloniaKeyboardDriver)_inputManager.KeyboardDriver).RemoveControl(Window);
 
@@ -338,6 +345,7 @@ namespace Ryujinx.Ava
 
             _mainThread.Join();
             _renderingThread.Join();
+            _nvStutterWorkaround?.Join();
 
             Ptc.Close();
             PtcProfiler.Stop();
@@ -348,11 +356,6 @@ namespace Ryujinx.Ava
             Device.DisposeGpu();
 
             AppExit?.Invoke(this, EventArgs.Empty);
-        }
-
-        public void Dispose()
-        {
-            Exit();
         }
 
         private void Window_MouseMove(object sender, (double X, double Y) e)
@@ -531,7 +534,7 @@ namespace Ryujinx.Ava
                             {
                                 Logger.Error?.Print(LogClass.Application, "The specified file is not supported by Ryujinx.");
 
-                                Exit();
+                                Dispose();
 
                                 return false;
                             }
@@ -544,7 +547,7 @@ namespace Ryujinx.Ava
             {
                 Logger.Warning?.Print(LogClass.Application, "Please specify a valid XCI/NCA/NSP/PFS0/NRO file.");
 
-                Exit();
+                Dispose();
 
                 return false;
             }
@@ -566,6 +569,17 @@ namespace Ryujinx.Ava
             IRenderer             renderer     = new Renderer();
             IHardwareDeviceDriver deviceDriver = new DummyHardwareDeviceDriver();
 
+            BackendThreading threadingMode = ConfigurationState.Instance.Graphics.BackendThreading;
+
+            bool threadedGAL = threadingMode == BackendThreading.On || (threadingMode == BackendThreading.Auto && renderer.PreferThreading);
+
+            if (threadedGAL)
+            {
+                renderer = new ThreadedRenderer(renderer);
+            }
+
+            Logger.Info?.PrintMsg(LogClass.Gpu, $"Backend Threading ({threadingMode}): {threadedGAL}");
+
             if (ConfigurationState.Instance.System.AudioBackend.Value == AudioBackend.SDL2)
             {
                 if (SDL2HardwareDeviceDriver.IsSupported)
@@ -574,7 +588,35 @@ namespace Ryujinx.Ava
                 }
                 else
                 {
-                    Logger.Warning?.Print(LogClass.Audio, "SDL2 audio is not supported, falling back to dummy audio out.");
+                    Logger.Warning?.Print(LogClass.Audio, "SDL2 is not supported, trying to fall back to OpenAL.");
+
+                    if (OpenALHardwareDeviceDriver.IsSupported)
+                    {
+                        Logger.Warning?.Print(LogClass.Audio, "Found OpenAL, changing configuration.");
+
+                        ConfigurationState.Instance.System.AudioBackend.Value = AudioBackend.OpenAl;
+                        MainWindow.SaveConfig();
+
+                        deviceDriver = new OpenALHardwareDeviceDriver();
+                    }
+                    else
+                    {
+                        Logger.Warning?.Print(LogClass.Audio, "OpenAL is not supported, trying to fall back to SoundIO.");
+
+                        if (SoundIoHardwareDeviceDriver.IsSupported)
+                        {
+                            Logger.Warning?.Print(LogClass.Audio, "Found SoundIO, changing configuration.");
+
+                            ConfigurationState.Instance.System.AudioBackend.Value = AudioBackend.SoundIo;
+                            MainWindow.SaveConfig();
+
+                            deviceDriver = new SoundIoHardwareDeviceDriver();
+                        }
+                        else
+                        {
+                            Logger.Warning?.Print(LogClass.Audio, "SoundIO is not supported, falling back to dummy audio out.");
+                        }
+                    }
                 }
             }
             else if (ConfigurationState.Instance.System.AudioBackend.Value == AudioBackend.SoundIo)
@@ -585,7 +627,35 @@ namespace Ryujinx.Ava
                 }
                 else
                 {
-                    Logger.Warning?.Print(LogClass.Audio, "SoundIO is not supported, falling back to dummy audio out.");
+                    Logger.Warning?.Print(LogClass.Audio, "SoundIO is not supported, trying to fall back to SDL2.");
+
+                    if (SDL2HardwareDeviceDriver.IsSupported)
+                    {
+                        Logger.Warning?.Print(LogClass.Audio, "Found SDL2, changing configuration.");
+
+                        ConfigurationState.Instance.System.AudioBackend.Value = AudioBackend.SDL2;
+                        MainWindow.SaveConfig();
+
+                        deviceDriver = new SDL2HardwareDeviceDriver();
+                    }
+                    else
+                    {
+                        Logger.Warning?.Print(LogClass.Audio, "SDL2 is not supported, trying to fall back to OpenAL.");
+
+                        if (OpenALHardwareDeviceDriver.IsSupported)
+                        {
+                            Logger.Warning?.Print(LogClass.Audio, "Found OpenAL, changing configuration.");
+
+                            ConfigurationState.Instance.System.AudioBackend.Value = AudioBackend.OpenAl;
+                            MainWindow.SaveConfig();
+
+                            deviceDriver = new OpenALHardwareDeviceDriver();
+                        }
+                        else
+                        {
+                            Logger.Warning?.Print(LogClass.Audio, "OpenAL is not supported, falling back to dummy audio out.");
+                        }
+                    }
                 }
             }
             else if (ConfigurationState.Instance.System.AudioBackend.Value == AudioBackend.OpenAl)
@@ -596,20 +666,34 @@ namespace Ryujinx.Ava
                 }
                 else
                 {
-                    Logger.Warning?.Print(LogClass.Audio, "OpenAL is not supported, trying to fall back to SoundIO.");
+                    Logger.Warning?.Print(LogClass.Audio, "OpenAL is not supported, trying to fall back to SDL2.");
 
-                    if (SoundIoHardwareDeviceDriver.IsSupported)
+                    if (SDL2HardwareDeviceDriver.IsSupported)
                     {
-                        Logger.Warning?.Print(LogClass.Audio, "Found SoundIO, changing configuration.");
+                        Logger.Warning?.Print(LogClass.Audio, "Found SDL2, changing configuration.");
 
-                        ConfigurationState.Instance.System.AudioBackend.Value = AudioBackend.SoundIo;
+                        ConfigurationState.Instance.System.AudioBackend.Value = AudioBackend.SDL2;
                         MainWindow.SaveConfig();
 
-                        deviceDriver = new SoundIoHardwareDeviceDriver();
+                        deviceDriver = new SDL2HardwareDeviceDriver();
                     }
                     else
                     {
-                        Logger.Warning?.Print(LogClass.Audio, "SoundIO is not supported, falling back to dummy audio out.");
+                        Logger.Warning?.Print(LogClass.Audio, "SDL2 is not supported, trying to fall back to SoundIO.");
+
+                        if (SoundIoHardwareDeviceDriver.IsSupported)
+                        {
+                            Logger.Warning?.Print(LogClass.Audio, "Found SoundIO, changing configuration.");
+
+                            ConfigurationState.Instance.System.AudioBackend.Value = AudioBackend.SoundIo;
+                            MainWindow.SaveConfig();
+
+                            deviceDriver = new SoundIoHardwareDeviceDriver();
+                        }
+                        else
+                        {
+                            Logger.Warning?.Print(LogClass.Audio, "SoundIO is not supported, falling back to dummy audio out.");
+                        }
                     }
                 }
             }
@@ -700,7 +784,14 @@ namespace Ryujinx.Ava
                 Window.IsFullscreen = _parent.WindowState == WindowState.FullScreen;
             });
 
-            _renderer = Device.Gpu.Renderer;
+            IRenderer renderer = Device.Gpu.Renderer;
+
+            if (renderer is ThreadedRenderer tr)
+            {
+                renderer = tr.BaseRenderer;
+            }
+
+            _renderer = renderer;
 
             _renderer.ScreenCaptured += Renderer_ScreenCaptured;
 
@@ -712,56 +803,59 @@ namespace Ryujinx.Ava
             }
 
             Device.Gpu.Renderer.Initialize(_glLogLevel);
-            Device.Gpu.InitializeShaderCache();
-
-            Translator.IsReadyForTranslation.Set();
 
             Width  = (int)Window.Bounds.Width;
             Height = (int)Window.Bounds.Height;
 
             _renderer.Window.SetSize((int)(Width * Program.WindowScaleFactor), (int)(Height * Program.WindowScaleFactor));
 
-            while (_isActive)
+            Device.Gpu.Renderer.RunLoop(() =>
             {
-                _ticks += _chrono.ElapsedTicks;
+                Device.Gpu.InitializeShaderCache();
+                Translator.IsReadyForTranslation.Set();
 
-                _chrono.Restart();
-
-                if (Device.WaitFifo())
+                while (_isActive)
                 {
-                    Device.Statistics.RecordFifoStart();
-                    Device.ProcessFrame();
-                    Device.Statistics.RecordFifoEnd();
-                }
+                    _ticks += _chrono.ElapsedTicks;
 
-                while (Device.ConsumeFrameAvailable())
-                {
-                    Device.PresentFrame(Present);
-                }
+                    _chrono.Restart();
 
-                if (_ticks >= _ticksPerFrame)
-                {
-                    string dockedMode = ConfigurationState.Instance.System.EnableDockedMode ? "Docked" : "Handheld";
-                    float  scale      = GraphicsConfig.ResScale;
-
-                    if (scale != 1)
+                    if (Device.WaitFifo())
                     {
-                        dockedMode += $" ({scale}x)";
+                        Device.Statistics.RecordFifoStart();
+                        Device.ProcessFrame();
+                        Device.Statistics.RecordFifoEnd();
                     }
 
-                    string vendor = _renderer is Renderer renderer ? renderer.GpuVendor : "Vulkan Test";
+                    while (Device.ConsumeFrameAvailable())
+                    {
+                        Device.PresentFrame(Present);
+                    }
 
-                    StatusUpdatedEvent?.Invoke(this, new StatusUpdatedEventArgs(
-                        Device.EnableDeviceVsync,
-                        dockedMode,
-                        ConfigurationState.Instance.Graphics.AspectRatio.Value.ToText(),
-                        $"Game: {Device.Statistics.GetGameFrameRate():00.00} FPS",
-                        $"FIFO: {Device.Statistics.GetFifoPercent():00.00} %",
-                        $"GPU: {vendor}"));
+                    if (_ticks >= _ticksPerFrame)
+                    {
+                        string dockedMode = ConfigurationState.Instance.System.EnableDockedMode ? "Docked" : "Handheld";
+                        float scale = GraphicsConfig.ResScale;
 
-                    _ticks = Math.Min(_ticks - _ticksPerFrame, _ticksPerFrame);
+                        if (scale != 1)
+                        {
+                            dockedMode += $" ({scale}x)";
+                        }
+
+                        string vendor = _renderer is Renderer renderer ? renderer.GpuVendor : "Vulkan Test";
+
+                        StatusUpdatedEvent?.Invoke(this, new StatusUpdatedEventArgs(
+                            Device.EnableDeviceVsync,
+                            dockedMode,
+                            ConfigurationState.Instance.Graphics.AspectRatio.Value.ToText(),
+                            $"Game: {Device.Statistics.GetGameFrameRate():00.00} FPS",
+                            $"FIFO: {Device.Statistics.GetFifoPercent():00.00} %",
+                            $"GPU: {vendor}"));
+
+                        _ticks = Math.Min(_ticks - _ticksPerFrame, _ticksPerFrame);
+                    }
                 }
-            }
+            });
 
             if (Window is OpenGlEmbeddedWindow window)
             {
@@ -799,14 +893,14 @@ namespace Ryujinx.Ava
                         {
                             if (!ConfigurationState.Instance.ShowConfirmExit)
                             {
-                                Exit();
+                                Dispose();
                             }
                             else
                             {
                                 bool shouldExit = await ContentDialogHelper.CreateExitDialog(_parent);
                                 if (shouldExit)
                                 {
-                                    Exit();
+                                    Dispose();
                                 }
                             }
                         }

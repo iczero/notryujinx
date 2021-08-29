@@ -23,6 +23,7 @@ namespace Ryujinx.Ava.Common
                 }
             }
         }
+
         public byte[] Icon { get; set; }
         public string TitleName { get; set; }
         public string TitleId { get; set; }

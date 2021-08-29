@@ -164,7 +164,7 @@ namespace Ryujinx.Ava.Common
                 {
                     Dispatcher.UIThread.Post(async () =>
                     {
-                        UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_owner, string.Format(LocaleManager.Instance["DialogNcaExtractionMessage"], ncaSectionType, Path.GetFileName(titleFilePath)), "", "", "Cancel", LocaleManager.Instance["DialogNcaExtractionTitle"]);
+                        UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_owner, string.Format(LocaleManager.Instance["DialogNcaExtractionMessage"], ncaSectionType, Path.GetFileName(titleFilePath)), "", "", LocaleManager.Instance["InputDialogCancel"], LocaleManager.Instance["DialogNcaExtractionTitle"]);
 
                         if (result == UserResult.Cancel)
                         {

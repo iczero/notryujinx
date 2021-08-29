@@ -28,8 +28,7 @@ namespace Ryujinx.Ava
         public static double WindowScaleFactor { get; private set; }
         public static string Version           { get; private set; }
         public static string ConfigurationPath { get; private set; }
-
-        public static bool PreviewerDetached { get; private set; }
+        public static bool   PreviewerDetached { get; private set; }
 
         [DllImport("libX11")]
         private static extern int XInitThreads();
@@ -141,7 +140,8 @@ namespace Ryujinx.Ava
             PrintSystemInfo();
 
             // Enable OGL multithreading on the driver, when available.
-            DriverUtilities.ToggleOGLThreading(true);
+            BackendThreading threadingMode = ConfigurationState.Instance.Graphics.BackendThreading;
+            DriverUtilities.ToggleOGLThreading(threadingMode == BackendThreading.Off);
 
             // Check if keys exists.
             bool hasSystemProdKeys = File.Exists(Path.Combine(AppDataManager.KeysDirPath, "prod.keys"));
