@@ -505,7 +505,7 @@ namespace Ryujinx.Ava.Ui.Windows
         {
             await Task.Run(() =>
             {
-                AppHost?.Exit();
+                AppHost?.Dispose();
             });
         }
 
@@ -549,7 +549,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
             _isClosing = true;
             
-            AppHost?.Exit();
+            AppHost?.Dispose();
             InputManager.Dispose();
             Program.Exit();
 

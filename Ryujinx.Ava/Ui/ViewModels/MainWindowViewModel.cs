@@ -1103,7 +1103,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                                     LocaleManager.Instance["DialogFirmwareInstallerFirmwareInstallSuccessMessage"],
                                     firmwareVersion.VersionString);
 
-                                await ContentDialogHelper.CreateInfoDialog(_owner, dialogTitle, message, "", "Ok");
+                                await ContentDialogHelper.CreateInfoDialog(_owner, dialogTitle, message, "", LocaleManager.Instance["InputDialogOk"]);
                                 Logger.Info?.Print(LogClass.Application, message);
                                 
                                 // Purge Applet Cache.
