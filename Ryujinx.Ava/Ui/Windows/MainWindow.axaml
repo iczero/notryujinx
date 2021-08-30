@@ -158,7 +158,7 @@
                             </MenuItem>
                             <Separator />
                             <MenuItem Command="{Binding OpenSettings}" Header="{locale:Locale MenuBarOptionsSettings}" />
-                            <MenuItem Command="{Binding ManageProfiles}"
+                            <MenuItem Command="{Binding ManageProfiles}" IsEnabled="{Binding EnableNonGameRunningControls}"
                                       Header="{locale:Locale MenuBarOptionsManageUserProfiles}" />
                         </MenuItem>
                         <MenuItem
@@ -188,7 +188,7 @@
                         <MenuItem
                             VerticalAlignment="Center"
                             Header="{locale:Locale MenuBarTools}">
-                            <MenuItem Header="{locale:Locale MenuBarToolsInstallFirmware}">
+                            <MenuItem Header="{locale:Locale MenuBarToolsInstallFirmware}" IsEnabled="{Binding EnableNonGameRunningControls}">
                                 <MenuItem Command="{Binding InstallFirmwareFromFile}"
                                           Header="{locale:Locale MenuBarFileToolsInstallFirmwareFromFile}" />
                                 <MenuItem Command="{Binding InstallFirmwareFromFolder}"
