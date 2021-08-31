@@ -12,9 +12,9 @@ namespace Ryujinx.Ava.Ui.Controls
             Minor = minor;
             DebugLevel = graphicsDebugLevel;
 
-            GLFW.WindowHint(WindowHintClientApi.ClientApi, ClientApi.OpenGlApi);
-            GLFW.WindowHint(WindowHintInt.ContextVersionMajor, major);
-            GLFW.WindowHint(WindowHintInt.ContextVersionMinor, minor);
+            GLFW.WindowHint(WindowHintClientApi.ClientApi,      ClientApi.OpenGlApi);
+            GLFW.WindowHint(WindowHintInt.ContextVersionMajor,  major);
+            GLFW.WindowHint(WindowHintInt.ContextVersionMinor,  minor);
             GLFW.WindowHint(WindowHintBool.OpenGLForwardCompat, true);
 
             if (DebugLevel != GraphicsDebugLevel.None)
