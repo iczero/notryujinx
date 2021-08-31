@@ -97,5 +97,10 @@ namespace Ryujinx.Input.Avalonia
 
             return _pressedKeys.Contains(nativeKey);
         }
+
+        public void ResetKeys()
+        {
+            _pressedKeys.Clear();
+        }
     }
 }
