@@ -10,8 +10,9 @@ namespace Ryujinx.Ava.Common
         {
             GLFW.WindowHint(WindowHintOpenGlProfile.OpenGlProfile,   OpenGlProfile.Core);
             GLFW.WindowHint(WindowHintContextApi.ContextCreationApi, ContextApi.NativeContextApi);
-            GLFW.WindowHint(WindowHintInt.ContextVersionMajor,       4);
-            GLFW.WindowHint(WindowHintInt.ContextVersionMinor,       5);
+            GLFW.WindowHint(WindowHintBool.OpenGLForwardCompat,      true);
+            GLFW.WindowHint(WindowHintInt.ContextVersionMajor,       3);
+            GLFW.WindowHint(WindowHintInt.ContextVersionMinor,       3);
             GLFW.WindowHint(WindowHintBool.OpenGLDebugContext,       debug);
             GLFW.WindowHint(WindowHintBool.Visible,                  false);
 
