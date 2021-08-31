@@ -326,6 +326,8 @@ namespace Ryujinx.Ava
 
         public void Dispose()
         {
+            (_keyboardInterface as AvaloniaKeyboard)?.Clear();
+
             ((AvaloniaKeyboardDriver)_inputManager.KeyboardDriver).RemoveControl(Window);
 
             if (!_isActive)
@@ -903,6 +905,8 @@ namespace Ryujinx.Ava
                                     Dispose();
                                 }
                             }
+
+                            (_keyboardInterface as AvaloniaKeyboard).Clear();
                         }
                         else
                         {
@@ -995,6 +999,11 @@ namespace Ryujinx.Ava
                      _prevHotkeyState != KeyboardHotkeyState.ShowUi)
                 {
                     _parent.ViewModel.ShowMenuAndStatusBar = true;
+                }
+
+                if(currentHotkeyState != KeyboardHotkeyState.None)
+                {
+                    (_keyboardInterface as AvaloniaKeyboard).Clear();
                 }
 
                 _prevHotkeyState = currentHotkeyState;

@@ -1385,7 +1385,7 @@
                                 <CheckBox
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    IsChecked="{Binding IsMotionController}">
+                                    IsChecked="{Binding Configuration.EnableMotion, Mode=TwoWay}">
                                     <TextBlock
                                         Margin="0,0,20,0"
                                         Text="{locale:Locale ControllerSettingsMotionEnableMotionControls}" />
@@ -1398,7 +1398,7 @@
                               Padding="0"
                               BorderBrush="{DynamicResource ThemeControlBorderColor}"
                               HorizontalAlignment="Stretch"
-                              IsVisible="{Binding IsMotionController}">
+                              IsVisible="{Binding Configuration.EnableMotion}">
                               <StackPanel
                                   Grid.Row="1"
                                   HorizontalAlignment="Center"
