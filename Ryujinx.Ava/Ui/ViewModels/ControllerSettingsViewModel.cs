@@ -39,7 +39,6 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private string      _controllerImage;
         private int         _device;
         private int         _profile;
-        private bool        _isMotionController;
         private bool        _isCemuHookMotionController;
 
         private InputConfig _inputConfig;
@@ -180,24 +179,6 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 }
 
                 return image;
-            }
-        }
-
-        public bool IsMotionController
-        {
-            get
-            {
-                if (!IsController)
-                {
-                    return false;
-                }
-
-                return _isMotionController;
-            }
-            set
-            {
-                _isMotionController = value;
-                OnPropertyChanged();
             }
         }
 

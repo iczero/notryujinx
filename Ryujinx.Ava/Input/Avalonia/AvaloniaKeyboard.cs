@@ -198,6 +198,11 @@ namespace Ryujinx.Input.Avalonia
             return ((short)(stick.X * short.MaxValue), (short)(stick.Y * short.MaxValue));
         }
 
+        public void Clear()
+        {
+            (_driver as AvaloniaKeyboardDriver)?.ResetKeys();
+        }
+
         private class ButtonMappingEntry
         {
             public readonly Key From;
