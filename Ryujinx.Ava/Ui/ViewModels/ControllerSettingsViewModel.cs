@@ -1,3 +1,4 @@
+using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Svg.Skia;
@@ -53,6 +54,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         public ObservableDictionary<string, string>         Devices       { get; set; }
         public ObservableDictionary<ControllerType, string> Controllers   { get; set; }
         public ObservableDictionary<string, string>         Profiles      { get; set; }
+        public AvaloniaList<string>                         ProfilesList  { get; set; }
 
         // XAML Flags
         public bool ShowSettings => _device > 0;
@@ -256,6 +258,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             Controllers   = new ObservableDictionary<ControllerType, string>();
             Devices       = new ObservableDictionary<string, string>();
             Profiles      = new ObservableDictionary<string, string>();
+            ProfilesList  = new AvaloniaList<string>();
 
             ControllerImage = "Ryujinx.Ava.Assets.Images.Controller_ProCon.svg";
 
@@ -473,6 +476,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private void LoadProfiles()
         {
             Profiles.Clear();
+            ProfilesList.Clear();
 
             string basePath = GetProfileBasePath();
 
@@ -487,6 +491,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
             {
                 Profiles.Add(Path.GetFileName(profile), Path.GetFileNameWithoutExtension(profile));
             }
+            
+            ProfilesList.AddRange(Profiles.Values);
 
             Profile = 0;
 
@@ -660,6 +666,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 if (!File.Exists(path))
                 {
                     Profiles.Remove(activeProfile);
+                    ProfilesList.RemoveAt(Profile);
 
                     return;
                 }

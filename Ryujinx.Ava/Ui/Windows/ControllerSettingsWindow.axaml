@@ -151,13 +151,8 @@
                         <ComboBox
                             Name="ProfileBox"
                             Width="200"
-                            Items="{Binding Profiles}"
+                            Items="{Binding ProfilesList}"
                             SelectedIndex="{Binding Profile}">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Value}" />
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
                         </ComboBox>
                         <Button
                             Margin="5,0,0,0"
