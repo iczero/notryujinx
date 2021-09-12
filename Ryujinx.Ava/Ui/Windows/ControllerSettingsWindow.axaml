@@ -82,13 +82,8 @@
                         <ComboBox
                             Name="DeviceBox"
                             HorizontalAlignment="Stretch"
-                            Items="{Binding Devices}"
+                            Items="{Binding DeviceList}"
                             SelectedIndex="{Binding Device}">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Value}" />
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
                         </ComboBox>
                         <Button
                             Grid.Column="1"
