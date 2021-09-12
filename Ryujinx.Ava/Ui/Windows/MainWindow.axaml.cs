@@ -509,6 +509,22 @@ namespace Ryujinx.Ava.Ui.Windows
             });
         }
 
+        private async void PauseEmulation_Click(object sender, RoutedEventArgs e)
+        {
+            await Task.Run(() =>
+            {
+                AppHost?.Pause();
+            });
+        }
+
+        private async void ResumeEmulation_Click(object sender, RoutedEventArgs e)
+        {
+            await Task.Run(() =>
+            {
+                AppHost?.Resume();
+            });
+        }
+
         private void ScanAmiiboMenuItem_AttachedToVisualTree(object sender, VisualTreeAttachmentEventArgs e)
         {
             if (sender is MenuItem)

@@ -884,7 +884,8 @@ namespace Ryujinx.Configuration
                 {
                     ToggleVsync = Key.Tab,
                     Screenshot = Key.F8,
-                    ShowUi = Key.F4
+                    ShowUi = Key.F4,
+                    Pause = Key.F5
                 };
                 configurationFileUpdated = true;
             }
@@ -920,7 +921,22 @@ namespace Ryujinx.Configuration
 
             if (configurationFileFormat.Version < 32)
             {
-                Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 31.");
+                Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 32.");
+
+                configurationFileFormat.Hotkeys = new KeyboardHotkeys
+                {
+                    ToggleVsync = configurationFileFormat.Hotkeys.ToggleVsync,
+                    Screenshot = configurationFileFormat.Hotkeys.Screenshot,
+                    ShowUi = configurationFileFormat.Hotkeys.ShowUi,
+                    Pause = Key.F5
+                };
+
+                configurationFileUpdated = true;
+            }
+
+            if (configurationFileFormat.Version < 33)
+            {
+                Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 33.");
 
                 configurationFileFormat.BaseStyle = "Dark";
 

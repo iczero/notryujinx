@@ -57,6 +57,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private bool _isAppletMenuActive;
         private int _statusBarProgressMaximum;
         private int _statusBarProgressValue;
+        private bool _isPaused;
 
         public MainWindowViewModel(MainWindow owner) : this()
         {
@@ -132,6 +133,17 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
         }
 
+        public bool IsPaused
+        {
+            get => _isPaused;
+            set
+            {
+                _isPaused = value;
+
+                OnPropertyChanged();
+            }
+        }
+
         public bool EnableNonGameRunningControls => !IsGameRunning;
         
         public bool ShowFirmwareStatus => !ShowLoadProgress;
@@ -142,6 +154,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
             set
             {
                 _isGameRunning = value;
+
+                if(!value)
+                {
+                    ShowMenuAndStatusBar = false;
+                }
 
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(EnableNonGameRunningControls));
@@ -709,6 +726,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
             else
             {
                 _owner.WindowState = WindowState.FullScreen;
+
+                if(IsGameRunning)
+                {
+                    ShowMenuAndStatusBar = true;
+                }
             }
         }
 
