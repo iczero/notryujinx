@@ -233,26 +233,29 @@ namespace Ryujinx.Ava.Ui.Models
                     DeadzoneRight = controllerConfig.DeadzoneRight;
                     TriggerThreshold = controllerConfig.TriggerThreshold;
 
-                    EnableMotion = controllerConfig.Motion.EnableMotion;
-                    MotionBackend = controllerConfig.Motion.MotionBackend;
-                    GyroDeadzone = controllerConfig.Motion.GyroDeadzone;
-                    Sensitivity = controllerConfig.Motion.Sensitivity;
-
-                    if (controllerConfig.Motion is CemuHookMotionConfigController cemuHook)
+                    if (controllerConfig.Motion != null)
                     {
-                        EnableCemuHookMotion = true;
-                        DsuServerHost = cemuHook.DsuServerHost;
-                        DsuServerPort = cemuHook.DsuServerPort;
-                        Slot = cemuHook.Slot;
-                        AltSlot = cemuHook.AltSlot;
-                        MirrorInput = cemuHook.MirrorInput;
-                    }
+                        EnableMotion = controllerConfig.Motion.EnableMotion;
+                        MotionBackend = controllerConfig.Motion.MotionBackend;
+                        GyroDeadzone = controllerConfig.Motion.GyroDeadzone;
+                        Sensitivity = controllerConfig.Motion.Sensitivity;
 
-                    if (controllerConfig.Rumble != null)
-                    {
-                        EnableRumble = controllerConfig.Rumble.EnableRumble;
-                        WeakRumble = controllerConfig.Rumble.WeakRumble;
-                        StrongRumble = controllerConfig.Rumble.StrongRumble;
+                        if (controllerConfig.Motion is CemuHookMotionConfigController cemuHook)
+                        {
+                            EnableCemuHookMotion = true;
+                            DsuServerHost = cemuHook.DsuServerHost;
+                            DsuServerPort = cemuHook.DsuServerPort;
+                            Slot = cemuHook.Slot;
+                            AltSlot = cemuHook.AltSlot;
+                            MirrorInput = cemuHook.MirrorInput;
+                        }
+
+                        if (controllerConfig.Rumble != null)
+                        {
+                            EnableRumble = controllerConfig.Rumble.EnableRumble;
+                            WeakRumble = controllerConfig.Rumble.WeakRumble;
+                            StrongRumble = controllerConfig.Rumble.StrongRumble;
+                        }
                     }
                 }
             }
@@ -372,19 +375,22 @@ namespace Ryujinx.Ava.Ui.Models
                     DeadzoneLeft = DeadzoneLeft,
                     DeadzoneRight = DeadzoneRight,
                     TriggerThreshold = TriggerThreshold,
-                    Motion = MotionBackend == MotionInputBackendType.CemuHook || EnableCemuHookMotion
+                    Motion = EnableCemuHookMotion
                            ? new CemuHookMotionConfigController()
                            {
                                DsuServerHost = DsuServerHost,
                                DsuServerPort = DsuServerPort,
                                Slot = Slot,
                                AltSlot = AltSlot,
-                               MirrorInput = MirrorInput
+                               MirrorInput = MirrorInput,
+                               MotionBackend = MotionInputBackendType.CemuHook
                            }
                            : new StandardMotionConfigController()
+                           {
+                               MotionBackend = MotionInputBackendType.GamepadDriver
+                           }
                 };
 
-                config.Motion.MotionBackend = MotionBackend;
                 config.Motion.Sensitivity = Sensitivity;
                 config.Motion.EnableMotion = EnableMotion;
                 config.Motion.GyroDeadzone = GyroDeadzone;
