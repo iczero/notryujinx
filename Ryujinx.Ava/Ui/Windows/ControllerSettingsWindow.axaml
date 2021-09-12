@@ -143,12 +143,14 @@
                         HorizontalAlignment="Center"
                         Text="{locale:Locale ControllerSettingsProfile}" />
                     <StackPanel Orientation="Horizontal">
-                        <ComboBox
+                        <ui:ComboBox
+                            IsEditable="True"
                             Name="ProfileBox"
-                            Width="200"
+                            Width="250"
+                            SelectedIndex="0"
                             Items="{Binding ProfilesList}"
-                            SelectedIndex="{Binding Profile}">
-                        </ComboBox>
+                            Text="{Binding ProfileName}">
+                        </ui:ComboBox>
                         <Button
                             Margin="5,0,0,0"
                             VerticalAlignment="Center"
@@ -156,16 +158,6 @@
                             Command="{Binding LoadProfile}">
                             <ui:SymbolIcon
                                 Symbol="Upload"
-                                FontSize="15"
-                                Height="20" />
-                        </Button>
-                        <Button
-                            Margin="5,0,0,0"
-                            VerticalAlignment="Center"
-                            ToolTip.Tip="{locale:Locale ControllerSettingsAddProfileToolTip}"
-                            Command="{Binding AddProfile}">
-                            <ui:SymbolIcon
-                                Symbol="Add"
                                 FontSize="15"
                                 Height="20" />
                         </Button>
