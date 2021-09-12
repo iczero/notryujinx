@@ -2,6 +2,7 @@ using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Svg.Skia;
+using Avalonia.Threading;
 using Avalonia.VisualTree;
 using FluentAvalonia.Core;
 using IX.Observable;
@@ -55,6 +56,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         public ObservableDictionary<ControllerType, string> Controllers   { get; set; }
         public ObservableDictionary<string, string>         Profiles      { get; set; }
         public AvaloniaList<string>                         ProfilesList  { get; set; }
+        public AvaloniaList<string>                         DeviceList    { get; set; }
 
         // XAML Flags
         public bool ShowSettings => _device > 0;
@@ -259,6 +261,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             Devices       = new ObservableDictionary<string, string>();
             Profiles      = new ObservableDictionary<string, string>();
             ProfilesList  = new AvaloniaList<string>();
+            DeviceList    = new AvaloniaList<string>();
 
             ControllerImage = "Ryujinx.Ava.Assets.Images.Controller_ProCon.svg";
 
@@ -360,12 +363,18 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         private void HandleOnGamepadDisconnected(string id)
         {
-            LoadDevices();
+            Dispatcher.UIThread.Post(() =>
+            {
+                LoadDevices();
+            });
         }
 
         private void HandleOnGamepadConnected(string id)
         {
-            LoadDevices();
+            Dispatcher.UIThread.Post(() =>
+            {
+                LoadDevices();
+            });
         }
 
         private string GetCurrentGamepadId()
@@ -428,31 +437,38 @@ namespace Ryujinx.Ava.Ui.ViewModels
         
         public void LoadDevices()
         {
-            Devices.Clear();
-            Devices.Add("disabled", LocaleManager.Instance["ControllerSettingsDeviceDisabled"]);
-
-            foreach (string id in _mainWindow.InputManager.KeyboardDriver.GamepadsIds)
+            lock (Devices)
             {
-                IGamepad gamepad = _mainWindow.InputManager.KeyboardDriver.GetGamepad(id);
+                Devices.Clear();
+                DeviceList.Clear();
+                Devices.Add("disabled", LocaleManager.Instance["ControllerSettingsDeviceDisabled"]);
 
-                if (gamepad != null)
+                foreach (string id in _mainWindow.InputManager.KeyboardDriver.GamepadsIds)
                 {
-                    Devices.Add($"keyboard/{id}", $"{GetShrinkedGamepadName(gamepad.Name)} ({id})");
+                    IGamepad gamepad = _mainWindow.InputManager.KeyboardDriver.GetGamepad(id);
 
-                    gamepad.Dispose();
+                    if (gamepad != null)
+                    {
+                        Devices.TryAdd($"keyboard/{id}", $"{GetShrinkedGamepadName(gamepad.Name)} ({id})");
+
+                        gamepad.Dispose();
+                    }
                 }
-            }
 
-            foreach (string id in _mainWindow.InputManager.GamepadDriver.GamepadsIds)
-            {
-                IGamepad gamepad = _mainWindow.InputManager.GamepadDriver.GetGamepad(id);
-
-                if (gamepad != null)
+                foreach (string id in _mainWindow.InputManager.GamepadDriver.GamepadsIds)
                 {
-                    Devices.Add($"controller/{id}", $"{GetShrinkedGamepadName(gamepad.Name)} ({id})");
+                    IGamepad gamepad = _mainWindow.InputManager.GamepadDriver.GetGamepad(id);
 
-                    gamepad.Dispose();
+                    if (gamepad != null)
+                    {
+                        Devices.TryAdd($"controller/{id}", $"{GetShrinkedGamepadName(gamepad.Name)} ({id})");
+
+                        gamepad.Dispose();
+                    }
                 }
+
+                DeviceList.AddRange(Devices.Values);
+                Device = Math.Min(Device, DeviceList.Count);
             }
         }
 
