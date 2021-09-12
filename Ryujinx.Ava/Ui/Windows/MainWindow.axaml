@@ -165,6 +165,16 @@
                             VerticalAlignment="Center"
                             Header="{locale:Locale MenuBarActions}"
                             IsEnabled="{Binding IsGameRunning}">
+                          <MenuItem
+                              Click="PauseEmulation_Click"
+                              Header="{locale:Locale MenuBarOptionsPauseEmulation}"
+                              IsEnabled="{Binding !IsPaused}"
+                              IsVisible="{Binding !IsPaused}" />
+                          <MenuItem
+                              Click="ResumeEmulation_Click"
+                              Header="{locale:Locale MenuBarOptionsResumeEmulation}"
+                              IsEnabled="{Binding IsPaused}"
+                              IsVisible="{Binding IsPaused}" />
                             <MenuItem
                                 Click="StopEmulation_Click"
                                 Header="{locale:Locale MenuBarOptionsStopEmulation}"

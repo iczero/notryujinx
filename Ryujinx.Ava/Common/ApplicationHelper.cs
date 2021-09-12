@@ -164,13 +164,20 @@ namespace Ryujinx.Ava.Common
                 {
                     Dispatcher.UIThread.Post(async () =>
                     {
-                        UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_owner, string.Format(LocaleManager.Instance["DialogNcaExtractionMessage"], ncaSectionType, Path.GetFileName(titleFilePath)), "", "", LocaleManager.Instance["InputDialogCancel"], LocaleManager.Instance["DialogNcaExtractionTitle"]);
+                        UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_owner,
+                                                                                               string.Format(LocaleManager.Instance["DialogNcaExtractionMessage"], ncaSectionType, Path.GetFileName(titleFilePath)),
+                                                                                               "",
+                                                                                               "",
+                                                                                               LocaleManager.Instance["InputDialogCancel"],
+                                                                                               LocaleManager.Instance["DialogNcaExtractionTitle"]);
 
                         if (result == UserResult.Cancel)
                         {
                             _cancel = true;
                         }
                     });
+
+                    Thread.Sleep(1000);
 
                     using (FileStream file = new(titleFilePath, FileMode.Open, FileAccess.Read))
                     {
@@ -246,44 +253,54 @@ namespace Ryujinx.Ava.Common
 
                         int index = Nca.GetSectionIndexFromType(ncaSectionType, mainNca.Header.ContentType);
 
-                        IFileSystem ncaFileSystem = patchNca != null
-                            ? mainNca.OpenFileSystemWithPatch(patchNca, index, IntegrityCheckLevel.ErrorOnInvalid)
-                            : mainNca.OpenFileSystem(index, IntegrityCheckLevel.ErrorOnInvalid);
-
-                        FileSystemClient fsClient = _horizonClient.Fs;
-
-                        string source = DateTime.Now.ToFileTime().ToString()[10..];
-                        string output = DateTime.Now.ToFileTime().ToString()[10..];
-
-                        fsClient.Register(source.ToU8Span(), ncaFileSystem);
-                        fsClient.Register(output.ToU8Span(), new LocalFileSystem(destination));
-
-                        (Result? resultCode, bool canceled) = CopyDirectory(fsClient, $"{source}:/", $"{output}:/");
-
-                        if (!canceled)
+                        try
                         {
-                            if (resultCode.Value.IsFailure())
-                            {
-                                Logger.Error?.Print(LogClass.Application,
-                                    $"LibHac returned error code: {resultCode.Value.ErrorCode}");
+                            IFileSystem ncaFileSystem = patchNca != null
+                                ? mainNca.OpenFileSystemWithPatch(patchNca, index, IntegrityCheckLevel.ErrorOnInvalid)
+                                : mainNca.OpenFileSystem(index, IntegrityCheckLevel.ErrorOnInvalid);
 
-                                Dispatcher.UIThread.InvokeAsync(() =>
-                                {
-                                    ContentDialogHelper.CreateErrorDialog(_owner,
-                                        LocaleManager.Instance["DialogNcaExtractionCheckLogErrorMessage"]);
-                                });
-                            }
-                            else if (resultCode.Value.IsSuccess())
+                            FileSystemClient fsClient = _horizonClient.Fs;
+
+                            string source = DateTime.Now.ToFileTime().ToString()[10..];
+                            string output = DateTime.Now.ToFileTime().ToString()[10..];
+
+                            fsClient.Register(source.ToU8Span(), ncaFileSystem);
+                            fsClient.Register(output.ToU8Span(), new LocalFileSystem(destination));
+
+                            (Result? resultCode, bool canceled) = CopyDirectory(fsClient, $"{source}:/", $"{output}:/");
+
+                            if (!canceled)
                             {
-                                Dispatcher.UIThread.InvokeAsync(async () =>
+                                if (resultCode.Value.IsFailure())
                                 {
-                                    await ContentDialogHelper.CreateInfoDialog(_owner, LocaleManager.Instance["DialogNcaExtractionSuccessMessage"], "", closeButton:"", title:LocaleManager.Instance["DialogNcaExtractionTitle"]);
-                                });
+                                    Logger.Error?.Print(LogClass.Application,
+                                        $"LibHac returned error code: {resultCode.Value.ErrorCode}");
+
+                                    Dispatcher.UIThread.InvokeAsync(() =>
+                                    {
+                                        ContentDialogHelper.CreateErrorDialog(_owner,
+                                            LocaleManager.Instance["DialogNcaExtractionCheckLogErrorMessage"]);
+                                    });
+                                }
+                                else if (resultCode.Value.IsSuccess())
+                                {
+                                    Dispatcher.UIThread.InvokeAsync(async () =>
+                                    {
+                                        await ContentDialogHelper.CreateInfoDialog(_owner, LocaleManager.Instance["DialogNcaExtractionSuccessMessage"], "", closeButton: "", title: LocaleManager.Instance["DialogNcaExtractionTitle"]);
+                                    });
+                                }
                             }
+
+                            fsClient.Unmount(source.ToU8Span());
+                            fsClient.Unmount(output.ToU8Span());
                         }
-
-                        fsClient.Unmount(source.ToU8Span());
-                        fsClient.Unmount(output.ToU8Span());
+                        catch(ArgumentException ex)
+                        {
+                            Dispatcher.UIThread.InvokeAsync(() =>
+                            {
+                                ContentDialogHelper.CreateErrorDialog(_owner, ex.Message);
+                            });
+                        }
                     }
                 });
 

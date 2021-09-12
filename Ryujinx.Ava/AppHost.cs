@@ -335,6 +335,11 @@ namespace Ryujinx.Ava
                 return;
             }
 
+            if (Device.Application != null)
+            {
+                MainWindow.UpdateGameMetadata(Device.Application.TitleIdText);
+            }
+
             _windowsMultimediaTimerResolution?.Dispose();
             _windowsMultimediaTimerResolution = null;
             DisplaySleep.Restore();
@@ -562,6 +567,18 @@ namespace Ryujinx.Ava
             });
 
             return true;
+        }
+
+        internal void Resume()
+        {
+            Device?.System?.TogglePauseEmulation(false);
+            _parent.ViewModel.IsPaused = false;
+        }
+
+        internal void Pause()
+        {
+            Device?.System?.TogglePauseEmulation(true);
+            _parent.ViewModel.IsPaused = true;
         }
 
         private void InitializeSwitchInstance()
@@ -938,6 +955,8 @@ namespace Ryujinx.Ava
                 Dispatcher.UIThread.Post(() =>
                 {
                     _parent.Cursor = cursorMoveDelta >= CursorHideIdleTime * Stopwatch.Frequency ? InvisibleCursor : Cursor.Default;
+
+                    Window.SetCursor(_parent.Cursor == InvisibleCursor);
                 });
             }
             
@@ -1001,7 +1020,20 @@ namespace Ryujinx.Ava
                     _parent.ViewModel.ShowMenuAndStatusBar = true;
                 }
 
-                if(currentHotkeyState != KeyboardHotkeyState.None)
+                if (currentHotkeyState == KeyboardHotkeyState.Pause &&
+                     _prevHotkeyState != KeyboardHotkeyState.Pause)
+                {
+                    if(_parent.ViewModel.IsPaused)
+                    {
+                        Resume();
+                    }
+                    else
+                    {
+                        Pause();
+                    }
+                }
+
+                if (currentHotkeyState != KeyboardHotkeyState.None)
                 {
                     (_keyboardInterface as AvaloniaKeyboard).Clear();
                 }
@@ -1043,9 +1075,14 @@ namespace Ryujinx.Ava
                 state = KeyboardHotkeyState.Screenshot;
             }
             
-            if (_keyboardInterface.IsPressed(Key.F4))
+            if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.ShowUi))
             {
                 state = KeyboardHotkeyState.ShowUi;
+            }
+
+            if(_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.Pause))
+            {
+                state = KeyboardHotkeyState.Pause;
             }
 
             return state;
