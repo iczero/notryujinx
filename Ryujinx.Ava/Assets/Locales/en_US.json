@@ -387,5 +387,7 @@
   "CommonOn": "On",
   "InputDialogYes": "Yes",
   "InputDialogNo": "No",
-  "DialogProfileInvalidProfileNameErrorMessage": "The file name contains invalid characters. Please try again."
+  "DialogProfileInvalidProfileNameErrorMessage": "The file name contains invalid characters. Please try again.",
+  "MenuBarOptionsPauseEmulation": "Pause",
+  "MenuBarOptionsResumeEmulation" : "Resume"
 }

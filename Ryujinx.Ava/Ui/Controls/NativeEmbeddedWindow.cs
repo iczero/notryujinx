@@ -165,6 +165,11 @@ namespace Ryujinx.Ava.Ui.Controls
             });
         }
 
+        public void SetCursor(bool isInvisible)
+        {
+            GlfwWindow.CursorVisible = !isInvisible;
+        }
+
         private async void StateChanged(Rect rect)
         {
             SizeChanged?.Invoke(this, rect.Size);
