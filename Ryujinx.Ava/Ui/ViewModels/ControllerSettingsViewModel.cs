@@ -44,6 +44,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private InputConfig _inputConfig;
         private object _configuration;
         private string _profileName;
+        private bool _isProfileLoading;
         private readonly UserControl _owner;
 
         public IGamepadDriver AvaloniaKeyboardDriver { get; }
@@ -207,6 +208,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 LoadControllers();
 
+                if (!_isProfileLoading)
+                {
+                    LoadConfiguration(LoadDefaultConfiguration());
+                }
+
                 OnPropertyChanged();
                 NotifyChanges();
             }
@@ -270,12 +276,12 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             if (Config is StandardKeyboardInputConfig)
             {
-                _configuration = new InputConfiguration<Key, ConfigStickInputId>(Config as StandardKeyboardInputConfig);
+                Configuration = new InputConfiguration<Key, ConfigStickInputId>(Config as StandardKeyboardInputConfig);
             }
 
             if (Config is StandardControllerInputConfig)
             {
-                _configuration = new InputConfiguration<ConfigGamepadInputId, ConfigStickInputId>(Config as StandardControllerInputConfig);
+                Configuration = new InputConfiguration<ConfigGamepadInputId, ConfigStickInputId>(Config as StandardControllerInputConfig);
             }
         }
 
@@ -698,9 +704,13 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             if (config != null)
             {
+                _isProfileLoading = true;
+
                 LoadConfiguration(config);
 
                 LoadDevice();
+
+                _isProfileLoading = false;
 
                 NotifyChanges();
             }
