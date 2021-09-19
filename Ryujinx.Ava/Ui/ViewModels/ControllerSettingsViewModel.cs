@@ -43,7 +43,6 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         private InputConfig _inputConfig;
         private object _configuration;
-        private bool _isLoaded;
         private string _profileName;
         private readonly UserControl _owner;
 
@@ -97,8 +96,6 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 LoadConfiguration();
                 LoadDevice();
                 LoadProfiles();
-
-                _isLoaded = true;
 
                 OnPropertyChanged();
             }
@@ -209,11 +206,6 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 }
 
                 LoadControllers();
-
-                if (_isLoaded)
-                {
-                    LoadConfiguration(LoadDefaultConfiguration());
-                }
 
                 OnPropertyChanged();
                 NotifyChanges();
@@ -503,7 +495,10 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 ProfilesList.Add(Path.GetFileNameWithoutExtension(profile));
             }
 
-            ProfileName = LocaleManager.Instance["ControllerSettingsProfileDefault"];
+            if (string.IsNullOrWhiteSpace(ProfileName))
+            {
+                ProfileName = LocaleManager.Instance["ControllerSettingsProfileDefault"];
+            }
         }
 
         public InputConfig LoadDefaultConfiguration()
