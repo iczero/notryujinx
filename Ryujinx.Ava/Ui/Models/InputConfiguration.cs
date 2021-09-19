@@ -15,6 +15,8 @@ namespace Ryujinx.Ava.Ui.Models
         private double _gyroDeadzone;
         private int _sensitivity;
         private bool enableMotion;
+        private float weakRumble;
+        private float strongRumble;
 
         public InputBackendType Backend { get; set; }
 
@@ -151,8 +153,24 @@ namespace Ryujinx.Ava.Ui.Models
         public int DsuServerPort { get; set; }
 
         public bool EnableRumble { get; set; }
-        public float WeakRumble { get; set; }
-        public float StrongRumble { get; set; }
+        public float WeakRumble
+        {
+            get => weakRumble; set
+            {
+                weakRumble = value;
+
+                OnPropertyChanged();
+            }
+        }
+        public float StrongRumble
+        {
+            get => strongRumble; set
+            {
+                strongRumble = value;
+
+                OnPropertyChanged();
+            }
+        }
 
         public InputConfiguration(InputConfig config)
         {
