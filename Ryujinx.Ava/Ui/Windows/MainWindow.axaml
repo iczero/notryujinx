@@ -102,55 +102,55 @@
                                 </MenuItem.Icon>
                             </MenuItem>
                             <Separator />
-                            <MenuItem Header="Change Language">
+                            <MenuItem Header="{locale:Locale MenuBarOptionsChangeLanguage}">
                                 <MenuItem Command="{Binding ChangeLanguage}" CommandParameter="en_US"
                                           Header="American English" />
                                 <MenuItem Command="{Binding ChangeLanguage}" CommandParameter="fr_FR" Header="French" />
                                 <MenuItem Command="{Binding ChangeLanguage}" CommandParameter="pt_BR"
                                           Header="Brazilian Portuguese" />
                             </MenuItem>
-                            <MenuItem Header="Enable GUI Columns">
-                                <MenuItem Header="Enable Icon Column">
+                            <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumns}">
+                                <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumns}">
                                     <MenuItem.Icon>
                                         <CheckBox Margin="0" IsChecked="{Binding ShowIconColumn, Mode=TwoWay}" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Enable Title/ID Column">
+                                <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnTitle}">
                                     <MenuItem.Icon>
                                         <CheckBox Margin="0" IsChecked="{Binding ShowTitleColumn, Mode=TwoWay}" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Enable Developer Column">
+                                <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnDeveloper}">
                                     <MenuItem.Icon>
                                         <CheckBox Margin="0" IsChecked="{Binding ShowDeveloperColumn, Mode=TwoWay}" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Enable Version Column">
+                                <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnVersion}">
                                     <MenuItem.Icon>
                                         <CheckBox Margin="0" IsChecked="{Binding ShowVersionColumn, Mode=TwoWay}" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Enable Time Played Column">
+                                <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnTimePlayed}">
                                     <MenuItem.Icon>
                                         <CheckBox Margin="0" IsChecked="{Binding ShowTimePlayedColumn, Mode=TwoWay}" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Enable Last Played Column">
+                                <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnLastPlayed}">
                                     <MenuItem.Icon>
                                         <CheckBox Margin="0" IsChecked="{Binding ShowLastPlayedColumn, Mode=TwoWay}" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Enable File Extension Column">
+                                <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnFileExtension}">
                                     <MenuItem.Icon>
                                         <CheckBox Margin="0" IsChecked="{Binding ShowFileExtColumn, Mode=TwoWay}" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Enable File Size Column">
+                                <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnFileSize}">
                                     <MenuItem.Icon>
                                         <CheckBox Margin="0" IsChecked="{Binding ShowFileSizeColumn, Mode=TwoWay}" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Enable Path Column">
+                                <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumns}">
                                     <MenuItem.Icon>
                                         <CheckBox Margin="0" IsChecked="{Binding ShowFilePathColumn, Mode=TwoWay}" />
                                     </MenuItem.Icon>

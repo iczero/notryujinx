@@ -5,6 +5,7 @@
                         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
                         x:Class="Ryujinx.Ava.Ui.Windows.AboutWindow"
                         xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
+                        xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
                         CanResize="False"
                         WindowStartupLocation="CenterOwner"
                         Width="850" MinHeight="550" Height="550"
@@ -42,23 +43,23 @@
                            Margin="0,0,0,0" />
                 <Button Grid.Column="1" Background="Transparent" Margin="0" Grid.Row="2" Tag="https://www.ryujinx.org/"
                         Click="Button_OnClick">
-                    <TextBlock ToolTip.Tip="Click to open the Ryujinx website in your default browser."
+                    <TextBlock ToolTip.Tip="{locale:Locale AboutUrlTooltipMessage}"
                                TextAlignment="Center" TextDecorations="Underline" Text="www.ryujinx.org" />
                 </Button>
             </Grid>
             <TextBlock TextAlignment="Center" VerticalAlignment="Center" HorizontalAlignment="Center"
                        Text="{Binding Version}" Grid.Row="1" />
             <TextBlock Grid.Row="2" TextAlignment="Center" HorizontalAlignment="Center" Margin="20"
-                       Text="Ryujinx is not affiliated with Nintendo™,&#10;or any of its partners, in any way."
+                       Text="{locale:Locale AboutDisclaimerMessage}"
                        MaxLines="2" />
             <TextBlock Grid.Row="3" TextAlignment="Center" HorizontalAlignment="Center" Margin="20"
-                       Text="AmiiboAPI (www.amiiboapi.com) is used&#10;in our Amiibo emulation."
+                       Text="{locale:Locale AboutAmiiboDisclaimerMessage}"
                        Name="AmiiboLabel"
                        PointerPressed="AmiiboLabel_OnPointerPressed"
                        MaxLines="2" />
             <StackPanel Spacing="10" Orientation="Horizontal" Grid.Row="4" HorizontalAlignment="Center">
                 <StackPanel Orientation="Vertical"
-                            ToolTip.Tip="Click to open the Ryujinx Patreon page in your default browser.">
+                            ToolTip.Tip="{locale:Locale AboutPatreonUrlTooltipMessage}">
                     <Button Height="65" Background="Transparent" Tag="https://www.patreon.com/ryujinx"
                             Click="Button_OnClick">
                         <Grid>
@@ -72,7 +73,7 @@
                     </Button>
                 </StackPanel>
                 <StackPanel Orientation="Vertical"
-                            ToolTip.Tip="Click to open the Ryujinx GitHub page in your default browser.">
+                            ToolTip.Tip="{locale:Locale AboutGithubUrlTooltipMessage}">
                     <Button Height="65" Background="Transparent" Tag="https://github.com/Ryujinx/Ryujinx"
                             Click="Button_OnClick">
                         <Grid>
@@ -86,7 +87,7 @@
                     </Button>
                 </StackPanel>
                 <StackPanel Orientation="Vertical"
-                            ToolTip.Tip="Click to open an invite to the Ryujinx Discord server in your default browser.">
+                            ToolTip.Tip="{locale:Locale AboutDiscordUrlTooltipMessage}">
                     <Button Height="65" Background="Transparent" Tag="https://discordapp.com/invite/N2FmfVc"
                             Click="Button_OnClick">
                         <Grid>
@@ -100,7 +101,7 @@
                     </Button>
                 </StackPanel>
                 <StackPanel Orientation="Vertical"
-                            ToolTip.Tip="Click to open the Ryujinx Twitter page in your default browser.">
+                            ToolTip.Tip="{locale:Locale AboutTwitterUrlTooltipMessage}">
                     <Button Height="65" Background="Transparent" Tag="https://twitter.com/RyujinxEmu"
                             Click="Button_OnClick">
                         <Grid>
@@ -125,19 +126,19 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <TextBlock Text="About:" FontWeight="Bold" TextDecorations="Underline" />
+            <TextBlock Text="{locale:Locale AboutRyujinxAboutTitle}" FontWeight="Bold" TextDecorations="Underline" />
             <TextBlock LineHeight="20" Grid.Row="1" Margin="20,5,5,5"
-                       Text="Ryujinx is an emulator for the Nintendo Switch™.&#10;Please support us on Patreon.&#10;Get all the latest news on our Twitter or Discord.&#10;Developers interested in contributing can find out more on our GitHub or Discord." />
-            <TextBlock Grid.Row="2" Margin="0,10,0,0" Text="Maintained By:" FontWeight="Bold"
+                       Text="{locale:Locale AboutRyujinxAboutContent}" />
+            <TextBlock Grid.Row="2" Margin="0,10,0,0" Text="{locale:Locale AboutRyujinxMaintainersTitle}" FontWeight="Bold"
                        TextDecorations="Underline" />
             <TextBlock LineHeight="20" Grid.Row="3" Margin="20,5,5,5"
                        Text="gdkchan, Ac_K, Thog, rip in peri peri, LDj3SNuD, emmaus, Thealexbarney,&#10; Xpl0itR, GoffyDude, »jD« and more..." />
             <Button Background="Transparent" HorizontalAlignment="Right" Grid.Row="4"
                     Tag="https://github.com/Ryujinx/Ryujinx/graphs/contributors?type=a" Click="Button_OnClick">
-                <TextBlock ToolTip.Tip="Click to open the Contributors page in your default browser."
+                <TextBlock ToolTip.Tip="{locale:Locale AboutRyujinxMaintainersContentTooltipMessage}"
                            TextAlignment="Right" TextDecorations="Underline" Text="See All Contributors" />
             </Button>
-            <TextBlock Grid.Row="5" Margin="0,0,0,0" Text="Supported On Patreon By:" FontWeight="Bold"
+            <TextBlock Grid.Row="5" Margin="0,0,0,0" Text="{locale:Locale AboutRyujinxSupprtersTitle}" FontWeight="Bold"
                        TextDecorations="Underline" />
             <Border Width="460" Grid.Row="6" VerticalAlignment="Stretch" Height="200" BorderThickness="1" Margin="20,5"
                     BorderBrush="White" Padding="5">

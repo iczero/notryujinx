@@ -59,6 +59,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             _ = LoadContentAsync();
         }
+
+        public AmiiboWindowViewModel() {}
         
         public string TitleId { get; set; }
         public string LastScannedAmiiboId { get; set; }
