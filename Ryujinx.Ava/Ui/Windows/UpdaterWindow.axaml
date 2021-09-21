@@ -3,6 +3,7 @@
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
+                        xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
                         x:Class="Ryujinx.Ava.Ui.Windows.UpdaterWindow"
                         xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
                         CanResize="False"
@@ -25,10 +26,10 @@
         <StackPanel IsVisible="False" Name="ButtonBox" Orientation="Horizontal" Spacing="20" Grid.Row="3"
                     HorizontalAlignment="Right">
             <Button Command="{Binding YesPressed}" MinWidth="50">
-                <TextBlock TextAlignment="Center" Text="Yes" />
+                <TextBlock TextAlignment="Center" Text="{locale:Locale InputDialogYes}" />
             </Button>
             <Button Command="{Binding NoPressed}" MinWidth="50">
-                <TextBlock TextAlignment="Center" Text="No" />
+                <TextBlock TextAlignment="Center" Text="{locale:Locale InputDialogNo}" />
             </Button>
         </StackPanel>
     </Grid>

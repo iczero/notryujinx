@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
     xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
     Title="Ryujinx - Title Update Manager"
     Width="550"
@@ -57,49 +58,49 @@
                 </ItemsControl>
             </ScrollViewer>
         </Border>
-        <DockPanel
-            Grid.Row="2"
-            Margin="0"
-            HorizontalAlignment="Stretch">
-            <DockPanel Margin="0" HorizontalAlignment="Left">
-                <Button
-                    Name="AddButton"
-                    MinWidth="90"
-                    Margin="5"
-                    Command="{Binding Add}">
-                    <TextBlock Text="Add" />
-                </Button>
-                <Button
-                    Name="RemoveButton"
-                    MinWidth="90"
-                    Margin="5"
-                    Command="{Binding RemoveSelected}">
-                    <TextBlock Text="Remove" />
-                </Button>
-                <Button
-                    Name="RemoveAllButton"
-                    MinWidth="90"
-                    Margin="5"
-                    Command="{Binding RemoveAll}">
-                    <TextBlock Text="Remove All" />
-                </Button>
-            </DockPanel>
-            <DockPanel Margin="0" HorizontalAlignment="Right">
-                <Button
-                    Name="SaveButton"
-                    MinWidth="90"
-                    Margin="5"
-                    Command="{Binding Save}">
-                    <TextBlock Text="Save" />
-                </Button>
-                <Button
-                    Name="CancelButton"
-                    MinWidth="90"
-                    Margin="5"
-                    Command="{Binding Close}">
-                    <TextBlock Text="Cancel" />
-                </Button>
-            </DockPanel>
+      <DockPanel
+          Grid.Row="2"
+          Margin="0"
+          HorizontalAlignment="Stretch">
+        <DockPanel Margin="0" HorizontalAlignment="Left">
+          <Button
+              Name="AddButton"
+              MinWidth="90"
+              Margin="5"
+              Command="{Binding Add}">
+            <TextBlock Text="{locale:Locale SettingsTabGeneralAdd}" />
+          </Button>
+          <Button
+              Name="RemoveButton"
+              MinWidth="90"
+              Margin="5"
+              Command="{Binding RemoveSelected}">
+            <TextBlock Text="{locale:Locale SettingsTabGeneralRemove}" />
+          </Button>
+          <Button
+              Name="RemoveAllButton"
+              MinWidth="90"
+              Margin="5"
+              Command="{Binding RemoveAll}">
+            <TextBlock Text="{locale:Locale DlcManagerRemoveAllButton}" />
+          </Button>
         </DockPanel>
+        <DockPanel Margin="0" HorizontalAlignment="Right">
+          <Button
+              Name="SaveButton"
+              MinWidth="90"
+              Margin="5"
+              Command="{Binding Save}">
+            <TextBlock Text="{locale:Locale SettingsButtonSave}" />
+          </Button>
+          <Button
+              Name="CancelButton"
+              MinWidth="90"
+              Margin="5"
+              Command="{Binding Close}">
+            <TextBlock Text="{locale:Locale InputDialogCancel}" />
+          </Button>
+        </DockPanel>
+      </DockPanel>
     </Grid>
 </window:StyleableWindow>
