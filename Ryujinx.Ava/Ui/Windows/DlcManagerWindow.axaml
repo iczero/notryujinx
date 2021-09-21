@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
     xmlns:window="clr-namespace:Ryujinx.Ava.Ui.Windows"
     Title="Ryujinx - DLC Manager"
     Width="550"
@@ -45,7 +46,7 @@
                 Items="{Binding Dlcs}"
                 VerticalScrollBarVisibility="Auto">
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn Width="90" Header="Enabled">
+                    <DataGridTemplateColumn Width="90">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <CheckBox
@@ -55,22 +56,34 @@
                                     IsChecked="{Binding IsEnabled}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
+                      <DataGridTemplateColumn.Header>
+                        <TextBlock Text="{locale:Locale DlcManagerTableHeadingEnabledLabel}"/>
+                      </DataGridTemplateColumn.Header>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn
-                        Width="190"
-                        Binding="{Binding TitleId}"
-                        CanUserResize="True"
-                        Header="TitleId" />
+                  <DataGridTextColumn
+                      Width="190"
+                      Binding="{Binding TitleId}"
+                      CanUserResize="True">
+                    <DataGridTextColumn.Header>
+                      <TextBlock  Text="{locale:Locale DlcManagerTableHeadingTitleIdLabel}"/>
+                    </DataGridTextColumn.Header>
+                  </DataGridTextColumn>
                     <DataGridTextColumn
                         Width="*"
                         Binding="{Binding ContainerPath}"
-                        CanUserResize="True"
-                        Header="Container Path" />
+                        CanUserResize="True">
+                      <DataGridTextColumn.Header>
+                        <TextBlock Text="{locale:Locale DlcManagerTableHeadingContainerPathLabel}"/>
+                      </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
                     <DataGridTextColumn
                         Width="*"
                         Binding="{Binding FullPath}"
-                        CanUserResize="True"
-                        Header="Full Path" />
+                        CanUserResize="True">
+                      <DataGridTextColumn.Header>
+                        <TextBlock Text="{locale:Locale DlcManagerTableHeadingFullPathLabel}"/>
+                      </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </Border>
@@ -84,21 +97,21 @@
                     MinWidth="90"
                     Margin="5"
                     Command="{Binding Add}">
-                    <TextBlock Text="Add" />
+                    <TextBlock Text="{locale:Locale SettingsTabGeneralAdd}" />
                 </Button>
                 <Button
                     Name="RemoveButton"
                     MinWidth="90"
                     Margin="5"
                     Command="{Binding RemoveSelected}">
-                    <TextBlock Text="Remove" />
+                    <TextBlock Text="{locale:Locale SettingsTabGeneralRemove}" />
                 </Button>
                 <Button
                     Name="RemoveAllButton"
                     MinWidth="90"
                     Margin="5"
                     Command="{Binding RemoveAll}">
-                    <TextBlock Text="Remove All" />
+                    <TextBlock Text="{locale:Locale DlcManagerRemoveAllButton}" />
                 </Button>
             </DockPanel>
             <DockPanel Margin="0" HorizontalAlignment="Right">
@@ -107,14 +120,14 @@
                     MinWidth="90"
                     Margin="5"
                     Command="{Binding Save}">
-                    <TextBlock Text="Save" />
+                    <TextBlock Text="{locale:Locale SettingsButtonSave}" />
                 </Button>
                 <Button
                     Name="CancelButton"
                     MinWidth="90"
                     Margin="5"
                     Command="{Binding Close}">
-                    <TextBlock Text="Cancel" />
+                    <TextBlock Text="{locale:Locale InputDialogCancel}" />
                 </Button>
             </DockPanel>
         </DockPanel>
