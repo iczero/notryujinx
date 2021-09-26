@@ -184,6 +184,11 @@
         <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundColor}" />
     </Style>
     <Styles.Resources>
+       <StaticResource x:Key="ListViewItemBackgroundSelected" ResourceKey="ThemeAccentColorBrush" />
+       <StaticResource x:Key="ListViewItemBackgroundPressed" ResourceKey="SystemAccentColorDark1" />
+       <StaticResource x:Key="ListViewItemBackgroundPointerOver" ResourceKey="SystemAccentColorDark2" />
+       <StaticResource x:Key="ListViewItemBackgroundSelectedPressed" ResourceKey="ThemeAccentColorBrush" />
+       <StaticResource x:Key="ListViewItemBackgroundSelectedPointerOver" ResourceKey="SystemAccentColorDark2" />
         <SolidColorBrush x:Key="DataGridGridLinesBrush"
                          Color="{DynamicResource SystemBaseMediumLowColor}"
                          Opacity="0.4" />
