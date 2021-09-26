@@ -1,4 +1,5 @@
 using ARMeilleure.Translation.PTC;
+using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Media;
@@ -40,6 +41,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private string _fifoStatusText;
         private string _gameStatusText;
         private string _gpuStatusText;
+        private ViewMode _viewMode = Controls.ViewMode.Grid;
         private bool _isAmiiboRequested;
         private bool _isGameRunning;
         private bool _isLoading;
@@ -58,6 +60,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private int _statusBarProgressMaximum;
         private int _statusBarProgressValue;
         private bool _isPaused;
+        private bool _showNames;
 
         public MainWindowViewModel(MainWindow owner) : this()
         {
@@ -365,6 +368,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
         }
 
+        public Thickness GridItemPadding => ShowNames ? new Thickness() : new Thickness(5);
+
         public bool ShowMenuAndStatusBar
         {
             get => _showMenuAndStatusBar;
@@ -386,6 +391,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        public bool IsGrid => ViewMode == ViewMode.Grid;
+        public bool IsList => ViewMode == ViewMode.List;
 
         public bool ShowTitleColumn
         {
@@ -528,6 +536,27 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 _applications = value;
 
                 OnPropertyChanged();
+            }
+        }
+
+        public ViewMode ViewMode
+        {
+            get => _viewMode; set
+            {
+                _viewMode = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsGrid));
+                OnPropertyChanged(nameof(IsList));
+            }
+        }
+
+        public bool ShowNames
+        {
+            get => _showNames; set
+            {
+                _showNames = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(GridItemPadding));
             }
         }
 
@@ -690,7 +719,17 @@ namespace Ryujinx.Ava.Ui.ViewModels
         {
             ShowMenuAndStatusBar = false;
         }
-        
+
+        public async void SetListMode()
+        {
+            ViewMode = ViewMode.List;
+        }
+
+        public async void SetGridMode()
+        {
+            ViewMode = ViewMode.Grid;
+        }
+
         public async void OpenMiiApplet()
         {
             string contentPath = _owner.ContentManager.GetInstalledContentPath(0x0100000000001009, StorageId.NandSystem, NcaContentType.Program);
