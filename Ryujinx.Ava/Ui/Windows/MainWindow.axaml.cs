@@ -72,6 +72,7 @@ namespace Ryujinx.Ava.Ui.Windows
         public ProgressBar          LoadProgressBar { get; private set; }
         public Menu                 Menu            { get; private set; }
         public MenuItem             UpdateMenuItem  { get; private set; }
+        public GameGridView         GameGrid        { get; private set; }
         public DataGrid             GameList        { get; private set; }
 
         public MainWindowViewModel ViewModel { get; private set; }
@@ -163,6 +164,11 @@ namespace Ryujinx.Ava.Ui.Windows
             GameList.Columns[6].IsVisible = ViewModel.ShowFileExtColumn;
             GameList.Columns[7].IsVisible = ViewModel.ShowFileSizeColumn;
             GameList.Columns[8].IsVisible = ViewModel.ShowFilePathColumn;
+        }
+
+        public void Application_Opened(object sender, ApplicationData args)
+        {
+
         }
 
         public async Task PerformanceCheck()
@@ -396,6 +402,9 @@ namespace Ryujinx.Ava.Ui.Windows
             SearchBox       = this.FindControl<TextBox>("SearchBox");
             Menu            = this.FindControl<Menu>("Menu");
             UpdateMenuItem  = this.FindControl<MenuItem>("UpdateMenuItem");
+            GameGrid        = this.FindControl<GameGridView>("GameGrid");
+
+            GameGrid.DataContext = ViewModel;
         }
 
         public static void UpdateGraphicsConfig()
