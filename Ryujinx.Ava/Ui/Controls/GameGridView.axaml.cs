@@ -15,8 +15,14 @@ namespace Ryujinx.Ava.Ui.Controls
     public partial class GameGridView : UserControl
     {
         private ApplicationData _selectedApplication;
+        public static readonly RoutedEvent<ApplicationOpenedEventArgs> ApplicationOpenedEvent =
+            RoutedEvent.Register<GameGridView, ApplicationOpenedEventArgs>(nameof(ApplicationOpened), RoutingStrategies.Bubble);
 
-        public event EventHandler<ApplicationData> ApplicationOpened;
+        public event EventHandler<ApplicationOpenedEventArgs> ApplicationOpened
+        {
+            add { AddHandler(ApplicationOpenedEvent, value); }
+            remove { RemoveHandler(ApplicationOpenedEvent, value); }
+        }
 
         public void GameList_DoubleTapped(object sender, RoutedEventArgs args)
         {
@@ -26,7 +32,7 @@ namespace Ryujinx.Ava.Ui.Controls
 
                 if (selected != null)
                 {
-                    ApplicationOpened?.Invoke(this, selected);
+                    RaiseEvent(new ApplicationOpenedEventArgs(selected, ApplicationOpenedEvent));
                 }
             }
         }

@@ -166,7 +166,7 @@ namespace Ryujinx.Ava.Ui.Windows
             GameList.Columns[8].IsVisible = ViewModel.ShowFilePathColumn;
         }
 
-        public void Application_Opened(object sender, ApplicationData args)
+        public void Application_Opened(object sender, ApplicationOpenedEventArgs args)
         {
 
         }

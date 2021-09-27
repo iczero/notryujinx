@@ -24,8 +24,15 @@
             <Setter Property="Background" Value="#000000" />
         </Style>
     </Window.Styles>
-  <Window.Resources>
-    <ContextMenu x:Key="GameContextMenu" MenuOpened="MenuBase_OnMenuOpened">
+    <Design.DataContext>
+        <viewModels:MainWindowViewModel />
+    </Design.DataContext>
+    <Window.Resources>
+        <controls:BitmapArrayValueConverter x:Key="ByteImage" />
+        <models:TimePlayedSortComparer x:Key="TimePlayedComparer" />
+        <models:LastPlayedSortComparer x:Key="LastPlayedComparer" />
+        <models:FileSizeSortComparer x:Key="FileSizeComparer" />
+        <ContextMenu x:Key="GameContextMenu" MenuOpened="MenuBase_OnMenuOpened">
       <MenuItem
           Command="{Binding ToggleFavorite}"
           Header="{locale:Locale GameListContextMenuToggleFavorite}"
@@ -90,15 +97,6 @@
             ToolTip.Tip="{locale:Locale GameListContextMenuExtractDataLogoToolTip}" />
       </MenuItem>
     </ContextMenu>
-  </Window.Resources>
-    <Design.DataContext>
-        <viewModels:MainWindowViewModel />
-    </Design.DataContext>
-    <Window.Resources>
-        <controls:BitmapArrayValueConverter x:Key="ByteImage" />
-        <models:TimePlayedSortComparer x:Key="TimePlayedComparer" />
-        <models:LastPlayedSortComparer x:Key="LastPlayedComparer" />
-        <models:FileSizeSortComparer x:Key="FileSizeComparer" />
     </Window.Resources>
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
         <ContentControl
