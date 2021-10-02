@@ -4,12 +4,15 @@ using Avalonia.Collections;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Threading;
+using DynamicData;
+using DynamicData.Binding;
 using LibHac;
 using LibHac.Fs;
 using LibHac.FsSystem.NcaUtils;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.Controls;
+using Ryujinx.Ava.Ui.Models;
 using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
@@ -19,9 +22,12 @@ using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.FileSystem.Content;
 using Ryujinx.Modules;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ShaderCacheLoadingState = Ryujinx.Graphics.Gpu.Shader.ShaderCacheState;
@@ -31,7 +37,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
     public class MainWindowViewModel : BaseModel
     {
         private readonly MainWindow _owner;
-        private AvaloniaList<ApplicationData> _applications;
+        private ObservableCollection<ApplicationData> _applications;
         private DataGridCollectionView _appsCollection;
         private string _aspectStatusText;
         private string _cacheLoadHeading;
@@ -61,6 +67,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private int _statusBarProgressValue;
         private bool _isPaused;
         private bool _showNames;
+        private ReadOnlyObservableCollection<ApplicationData> _appsObservableList;
+        private ApplicationSort _sortMode = ApplicationSort.Favorite;
 
         public MainWindowViewModel(MainWindow owner) : this()
         {
@@ -69,7 +77,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public MainWindowViewModel()
         {
-            Applications   = new AvaloniaList<ApplicationData>();
+            Applications = new ObservableCollection<ApplicationData>();
+            Applications.ToObservableChangeSet().Bind(out _appsObservableList).AsObservableList();
             AppsCollection = new DataGridCollectionView(Applications)
             {
                 Filter = Filter
@@ -85,11 +94,15 @@ namespace Ryujinx.Ava.Ui.ViewModels
         }
 
         public string SearchText
-        { 
+        {
             get => _searchText;
             set
             {
                 _searchText = value;
+
+                Applications.ToObservableChangeSet().Filter(Filter).Bind(out _appsObservableList).AsObservableList();
+
+                RefreshView();
 
                 AppsCollection.Refresh();
             }
@@ -101,6 +114,17 @@ namespace Ryujinx.Ava.Ui.ViewModels
             set
             {
                 _appsCollection = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public ReadOnlyObservableCollection<ApplicationData> AppsObservableList
+        {
+            get => _appsObservableList;
+            set
+            {
+                _appsObservableList = value;
 
                 OnPropertyChanged();
             }
@@ -148,7 +172,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         }
 
         public bool EnableNonGameRunningControls => !IsGameRunning;
-        
+
         public bool ShowFirmwareStatus => !ShowLoadProgress;
 
         public bool IsGameRunning
@@ -158,7 +182,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             {
                 _isGameRunning = value;
 
-                if(!value)
+                if (!value)
                 {
                     ShowMenuAndStatusBar = false;
                 }
@@ -380,7 +404,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 OnPropertyChanged();
             }
         }
-        
+
         public bool IsAppletMenuActive
         {
             get => _isAppletMenuActive && EnableNonGameRunningControls;
@@ -408,6 +432,53 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 OnPropertyChanged();
             }
+        }
+
+        internal void Sort(bool isAscending)
+        {
+            IsAscending = isAscending;
+            RefreshView();
+        }
+
+        internal void Sort(ApplicationSort sort)
+        {
+            SortMode = sort;
+            RefreshView();
+        }
+
+        private IComparer<ApplicationData> GetComparer()
+        {
+            switch (SortMode)
+            {
+                case ApplicationSort.LastPlayed:
+                    return new Models.Generic.LastPlayedSortComparer(IsAscending);
+                case ApplicationSort.FileSize:
+                    return new Models.Generic.FileSizeSortComparer(IsAscending);
+                case ApplicationSort.TotalTimePlayed:
+                    return new Models.Generic.TimePlayedSortComparer(IsAscending);
+                case ApplicationSort.Title:
+                    return IsAscending ? SortExpressionComparer<ApplicationData>.Ascending(app => app.ApplicationName) : SortExpressionComparer<ApplicationData>.Descending(app => app.ApplicationName);
+                case ApplicationSort.Favorite:
+                    return IsAscending ? SortExpressionComparer<ApplicationData>.Ascending(app => app.Favorite) : SortExpressionComparer<ApplicationData>.Descending(app => app.Favorite);
+                case ApplicationSort.Developer:
+                    return IsAscending ? SortExpressionComparer<ApplicationData>.Ascending(app => app.Developer) : SortExpressionComparer<ApplicationData>.Descending(app => app.Developer);
+                case ApplicationSort.FileType:
+                    return IsAscending ? SortExpressionComparer<ApplicationData>.Ascending(app => app.FileExtension) : SortExpressionComparer<ApplicationData>.Descending(app => app.FileExtension);
+                case ApplicationSort.Path:
+                    return IsAscending ? SortExpressionComparer<ApplicationData>.Ascending(app => app.Path) : SortExpressionComparer<ApplicationData>.Descending(app => app.Path);
+                default:
+                    return null;
+            }
+        }
+
+        private void RefreshView()
+        {
+            Applications.ToObservableChangeSet()
+                .Filter(Filter)
+                .Sort(GetComparer())
+                .Bind(out _appsObservableList).AsObservableList();
+
+            OnPropertyChanged(nameof(AppsObservableList));
         }
 
         public bool ShowDeveloperColumn
@@ -528,7 +599,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
         }
 
-        public AvaloniaList<ApplicationData> Applications
+        public ObservableCollection<ApplicationData> Applications
         {
             get => _applications;
             set
@@ -559,6 +630,46 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 OnPropertyChanged(nameof(GridItemPadding));
             }
         }
+
+        public ApplicationSort SortMode
+        {
+            get => _sortMode; private set
+            {
+                _sortMode = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(SortName));
+            }
+        }
+
+        public string SortName
+        {
+            get
+            {
+                switch (SortMode)
+                {
+                    case ApplicationSort.Title:
+                        return LocaleManager.Instance["GameListHeaderApplication"];
+                    case ApplicationSort.Developer:
+                        return LocaleManager.Instance["GameListHeaderDeveloper"];
+                    case ApplicationSort.LastPlayed:
+                        return LocaleManager.Instance["GameListHeaderLastPlayed"];
+                    case ApplicationSort.TotalTimePlayed:
+                        return LocaleManager.Instance["GameListHeaderTimePlayed"];
+                    case ApplicationSort.FileType:
+                        return LocaleManager.Instance["GameListHeaderFileExtension"];
+                    case ApplicationSort.FileSize:
+                        return LocaleManager.Instance["GameListHeaderFileSize"];
+                    case ApplicationSort.Path:
+                        return LocaleManager.Instance["GameListHeaderPath"];
+                    case ApplicationSort.Favorite:
+                        return LocaleManager.Instance["CommonFavorite"];
+                }
+
+                return string.Empty;
+            }
+        }
+
+        public bool IsAscending { get; private set; } = true;
 
         public async void OpenAmiiboWindow()
         {
@@ -655,8 +766,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
             {
                 ApplicationLibrary.LoadApplications(ConfigurationState.Instance.Ui.GameDirs, _owner.VirtualFileSystem, ConfigurationState.Instance.System.Language);
 
+                Applications.ToObservableChangeSet().Bind(out _appsObservableList).AsObservableList();
+
                 _isLoading = false;
-            }) { Name = "GUI.AppListLoadThread", Priority = ThreadPriority.AboveNormal };
+            })
+            { Name = "GUI.AppListLoadThread", Priority = ThreadPriority.AboveNormal };
 
             thread.Start();
         }
@@ -680,12 +794,12 @@ namespace Ryujinx.Ava.Ui.ViewModels
                     "nso"
                 }
             });
-            dialog.Filters.Add(new FileDialogFilter {Name = "NSP", Extensions = {"nsp"}});
-            dialog.Filters.Add(new FileDialogFilter {Name = "PFS0", Extensions = {"pfs0"}});
-            dialog.Filters.Add(new FileDialogFilter {Name = "XCI", Extensions = {"xci"}});
-            dialog.Filters.Add(new FileDialogFilter {Name = "NCA", Extensions = {"nca"}});
-            dialog.Filters.Add(new FileDialogFilter {Name = "NRO", Extensions = {"nro"}});
-            dialog.Filters.Add(new FileDialogFilter {Name = "NSO", Extensions = {"nso"}});
+            dialog.Filters.Add(new FileDialogFilter { Name = "NSP", Extensions = { "nsp" } });
+            dialog.Filters.Add(new FileDialogFilter { Name = "PFS0", Extensions = { "pfs0" } });
+            dialog.Filters.Add(new FileDialogFilter { Name = "XCI", Extensions = { "xci" } });
+            dialog.Filters.Add(new FileDialogFilter { Name = "NCA", Extensions = { "nca" } });
+            dialog.Filters.Add(new FileDialogFilter { Name = "NRO", Extensions = { "nro" } });
+            dialog.Filters.Add(new FileDialogFilter { Name = "NSO", Extensions = { "nso" } });
 
             string[] files = await dialog.ShowAsync(_owner);
 
@@ -700,7 +814,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             OpenFolderDialog dialog = new()
             {
                 Title = "Select a folder with an unpacked game"
-            };;
+            }; ;
 
             string folder = await dialog.ShowAsync(_owner);
 
@@ -714,7 +828,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         {
             _owner.AppHost.ScreenshotRequested = true;
         }
-        
+
         public async void HideUi()
         {
             ShowMenuAndStatusBar = false;
@@ -733,7 +847,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         public async void OpenMiiApplet()
         {
             string contentPath = _owner.ContentManager.GetInstalledContentPath(0x0100000000001009, StorageId.NandSystem, NcaContentType.Program);
-            
+
             if (!string.IsNullOrWhiteSpace(contentPath))
             {
                 _owner.LoadApplication(contentPath);
@@ -766,7 +880,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             {
                 _owner.WindowState = WindowState.FullScreen;
 
-                if(IsGameRunning)
+                if (IsGameRunning)
                 {
                     ShowMenuAndStatusBar = true;
                 }
@@ -850,7 +964,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 OpenSaveDirectory(filter, data);
             }
         }
-        
+
         public void ToggleFavorite()
         {
             object selection = _owner.GameList.SelectedItem;
@@ -858,7 +972,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             if (selection != null && selection is ApplicationData data)
             {
                 data.Favorite = !data.Favorite;
-                
+
                 AppsCollection.Refresh();
             }
         }
@@ -869,7 +983,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             if (selection != null && selection is ApplicationData data)
             {
-                string modsBasePath  = _owner.VirtualFileSystem.ModLoader.GetModsBasePath();
+                string modsBasePath = _owner.VirtualFileSystem.ModLoader.GetModsBasePath();
                 string titleModsPath = _owner.VirtualFileSystem.ModLoader.GetTitleDir(modsBasePath, data.TitleId);
 
                 OpenHelper.OpenFolder(titleModsPath);
@@ -884,7 +998,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             {
                 string ptcDir = Path.Combine(AppDataManager.GamesDirPath, data.TitleId, "cache", "cpu");
 
-                string mainPath   = Path.Combine(ptcDir, "0");
+                string mainPath = Path.Combine(ptcDir, "0");
                 string backupPath = Path.Combine(ptcDir, "1");
 
                 if (!Directory.Exists(ptcDir))
@@ -904,7 +1018,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             if (selection != null && selection is ApplicationData data)
             {
-                DirectoryInfo mainDir   = new(Path.Combine(AppDataManager.GamesDirPath, data.TitleId, "cache", "cpu", "0"));
+                DirectoryInfo mainDir = new(Path.Combine(AppDataManager.GamesDirPath, data.TitleId, "cache", "cpu", "0"));
                 DirectoryInfo backupDir = new(Path.Combine(AppDataManager.GamesDirPath, data.TitleId, "cache", "cpu", "1"));
 
                 // FIXME: Found a way to reproduce the bold effect on the title name (fork?).
@@ -933,7 +1047,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                         }
                         catch (Exception e)
                         {
-                            ContentDialogHelper.CreateErrorDialog(_owner, string.Format(LocaleManager.Instance["DialogPPTCDeletionErrorMessage"],file.Name, e));
+                            ContentDialogHelper.CreateErrorDialog(_owner, string.Format(LocaleManager.Instance["DialogPPTCDeletionErrorMessage"], file.Name, e));
                         }
                     }
                 }
@@ -1110,7 +1224,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 string filename = path;
 
                 SystemVersion firmwareVersion = _owner.ContentManager.VerifyFirmwarePackage(filename);
-                
+
                 if (firmwareVersion == null)
                 {
                     ContentDialogHelper.CreateErrorDialog(_owner, string.Format(LocaleManager.Instance["DialogFirmwareInstallerFirmwareNotFoundErrorMessage"], filename));
@@ -1166,7 +1280,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                                 await ContentDialogHelper.CreateInfoDialog(_owner, dialogTitle, message, "", LocaleManager.Instance["InputDialogOk"]);
                                 Logger.Info?.Print(LogClass.Application, message);
-                                
+
                                 // Purge Applet Cache.
 
                                 DirectoryInfo miiEditorCacheFolder = new DirectoryInfo(System.IO.Path.Combine(AppDataManager.GamesDirPath, "0100000000001009", "cache"));
@@ -1196,7 +1310,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                     thread.Start();
                 }
             }
-            catch (MissingKeyException ex)
+            catch (LibHac.MissingKeyException ex)
             {
                 Logger.Error?.Print(LogClass.Application, ex.ToString());
                 UserErrorDialog.ShowUserErrorDialog(UserError.NoKeys, _owner);
@@ -1209,10 +1323,10 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public async void InstallFirmwareFromFile()
         {
-            OpenFileDialog dialog = new() {AllowMultiple = false};
-            dialog.Filters.Add(new FileDialogFilter {Name = "All types", Extensions = {"xci", "zip"}});
-            dialog.Filters.Add(new FileDialogFilter {Name = "XCI", Extensions = {"xci"}});
-            dialog.Filters.Add(new FileDialogFilter {Name = "ZIP", Extensions = {"zip"}});
+            OpenFileDialog dialog = new() { AllowMultiple = false };
+            dialog.Filters.Add(new FileDialogFilter { Name = "All types", Extensions = { "xci", "zip" } });
+            dialog.Filters.Add(new FileDialogFilter { Name = "XCI", Extensions = { "xci" } });
+            dialog.Filters.Add(new FileDialogFilter { Name = "ZIP", Extensions = { "zip" } });
 
             string[] file = await dialog.ShowAsync(_owner);
 

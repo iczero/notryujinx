@@ -1,6 +1,7 @@
 using Ryujinx.Ava.Common;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Ryujinx.Ava.Ui.Models
 {
@@ -8,8 +9,8 @@ namespace Ryujinx.Ava.Ui.Models
     {
         public int Compare(object? x, object? y)
         {
-            string aValue = (x as ApplicationData).LastPlayed;
-            string bValue = (y as ApplicationData).LastPlayed;
+            string aValue = (x as ApplicationData).TimePlayed;
+            string bValue = (y as ApplicationData).TimePlayed;
 
             if (aValue == "Never")
             {
