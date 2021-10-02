@@ -168,7 +168,16 @@ namespace Ryujinx.Ava.Ui.Windows
 
         public void Application_Opened(object sender, ApplicationOpenedEventArgs args)
         {
+            if (args.Application != null)
+            {
+                ViewModel.SelectedIcon = args.Application.Icon;
 
+                string path = new FileInfo(args.Application.Path).FullName;
+
+                LoadApplication(path);
+            }
+
+            args.Handled = true;
         }
 
         public async Task PerformanceCheck()
@@ -312,6 +321,24 @@ namespace Ryujinx.Ava.Ui.Windows
             });
         }
 
+        public void Sort_Checked(object sender, RoutedEventArgs args)
+        {
+            if(sender is RadioButton button)
+            {
+                var sort = Enum.Parse<ApplicationSort>(button.Tag.ToString());
+                ViewModel.Sort(sort);
+            }
+        }
+
+        public void Order_Checked(object sender, RoutedEventArgs args)
+        {
+            if (sender is RadioButton button)
+            {
+                var tag = button.Tag.ToString();
+                ViewModel.Sort(tag != "Descending");
+            }
+        }
+
         private void Initialize()
         {
             UpdateGridColumns();
@@ -403,6 +430,8 @@ namespace Ryujinx.Ava.Ui.Windows
             Menu            = this.FindControl<Menu>("Menu");
             UpdateMenuItem  = this.FindControl<MenuItem>("UpdateMenuItem");
             GameGrid        = this.FindControl<GameGridView>("GameGrid");
+
+            GameGrid.ApplicationOpened += Application_Opened;
 
             GameGrid.DataContext = ViewModel;
         }

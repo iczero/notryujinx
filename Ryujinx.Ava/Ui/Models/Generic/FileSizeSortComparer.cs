@@ -3,14 +3,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Ryujinx.Ava.Ui.Models
+namespace Ryujinx.Ava.Ui.Models.Generic
 {
-    public class FileSizeSortComparer : IComparer
+    public class FileSizeSortComparer : IComparer<ApplicationData>
     {
-        public int Compare(object? x, object? y)
+        public FileSizeSortComparer() { }
+        public FileSizeSortComparer(bool isAscending) { _order = isAscending ? 1 : -1; }
+
+        private int _order;
+
+        public int Compare(ApplicationData? x, ApplicationData? y)
         {
-            string aValue = (x as ApplicationData).TimePlayed;
-            string bValue = (y as ApplicationData).TimePlayed;
+            string aValue = x.FileSize;
+            string bValue = y.FileSize;
 
             if (aValue[^2..] == "GB")
             {
@@ -32,11 +37,11 @@ namespace Ryujinx.Ava.Ui.Models
 
             if (float.Parse(aValue) > float.Parse(bValue))
             {
-                return -1;
+                return -1 * _order;
             }
             else if (float.Parse(bValue) > float.Parse(aValue))
             {
-                return 1;
+                return 1 * _order;
             }
             else
             {

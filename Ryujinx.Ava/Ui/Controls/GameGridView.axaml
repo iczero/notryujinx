@@ -88,7 +88,7 @@
              SelectionChanged="GameList_SelectionChanged"
              ContextMenu="{StaticResource GameContextMenu}"
              VerticalAlignment="Stretch" 
-             Items="{Binding Applications}">
+             Items="{Binding AppsObservableList}">
       <ListBox.ItemsPanel>
         <ItemsPanelTemplate>
           <flex:FlexPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" JustifyContent="FlexStart" AlignContent="FlexStart"/>
@@ -105,13 +105,13 @@
       <ListBox.ItemTemplate>
         <DataTemplate>
           <Grid>
-            <Border HorizontalAlignment="Stretch" Padding="{Binding $parent[UserControl].DataContext.GridItemPadding}" CornerRadius="5" VerticalAlignment="Stretch" Margin="0" ClipToBounds="True">
-              <Grid Margin="0" Width="140">
+            <Border Width="130" HorizontalAlignment="Stretch" Padding="{Binding $parent[UserControl].DataContext.GridItemPadding}" CornerRadius="5" VerticalAlignment="Stretch" Margin="0" ClipToBounds="True">
+              <Grid Margin="0">
                 <Grid.RowDefinitions>
                   <RowDefinition Height="Auto"/>
                   <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Image Width="140" HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0" Grid.Row="0"
+                <Image HorizontalAlignment="Stretch" VerticalAlignment="Top" Margin="0" Grid.Row="0"
                                                 Source="{Binding Icon, Converter={StaticResource ByteImage}}" />
                 <StackPanel IsVisible="{Binding $parent[UserControl].DataContext.ShowNames}" Height="50" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="5" Grid.Row="1">
                   <TextBlock Text="{Binding TitleName}" TextAlignment="Center" TextWrapping="Wrap" HorizontalAlignment="Stretch"/>
