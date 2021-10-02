@@ -8,6 +8,8 @@ namespace Ryujinx.Ava.Common
         LastPlayed,
         TotalTimePlayed,
         FileType,
+        FileSize,
+        Path,
         Favorite
     }
 }

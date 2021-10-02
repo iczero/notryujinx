@@ -174,53 +174,6 @@
                                 <MenuItem Command="{Binding ChangeLanguage}" CommandParameter="pt_BR"
                                           Header="Brazilian Portuguese" />
                             </MenuItem>
-                            <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumns}">
-                                <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumns}">
-                                    <MenuItem.Icon>
-                                        <CheckBox Margin="0" IsChecked="{Binding ShowIconColumn, Mode=TwoWay}" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnTitle}">
-                                    <MenuItem.Icon>
-                                        <CheckBox Margin="0" IsChecked="{Binding ShowTitleColumn, Mode=TwoWay}" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnDeveloper}">
-                                    <MenuItem.Icon>
-                                        <CheckBox Margin="0" IsChecked="{Binding ShowDeveloperColumn, Mode=TwoWay}" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnVersion}">
-                                    <MenuItem.Icon>
-                                        <CheckBox Margin="0" IsChecked="{Binding ShowVersionColumn, Mode=TwoWay}" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnTimePlayed}">
-                                    <MenuItem.Icon>
-                                        <CheckBox Margin="0" IsChecked="{Binding ShowTimePlayedColumn, Mode=TwoWay}" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnLastPlayed}">
-                                    <MenuItem.Icon>
-                                        <CheckBox Margin="0" IsChecked="{Binding ShowLastPlayedColumn, Mode=TwoWay}" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnFileExtension}">
-                                    <MenuItem.Icon>
-                                        <CheckBox Margin="0" IsChecked="{Binding ShowFileExtColumn, Mode=TwoWay}" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnFileSize}">
-                                    <MenuItem.Icon>
-                                        <CheckBox Margin="0" IsChecked="{Binding ShowFileSizeColumn, Mode=TwoWay}" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                                <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumns}">
-                                    <MenuItem.Icon>
-                                        <CheckBox Margin="0" IsChecked="{Binding ShowFilePathColumn, Mode=TwoWay}" />
-                                    </MenuItem.Icon>
-                                </MenuItem>
-                            </MenuItem>
                             <Separator />
                             <MenuItem Command="{Binding OpenSettings}" Header="{locale:Locale MenuBarOptionsSettings}" />
                             <MenuItem Command="{Binding ManageProfiles}" IsEnabled="{Binding EnableNonGameRunningControls}"
@@ -297,9 +250,9 @@
                   <RowDefinition Height="Auto"/>
                   <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,5">
+                <DockPanel Grid.Row="0" HorizontalAlignment="Stretch" Margin="0,0,0,5">
                   <Button
-                                     IsEnabled="{Binding IsGrid}" VerticalAlignment="Stretch"  MinWidth="40" Width="40" Margin="8,3" Command="{Binding SetListMode}">
+                                     IsEnabled="{Binding IsGrid}" VerticalAlignment="Stretch"  MinWidth="40" Width="40" Margin="5,2,0,2" Command="{Binding SetListMode}">
                     <ui:FontIcon FontFamily="avares://FluentAvalonia/Fonts#FluentSystemIcons-Regular"
                                  VerticalAlignment="Center"
                                  Margin="0"
@@ -307,20 +260,68 @@
                                  HorizontalAlignment="Stretch" />
                   </Button>
                   <Button
-                                 IsEnabled="{Binding IsList}" VerticalAlignment="Stretch" MinWidth="40" Width="40" Margin="8,3" Command="{Binding SetGridMode}">
+                                 IsEnabled="{Binding IsList}" VerticalAlignment="Stretch" MinWidth="40" Width="40" Margin="5,2,5,2" Command="{Binding SetGridMode}">
                     <ui:FontIcon FontFamily="avares://FluentAvalonia/Fonts#FluentSystemIcons-Regular"
                                  VerticalAlignment="Center"
                                  Margin="0"
                                  Glyph="{controls:GlyphValueConverter Grid}"
                                  HorizontalAlignment="Stretch" />
                   </Button>
-                  <CheckBox IsChecked="{Binding ShowNames, Mode=TwoWay}" VerticalAlignment="Center">
-                    <TextBlock Text="Show Names" Margin="0,3,0,0"/>
+                  <CheckBox IsChecked="{Binding ShowNames, Mode=TwoWay}" VerticalAlignment="Center" IsVisible="{Binding IsGrid}">
+                    <TextBlock Text="{locale:Locale CommonShowNames}" Margin="0,3,0,0"/>
                   </CheckBox>
-                  <TextBlock Text="Sort" VerticalAlignment="Center" Margin="10,0"/>
-                  <ComboBox  Width="90" VerticalAlignment="Center"/>
+                  <Menu IsVisible="{Binding IsList}" Margin="0" Padding="0" Height="25">
+                    <MenuItem VerticalAlignment="Center" Margin="0" Padding="0" Header="{locale:Locale MenuBarOptionsEnableGuiColumns}">
+                      <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumns}">
+                        <MenuItem.Icon>
+                          <CheckBox Margin="0" IsChecked="{Binding ShowIconColumn, Mode=TwoWay}" />
+                        </MenuItem.Icon>
+                      </MenuItem>
+                      <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnTitle}">
+                        <MenuItem.Icon>
+                          <CheckBox Margin="0" IsChecked="{Binding ShowTitleColumn, Mode=TwoWay}" />
+                        </MenuItem.Icon>
+                      </MenuItem>
+                      <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnDeveloper}">
+                        <MenuItem.Icon>
+                          <CheckBox Margin="0" IsChecked="{Binding ShowDeveloperColumn, Mode=TwoWay}" />
+                        </MenuItem.Icon>
+                      </MenuItem>
+                      <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnVersion}">
+                        <MenuItem.Icon>
+                          <CheckBox Margin="0" IsChecked="{Binding ShowVersionColumn, Mode=TwoWay}" />
+                        </MenuItem.Icon>
+                      </MenuItem>
+                      <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnTimePlayed}">
+                        <MenuItem.Icon>
+                          <CheckBox Margin="0" IsChecked="{Binding ShowTimePlayedColumn, Mode=TwoWay}" />
+                        </MenuItem.Icon>
+                      </MenuItem>
+                      <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnLastPlayed}">
+                        <MenuItem.Icon>
+                          <CheckBox Margin="0" IsChecked="{Binding ShowLastPlayedColumn, Mode=TwoWay}" />
+                        </MenuItem.Icon>
+                      </MenuItem>
+                      <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnFileExtension}">
+                        <MenuItem.Icon>
+                          <CheckBox Margin="0" IsChecked="{Binding ShowFileExtColumn, Mode=TwoWay}" />
+                        </MenuItem.Icon>
+                      </MenuItem>
+                      <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnFileSize}">
+                        <MenuItem.Icon>
+                          <CheckBox Margin="0" IsChecked="{Binding ShowFileSizeColumn, Mode=TwoWay}" />
+                        </MenuItem.Icon>
+                      </MenuItem>
+                      <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumns}">
+                        <MenuItem.Icon>
+                          <CheckBox Margin="0" IsChecked="{Binding ShowFilePathColumn, Mode=TwoWay}" />
+                        </MenuItem.Icon>
+                      </MenuItem>
+                    </MenuItem>
+                  </Menu>
                   <TextBox
                       Name="SearchBox"
+                      DockPanel.Dock="Right"
                       VerticalAlignment="Center"
                       MinWidth="200"
                       Margin="5,0,0,0"
@@ -328,7 +329,31 @@
                       KeyUp="SearchBox_OnKeyUp"
                       Text="{Binding SearchText}"
                       Watermark="{locale:Locale MenuSearch}" />
-                </StackPanel>
+                  <ui:DropDownButton DockPanel.Dock="Right" IsVisible="{Binding IsGrid}" HorizontalAlignment="Right"  Width="150" VerticalAlignment="Center" Content="{Binding SortName}">
+                    <ui:DropDownButton.Flyout>
+                      <Flyout Placement="Bottom">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" Margin="0" >
+                          <StackPanel>
+                            <RadioButton Tag="Favorite" IsChecked="True" GroupName="Sort" Content="{locale:Locale CommonFavorite}" Checked="Sort_Checked"/>
+                            <RadioButton Tag="Title" GroupName="Sort" Content="{locale:Locale GameListHeaderApplication}"  Checked="Sort_Checked"/>
+                            <RadioButton Tag="Developer" GroupName="Sort" Content="{locale:Locale GameListHeaderDeveloper}" Checked="Sort_Checked"/>
+                            <RadioButton Tag="TotalTimePlayed" GroupName="Sort" Content="{locale:Locale GameListHeaderTimePlayed}" Checked="Sort_Checked"/>
+                            <RadioButton Tag="LastPlayed" GroupName="Sort" Content="{locale:Locale GameListHeaderLastPlayed}" Checked="Sort_Checked"/>
+                            <RadioButton Tag="FileType" GroupName="Sort" Content="{locale:Locale GameListHeaderFileExtension}" Checked="Sort_Checked"/>
+                            <RadioButton Tag="FileSize" GroupName="Sort" Content="{locale:Locale GameListHeaderFileSize}" Checked="Sort_Checked"/>
+                            <RadioButton Tag="Path" GroupName="Sort" Content="{locale:Locale GameListHeaderPath}" Checked="Sort_Checked"/>
+                          </StackPanel>
+                          <Border HorizontalAlignment="Stretch" Margin="5" Height="2" BorderBrush="White" Width="40" BorderThickness="0,1,0,0">
+                            <Separator HorizontalAlignment="Stretch" Height="0"/>
+                          </Border>
+                          <RadioButton Tag="Ascending" IsChecked="True" GroupName="Order" Content="{locale:Locale OrderAscending}" Checked="Order_Checked"/>
+                          <RadioButton Tag="Descending" GroupName="Order" Content="{locale:Locale OrderDescending}" Checked="Order_Checked"/>
+                        </StackPanel>                        
+                      </Flyout>
+                    </ui:DropDownButton.Flyout>
+                  </ui:DropDownButton>
+                  <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" Text="{locale:Locale CommonSort}" VerticalAlignment="Center" Margin="10,0"/>
+                </DockPanel>
                 <DataGrid
                   Grid.Row="1"
                 Name="GameList"
@@ -423,7 +448,6 @@
                   HorizontalContentAlignment="Stretch"
                   HorizontalAlignment="Stretch"
                   VerticalContentAlignment="Stretch"
-                  ApplicationOpened="Application_Opened"
                   VerticalAlignment="Stretch"
                   IsVisible="{Binding IsGrid}"
                  />

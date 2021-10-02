@@ -421,6 +421,10 @@
   "MenuBarOptionsEnableGuiColumnTimePlayed": "Enable Time Played Column",
   "MenuBarOptionsEnableGuiColumnLastPlayed": "Enable Last Played Column",
   "MenuBarOptionsEnableGuiColumnFileExtension": "Enable File Extension Column",
-  "MenuBarOptionsEnableGuiColumnFileSize": "Enable File Size Column"
-
+  "MenuBarOptionsEnableGuiColumnFileSize": "Enable File Size Column",
+  "CommonSort": "Sort",
+  "CommonShowNames": "Show Names",
+  "CommonFavorite": "Favorite",
+  "OrderAscending" :  "Ascending",
+  "OrderDescending" :  "Descending"
 }
