@@ -103,8 +103,6 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 Applications.ToObservableChangeSet().Filter(Filter).Bind(out _appsObservableList).AsObservableList();
 
                 RefreshView();
-
-                AppsCollection.Refresh();
             }
         }
 
@@ -224,6 +222,24 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 _gameStatusText = value;
 
                 OnPropertyChanged();
+            }
+        }
+
+        public ApplicationData SelectedApplication
+        {
+            get
+            {
+                switch (ViewMode)
+                {
+                    case ViewMode.List:
+                        return _owner.GameList.SelectedItem as ApplicationData;
+                        break;
+                    case ViewMode.Grid:
+                        return _owner.GameGrid.SelectedApplication;
+                        break;
+                    default:
+                        return null;
+                }
             }
         }
 
@@ -473,6 +489,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         private void RefreshView()
         {
+            AppsCollection.Refresh();
+            
             Applications.ToObservableChangeSet()
                 .Filter(Filter)
                 .Sort(GetComparer())
@@ -918,6 +936,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             bool showLoadProgress = false;
             ProgressMaximum = total;
             ProgressValue = current;
+            
             switch (state)
             {
                 case PtcLoadingState ptcState:
@@ -955,36 +974,36 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public void OpenUserSaveDirectory()
         {
-            object selection = _owner.GameList.SelectedItem;
+            var selection = SelectedApplication;
 
-            if (selection != null && selection is ApplicationData data)
+            if (selection != null)
             {
                 SaveDataFilter filter = new();
                 filter.SetUserId(new UserId(1, 0));
-                OpenSaveDirectory(filter, data);
+                OpenSaveDirectory(filter, selection);
             }
         }
 
         public void ToggleFavorite()
         {
-            object selection = _owner.GameList.SelectedItem;
+            var selection = SelectedApplication;
 
-            if (selection != null && selection is ApplicationData data)
+            if (selection != null)
             {
-                data.Favorite = !data.Favorite;
+                selection.Favorite = !selection.Favorite;
 
-                AppsCollection.Refresh();
+                RefreshView();
             }
         }
 
         public void OpenModsDirectory()
         {
-            object selection = _owner.GameList.SelectedItem;
+            var selection = SelectedApplication;
 
-            if (selection != null && selection is ApplicationData data)
+            if (selection != null)
             {
                 string modsBasePath = _owner.VirtualFileSystem.ModLoader.GetModsBasePath();
-                string titleModsPath = _owner.VirtualFileSystem.ModLoader.GetTitleDir(modsBasePath, data.TitleId);
+                string titleModsPath = _owner.VirtualFileSystem.ModLoader.GetTitleDir(modsBasePath, selection.TitleId);
 
                 OpenHelper.OpenFolder(titleModsPath);
             }
@@ -992,11 +1011,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public void OpenPtcDirectory()
         {
-            object selection = _owner.GameList.SelectedItem;
+            var selection = SelectedApplication;
 
-            if (selection != null && selection is ApplicationData data)
+            if (selection != null)
             {
-                string ptcDir = Path.Combine(AppDataManager.GamesDirPath, data.TitleId, "cache", "cpu");
+                string ptcDir = Path.Combine(AppDataManager.GamesDirPath, selection.TitleId, "cache", "cpu");
 
                 string mainPath = Path.Combine(ptcDir, "0");
                 string backupPath = Path.Combine(ptcDir, "1");
@@ -1014,16 +1033,16 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public async void PurgePtcCache()
         {
-            object selection = _owner.GameList.SelectedItem;
+            var selection = SelectedApplication;
 
-            if (selection != null && selection is ApplicationData data)
+            if (selection != null)
             {
-                DirectoryInfo mainDir = new(Path.Combine(AppDataManager.GamesDirPath, data.TitleId, "cache", "cpu", "0"));
-                DirectoryInfo backupDir = new(Path.Combine(AppDataManager.GamesDirPath, data.TitleId, "cache", "cpu", "1"));
+                DirectoryInfo mainDir = new(Path.Combine(AppDataManager.GamesDirPath, selection.TitleId, "cache", "cpu", "0"));
+                DirectoryInfo backupDir = new(Path.Combine(AppDataManager.GamesDirPath, selection.TitleId, "cache", "cpu", "1"));
 
                 // FIXME: Found a way to reproduce the bold effect on the title name (fork?).
                 UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_owner, LocaleManager.Instance["DialogWarning"],
-                    string.Format(LocaleManager.Instance["DialogPPTCDeletionMessage"], data.TitleName));
+                    string.Format(LocaleManager.Instance["DialogPPTCDeletionMessage"], selection.TitleName));
 
                 List<FileInfo> cacheFiles = new();
 
@@ -1056,11 +1075,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public void OpenShaderCacheDirectory()
         {
-            object selection = _owner.GameList.SelectedItem;
+            var selection = SelectedApplication;
 
-            if (selection != null && selection is ApplicationData data)
+            if (selection != null)
             {
-                string shaderCacheDir = Path.Combine(AppDataManager.GamesDirPath, data.TitleId, "cache", "shader");
+                string shaderCacheDir = Path.Combine(AppDataManager.GamesDirPath, selection.TitleId, "cache", "shader");
 
                 if (!Directory.Exists(shaderCacheDir))
                 {
@@ -1078,15 +1097,15 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public async void PurgeShaderCache()
         {
-            object selection = _owner.GameList.SelectedItem;
+            var selection = SelectedApplication;
 
-            if (selection != null && selection is ApplicationData data)
+            if (selection != null)
             {
-                DirectoryInfo shaderCacheDir = new(Path.Combine(AppDataManager.GamesDirPath, data.TitleId, "cache", "shader"));
+                DirectoryInfo shaderCacheDir = new(Path.Combine(AppDataManager.GamesDirPath, selection.TitleId, "cache", "shader"));
 
                 // FIXME: Found a way to reproduce the bold effect on the title name (fork?).
                 UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_owner, LocaleManager.Instance["DialogWarning"],
-                    string.Format(LocaleManager.Instance["DialogShaderDeletionMessage"], data.TitleName));
+                    string.Format(LocaleManager.Instance["DialogShaderDeletionMessage"], selection.TitleName));
 
                 List<DirectoryInfo> cacheDirectory = new();
 
@@ -1124,11 +1143,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public async void OpenTitleUpdateManager()
         {
-            object selection = _owner.GameList.SelectedItem;
+            var selection = SelectedApplication;
 
-            if (selection != null && selection is ApplicationData data)
+            if (selection != null)
             {
-                TitleUpdateWindow titleUpdateManager = new(_owner.VirtualFileSystem, data.TitleId, data.TitleName);
+                TitleUpdateWindow titleUpdateManager = new(_owner.VirtualFileSystem, selection.TitleId, selection.TitleName);
 
                 await titleUpdateManager.ShowDialog(_owner);
             }
@@ -1136,11 +1155,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public async void OpenDlcManager()
         {
-            object selection = _owner.GameList.SelectedItem;
+            var selection = SelectedApplication;
 
-            if (selection != null && selection is ApplicationData data)
+            if (selection != null)
             {
-                DlcManagerWindow dlcManager = new(_owner.VirtualFileSystem, data.TitleId, data.TitleName);
+                DlcManagerWindow dlcManager = new(_owner.VirtualFileSystem, selection.TitleId, selection.TitleName);
 
                 await dlcManager.ShowDialog(_owner);
             }
@@ -1149,25 +1168,25 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public void OpenDeviceSaveDirectory()
         {
-            object selection = _owner.GameList.SelectedItem;
+            var selection = SelectedApplication;
 
-            if (selection != null && selection is ApplicationData data)
+            if (selection != null)
             {
                 SaveDataFilter filter = new();
                 filter.SetSaveDataType(SaveDataType.Device);
-                OpenSaveDirectory(filter, data);
+                OpenSaveDirectory(filter, selection);
             }
         }
 
         public void OpenBcatSaveDirectory()
         {
-            object selection = _owner.GameList.SelectedItem;
+            var selection = SelectedApplication;
 
-            if (selection != null && selection is ApplicationData data)
+            if (selection != null)
             {
                 SaveDataFilter filter = new();
                 filter.SetSaveDataType(SaveDataType.Bcat);
-                OpenSaveDirectory(filter, data);
+                OpenSaveDirectory(filter, selection);
             }
         }
 
@@ -1187,28 +1206,28 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         private void ExtractLogo()
         {
-            object selection = _owner.GameList.SelectedItem;
-            if (selection != null && selection is ApplicationData data)
+            var selection = SelectedApplication;
+            if (selection != null)
             {
-                ApplicationHelper.ExtractSection(NcaSectionType.Logo, data.Path);
+                ApplicationHelper.ExtractSection(NcaSectionType.Logo, selection.Path);
             }
         }
 
         private void ExtractRomFs()
         {
-            object selection = _owner.GameList.SelectedItem;
-            if (selection != null && selection is ApplicationData data)
+            var selection = SelectedApplication;
+            if (selection != null)
             {
-                ApplicationHelper.ExtractSection(NcaSectionType.Data, data.Path);
+                ApplicationHelper.ExtractSection(NcaSectionType.Data, selection.Path);
             }
         }
 
         private void ExtractExeFs()
         {
-            object selection = _owner.GameList.SelectedItem;
-            if (selection != null && selection is ApplicationData data)
+            var selection = SelectedApplication;
+            if (selection != null)
             {
-                ApplicationHelper.ExtractSection(NcaSectionType.Code, data.Path);
+                ApplicationHelper.ExtractSection(NcaSectionType.Code, selection.Path);
             }
         }
 
