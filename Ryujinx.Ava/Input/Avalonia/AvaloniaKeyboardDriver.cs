@@ -1,6 +1,7 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Input;
 using Ryujinx.Ava.Ui.Controls;
+using Ryujinx.Ava.Ui.Windows;
 using System;
 using System.Collections.Generic;
 using AvaKey = Avalonia.Input.Key;
@@ -84,6 +85,11 @@ namespace Ryujinx.Input.Avalonia
         protected void OnKeyRelease(object sender, KeyEventArgs args)
         {
             _pressedKeys.Remove(args.Key);
+
+            if (args.Key == AvaKey.Return && sender is MainWindow window)
+            {
+                window.ViewModel.ToggleFullscreen();
+            }
         }
 
         internal bool IsPressed(Key key)
