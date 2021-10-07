@@ -482,7 +482,7 @@
                                 </StackPanel>
                             </StackPanel>
                             <Separator Height="1" Margin="0,5" />
-                            <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGraphicsDeveloperOptions}" />
+                            <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGraphicsFeatures}" />
                             <StackPanel
                                 Margin="10,0,10,0"
                                 HorizontalAlignment="Stretch"

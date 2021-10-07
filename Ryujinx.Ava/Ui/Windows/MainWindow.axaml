@@ -270,55 +270,41 @@
                   <CheckBox IsChecked="{Binding ShowNames, Mode=TwoWay}" VerticalAlignment="Center" IsVisible="{Binding IsGrid}">
                     <TextBlock Text="{locale:Locale CommonShowNames}" Margin="0,3,0,0"/>
                   </CheckBox>
-                  <Menu IsVisible="{Binding IsList}" Margin="0" Padding="0" Height="25">
-                    <MenuItem VerticalAlignment="Center" Margin="0" Padding="0" Header="{locale:Locale MenuBarOptionsEnableGuiColumns}">
-                      <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumns}">
-                        <MenuItem.Icon>
-                          <CheckBox Margin="0" IsChecked="{Binding ShowIconColumn, Mode=TwoWay}" />
-                        </MenuItem.Icon>
-                      </MenuItem>
-                      <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnTitle}">
-                        <MenuItem.Icon>
-                          <CheckBox Margin="0" IsChecked="{Binding ShowTitleColumn, Mode=TwoWay}" />
-                        </MenuItem.Icon>
-                      </MenuItem>
-                      <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnDeveloper}">
-                        <MenuItem.Icon>
-                          <CheckBox Margin="0" IsChecked="{Binding ShowDeveloperColumn, Mode=TwoWay}" />
-                        </MenuItem.Icon>
-                      </MenuItem>
-                      <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnVersion}">
-                        <MenuItem.Icon>
-                          <CheckBox Margin="0" IsChecked="{Binding ShowVersionColumn, Mode=TwoWay}" />
-                        </MenuItem.Icon>
-                      </MenuItem>
-                      <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnTimePlayed}">
-                        <MenuItem.Icon>
-                          <CheckBox Margin="0" IsChecked="{Binding ShowTimePlayedColumn, Mode=TwoWay}" />
-                        </MenuItem.Icon>
-                      </MenuItem>
-                      <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnLastPlayed}">
-                        <MenuItem.Icon>
-                          <CheckBox Margin="0" IsChecked="{Binding ShowLastPlayedColumn, Mode=TwoWay}" />
-                        </MenuItem.Icon>
-                      </MenuItem>
-                      <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnFileExtension}">
-                        <MenuItem.Icon>
-                          <CheckBox Margin="0" IsChecked="{Binding ShowFileExtColumn, Mode=TwoWay}" />
-                        </MenuItem.Icon>
-                      </MenuItem>
-                      <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumnFileSize}">
-                        <MenuItem.Icon>
-                          <CheckBox Margin="0" IsChecked="{Binding ShowFileSizeColumn, Mode=TwoWay}" />
-                        </MenuItem.Icon>
-                      </MenuItem>
-                      <MenuItem Header="{locale:Locale MenuBarOptionsEnableGuiColumns}">
-                        <MenuItem.Icon>
-                          <CheckBox Margin="0" IsChecked="{Binding ShowFilePathColumn, Mode=TwoWay}" />
-                        </MenuItem.Icon>
-                      </MenuItem>
-                    </MenuItem>
-                  </Menu>
+                  <ui:DropDownButton IsVisible="{Binding IsList}" Content="{locale:Locale MenuBarOptionsEnableGuiColumns}">
+                      <ui:DropDownButton.Flyout>
+                          <Flyout>
+                              <StackPanel Orientation="Vertical" HorizontalAlignment="Right">
+                                  <CheckBox Margin="0" IsChecked="{Binding ShowIconColumn, Mode=TwoWay}">
+                                      <TextBlock Margin="0,3,0,0" Text="{locale:Locale MenuBarOptionsEnableGuiColumnIcon}"/>
+                                  </CheckBox>
+                                  <CheckBox Margin="0" IsChecked="{Binding ShowTitleColumn, Mode=TwoWay}">
+                                      <TextBlock Margin="0,3,0,0"  Text="{locale:Locale MenuBarOptionsEnableGuiColumnTitle}"/>
+                                  </CheckBox>
+                                  <CheckBox Margin="0" IsChecked="{Binding ShowDeveloperColumn, Mode=TwoWay}">
+                                      <TextBlock Margin="0,3,0,0"  Text="{locale:Locale MenuBarOptionsEnableGuiColumnDeveloper}"/>
+                                  </CheckBox>
+                                  <CheckBox Margin="0" IsChecked="{Binding ShowVersionColumn, Mode=TwoWay}">
+                                      <TextBlock Margin="0,3,0,0"  Text="{locale:Locale MenuBarOptionsEnableGuiColumnVersion}"/>
+                                  </CheckBox>
+                                  <CheckBox Margin="0" IsChecked="{Binding  ShowTimePlayedColumn, Mode=TwoWay}">
+                                      <TextBlock Margin="0,3,0,0"  Text="{locale:Locale MenuBarOptionsEnableGuiColumnTimePlayed}"/>
+                                  </CheckBox>
+                                  <CheckBox Margin="0" IsChecked="{Binding ShowLastPlayedColumn, Mode=TwoWay}">
+                                      <TextBlock Margin="0,3,0,0"  Text="{locale:Locale MenuBarOptionsEnableGuiColumnLastPlayed}"/>
+                                  </CheckBox>
+                                  <CheckBox Margin="0" IsChecked="{Binding  ShowFileExtColumn, Mode=TwoWay}">
+                                      <TextBlock Margin="0,3,0,0"  Text="{locale:Locale MenuBarOptionsEnableGuiColumnFileExtension}"/>
+                                  </CheckBox>
+                                  <CheckBox Margin="0" IsChecked="{Binding  ShowFileSizeColumn, Mode=TwoWay}">
+                                      <TextBlock Margin="0,3,0,0"  Text="{locale:Locale MenuBarOptionsEnableGuiColumnFileSize}"/>
+                                  </CheckBox>
+                                  <CheckBox Margin="0" IsChecked="{Binding ShowFilePathColumn, Mode=TwoWay}">
+                                      <TextBlock Margin="0,3,0,0"  Text="{locale:Locale MenuBarOptionsEnableGuiColumnPath}"/>
+                                  </CheckBox>
+                              </StackPanel>
+                          </Flyout>
+                      </ui:DropDownButton.Flyout>
+                  </ui:DropDownButton>
                   <TextBox
                       Name="SearchBox"
                       DockPanel.Dock="Right"
