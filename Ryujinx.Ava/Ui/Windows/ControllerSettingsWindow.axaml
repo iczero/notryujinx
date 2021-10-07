@@ -11,7 +11,7 @@
     HorizontalAlignment="Stretch"
     VerticalAlignment="Stretch"
     d:DesignHeight="600"
-    d:DesignWidth="1920"
+    d:DesignWidth="1660"
     mc:Ignorable="d">
     <Design.DataContext>
         <viewModels:ControllerSettingsViewModel />
@@ -146,7 +146,7 @@
                         <ui:ComboBox
                             IsEditable="True"
                             Name="ProfileBox"
-                            Width="250"
+                            Width="200"
                             SelectedIndex="0"
                             Items="{Binding ProfilesList}"
                             Text="{Binding ProfileName}">
@@ -208,7 +208,7 @@
                 <!--  Left Joystick  -->
                 <Border
                     Grid.Row="0"
-                    Padding="20,5,20,0"
+                    Padding="15,5,15,0"
                     Margin="2,0,2,2"
                     BorderBrush="{DynamicResource ThemeControlBorderColor}"
                     BorderThickness="1"
@@ -419,7 +419,7 @@
                                 VerticalAlignment="Center"
                                 Orientation="Horizontal">
                                 <CheckBox IsChecked="{Binding Configuration.LeftInvertStickX}">
-                                    <TextBlock Margin="0,0,20,0"
+                                    <TextBlock Margin="0,0,15,0"
                                                Text="{locale:Locale ControllerSettingsLStickInvertXAxis}" />
                                 </CheckBox>
                                 <CheckBox IsChecked="{Binding Configuration.LeftInvertStickY}">
@@ -590,7 +590,7 @@
                             HorizontalAlignment="Center"
                             Text="{locale:Locale ControllerSettingsRumble}" />
                         <CheckBox HorizontalAlignment="Center" IsChecked="{Binding Configuration.EnableRumble}">
-                            <TextBlock Margin="0,0,20,0"
+                            <TextBlock Margin="0,0,15,0"
                                        Text="{locale:Locale ControllerSettingsRumbleEnable}" />
                         </CheckBox>
                         <TextBlock  Margin="0"
@@ -1095,7 +1095,7 @@
                 <Border
                     Grid.Row="1"
                     Margin="2,0,2,2"
-                    Padding="20,5,20,0"
+                    Padding="15,5,15,0"
                     BorderBrush="{DynamicResource ThemeControlBorderColor}"
                     BorderThickness="1"
                     IsVisible="{Binding IsRight}">
@@ -1305,7 +1305,7 @@
                                 VerticalAlignment="Center"
                                 Orientation="Horizontal">
                                 <CheckBox IsChecked="{Binding Configuration.RightInvertStickX}">
-                                    <TextBlock Margin="0,0,20,0"
+                                    <TextBlock Margin="0,0,15,0"
                                                Text="{locale:Locale ControllerSettingsRStickInvertXAxis}" />
                                 </CheckBox>
                                 <CheckBox IsChecked="{Binding Configuration.RightInvertStickY}">
@@ -1369,7 +1369,7 @@
                                     VerticalAlignment="Center"
                                     IsChecked="{Binding Configuration.EnableMotion, Mode=TwoWay}">
                                     <TextBlock
-                                        Margin="0,0,20,0"
+                                        Margin="0,0,15,0"
                                         Text="{locale:Locale ControllerSettingsMotionEnableMotionControls}" />
                                 </CheckBox>
                             </StackPanel>
