@@ -31,7 +31,7 @@
   "MenuSearch": "Search...",
   "GameListHeaderFavorite": "Fav",
   "GameListHeaderIcon": "Icon",
-  "GameListHeaderApplication": "Application",
+  "GameListHeaderApplication": "Name",
   "GameListHeaderDeveloper": "Developer",
   "GameListHeaderVersion": "Version",
   "GameListHeaderTimePlayed": "Play Time",

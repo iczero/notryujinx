@@ -132,25 +132,28 @@ namespace Ryujinx.Ava.Ui.Windows
 
         private void Update_StatusBar(object sender, StatusUpdatedEventArgs args)
         {
-            Dispatcher.UIThread.InvokeAsync(() =>
+            if (ViewModel.ShowMenuAndStatusBar && !ViewModel.ShowLoadProgress)
             {
-                if (args.VSyncEnabled)
+                Dispatcher.UIThread.InvokeAsync(() =>
                 {
-                    ViewModel.VsyncColor = new SolidColorBrush(Color.Parse("#ff2eeac9"));
-                }
-                else
-                {
-                    ViewModel.VsyncColor = new SolidColorBrush(Color.Parse("#ffff4554"));
-                }
-            });
+                    if (args.VSyncEnabled)
+                    {
+                        ViewModel.VsyncColor = new SolidColorBrush(Color.Parse("#ff2eeac9"));
+                    }
+                    else
+                    {
+                        ViewModel.VsyncColor = new SolidColorBrush(Color.Parse("#ffff4554"));
+                    }
 
-            ViewModel.DockedStatusText = args.DockedMode;
-            ViewModel.AspectRatioStatusText = args.AspectRatio;
-            ViewModel.GameStatusText = args.GameStatus;
-            ViewModel.FifoStatusText = args.FifoStatus;
-            ViewModel.GpuStatusText = args.GpuName;
+                    ViewModel.DockedStatusText = args.DockedMode;
+                    ViewModel.AspectRatioStatusText = args.AspectRatio;
+                    ViewModel.GameStatusText = args.GameStatus;
+                    ViewModel.FifoStatusText = args.FifoStatus;
+                    ViewModel.GpuStatusText = args.GpuName;
 
-            ViewModel.ShowStatusSeparator = true;
+                    ViewModel.ShowStatusSeparator = true;
+                });
+            }
         }
 
         public void UpdateGridColumns()

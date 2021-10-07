@@ -514,7 +514,7 @@
                 Name="StatusBar"
                 Grid.Row="2"
                 Height="30"
-                Margin="0"
+                Margin="0,0"
                 HorizontalAlignment="Stretch"
                 Background="{DynamicResource ThemeContentBackgroundColor}"
                 VerticalAlignment="Bottom"
@@ -526,8 +526,8 @@
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                    <Grid Margin="0" IsVisible="{Binding EnableNonGameRunningControls}">
+                <StackPanel Grid.Column="0" IsVisible="{Binding EnableNonGameRunningControls}" VerticalAlignment="Center" Margin="10,0">
+                    <Grid Margin="0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="Auto" />
@@ -537,7 +537,7 @@
                             Width="25"
                             Height="25"
                             MinWidth="0"
-                            Margin="5,0,5,0"
+                            Margin="0,0,5,0"
                             VerticalAlignment="Center"
                             Background="Transparent"
                             Command="{Binding LoadApplications}">
@@ -563,7 +563,7 @@
                 </StackPanel>
                 <StackPanel
                     Grid.Column="1"
-                    Margin="5,0,0,0"
+                    Margin="10,0"
                     HorizontalAlignment="Left"
                     VerticalAlignment="Center"
                     IsVisible="{Binding IsGameRunning}"
@@ -574,7 +574,7 @@
                         VerticalAlignment="Center"
                         Foreground="{Binding VsyncColor}"
                         PointerReleased="VsyncStatus_PointerReleased"
-                        Margin="5,0,5,0"
+                        Margin="0,0,5,0"
                         Text="VSync"
                         TextAlignment="Left" />
                     <TextBlock
@@ -613,12 +613,12 @@
                         TextAlignment="Left" />
                 </StackPanel>
                 <StackPanel VerticalAlignment="Center" IsVisible="{Binding ShowFirmwareStatus}" Grid.Column="3"
-                            Orientation="Horizontal" Margin="0">
+                            Orientation="Horizontal" Margin="10, 0">
                     <TextBlock
                         Name="FirmwareStatus"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
-                        Margin="5,0"
+                        Margin="0"
                         Text="{locale:Locale StatusBarSystemVersion}" />
                 </StackPanel>
             </Grid>
