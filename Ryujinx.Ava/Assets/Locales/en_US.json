@@ -422,9 +422,11 @@
   "MenuBarOptionsEnableGuiColumnLastPlayed": "Enable Last Played Column",
   "MenuBarOptionsEnableGuiColumnFileExtension": "Enable File Extension Column",
   "MenuBarOptionsEnableGuiColumnFileSize": "Enable File Size Column",
+  "MenuBarOptionsEnableGuiColumnPath": "Enable Path Column",
   "CommonSort": "Sort",
   "CommonShowNames": "Show Names",
   "CommonFavorite": "Favorite",
   "OrderAscending" :  "Ascending",
-  "OrderDescending" :  "Descending"
+  "OrderDescending" :  "Descending",
+  "SettingsTabGraphicsFeatures" : "Features"
 }
