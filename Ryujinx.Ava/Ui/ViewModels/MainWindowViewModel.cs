@@ -475,7 +475,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 case ApplicationSort.Title:
                     return IsAscending ? SortExpressionComparer<ApplicationData>.Ascending(app => app.ApplicationName) : SortExpressionComparer<ApplicationData>.Descending(app => app.ApplicationName);
                 case ApplicationSort.Favorite:
-                    return IsAscending ? SortExpressionComparer<ApplicationData>.Ascending(app => app.Favorite) : SortExpressionComparer<ApplicationData>.Descending(app => app.Favorite);
+                    return !IsAscending ? SortExpressionComparer<ApplicationData>.Ascending(app => app.Favorite) : SortExpressionComparer<ApplicationData>.Descending(app => app.Favorite);
                 case ApplicationSort.Developer:
                     return IsAscending ? SortExpressionComparer<ApplicationData>.Ascending(app => app.Developer) : SortExpressionComparer<ApplicationData>.Descending(app => app.Developer);
                 case ApplicationSort.FileType:
@@ -900,7 +900,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 if (IsGameRunning)
                 {
-                    ShowMenuAndStatusBar = true;
+                    ShowMenuAndStatusBar = false;
                 }
             }
         }
