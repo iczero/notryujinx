@@ -78,7 +78,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
         public MainWindowViewModel()
         {
             Applications = new ObservableCollection<ApplicationData>();
-            Applications.ToObservableChangeSet().Bind(out _appsObservableList).AsObservableList();
+            
+            Applications.ToObservableChangeSet()
+                .Filter(Filter)
+                .Sort(GetComparer())
+                .Bind(out _appsObservableList).AsObservableList();
             AppsCollection = new DataGridCollectionView(Applications)
             {
                 Filter = Filter
@@ -99,8 +103,6 @@ namespace Ryujinx.Ava.Ui.ViewModels
             set
             {
                 _searchText = value;
-
-                Applications.ToObservableChangeSet().Filter(Filter).Bind(out _appsObservableList).AsObservableList();
 
                 RefreshView();
             }
@@ -491,6 +493,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
         {
             AppsCollection.Refresh();
             
+            RefreshGrid();
+        }
+
+        private void RefreshGrid()
+        {
             Applications.ToObservableChangeSet()
                 .Filter(Filter)
                 .Sort(GetComparer())
@@ -732,6 +739,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private void ApplicationLibrary_ApplicationAdded(object sender, ApplicationAddedEventArgs e)
         {
             AddApplication(e.AppData);
+            
+            //RefreshGrid();
         }
 
         private void ApplicationLibrary_ApplicationCountUpdated(object sender, ApplicationCountUpdatedEventArgs e)
@@ -783,8 +792,6 @@ namespace Ryujinx.Ava.Ui.ViewModels
             Thread thread = new(() =>
             {
                 ApplicationLibrary.LoadApplications(ConfigurationState.Instance.Ui.GameDirs, _owner.VirtualFileSystem, ConfigurationState.Instance.System.Language);
-
-                Applications.ToObservableChangeSet().Bind(out _appsObservableList).AsObservableList();
 
                 _isLoading = false;
             })
