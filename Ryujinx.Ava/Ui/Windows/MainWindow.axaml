@@ -342,7 +342,7 @@
                       </Flyout>
                     </ui:DropDownButton.Flyout>
                   </ui:DropDownButton>
-                  <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" Text="{locale:Locale CommonSort}" VerticalAlignment="Center" Margin="10,0"/>
+                  <TextBlock DockPanel.Dock="Right" HorizontalAlignment="Right" IsVisible="{Binding IsGrid}"  Text="{locale:Locale CommonSort}" VerticalAlignment="Center" Margin="10,0"/>
                 </DockPanel>
                 <DataGrid
                   Grid.Row="1"
