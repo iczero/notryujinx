@@ -4,12 +4,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         x:Class="Ryujinx.Ava.Ui.Applet.ErrorAppletWindow"
-        WindowStartupLocation="CenterOwner"
+        xmlns:locale="clr-namespace:Ryujinx.Ava.Common.Locale"
         CanResize="False"
         SizeToContent="Height"
         Width="450"
         Height="340"
-        Title="Error Window">
+        Title="{locale:Locale ErrorWindowTitle}">
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />

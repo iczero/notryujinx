@@ -2,6 +2,7 @@ using ARMeilleure.Translation.PTC;
 using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Threading;
 using DynamicData;
@@ -95,6 +96,13 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             Ptc.PtcStateChanged -= ProgressHandler;
             Ptc.PtcStateChanged += ProgressHandler;
+
+            if (Program.PreviewerDetached)
+            {
+                ShowUiKey     = KeyGesture.Parse(ConfigurationState.Instance.Hid.Hotkeys.Value.ShowUi.ToString());
+                ScreenshotKey = KeyGesture.Parse(ConfigurationState.Instance.Hid.Hotkeys.Value.Screenshot.ToString());
+                PauseKey      = KeyGesture.Parse(ConfigurationState.Instance.Hid.Hotkeys.Value.Pause.ToString());
+            }
         }
 
         public string SearchText
@@ -226,6 +234,10 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        private string _showUikey     = "F4";
+        private string _pauseKey      = "F5";
+        private string _screenshotkey = "F8";
 
         public ApplicationData SelectedApplication
         {
@@ -695,6 +707,33 @@ namespace Ryujinx.Ava.Ui.ViewModels
         }
 
         public bool IsAscending { get; private set; } = true;
+
+        public KeyGesture ShowUiKey
+        {
+            get => KeyGesture.Parse(_showUikey); set
+            {
+                _showUikey = value.ToString();
+                OnPropertyChanged();
+            }
+        }
+
+        public KeyGesture ScreenshotKey
+        {
+            get => KeyGesture.Parse(_screenshotkey); set
+            {
+                _screenshotkey = value.ToString();
+                OnPropertyChanged();
+            }
+        }
+
+        public KeyGesture PauseKey
+        {
+            get => KeyGesture.Parse(_pauseKey); set
+            {
+                _pauseKey = value.ToString();
+                OnPropertyChanged();
+            }
+        }
 
         public async void OpenAmiiboWindow()
         {

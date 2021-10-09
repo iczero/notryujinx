@@ -494,7 +494,7 @@
                                     Spacing="20">
                                     <TextBlock VerticalAlignment="Center"
                                                Text="{locale:Locale SettingsTabGraphicsBackendMultithreading}" />
-                                    <ComboBox Grid.Column="1" Grid.Row="2" Margin="10,10" MinWidth="100"
+                                    <ComboBox Grid.Column="1" Grid.Row="2" MinWidth="100"
                                           SelectedIndex="{Binding GraphicsBackendMultithreadingIndex}">
                                       <ComboBoxItem>
                                         <TextBlock Text="{locale:Locale CommonAuto}" />
