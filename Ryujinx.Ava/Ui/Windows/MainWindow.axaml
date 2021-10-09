@@ -160,7 +160,7 @@
                             VerticalAlignment="Center"
                             Header="{locale:Locale MenuBarOptions}">
                             <MenuItem Command="{Binding ToggleFullscreen}"
-                                      Header="{locale:Locale MenuBarOptionsToggleFullscreen}" />
+                                      Header="{locale:Locale MenuBarOptionsToggleFullscreen}" InputGesture="F11" />
                             <MenuItem Header="{locale:Locale MenuBarOptionsStartGamesInFullscreen}">
                                 <MenuItem.Icon>
                                     <CheckBox Margin="0" IsChecked="{Binding StartGamesInFullscreen, Mode=TwoWay}" />
@@ -187,16 +187,18 @@
                               Click="PauseEmulation_Click"
                               Header="{locale:Locale MenuBarOptionsPauseEmulation}"
                               IsEnabled="{Binding !IsPaused}"
-                              IsVisible="{Binding !IsPaused}" />
+                              IsVisible="{Binding !IsPaused}"  
+                              InputGesture="{Binding PauseKey}"/>
                           <MenuItem
                               Click="ResumeEmulation_Click"
                               Header="{locale:Locale MenuBarOptionsResumeEmulation}"
                               IsEnabled="{Binding IsPaused}"
-                              IsVisible="{Binding IsPaused}" />
+                              IsVisible="{Binding IsPaused}"  
+                              InputGesture="{Binding PauseKey}"/>
                             <MenuItem
                                 Click="StopEmulation_Click"
                                 Header="{locale:Locale MenuBarOptionsStopEmulation}"
-                                IsEnabled="{Binding IsGameRunning}" />
+                                IsEnabled="{Binding IsGameRunning}" InputGesture="Escape"/>
                             <MenuItem Command="{Binding SimulateWakeUpMessage}"
                                       Header="{locale:Locale MenuBarOptionsSimulateWakeUpMessage}" />
                             <Separator />
@@ -208,10 +210,12 @@
                                 IsEnabled="{Binding IsAmiiboRequested}" />
                             <MenuItem Command="{Binding TakeScreenshot}"
                                       IsEnabled="{Binding IsGameRunning}"
-                                      Header="{locale:Locale MenuBarFileToolsTakeScreenshot}" />
+                                      Header="{locale:Locale MenuBarFileToolsTakeScreenshot}"
+                                      InputGesture="{Binding ScreenshotKey}" />
                             <MenuItem Command="{Binding HideUi}"
                                       IsEnabled="{Binding IsGameRunning}"
-                                      Header="{locale:Locale MenuBarFileToolsHideUi}" />
+                                      Header="{locale:Locale MenuBarFileToolsHideUi}" 
+                                      InputGesture="{Binding ShowUiKey}"/>
                         </MenuItem>
                         <MenuItem
                             VerticalAlignment="Center"

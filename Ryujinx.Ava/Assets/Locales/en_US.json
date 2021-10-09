@@ -426,7 +426,8 @@
   "CommonSort": "Sort",
   "CommonShowNames": "Show Names",
   "CommonFavorite": "Favorite",
-  "OrderAscending" :  "Ascending",
-  "OrderDescending" :  "Descending",
-  "SettingsTabGraphicsFeatures" : "Features"
+  "OrderAscending": "Ascending",
+  "OrderDescending": "Descending",
+  "SettingsTabGraphicsFeatures": "Features",
+  "ErrorWindowTitle": "Error Window"
 }
