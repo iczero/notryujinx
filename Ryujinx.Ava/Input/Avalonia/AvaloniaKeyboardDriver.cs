@@ -14,6 +14,9 @@ namespace Ryujinx.Input.Avalonia
         private readonly Control _control;
         private readonly HashSet<AvaKey> _pressedKeys;
 
+        public event EventHandler<KeyEventArgs> KeyPressed;
+        public event EventHandler<KeyEventArgs> KeyRelease;
+
         public string DriverName => "Avalonia";
 
         public ReadOnlySpan<string> GamepadsIds => _keyboardIdentifers;
@@ -80,6 +83,8 @@ namespace Ryujinx.Input.Avalonia
             AvaKey key = args.Key;
 
             _pressedKeys.Add(args.Key);
+
+            KeyPressed?.Invoke(this, args);
         }
 
         protected void OnKeyRelease(object sender, KeyEventArgs args)
@@ -90,6 +95,8 @@ namespace Ryujinx.Input.Avalonia
             {
                 window.ViewModel.ToggleFullscreen();
             }
+
+            KeyRelease?.Invoke(this, args);
         }
 
         internal bool IsPressed(Key key)
@@ -99,7 +106,7 @@ namespace Ryujinx.Input.Avalonia
                 return false;
             }
 
-            AvaKey nativeKey = AvaloniaMappingHelper.ToKey(key);
+            AvaKey nativeKey = AvaloniaMappingHelper.ToAvaKey(key);
 
             return _pressedKeys.Contains(nativeKey);
         }

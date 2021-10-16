@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using AvaKey = Avalonia.Input.Key;
 
 namespace Ryujinx.Input.Avalonia
@@ -31,10 +33,39 @@ namespace Ryujinx.Input.Avalonia
             AvaKey.None
         };
 
+        private static readonly Dictionary<AvaKey, Key> _avaKeyMapping;
+
+        static AvaloniaMappingHelper()
+        {
+            var inputKeys = Enum.GetValues(typeof(Key));
+
+            // GtkKey is not contiguous and quite large, so use a dictionary instead of an array.
+            _avaKeyMapping = new Dictionary<AvaKey, Key>();
+
+            foreach (var key in inputKeys)
+            {
+                try
+                {
+                    var index = ToAvaKey((Key)key);
+                    _avaKeyMapping[index] = (Key)key;
+                }
+                catch
+                {
+                    // Skip invalid mappings.
+                }
+            }
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static AvaKey ToKey(Key key)
+        public static AvaKey ToAvaKey(Key key)
         {
             return _keyMapping[(int)key];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Key ToInputKey(AvaKey key)
+        {
+            return _avaKeyMapping.GetValueOrDefault(key, Key.Unknown);
         }
     }
 }

@@ -7,6 +7,7 @@ using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.HLE;
 using Ryujinx.HLE.HOS.Applets;
 using Ryujinx.HLE.HOS.Services.Am.AppletOE.ApplicationProxyService.ApplicationProxy.Types;
+using Ryujinx.HLE.Ui;
 using System;
 using System.Threading;
 
@@ -16,9 +17,13 @@ namespace Ryujinx.Ava.Ui.Applet
     {
         private readonly MainWindow _parent;
 
+        public IHostUiTheme HostUiTheme { get; }
+
         public AvaHostUiHandler(MainWindow parent)
         {
             _parent = parent;
+
+            HostUiTheme = new AvaloniaHostUiTheme(parent);
         }
 
         public bool DisplayMessageDialog(ControllerAppletUiArgs args)
@@ -174,6 +179,11 @@ namespace Ryujinx.Ava.Ui.Applet
             dialogCloseEvent.WaitOne();
 
             return showDetails;
+        }
+
+        public IDynamicTextInputHandler CreateDynamicTextInputHandler()
+        {
+            return new AvaloniaDynamicTextInputHandler(_parent);
         }
     }
 }
