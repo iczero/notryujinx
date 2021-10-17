@@ -87,7 +87,7 @@ namespace Ryujinx.HLE.HOS.Applets.SoftwareKeyboard
         {
             _surfaceInfo = new RenderingSurfaceInfo(0, 0, 0, 0, 0);
 
-            string ryujinxLogoPath = "Ryujinx.Ui.Resources.Logo_Ryujinx.png";
+            string ryujinxLogoPath = "Ryujinx.Ava.Assets.Images.Logo_Ryujinx.png";
             int    ryujinxLogoSize = 32;
 
             _ryujinxLogo = LoadResource(Assembly.GetEntryAssembly(), ryujinxLogoPath, ryujinxLogoSize, ryujinxLogoSize);

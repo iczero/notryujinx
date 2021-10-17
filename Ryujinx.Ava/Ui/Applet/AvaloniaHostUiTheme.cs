@@ -1,4 +1,5 @@
-﻿using Avalonia.Media;
+﻿using Avalonia.Controls;
+using Avalonia.Media;
 using Avalonia.Threading;
 using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.HLE.Ui;
@@ -12,78 +13,23 @@ namespace Ryujinx.Ava.Ui.Applet
 {
     class AvaloniaHostUiTheme : IHostUiTheme
     {
-        private readonly StyleableWindow _parent;
-
-        public AvaloniaHostUiTheme(StyleableWindow parent)
+        public AvaloniaHostUiTheme(MainWindow parent)
         {
-            _parent = parent;
+            FontFamily               = parent.FontFamily.Name;
+            DefaultBackgroundColor   = BrushToThemeColor(parent.Background);
+            DefaultForegroundColor   = BrushToThemeColor(parent.Foreground);
+            DefaultBorderColor       = BrushToThemeColor(parent.BorderBrush);
+            SelectionBackgroundColor = BrushToThemeColor(parent.SearchBox.SelectionBrush);
+            SelectionForegroundColor = BrushToThemeColor(parent.SearchBox.SelectionForegroundBrush);
         }
 
-        public string FontFamily
-        {
-            get
-            {
-                string fontFamily = string.Empty;
+        public string FontFamily { get; }
 
-                Dispatcher.UIThread.InvokeAsync(() => { fontFamily = _parent.FontFamily.Name; }).Wait();
-
-                return fontFamily;
-            }
-        }
-
-        public ThemeColor DefaultBackgroundColor
-        {
-            get
-            {
-                ThemeColor color = new ThemeColor();
-
-                Dispatcher.UIThread.InvokeAsync(() => { color = BrushToThemeColor(_parent.Background); }).Wait();
-
-                return color;
-            }
-        }
-
-        public ThemeColor DefaultForegroundColor
-        {
-            get
-            {
-                ThemeColor color = new ThemeColor();
-
-                Dispatcher.UIThread.InvokeAsync(() => { color = BrushToThemeColor(_parent.Foreground); }).Wait();
-
-                return color;
-            }
-        }
-
-        public ThemeColor DefaultBorderColor
-        {
-            get
-            {
-                _parent.Styles.Resources.TryGetValue("ThemeControlBorderColor", out var color);
-
-                return ColorToThemeColor((Color)color);
-            }
-        }
-
-        public ThemeColor SelectionBackgroundColor
-        {
-            get
-            {
-                _parent.Styles.Resources.TryGetValue("SystemAccentColor", out var color);
-
-                return ColorToThemeColor((Color)color);
-            }
-        }
-
-        public ThemeColor SelectionForegroundColor
-        {
-            get
-            {
-                _parent.Styles.Resources.TryGetValue("TextOnAccentFillColorSelectedText", out var color);
-
-                return ColorToThemeColor((Color)color);
-            }
-        }
+        public ThemeColor DefaultBackgroundColor   { get; }
+        public ThemeColor DefaultForegroundColor   { get; }
+        public ThemeColor DefaultBorderColor       { get; }
+        public ThemeColor SelectionBackgroundColor { get; }
+        public ThemeColor SelectionForegroundColor { get; }
 
         private ThemeColor BrushToThemeColor(IBrush brush)
         {
