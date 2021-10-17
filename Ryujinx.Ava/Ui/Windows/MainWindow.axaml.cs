@@ -91,12 +91,13 @@ namespace Ryujinx.Ava.Ui.Windows
         public MainWindow()
         {
             ViewModel = new MainWindowViewModel(this);
-            UiHandler = new AvaHostUiHandler(this);
 
             DataContext = ViewModel;
 
             InitializeComponent();
             AttachDebugDevTools();
+
+            UiHandler = new AvaHostUiHandler(this);
 
             Title = $"Ryujinx {Program.Version}";
 

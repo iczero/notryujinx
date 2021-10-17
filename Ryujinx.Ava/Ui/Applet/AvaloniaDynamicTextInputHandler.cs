@@ -83,7 +83,10 @@ namespace Ryujinx.Ava.Ui.Applet
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).KeyPressed -= AvaloniaDynamicTextInputHandler_KeyPressed;
+            (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).KeyRelease -= AvaloniaDynamicTextInputHandler_KeyRelease;
+
+            _parent = null;
         }
 
         public void SetText(string text, int cursorBegin)
