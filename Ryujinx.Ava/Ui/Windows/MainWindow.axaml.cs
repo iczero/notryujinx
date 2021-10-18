@@ -74,6 +74,7 @@ namespace Ryujinx.Ava.Ui.Windows
         public MenuItem             UpdateMenuItem  { get; private set; }
         public GameGridView         GameGrid        { get; private set; }
         public DataGrid             GameList        { get; private set; }
+        public OffscreenTextBox     HiddenTextBox   { get; private set; }
 
         public MainWindowViewModel ViewModel { get; private set; }
 
@@ -434,6 +435,7 @@ namespace Ryujinx.Ava.Ui.Windows
             Menu            = this.FindControl<Menu>("Menu");
             UpdateMenuItem  = this.FindControl<MenuItem>("UpdateMenuItem");
             GameGrid        = this.FindControl<GameGridView>("GameGrid");
+            HiddenTextBox   = this.FindControl<OffscreenTextBox>("HiddenTextBox");
 
             GameGrid.ApplicationOpened += Application_Opened;
 

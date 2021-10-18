@@ -99,6 +99,7 @@
     </ContextMenu>
     </Window.Resources>
     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <controls:OffscreenTextBox Name="HiddenTextBox"/>
         <ContentControl
             Focusable="False"
             IsVisible="False"

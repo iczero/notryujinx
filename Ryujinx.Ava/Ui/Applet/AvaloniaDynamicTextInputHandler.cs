@@ -1,5 +1,6 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Threading;
+using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.HLE.Ui;
 using Ryujinx.Input.Avalonia;
@@ -17,6 +18,8 @@ namespace Ryujinx.Ava.Ui.Applet
         private MainWindow _parent;
         private OffscreenTextBox _hiddenTextBox;
         private bool _canProcessInput;
+        private long _lastInputTimestamp;
+        private long _inputDelay;
 
         public AvaloniaDynamicTextInputHandler(MainWindow parent)
         {
@@ -25,10 +28,8 @@ namespace Ryujinx.Ava.Ui.Applet
             (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).KeyPressed += AvaloniaDynamicTextInputHandler_KeyPressed;
             (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).KeyRelease += AvaloniaDynamicTextInputHandler_KeyRelease;
 
-            Dispatcher.UIThread.Post(() =>
-            {
-                _hiddenTextBox = new OffscreenTextBox();
-            });
+            _hiddenTextBox = _parent.HiddenTextBox;
+            _inputDelay = TimeSpan.TicksPerMillisecond * 100;
         }
 
         private void AvaloniaDynamicTextInputHandler_KeyRelease(object sender, Avalonia.Input.KeyEventArgs e)
@@ -42,7 +43,16 @@ namespace Ryujinx.Ava.Ui.Applet
 
             e.RoutedEvent = _hiddenTextBox.GetKeyUpRoutedEvent();
 
-            RaiseKeyEvent(e);
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (_canProcessInput)
+                {
+                    _hiddenTextBox.SendKeyUpEvent(e);
+                }
+            }).Wait();
+            
+            TextChangedEvent?.Invoke(_hiddenTextBox.Text ?? string.Empty, _hiddenTextBox.SelectionStart,
+                _hiddenTextBox.SelectionEnd, true);
         }
 
         private void AvaloniaDynamicTextInputHandler_KeyPressed(object sender, Avalonia.Input.KeyEventArgs e)
@@ -56,16 +66,18 @@ namespace Ryujinx.Ava.Ui.Applet
 
             e.RoutedEvent = _hiddenTextBox.GetKeyUpRoutedEvent();
 
-            RaiseKeyEvent(e);
-        }
-
-        private void RaiseKeyEvent(Avalonia.Input.KeyEventArgs e)
-        {
-            if (_canProcessInput)
+            Dispatcher.UIThread.InvokeAsync(() =>
             {
-                _hiddenTextBox.RaiseEvent(e);
-                TextChangedEvent?.Invoke(_hiddenTextBox.Text, _hiddenTextBox.SelectionStart, _hiddenTextBox.SelectionEnd, true);
-            }
+                if (_canProcessInput && (_lastInputTimestamp == 0 || DateTime.Now.Ticks > _lastInputTimestamp + _inputDelay))
+                {
+                    _hiddenTextBox.Focus();
+                    _hiddenTextBox.SendKeyDownEvent(e);
+                    _lastInputTimestamp = DateTime.Now.Ticks;
+                }
+            }).Wait();
+            
+            TextChangedEvent?.Invoke(_hiddenTextBox.Text ?? string.Empty, _hiddenTextBox.SelectionStart,
+                _hiddenTextBox.SelectionEnd, true);
         }
 
         public bool TextProcessingEnabled
@@ -89,6 +101,8 @@ namespace Ryujinx.Ava.Ui.Applet
         {
             (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).KeyPressed -= AvaloniaDynamicTextInputHandler_KeyPressed;
             (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).KeyRelease -= AvaloniaDynamicTextInputHandler_KeyRelease;
+            _hiddenTextBox.Clear();
+            _parent.GlRenderer.Focus();
 
             _parent = null;
         }
