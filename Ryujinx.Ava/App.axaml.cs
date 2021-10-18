@@ -117,18 +117,18 @@ namespace Ryujinx.Ava
             
             var currentStyles = this.Styles;
 
-            if (currentStyles.Count > 1)
+            if (currentStyles.Count > 2)
             {
-                currentStyles.RemoveRange(1, currentStyles.Count - 1);
+                currentStyles.RemoveRange(2, currentStyles.Count - 1);
             }
 
             IStyle newStyles = null;
 
             newStyles = (Styles)AvaloniaXamlLoader.Load(new Uri($"avares://Ryujinx.Ava/Assets/Styles/Base{baseStyle}.xaml", UriKind.Absolute));
 
-            if (currentStyles.Count == 2)
+            if (currentStyles.Count == 3)
             {
-                currentStyles[1] = newStyles;
+                currentStyles[2] = newStyles;
             }
             else
             {
@@ -144,9 +144,9 @@ namespace Ryujinx.Ava
                         var themeContent = System.IO.File.ReadAllText(themePath);
                         var customStyle = AvaloniaRuntimeXamlLoader.Parse<IStyle>(themeContent);
 
-                        if (currentStyles.Count == 3)
+                        if (currentStyles.Count == 4)
                         {
-                            currentStyles[2] = customStyle;
+                            currentStyles[3] = customStyle;
                         }
                         else
                         {

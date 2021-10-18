@@ -96,7 +96,14 @@ namespace Ryujinx.Input.Avalonia
 
         public bool IsPressed(Key key)
         {
-            return _driver.IsPressed(key);
+            try
+            {
+                return _driver.IsPressed(key);
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
 
         public void SetConfiguration(InputConfig configuration)
