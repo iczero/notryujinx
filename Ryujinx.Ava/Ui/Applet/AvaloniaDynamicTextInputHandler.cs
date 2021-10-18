@@ -15,7 +15,7 @@ namespace Ryujinx.Ava.Ui.Applet
     class AvaloniaDynamicTextInputHandler : IDynamicTextInputHandler
     {
         private MainWindow _parent;
-        private TextBox _hiddenTextBox;
+        private OffscreenTextBox _hiddenTextBox;
         private bool _canProcessInput;
 
         public AvaloniaDynamicTextInputHandler(MainWindow parent)
@@ -27,7 +27,7 @@ namespace Ryujinx.Ava.Ui.Applet
 
             Dispatcher.UIThread.Post(() =>
             {
-                _hiddenTextBox = new TextBox();
+                _hiddenTextBox = new OffscreenTextBox();
             });
         }
 
@@ -40,6 +40,8 @@ namespace Ryujinx.Ava.Ui.Applet
                 return;
             }
 
+            e.RoutedEvent = _hiddenTextBox.GetKeyUpRoutedEvent();
+
             RaiseKeyEvent(e);
         }
 
@@ -51,6 +53,8 @@ namespace Ryujinx.Ava.Ui.Applet
             {
                 return;
             }
+
+            e.RoutedEvent = _hiddenTextBox.GetKeyUpRoutedEvent();
 
             RaiseKeyEvent(e);
         }
