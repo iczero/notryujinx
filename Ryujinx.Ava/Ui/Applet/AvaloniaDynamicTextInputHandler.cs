@@ -49,10 +49,11 @@ namespace Ryujinx.Ava.Ui.Applet
                 {
                     _hiddenTextBox.SendKeyUpEvent(e);
                 }
-            }).Wait();
-            
-            TextChangedEvent?.Invoke(_hiddenTextBox.Text ?? string.Empty, _hiddenTextBox.SelectionStart,
-                _hiddenTextBox.SelectionEnd, true);
+                
+                Task.Run(() => TextChangedEvent?.Invoke(_hiddenTextBox.Text ?? string.Empty,
+                    _hiddenTextBox.SelectionStart,
+                    _hiddenTextBox.SelectionEnd, true));
+            });
         }
 
         private void AvaloniaDynamicTextInputHandler_KeyPressed(object sender, Avalonia.Input.KeyEventArgs e)
@@ -68,16 +69,18 @@ namespace Ryujinx.Ava.Ui.Applet
 
             Dispatcher.UIThread.InvokeAsync(() =>
             {
-                if (_canProcessInput && (_lastInputTimestamp == 0 || DateTime.Now.Ticks > _lastInputTimestamp + _inputDelay))
+                if (_canProcessInput &&
+                    (_lastInputTimestamp == 0 || DateTime.Now.Ticks > _lastInputTimestamp + _inputDelay))
                 {
                     _hiddenTextBox.Focus();
                     _hiddenTextBox.SendKeyDownEvent(e);
                     _lastInputTimestamp = DateTime.Now.Ticks;
                 }
-            }).Wait();
-            
-            TextChangedEvent?.Invoke(_hiddenTextBox.Text ?? string.Empty, _hiddenTextBox.SelectionStart,
-                _hiddenTextBox.SelectionEnd, true);
+
+                Task.Run(() => TextChangedEvent?.Invoke(_hiddenTextBox.Text ?? string.Empty,
+                    _hiddenTextBox.SelectionStart,
+                    _hiddenTextBox.SelectionEnd, true));
+            });
         }
 
         public bool TextProcessingEnabled
@@ -101,10 +104,14 @@ namespace Ryujinx.Ava.Ui.Applet
         {
             (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).KeyPressed -= AvaloniaDynamicTextInputHandler_KeyPressed;
             (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).KeyRelease -= AvaloniaDynamicTextInputHandler_KeyRelease;
-            _hiddenTextBox.Clear();
-            _parent.GlRenderer.Focus();
 
-            _parent = null;
+            Dispatcher.UIThread.Post(() =>
+            {
+                _hiddenTextBox.Clear();
+                _parent.GlRenderer.Focus();
+
+                _parent = null;
+            });
         }
 
         public void SetText(string text, int cursorBegin)
