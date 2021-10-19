@@ -245,6 +245,7 @@
                 Name="Content"
                 Grid.Row="1"
                 Padding="0"
+                IsVisible="{Binding ShowContent}"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 BorderBrush="{DynamicResource ThemeControlBorderColor}"
@@ -347,19 +348,19 @@
                 </DockPanel>
                 <DataGrid
                   Grid.Row="1"
-                Name="GameList"
-                AlternatingRowBackground="{DynamicResource ThemeAlternatingRowColor}"
-                CanUserResizeColumns="True"
-                CanUserSortColumns="True"
-                DoubleTapped="GameList_OnDoubleTapped"
-                IsReadOnly="True"
-                IsVisible="{Binding IsList}"
-                Items="{Binding AppsCollection}"
-                PointerPressed="GameList_OnPointerPressed"
-                RowBackground="{DynamicResource ThemeBackgroundColor}"
-                SelectionMode="Single"
-                Tapped="GameList_OnTapped"
-                ContextMenu="{StaticResource GameContextMenu}">
+                    Name="GameList"
+                    AlternatingRowBackground="{DynamicResource ThemeAlternatingRowColor}"
+                    CanUserResizeColumns="True"
+                    CanUserSortColumns="True"
+                    DoubleTapped="GameList_OnDoubleTapped"
+                    IsReadOnly="True"
+                    IsVisible="{Binding IsList}"
+                    Items="{Binding AppsCollection}"
+                    PointerPressed="GameList_OnPointerPressed"
+                    RowBackground="{DynamicResource ThemeBackgroundColor}"
+                    SelectionMode="Single"
+                    Tapped="GameList_OnTapped"
+                    ContextMenu="{StaticResource GameContextMenu}">
                   <DataGrid.Columns>
                     <DataGridTemplateColumn  SortMemberPath="Favorite">
                       <DataGridTemplateColumn.Header>
@@ -492,9 +493,9 @@
                     <TextBlock
                         Grid.Row="1"
                         Margin="40,10,0,10"
-                        FontSize="38"
+                        FontSize="30"
                         FontWeight="Bold"
-                        Text="{Binding CacheLoadHeading}"
+                        Text="{Binding LoadHeading}"
                         TextAlignment="Left" />
                     <ProgressBar
                         Grid.Row="2"
@@ -506,6 +507,7 @@
                         Foreground="{Binding ProgressBarForegroundColor}"
                         Maximum="{Binding ProgressMaximum}"
                         Minimum="0"
+                        IsIndeterminate="{Binding IsLoadingIndeterminate}"
                         Value="{Binding ProgressValue}" />
                     <TextBlock
                         Grid.Row="3"

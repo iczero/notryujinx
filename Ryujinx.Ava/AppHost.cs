@@ -91,6 +91,7 @@ namespace Ryujinx.Ava
         private bool _toggleDockedMode;
         private bool _toggleFullscreen;
         private bool _isMouseInClient;
+        private bool _renderingStarted;
         private WindowsMultimediaTimerResolution _windowsMultimediaTimerResolution;
 
         public event EventHandler AppExit;
@@ -848,6 +849,12 @@ namespace Ryujinx.Ava
 
                     while (Device.ConsumeFrameAvailable())
                     {
+                        if (!_renderingStarted)
+                        {
+                            _renderingStarted = true;
+                            _parent.SwitchToGameControl();
+                        }
+                        
                         Device.PresentFrame(Present);
                     }
 
@@ -876,10 +883,7 @@ namespace Ryujinx.Ava
                 }
             });
 
-            if (Window is OpenGlEmbeddedWindow window)
-            {
-                window.MakeCurrent(null);
-            }
+            (Window as OpenGlEmbeddedWindow)?.MakeCurrent(null);
 
             Window.SizeChanged -= Window_SizeChanged;
         }
