@@ -41,7 +41,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private ObservableCollection<ApplicationData> _applications;
         private DataGridCollectionView _appsCollection;
         private string _aspectStatusText;
-        private string _cacheLoadHeading;
+        private string _loadHeading;
         private string _cacheLoadStatus;
         private string _searchText;
         private string _dockedStatusText;
@@ -68,6 +68,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private int _statusBarProgressValue;
         private bool _isPaused;
         private bool _showNames;
+        private bool _showContent = true;
+        private bool _isLoadingIndeterminate = true;
         private ReadOnlyObservableCollection<ApplicationData> _appsObservableList;
         private ApplicationSort _sortMode = ApplicationSort.Favorite;
 
@@ -257,12 +259,12 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
         }
 
-        public string CacheLoadHeading
+        public string LoadHeading
         {
-            get => _cacheLoadHeading;
+            get => _loadHeading;
             set
             {
-                _cacheLoadHeading = value;
+                _loadHeading = value;
 
                 OnPropertyChanged();
             }
@@ -434,7 +436,29 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 OnPropertyChanged();
             }
         }
+        
+        public bool IsLoadingIndeterminate
+        {
+            get => _isLoadingIndeterminate;
+            set
+            {
+                _isLoadingIndeterminate = value;
 
+                OnPropertyChanged();
+            }
+        }
+
+        public bool ShowContent
+        {
+            get => _showContent;
+            set
+            {
+                _showContent = value;
+
+                OnPropertyChanged();
+            }
+        }
+        
         public bool IsAppletMenuActive
         {
             get => _isAppletMenuActive && EnableNonGameRunningControls;
@@ -981,7 +1005,6 @@ namespace Ryujinx.Ava.Ui.ViewModels
         {
             try
             {
-                bool showLoadProgress = false;
                 ProgressMaximum = total;
                 ProgressValue = current;
 
@@ -989,37 +1012,39 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 {
                     case PtcLoadingState ptcState:
                         CacheLoadStatus = $"{current} / {total}";
-                        if (ptcState == PtcLoadingState.Start)
+                        switch (ptcState)
                         {
-                            _owner.HideGuestRendering();
-                            CacheLoadHeading = "Compiling PTC";
+                            case PtcLoadingState.Start:
+                            case PtcLoadingState.Loading:
+                                LoadHeading = "Compiling PTC";
+                                IsLoadingIndeterminate = false;
+                                break;
+                            case PtcLoadingState.Loaded:
+                                LoadHeading = $"Loading {SelectedApplication.TitleName}";
+                                IsLoadingIndeterminate = true;
+                                CacheLoadStatus = "";
+                                break;
                         }
-                        else if (ptcState == PtcLoadingState.Loaded)
-                        {
-                            _owner.ShowGuestRendering();
-                        }
-
-                        showLoadProgress = ptcState != PtcLoadingState.Loaded;
                         break;
                     case ShaderCacheLoadingState shaderCacheState:
                         CacheLoadStatus = $"{current} / {total}";
-                        if (shaderCacheState == ShaderCacheLoadingState.Start)
+                        switch (shaderCacheState)
                         {
-                            _owner.HideGuestRendering();
-                            CacheLoadHeading = "Compiling shaders";
+                            case ShaderCacheLoadingState.Start:
+                            case ShaderCacheLoadingState.Loading:
+                                LoadHeading = "Compiling shaders";
+                                IsLoadingIndeterminate = false;
+                                break;
+                            case ShaderCacheLoadingState.Loaded:
+                                LoadHeading = $"Loading {SelectedApplication.TitleName}";
+                                IsLoadingIndeterminate = true;
+                                CacheLoadStatus = "";
+                                break;
                         }
-                        else if (shaderCacheState == ShaderCacheLoadingState.Loaded)
-                        {
-                            _owner.ShowGuestRendering();
-                        }
-
-                        showLoadProgress = shaderCacheState != ShaderCacheLoadingState.Loaded;
                         break;
                     default:
                         throw new ArgumentException($"Unknown Progress Handler type {typeof(T)}");
                 }
-
-                ShowLoadProgress = showLoadProgress && IsGameRunning;
             }
             catch (Exception ex)
             {

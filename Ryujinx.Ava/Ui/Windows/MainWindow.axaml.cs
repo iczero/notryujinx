@@ -251,6 +251,8 @@ namespace Ryujinx.Ava.Ui.Windows
 
             PrepareLoadScreen();
 
+            ViewModel.LoadHeading = $"Loading {ViewModel.SelectedApplication.TitleName}";
+
             _mainViewContent = ContentFrame.Content as Control;
 
             GlRenderer = new OpenGlEmbeddedWindow(3, 3, ConfigurationState.Instance.Logger.GraphicsDebugLevel, PlatformImpl.DesktopScaling);
@@ -261,14 +263,17 @@ namespace Ryujinx.Ava.Ui.Windows
 
             ContentDialogHelper.UseModalOverlay = true;
 
-            ShowGuestRendering(startFullscreen);
+            SwitchToGameControl(startFullscreen);
 
             AppHost.StatusUpdatedEvent += Update_StatusBar;
             AppHost.AppExit            += AppHost_AppExit;
         }
 
-        public void ShowGuestRendering(bool startFullscreen = false)
+        public void SwitchToGameControl(bool startFullscreen = false)
         {
+            ViewModel.ShowContent = true;
+            ViewModel.ShowLoadProgress = false;
+
             Dispatcher.UIThread.InvokeAsync(() =>
             {
                 ContentFrame.Content = GlRenderer;
@@ -280,16 +285,24 @@ namespace Ryujinx.Ava.Ui.Windows
             });
         }
 
-        public void HideGuestRendering()
+        public void ShowLoading(bool startFullscreen = false)
         {
+            ViewModel.ShowContent = false;
+            ViewModel.ShowLoadProgress = true;
+            
             Dispatcher.UIThread.InvokeAsync(() =>
             {
-                ContentFrame.Content = _mainViewContent;
+                if(startFullscreen && WindowState != WindowState.FullScreen)
+                {
+                    ViewModel.ToggleFullscreen();
+                }
             });
         }
 
         private void GlRenderer_Created(object sender, IntPtr e)
         {
+            ShowLoading();
+            
             AppHost?.Start();
         }
 
