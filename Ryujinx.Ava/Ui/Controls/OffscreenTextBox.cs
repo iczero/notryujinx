@@ -22,8 +22,6 @@ namespace Ryujinx.Ava.Ui.Controls
         public void SendKeyDownEvent(KeyEventArgs keyEvent)
         {
             OnKeyDown(keyEvent);
-            
-            SendKey(keyEvent);
         }
 
         public void SendKeyUpEvent(KeyEventArgs keyEvent)
@@ -31,23 +29,15 @@ namespace Ryujinx.Ava.Ui.Controls
             OnKeyUp(keyEvent);
         }
 
-        public void SendKey(KeyEventArgs keyEvent)
+        public void SendText(string text)
         {
-            string keyText = keyEvent.Key switch
-            {
-                Key.Space => " ",
-                Key.Tab => "\t",
-                _ => keyEvent.Key.ToString()
-            };
-            if (keyText.Length == 1)
-            {
-                InputManager.Instance.ProcessInput(new RawTextInputEventArgs(
-                        KeyboardDevice.Instance, 
-                        (ulong)DateTime.Now.Ticks,
-                        (Window)this.GetVisualRoot(),
-                        keyText.ToLower()
-                    ));
-            }
+            OnTextInput(new TextInputEventArgs(){Text = text, Device = KeyboardDevice.Instance, Source = this, RoutedEvent = TextInputEvent});
+           /* InputManager.Instance.ProcessInput(new RawTextInputEventArgs(
+                KeyboardDevice.Instance,
+                (ulong)DateTime.Now.Ticks,
+                (Window)this.GetVisualRoot(),
+                text
+            ));*/
         }
     }
 }

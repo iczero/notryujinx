@@ -1,5 +1,7 @@
-﻿using Avalonia.Controls;
+﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Threading;
+using OpenTK.Windowing.Common;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.HLE.Ui;
@@ -19,7 +21,9 @@ namespace Ryujinx.Ava.Ui.Applet
         private OffscreenTextBox _hiddenTextBox;
         private bool _canProcessInput;
         private long _lastInputTimestamp;
-        private long _inputDelay;
+        private IDisposable _textChangedSubscription;
+        private IDisposable _selectionStartChangedSubscription;
+        private IDisposable _selectionEndtextChangedSubscription;
 
         public AvaloniaDynamicTextInputHandler(MainWindow parent)
         {
@@ -27,9 +31,41 @@ namespace Ryujinx.Ava.Ui.Applet
 
             (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).KeyPressed += AvaloniaDynamicTextInputHandler_KeyPressed;
             (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).KeyRelease += AvaloniaDynamicTextInputHandler_KeyRelease;
+            (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).TextInput  += AvaloniaDynamicTextInputHandler_TextInput;
 
             _hiddenTextBox = _parent.HiddenTextBox;
-            _inputDelay = TimeSpan.TicksPerMillisecond * 100;
+
+            Dispatcher.UIThread.Post(() =>
+            {
+                _textChangedSubscription = _hiddenTextBox.GetObservable(TextBox.TextProperty).Subscribe(TextChanged);
+                _selectionStartChangedSubscription = _hiddenTextBox.GetObservable(TextBox.SelectionStartProperty).Subscribe(SelectionChanged);
+                _selectionEndtextChangedSubscription = _hiddenTextBox.GetObservable(TextBox.SelectionEndProperty).Subscribe(SelectionChanged);
+            });
+        }
+
+        private void TextChanged(string text)
+        {
+            Task.Run(() => TextChangedEvent?.Invoke(text ?? string.Empty,
+                _hiddenTextBox.SelectionStart,
+                _hiddenTextBox.SelectionEnd, true));
+        }
+
+        private void SelectionChanged(int selection)
+        {
+            Task.Run(() => TextChangedEvent?.Invoke(_hiddenTextBox.Text ?? string.Empty,
+                _hiddenTextBox.SelectionStart,
+                _hiddenTextBox.SelectionEnd, true));
+        }
+
+        private void AvaloniaDynamicTextInputHandler_TextInput(object sender,TextInputEventArgs e)
+        {
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (_canProcessInput)
+                {
+                    _hiddenTextBox.SendText(e.AsString);
+                }
+            });
         }
 
         private void AvaloniaDynamicTextInputHandler_KeyRelease(object sender, Avalonia.Input.KeyEventArgs e)
@@ -49,10 +85,6 @@ namespace Ryujinx.Ava.Ui.Applet
                 {
                     _hiddenTextBox.SendKeyUpEvent(e);
                 }
-                
-                Task.Run(() => TextChangedEvent?.Invoke(_hiddenTextBox.Text ?? string.Empty,
-                    _hiddenTextBox.SelectionStart,
-                    _hiddenTextBox.SelectionEnd, true));
             });
         }
 
@@ -69,17 +101,11 @@ namespace Ryujinx.Ava.Ui.Applet
 
             Dispatcher.UIThread.InvokeAsync(() =>
             {
-                if (_canProcessInput &&
-                    (_lastInputTimestamp == 0 || DateTime.Now.Ticks > _lastInputTimestamp + _inputDelay))
+                if (_canProcessInput)
                 {
-                    _hiddenTextBox.Focus();
                     _hiddenTextBox.SendKeyDownEvent(e);
                     _lastInputTimestamp = DateTime.Now.Ticks;
                 }
-
-                Task.Run(() => TextChangedEvent?.Invoke(_hiddenTextBox.Text ?? string.Empty,
-                    _hiddenTextBox.SelectionStart,
-                    _hiddenTextBox.SelectionEnd, true));
             });
         }
 
@@ -104,6 +130,11 @@ namespace Ryujinx.Ava.Ui.Applet
         {
             (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).KeyPressed -= AvaloniaDynamicTextInputHandler_KeyPressed;
             (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).KeyRelease -= AvaloniaDynamicTextInputHandler_KeyRelease;
+            (_parent.InputManager.KeyboardDriver as AvaloniaKeyboardDriver).TextInput  -= AvaloniaDynamicTextInputHandler_TextInput;
+            
+            _textChangedSubscription?.Dispose();
+            _selectionStartChangedSubscription?.Dispose();
+            _selectionEndtextChangedSubscription?.Dispose();
 
             Dispatcher.UIThread.Post(() =>
             {
