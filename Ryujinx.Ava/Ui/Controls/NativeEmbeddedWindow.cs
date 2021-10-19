@@ -9,10 +9,13 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Ryujinx.Ava.Input.Glfw;
+using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.Common.Configuration;
 using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using KeyModifiers = Avalonia.Input.KeyModifiers;
+using TextInputEventArgs = OpenTK.Windowing.Common.TextInputEventArgs;
 using Window = OpenTK.Windowing.GraphicsLibraryFramework.Window;
 
 namespace Ryujinx.Ava.Ui.Controls
@@ -23,6 +26,7 @@ namespace Ryujinx.Ava.Ui.Controls
 
         public event EventHandler<KeyEventArgs> KeyPressed;
         public event EventHandler<KeyEventArgs> KeyReleased;
+        public event EventHandler<TextInputEventArgs> TextInput;
         public event EventHandler<MouseButtonEventArgs> MouseDown;
         public event EventHandler<MouseButtonEventArgs> MouseUp;
         public event EventHandler<(double X, double Y)> MouseMove;
@@ -255,16 +259,27 @@ namespace Ryujinx.Ava.Ui.Controls
             GlfwWindow.MouseDown += Window_MouseDown;
             GlfwWindow.MouseUp += Window_MouseUp;
             GlfwWindow.MouseMove += Window_MouseMove;
+            GlfwWindow.TextInput += GlfwWindow_TextInput;
 
             // Glfw Mouse Passthrough doesn't work on linux, so we pass events to the keyboard driver the hard way
             GlfwWindow.KeyDown += Window_KeyDown;
             GlfwWindow.KeyUp += Window_KeyUp;
         }
 
+        private void GlfwWindow_TextInput(TextInputEventArgs obj)
+        {
+            TextInput?.Invoke(this, obj);
+        }
+
         private void Window_KeyUp(KeyboardKeyEventArgs obj)
         {
             GlfwKey key = Enum.Parse<GlfwKey>(obj.Key.ToString());
             KeyEventArgs keyEvent = new() {Key = (Key)key};
+            
+            keyEvent.KeyModifiers |= obj.Alt     ? KeyModifiers.Alt     : keyEvent.KeyModifiers;
+            keyEvent.KeyModifiers |= obj.Control ? KeyModifiers.Control : keyEvent.KeyModifiers;
+            keyEvent.KeyModifiers |= obj.Shift   ? KeyModifiers.Shift   : keyEvent.KeyModifiers;
+            keyEvent.KeyModifiers |= obj.Command ? KeyModifiers.Meta    : keyEvent.KeyModifiers;
 
             KeyReleased?.Invoke(this, keyEvent);
         }
@@ -273,6 +288,11 @@ namespace Ryujinx.Ava.Ui.Controls
         {
             GlfwKey key = Enum.Parse<GlfwKey>(obj.Key.ToString());
             KeyEventArgs keyEvent = new() {Key = (Key)key};
+            
+            keyEvent.KeyModifiers |= obj.Alt     ? KeyModifiers.Alt     : keyEvent.KeyModifiers;
+            keyEvent.KeyModifiers |= obj.Control ? KeyModifiers.Control : keyEvent.KeyModifiers;
+            keyEvent.KeyModifiers |= obj.Shift   ? KeyModifiers.Shift   : keyEvent.KeyModifiers;
+            keyEvent.KeyModifiers |= obj.Command ? KeyModifiers.Meta    : keyEvent.KeyModifiers;
 
             KeyPressed?.Invoke(this, keyEvent);
         }

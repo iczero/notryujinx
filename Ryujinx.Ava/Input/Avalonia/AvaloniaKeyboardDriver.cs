@@ -4,7 +4,10 @@ using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Windows;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using AvaKey = Avalonia.Input.Key;
+using TextInputEventArgs = OpenTK.Windowing.Common.TextInputEventArgs;
 
 namespace Ryujinx.Input.Avalonia
 {
@@ -16,6 +19,7 @@ namespace Ryujinx.Input.Avalonia
 
         public event EventHandler<KeyEventArgs> KeyPressed;
         public event EventHandler<KeyEventArgs> KeyRelease;
+        public event EventHandler<OpenTK.Windowing.Common.TextInputEventArgs> TextInput;
 
         public string DriverName => "Avalonia";
 
@@ -28,6 +32,12 @@ namespace Ryujinx.Input.Avalonia
 
             _control.KeyDown += OnKeyPress;
             _control.KeyUp += OnKeyRelease;
+            _control.TextInput += Control_TextInput;
+        }
+
+        private void Control_TextInput(object? sender, global::Avalonia.Input.TextInputEventArgs e)
+        {
+            TextInput?.Invoke(this, new TextInputEventArgs(e.Text.First()));
         }
 
         public event Action<string> OnGamepadConnected
@@ -61,6 +71,12 @@ namespace Ryujinx.Input.Avalonia
         {
             control.KeyPressed += OnKeyPress;
             control.KeyReleased += OnKeyRelease;
+            control.TextInput += OnTextInput;
+        }
+
+        private void OnTextInput(object? sender, TextInputEventArgs e)
+        {
+            TextInput?.Invoke(this, e);
         }
 
         public void RemoveControl(NativeEmbeddedWindow control)
