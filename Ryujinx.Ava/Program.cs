@@ -4,6 +4,7 @@ using FFmpeg.AutoGen;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Ryujinx.Ava.Application.Module;
 using Ryujinx.Ava.Common;
+using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.Common.Configuration;
@@ -17,6 +18,7 @@ using SixLabors.ImageSharp.Formats.Jpeg;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -101,6 +103,9 @@ namespace Ryujinx.Ava
             // Make process DPI aware for proper window sizing on high-res screens.
             ForceDpiAware.Windows();
             WindowScaleFactor = 1;//ForceDpiAware.GetWindowScaleFactor();
+
+            var list = LocaleManager.Instance.LocaleStrings.Keys.ToList();
+            var enums = string.Join(",\n", list);
 
             // Delete backup files after updating.
             Task.Run(Updater.CleanupUpdate);
