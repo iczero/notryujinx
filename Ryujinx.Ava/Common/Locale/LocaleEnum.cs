@@ -493,7 +493,9 @@ namespace Ryujinx.Ava.Common.Locale
         OpenProfileManagerTooltip,
         StopEmulationTooltip,
         CheckUpdatesTooltip,
-        OpenAboutTooltip
+        OpenAboutTooltip,
+        GridSize,
+        GridSizeTooltip
     }
 
 }

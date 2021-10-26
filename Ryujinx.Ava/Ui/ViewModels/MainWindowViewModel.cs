@@ -55,6 +55,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private string _lastScannedAmiiboId;
         private int _progressMaximum;
         private int _progressValue;
+        private int _gridSizeScale = 2;
         private bool _showAll;
         private bool _showLoadProgress;
         private bool _showMenuAndStatusBar = true;
@@ -684,7 +685,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public bool ShowNames
         {
-            get => _showNames; set
+            get => _showNames && _gridSizeScale > 1; set
             {
                 _showNames = value;
                 OnPropertyChanged();
@@ -756,6 +757,27 @@ namespace Ryujinx.Ava.Ui.ViewModels
             {
                 _pauseKey = value.ToString();
                 OnPropertyChanged();
+            }
+        }
+
+        public bool IsGridSmall => _gridSizeScale == 1;
+        public bool IsGridNormal => _gridSizeScale == 2;
+        public bool IsGridLarge => _gridSizeScale == 3;
+        public bool IsGridHuge => _gridSizeScale == 4;
+
+        public int GridSizeScale
+        {
+            get => _gridSizeScale;
+            set
+            {
+                _gridSizeScale = value;
+                
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsGridSmall));
+                OnPropertyChanged(nameof(IsGridNormal));
+                OnPropertyChanged(nameof(IsGridLarge));
+                OnPropertyChanged(nameof(IsGridHuge));
+                OnPropertyChanged(nameof(ShowNames));
             }
         }
 
