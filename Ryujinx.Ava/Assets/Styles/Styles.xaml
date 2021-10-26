@@ -38,6 +38,18 @@
             </StackPanel>
         </Border>
     </Design.PreviewWith>
+    <Style Selector="Border.small">
+        <Setter Property="Width" Value="100"/>
+    </Style>
+    <Style Selector="Border.normal">
+        <Setter Property="Width" Value="130"/>
+    </Style>
+    <Style Selector="Border.large">
+        <Setter Property="Width" Value="160"/>
+    </Style>
+    <Style Selector="Border.huge">
+        <Setter Property="Width" Value="200"/>
+    </Style>
     <Style Selector="DataGridColumnHeader">
         <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />

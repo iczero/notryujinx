@@ -483,5 +483,7 @@
   "OpenProfileManagerTooltip" : "Open User Profiles Manager window",
   "StopEmulationTooltip" : "Stop emulation of the current game and return to game selection",
   "CheckUpdatesTooltip" :  "Check for updates to Ryujinx",
-  "OpenAboutTooltip" : "Open About Window"
+  "OpenAboutTooltip" : "Open About Window",
+  "GridSize" : "Grid Size",
+  "GridSizeTooltip" : "Change the size of grid items"
 }

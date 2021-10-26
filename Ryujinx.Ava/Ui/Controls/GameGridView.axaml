@@ -91,7 +91,7 @@
              Items="{Binding AppsObservableList}">
       <ListBox.ItemsPanel>
         <ItemsPanelTemplate>
-          <flex:FlexPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" JustifyContent="FlexStart" AlignContent="FlexStart"/>
+          <flex:FlexPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" JustifyContent="SpaceEvenly" AlignContent="FlexStart"/>
         </ItemsPanelTemplate>
       </ListBox.ItemsPanel>
       <ListBox.Styles>
@@ -105,7 +105,12 @@
       <ListBox.ItemTemplate>
         <DataTemplate>
           <Grid>
-            <Border Width="130" HorizontalAlignment="Stretch" Padding="{Binding $parent[UserControl].DataContext.GridItemPadding}" CornerRadius="5" VerticalAlignment="Stretch" Margin="0" ClipToBounds="True">
+            <Border
+                    Classes.small="{Binding $parent[UserControl].DataContext.IsGridSmall}" 
+                    Classes.normal="{Binding $parent[UserControl].DataContext.IsGridNormal}"
+                    Classes.large="{Binding $parent[UserControl].DataContext.IsGridLarge}"
+                    Classes.huge="{Binding $parent[UserControl].DataContext.IsGridHuge}"
+                    HorizontalAlignment="Stretch" Padding="{Binding $parent[UserControl].DataContext.GridItemPadding}" CornerRadius="5" VerticalAlignment="Stretch" Margin="0" ClipToBounds="True">
               <Grid Margin="0">
                 <Grid.RowDefinitions>
                   <RowDefinition Height="Auto"/>
