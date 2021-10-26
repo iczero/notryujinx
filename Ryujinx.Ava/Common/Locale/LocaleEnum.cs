@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Ryujinx.Ava.Common.Locale
 {
+    // Manually generated from the en locale file. Mainly used for the xaml designer for intellisense
     public enum LocaleEnum
     {
         MenuBarFileOpenApplet,
@@ -481,7 +482,18 @@ namespace Ryujinx.Ava.Common.Locale
         FSAccessLogModeTooltip,
         DeveloperOptionTooltip,
         OpenGlLogLevel,
-        DebugLogTooltip
+        DebugLogTooltip,
+        LoadApplicationFileTooltip,
+        LoadApplicationFolderTooltip,
+        OpenRyujinxFolderTooltip,
+        OpenRyujinxLogsTooltip,
+        ExitTooltip,
+        EnableGuiColumnTooltip,
+        OpenSettingsTooltip,
+        OpenProfileManagerTooltip,
+        StopEmulationTooltip,
+        CheckUpdatesTooltip,
+        OpenAboutTooltip
     }
 
 }
