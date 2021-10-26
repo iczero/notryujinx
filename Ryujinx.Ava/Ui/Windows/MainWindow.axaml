@@ -141,9 +141,11 @@
                             VerticalAlignment="Center"
                             Header="{locale:Locale MenuBarFile}">
                             <MenuItem IsEnabled="{Binding EnableNonGameRunningControls}" Command="{Binding OpenFile}"
-                                      Header="{locale:Locale MenuBarFileOpenFromFile}" />
+                                      Header="{locale:Locale MenuBarFileOpenFromFile}" 
+                                      ToolTip.Tip="{locale:Locale LoadApplicationFileTooltip}"/>
                             <MenuItem IsEnabled="{Binding EnableNonGameRunningControls}" Command="{Binding OpenFolder}"
-                                      Header="{locale:Locale MenuBarFileOpenUnpacked}" />
+                                      Header="{locale:Locale MenuBarFileOpenUnpacked}" 
+                                      ToolTip.Tip="{locale:Locale LoadApplicationFolderTooltip}"/>
                             <MenuItem Header="{locale:Locale MenuBarFileOpenApplet}"
                                       IsEnabled="{Binding IsAppletMenuActive}">
                                 <MenuItem Command="{Binding OpenMiiApplet}" Header="Mii Edit Applet"
@@ -151,11 +153,14 @@
                             </MenuItem>
                             <Separator />
                             <MenuItem Command="{Binding OpenRyujinxFolder}"
-                                      Header="{locale:Locale MenuBarFileOpenEmuFolder}" />
+                                      Header="{locale:Locale MenuBarFileOpenEmuFolder}" 
+                                      ToolTip.Tip="{locale:Locale OpenRyujinxFolderTooltip}"/>
                             <MenuItem Command="{Binding OpenLogsFolder}"
-                                      Header="{locale:Locale MenuBarFileOpenLogsFolder}" />
+                                      Header="{locale:Locale MenuBarFileOpenLogsFolder}"
+                                      ToolTip.Tip="{locale:Locale OpenRyujinxLogsTooltip}" />
                             <Separator />
-                            <MenuItem Command="{Binding CloseWindow}" Header="{locale:Locale MenuBarFileExit}" />
+                            <MenuItem Command="{Binding CloseWindow}" Header="{locale:Locale MenuBarFileExit}" 
+                                      ToolTip.Tip="{locale:Locale ExitTooltip}"/>
                         </MenuItem>
                         <MenuItem
                             VerticalAlignment="Center"
@@ -176,9 +181,11 @@
                                           Header="Brazilian Portuguese" />
                             </MenuItem>
                             <Separator />
-                            <MenuItem Command="{Binding OpenSettings}" Header="{locale:Locale MenuBarOptionsSettings}" />
+                            <MenuItem Command="{Binding OpenSettings}" Header="{locale:Locale MenuBarOptionsSettings}" 
+                                      ToolTip.Tip="{locale:Locale OpenSettingsTooltip}"/>
                             <MenuItem Command="{Binding ManageProfiles}" IsEnabled="{Binding EnableNonGameRunningControls}"
-                                      Header="{locale:Locale MenuBarOptionsManageUserProfiles}" />
+                                      Header="{locale:Locale MenuBarOptionsManageUserProfiles}" 
+                                      ToolTip.Tip="{locale:Locale OpenProfileManagerTooltip}"/>
                         </MenuItem>
                         <MenuItem
                             VerticalAlignment="Center"
@@ -199,6 +206,7 @@
                             <MenuItem
                                 Click="StopEmulation_Click"
                                 Header="{locale:Locale MenuBarOptionsStopEmulation}"
+                                ToolTip.Tip="{locale:Locale StopEmulationTooltip}"
                                 IsEnabled="{Binding IsGameRunning}" InputGesture="Escape"/>
                             <MenuItem Command="{Binding SimulateWakeUpMessage}"
                                       Header="{locale:Locale MenuBarOptionsSimulateWakeUpMessage}" />
@@ -234,9 +242,11 @@
                             <MenuItem
                                 Name="UpdateMenuItem"
                                 Command="{Binding CheckForUpdates}"
-                                Header="{locale:Locale MenuBarHelpCheckForUpdates}" />
+                                Header="{locale:Locale MenuBarHelpCheckForUpdates}" 
+                                ToolTip.Tip="{locale:Locale CheckUpdatesTooltip}"/>
                             <Separator />
-                            <MenuItem Command="{Binding OpenAboutWindow}" Header="{locale:Locale MenuBarHelpAbout}" />
+                            <MenuItem Command="{Binding OpenAboutWindow}" Header="{locale:Locale MenuBarHelpAbout}" 
+                                      ToolTip.Tip="{locale:Locale OpenAboutTooltip}"/>
                         </MenuItem>
                     </Menu>
                 </DockPanel>
@@ -276,7 +286,8 @@
                   <CheckBox IsChecked="{Binding ShowNames, Mode=TwoWay}" VerticalAlignment="Center" IsVisible="{Binding IsGrid}">
                     <TextBlock Text="{locale:Locale CommonShowNames}" Margin="0,3,0,0"/>
                   </CheckBox>
-                  <ui:DropDownButton IsVisible="{Binding IsList}" Content="{locale:Locale MenuBarOptionsEnableGuiColumns}">
+                  <ui:DropDownButton IsVisible="{Binding IsList}" Content="{locale:Locale MenuBarOptionsEnableGuiColumns}"
+                                     ToolTip.Tip="{locale:Locale EnableGuiColumnTooltip}">
                       <ui:DropDownButton.Flyout>
                           <Flyout>
                               <StackPanel Orientation="Vertical" HorizontalAlignment="Right">
