@@ -50,6 +50,22 @@
     <Style Selector="Border.huge">
         <Setter Property="Width" Value="200"/>
     </Style>
+    <Style Selector="Image.small">
+      <Setter Property="Width" Value="8"/>
+      <Setter Property="Height" Value="8"/>
+    </Style>
+    <Style Selector="Image.normal">
+      <Setter Property="Width" Value="13"/>
+      <Setter Property="Height" Value="13"/>
+    </Style>
+    <Style Selector="Image.large">
+      <Setter Property="Width" Value="18"/>
+      <Setter Property="Height" Value="18"/>
+    </Style>
+    <Style Selector="Image.huge">
+      <Setter Property="Width" Value="24"/>
+      <Setter Property="Height" Value="24"/>
+    </Style>
     <Style Selector="DataGridColumnHeader">
         <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
