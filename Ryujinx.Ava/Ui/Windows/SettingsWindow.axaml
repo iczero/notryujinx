@@ -290,6 +290,10 @@
                       <TextBlock
                           Text="{locale:Locale SettingsTabSystemSystemLanguageTraditionalChinese}" />
                     </ComboBoxItem>
+                    <ComboBoxItem>
+                      <TextBlock
+                          Text="{locale:Locale SettingsTabSystemSystemLanguageBrazilianPortuguese}" />
+                    </ComboBoxItem>
                   </ComboBox>
                 </StackPanel>
                 <StackPanel
