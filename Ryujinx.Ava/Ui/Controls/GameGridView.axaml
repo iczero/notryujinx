@@ -91,7 +91,7 @@
              Items="{Binding AppsObservableList}">
       <ListBox.ItemsPanel>
         <ItemsPanelTemplate>
-          <flex:FlexPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" JustifyContent="SpaceEvenly" AlignContent="FlexStart"/>
+          <flex:FlexPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" JustifyContent="Center" AlignContent="FlexStart"/>
         </ItemsPanelTemplate>
       </ListBox.ItemsPanel>
       <ListBox.Styles>
@@ -123,7 +123,10 @@
                 </StackPanel>
               </Grid>
             </Border>
-            <Image Source="resm:Ryujinx.Ava.Assets.Images.star.png" Width="13" Height="13"
+            <Image Classes.small="{Binding $parent[UserControl].DataContext.IsGridSmall}"
+                    Classes.normal="{Binding $parent[UserControl].DataContext.IsGridNormal}"
+                    Classes.large="{Binding $parent[UserControl].DataContext.IsGridLarge}"
+                    Classes.huge="{Binding $parent[UserControl].DataContext.IsGridHuge}" Source="resm:Ryujinx.Ava.Assets.Images.star.png"
                            IsVisible="{Binding Favorite}" Margin="5" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
           </Grid>
         </DataTemplate>

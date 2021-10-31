@@ -29,17 +29,24 @@ namespace Ryujinx.Common.System
         {
             double userDpiScale;
 
-            try
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                userDpiScale = Graphics.FromHwnd(IntPtr.Zero).DpiX;
+                try
+                {
+                    userDpiScale = Graphics.FromHwnd(IntPtr.Zero).DpiX;
+                }
+                catch (Exception e)
+                {
+                    Logger.Warning?.Print(LogClass.Application, $"Couldn't determine monitor DPI: {e.Message}");
+                    userDpiScale = 96.0;
+                }
             }
-            catch (Exception e)
+            else
             {
-                Logger.Warning?.Print(LogClass.Application, $"Couldn't determine monitor DPI: {e.Message}");
-                userDpiScale = 96.0;
+                userDpiScale = 1;
             }
 
-            return Math.Min(userDpiScale / _standardDpiScale, _maxScaleFactor);
+            return userDpiScale / _standardDpiScale;
         }
     }
 }
