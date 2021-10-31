@@ -7,9 +7,9 @@ namespace Ryujinx.Ava.Common.Locale
 {
     public class LocaleExtension : MarkupExtension
     {
-        public LocaleExtension(LocaleEnum key)
+        public LocaleExtension(string key)
         {
-            Key = key.ToString();
+            Key = key;
         }
 
         public string Key { get; }
