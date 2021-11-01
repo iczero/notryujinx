@@ -486,5 +486,6 @@
   "OpenAboutTooltip": "Open About Window",
   "GridSize": "Grid Size",
   "GridSizeTooltip": "Change the size of grid items",
-  "SettingsTabSystemSystemLanguageBrazilianPortuguese": "Brazilian Portuguese"
+  "SettingsTabSystemSystemLanguageBrazilianPortuguese": "Brazilian Portuguese",
+  "AboutRyujinxContributorsButtonHeader" :  "See All Contributors"
 }
