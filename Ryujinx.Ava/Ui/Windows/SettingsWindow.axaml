@@ -611,7 +611,7 @@
                   <TextBlock Text="{locale:Locale SettingsTabLoggingEnableGuestLogs}" />
                 </CheckBox>
                 <CheckBox IsChecked="{Binding EnableFsAccessLog}"
-                             ToolTip.Tip="{locale:Locale FSAccessLogModeTooltip}">
+                             ToolTip.Tip="{locale:Locale FileAccessLogTooltip}">
                   <TextBlock Text="{locale:Locale SettingsTabLoggingEnableFsAccessLogs}" />
                 </CheckBox>
                 <StackPanel

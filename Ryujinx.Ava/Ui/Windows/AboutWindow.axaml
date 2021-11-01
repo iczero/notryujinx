@@ -136,7 +136,7 @@
             <Button Background="Transparent" HorizontalAlignment="Right" Grid.Row="4"
                     Tag="https://github.com/Ryujinx/Ryujinx/graphs/contributors?type=a" Click="Button_OnClick">
                 <TextBlock ToolTip.Tip="{locale:Locale AboutRyujinxMaintainersContentTooltipMessage}"
-                           TextAlignment="Right" TextDecorations="Underline" Text="See All Contributors" />
+                           TextAlignment="Right" TextDecorations="Underline" Text="{locale:Locale AboutRyujinxContributorsButtonHeader}" />
             </Button>
             <TextBlock Grid.Row="5" Margin="0,0,0,0" Text="{locale:Locale AboutRyujinxSupprtersTitle}" FontWeight="Bold"
                        TextDecorations="Underline" />
