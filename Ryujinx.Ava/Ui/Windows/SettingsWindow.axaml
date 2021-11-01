@@ -200,7 +200,8 @@
                     Spacing="20">
                   <TextBlock VerticalAlignment="Center"
                              Text="{locale:Locale SettingsTabSystemSystemRegion}" />
-                  <ComboBox SelectedIndex="{Binding Region}">
+                  <ComboBox SelectedIndex="{Binding Region}"
+                               ToolTip.Tip="{locale:Locale RegionTooltip}">
                     <ComboBoxItem>
                       <TextBlock Text="{locale:Locale SettingsTabSystemSystemRegionJapan}" />
                     </ComboBoxItem>
