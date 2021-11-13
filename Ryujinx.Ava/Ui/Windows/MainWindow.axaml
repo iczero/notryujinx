@@ -269,7 +269,7 @@
                 <DockPanel Grid.Row="0" HorizontalAlignment="Stretch" Margin="0,0,0,5">
                   <Button
                                      IsEnabled="{Binding IsGrid}" VerticalAlignment="Stretch"  MinWidth="40" Width="40" Margin="5,2,0,2" Command="{Binding SetListMode}">
-                    <ui:FontIcon FontFamily="avares://FluentAvalonia/Fonts#FluentSystemIcons-Regular"
+                    <ui:FontIcon FontFamily="avares://FluentAvalonia/Fonts#Symbols"
                                  VerticalAlignment="Center"
                                  Margin="0"
                                  Glyph="{controls:GlyphValueConverter List}"
@@ -277,7 +277,7 @@
                   </Button>
                   <Button
                                  IsEnabled="{Binding IsList}" VerticalAlignment="Stretch" MinWidth="40" Width="40" Margin="5,2,5,2" Command="{Binding SetGridMode}">
-                    <ui:FontIcon FontFamily="avares://FluentAvalonia/Fonts#FluentSystemIcons-Regular"
+                    <ui:FontIcon FontFamily="avares://FluentAvalonia/Fonts#Symbols"
                                  VerticalAlignment="Center"
                                  Margin="0"
                                  Glyph="{controls:GlyphValueConverter Grid}"

@@ -20,7 +20,7 @@ namespace Ryujinx.Ava.Ui.Controls
         private static Dictionary<ViewMode, string> _glyphs = new Dictionary<ViewMode, string>
         {
             {ViewMode.List, char.ConvertFromUtf32((int)Symbol.List).ToString()},
-            {ViewMode.Grid, char.ConvertFromUtf32(62562).ToString()},
+            {ViewMode.Grid, char.ConvertFromUtf32((int)Symbol.ViewAll).ToString()},
         };
 
         public GlyphValueConverter(string key)

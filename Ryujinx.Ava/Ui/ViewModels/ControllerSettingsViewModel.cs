@@ -22,6 +22,7 @@ using Ryujinx.Input;
 using Ryujinx.Input.Avalonia;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -50,9 +51,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
         public IGamepadDriver AvaloniaKeyboardDriver { get; }
         public IGamepad SelectedGamepad { get; private set; }
 
-        public ObservableDictionary<PlayerIndex, string> PlayerIndexes { get; set; }
-        public ObservableDictionary<string, string> Devices { get; set; }
-        public ObservableDictionary<ControllerType, string> Controllers { get; set; }
+        public ObservableCollection<PlayerModel> PlayerIndexes { get; set; }
+        public ObservableCollection<(string Id, string Name)> Devices { get; set; }
+        public ObservableCollection<ControllerModel> Controllers { get; set; }
         public AvaloniaList<string> ProfilesList { get; set; }
         public AvaloniaList<string> DeviceList { get; set; }
 
@@ -116,7 +117,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 if (Controllers.Count > 0 && value < Controllers.Count && _controller > -1)
                 {
-                    ControllerType controller = Controllers.Keys.ToArray()[_controller];
+                    ControllerType controller = Controllers[_controller].Type;
 
                     IsLeft = true;
                     IsRight = true;
@@ -199,7 +200,12 @@ namespace Ryujinx.Ava.Ui.ViewModels
             {
                 _device = value < 0 ? 0 : value;
 
-                string selected = Devices.Keys.ToArray()[_device];
+                if(_device >= Devices.Count)
+                {
+                    return;
+                }
+
+                string selected = Devices[_device].Id;
 
                 if (selected == "disable")
                 {
@@ -251,23 +257,23 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public ControllerSettingsViewModel()
         {
-            PlayerIndexes = new ObservableDictionary<PlayerIndex, string>();
-            Controllers = new ObservableDictionary<ControllerType, string>();
-            Devices = new ObservableDictionary<string, string>();
+            PlayerIndexes = new ObservableCollection<PlayerModel>();
+            Controllers = new ObservableCollection<ControllerModel>();
+            Devices = new ObservableCollection<(string Id, string Name)>();
             ProfilesList = new AvaloniaList<string>();
             DeviceList = new AvaloniaList<string>();
 
             ControllerImage = "Ryujinx.Ava.Assets.Images.Controller_ProCon.svg";
 
-            PlayerIndexes.Add(PlayerIndex.Player1, LocaleManager.Instance["ControllerSettingsPlayer1"]);
-            PlayerIndexes.Add(PlayerIndex.Player2, LocaleManager.Instance["ControllerSettingsPlayer2"]);
-            PlayerIndexes.Add(PlayerIndex.Player3, LocaleManager.Instance["ControllerSettingsPlayer3"]);
-            PlayerIndexes.Add(PlayerIndex.Player4, LocaleManager.Instance["ControllerSettingsPlayer4"]);
-            PlayerIndexes.Add(PlayerIndex.Player5, LocaleManager.Instance["ControllerSettingsPlayer5"]);
-            PlayerIndexes.Add(PlayerIndex.Player6, LocaleManager.Instance["ControllerSettingsPlayer6"]);
-            PlayerIndexes.Add(PlayerIndex.Player7, LocaleManager.Instance["ControllerSettingsPlayer7"]);
-            PlayerIndexes.Add(PlayerIndex.Player8, LocaleManager.Instance["ControllerSettingsPlayer8"]);
-            PlayerIndexes.Add(PlayerIndex.Handheld, LocaleManager.Instance["ControllerSettingsHandheld"]);
+            PlayerIndexes.Add(new(PlayerIndex.Player1, LocaleManager.Instance["ControllerSettingsPlayer1"]));
+            PlayerIndexes.Add(new(PlayerIndex.Player2, LocaleManager.Instance["ControllerSettingsPlayer2"]));
+            PlayerIndexes.Add(new(PlayerIndex.Player3, LocaleManager.Instance["ControllerSettingsPlayer3"]));
+            PlayerIndexes.Add(new(PlayerIndex.Player4, LocaleManager.Instance["ControllerSettingsPlayer4"]));
+            PlayerIndexes.Add(new(PlayerIndex.Player5, LocaleManager.Instance["ControllerSettingsPlayer5"]));
+            PlayerIndexes.Add(new(PlayerIndex.Player6, LocaleManager.Instance["ControllerSettingsPlayer6"]));
+            PlayerIndexes.Add(new(PlayerIndex.Player7, LocaleManager.Instance["ControllerSettingsPlayer7"]));
+            PlayerIndexes.Add(new(PlayerIndex.Player8, LocaleManager.Instance["ControllerSettingsPlayer8"]));
+            PlayerIndexes.Add(new(PlayerIndex.Handheld, LocaleManager.Instance["ControllerSettingsHandheld"]));
         }
 
         private void LoadConfiguration(InputConfig inputConfig = null)
@@ -305,10 +311,10 @@ namespace Ryujinx.Ava.Ui.ViewModels
                     ident = "controller";
                 }
 
-                var item = Devices.FirstOrDefault(x => x.Key == $"{ident}/{Config.Id}");
-                if (item.Key != null)
+                var item = Devices.FirstOrDefault(x => x.Id == $"{ident}/{Config.Id}");
+                if (item != default)
                 {
-                    Device = Devices.Keys.ToList().IndexOf(item.Key);
+                    Device = Devices.ToList().FindIndex(x => x.Id == item.Id);
                 }
                 else
                 {
@@ -330,7 +336,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
 
             string id = GetCurrentGamepadId();
-            string selected = Devices.Keys.ToArray()[Device];
+            string selected = Devices[Device].Id;
 
             if (selected == "disabled")
             {
@@ -378,7 +384,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 return string.Empty;
             }
 
-            string selected = Devices.Keys.ToArray()[Device];
+            string selected = Devices[Device].Id;
 
             if (selected == null || selected == "disabled")
             {
@@ -394,20 +400,20 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             if (_playerId == PlayerIndex.Handheld)
             {
-                Controllers.Add(ControllerType.Handheld, LocaleManager.Instance["ControllerSettingsControllerTypeHandheld"]);
+                Controllers.Add(new(ControllerType.Handheld, LocaleManager.Instance["ControllerSettingsControllerTypeHandheld"]));
 
                 Controller = 0;
             }
             else
             {
-                Controllers.Add(ControllerType.ProController, LocaleManager.Instance["ControllerSettingsControllerTypeProController"]);
-                Controllers.Add(ControllerType.JoyconPair, LocaleManager.Instance["ControllerSettingsControllerTypeJoyConPair"]);
-                Controllers.Add(ControllerType.JoyconLeft, LocaleManager.Instance["ControllerSettingsControllerTypeJoyConLeft"]);
-                Controllers.Add(ControllerType.JoyconRight, LocaleManager.Instance["ControllerSettingsControllerTypeJoyConRight"]);
+                Controllers.Add(new(ControllerType.ProController, LocaleManager.Instance["ControllerSettingsControllerTypeProController"]));
+                Controllers.Add(new(ControllerType.JoyconPair, LocaleManager.Instance["ControllerSettingsControllerTypeJoyConPair"]));
+                Controllers.Add(new(ControllerType.JoyconLeft, LocaleManager.Instance["ControllerSettingsControllerTypeJoyConLeft"]));
+                Controllers.Add(new(ControllerType.JoyconRight, LocaleManager.Instance["ControllerSettingsControllerTypeJoyConRight"]));
 
-                if (Config != null && Controllers.ContainsKey(Config.ControllerType))
+                if (Config != null && Controllers.ToList().FindIndex(x => x.Type == Config.ControllerType) != -1)
                 {
-                    Controller = Controllers.Keys.ToList().IndexOf(Config.ControllerType);
+                    Controller = Controllers.ToList().FindIndex(x => x.Type == Config.ControllerType);
                 }
                 else
                 {
@@ -435,7 +441,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             {
                 Devices.Clear();
                 DeviceList.Clear();
-                Devices.Add("disabled", LocaleManager.Instance["ControllerSettingsDeviceDisabled"]);
+                Devices.Add(("disabled", LocaleManager.Instance["ControllerSettingsDeviceDisabled"]));
 
                 foreach (string id in _mainWindow.InputManager.KeyboardDriver.GamepadsIds)
                 {
@@ -443,7 +449,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                     if (gamepad != null)
                     {
-                        Devices.TryAdd($"keyboard/{id}", $"{GetShrinkedGamepadName(gamepad.Name)} ({id})");
+                        Devices.Add(($"keyboard/{id}", $"{GetShrinkedGamepadName(gamepad.Name)} ({id})"));
 
                         gamepad.Dispose();
                     }
@@ -455,13 +461,13 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                     if (gamepad != null)
                     {
-                        Devices.TryAdd($"controller/{id}", $"{GetShrinkedGamepadName(gamepad.Name)} ({id})");
+                        Devices.Add(($"controller/{id}", $"{GetShrinkedGamepadName(gamepad.Name)} ({id})"));
 
                         gamepad.Dispose();
                     }
                 }
 
-                DeviceList.AddRange(Devices.Values);
+                DeviceList.AddRange(Devices.Select(x => x.Name));
                 Device = Math.Min(Device, DeviceList.Count);
             }
         }
@@ -469,7 +475,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private string GetProfileBasePath()
         {
             string path = AppDataManager.ProfilesDirPath;
-            string selected = Devices.Keys.ToArray()[Device == -1 ? 0 : Device];
+            string selected = Devices[Device == -1 ? 0 : Device].Id;
 
             if (selected.StartsWith("keyboard"))
             {
@@ -494,7 +500,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 Directory.CreateDirectory(basePath);
             }
 
-            ProfilesList.Add(LocaleManager.Instance["ControllerSettingsProfileDefault"]);
+            ProfilesList.Add((LocaleManager.Instance["ControllerSettingsProfileDefault"]));
 
             foreach (string profile in Directory.GetFiles(basePath, "*.json", SearchOption.AllDirectories))
             {
@@ -511,9 +517,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
         {
             string activeDevice = "disabled";
 
-            if (Devices.Keys.Count > 0 && Device < Devices.Keys.Count && Device >= 0)
+            if (Devices.Count > 0 && Device < Devices.Count && Device >= 0)
             {
-                activeDevice = Devices.Keys.ToArray()[Device];
+                activeDevice = Devices[Device].Id;
             }
 
             InputConfig config;
@@ -573,7 +579,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
             else if (activeDevice.StartsWith("controller"))
             {
-                bool isNintendoStyle = Devices[activeDevice].Contains("Nintendo");
+                bool isNintendoStyle = Devices.ToList().Find(x => x.Id == activeDevice).Name.Contains("Nintendo");
 
                 string id = activeDevice.Split("/")[1].Split(" ")[0];
 
@@ -761,7 +767,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                         config = (Configuration as InputConfiguration<GamepadInputId, ConfigStickInputId>).GetConfig();
                     }
 
-                    config.ControllerType = Controllers.Keys.ToArray()[_controller];
+                    config.ControllerType = Controllers[_controller].Type;
 
                     string jsonString = JsonHelper.Serialize(config, true);
 
@@ -816,7 +822,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
             else
             {
-                string selected = Devices.Keys.ToArray()[Device];
+                string selected = Devices[Device].Id;
 
                 if (selected.StartsWith("keyboard"))
                 {
@@ -832,7 +838,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 var config = !IsController
                     ? (Configuration as InputConfiguration<Key, ConfigStickInputId>).GetConfig()
                     : (Configuration as InputConfiguration<GamepadInputId, ConfigStickInputId>).GetConfig();
-                config.ControllerType = Controllers.Keys.ToArray()[_controller];
+                config.ControllerType = Controllers[_controller].Type;
                 config.PlayerIndex = _playerId;
 
                 int i = newConfig.FindIndex(x => x.PlayerIndex == this.PlayerId);
