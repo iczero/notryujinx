@@ -212,7 +212,7 @@ namespace Ryujinx.Ava.Ui.Windows
         {
             IButtonAssigner assigner;
 
-            string selected = ViewModel.Devices.Keys.ToArray()[ViewModel.Device];
+            string selected = ViewModel.Devices[ViewModel.Device].Id;
 
             if (selected.StartsWith("keyboard"))
             {
