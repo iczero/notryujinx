@@ -253,7 +253,7 @@ namespace Ryujinx.Ava.Ui.Controls
         public static async Task<UserResult> CreateInfoDialog(StyleableWindow window, string primary, string secondaryText, string acceptButton = "Ok", string closeButton = "Close", string title = "Ryujinx - Info")
         {
             return await ShowContentDialog(window, title, primary, secondaryText, acceptButton, "", closeButton,
-                0xF4A3);
+                (int)Symbol.Important);
         }
 
         internal static async Task<UserResult> CreateConfirmationDialog(StyleableWindow window, string primaryText, string secondaryText, string acceptButtonText = "Yes", string cancelButtonText = "No", string title = "Ryujinx - Confirmation", UserResult primaryButtonResult = UserResult.Yes)
@@ -272,20 +272,20 @@ namespace Ryujinx.Ava.Ui.Controls
         internal static async void CreateUpdaterInfoDialog(StyleableWindow window, string primary, string secondaryText)
         {
             await ShowContentDialog(window, LocaleManager.Instance["DialogUpdaterTitle"], primary, secondaryText, "", "", LocaleManager.Instance["InputDialogOk"],
-                0xF4A3);
+                (int)Symbol.Important);
         }
         
         internal static async void CreateWarningDialog(StyleableWindow window, string primary, string secondaryText)
         {
             await ShowContentDialog(window, LocaleManager.Instance["DialogWarningTitle"], primary, secondaryText, "", "", LocaleManager.Instance["InputDialogOk"],
-                0xF4A3);
+                (int)Symbol.Important);
         }
 
         internal static async void CreateErrorDialog(StyleableWindow owner, string errorMessage, string secondaryErrorMessage = "")
         {
             Logger.Error?.Print(LogClass.Application, errorMessage);
 
-            await ShowContentDialog(owner, LocaleManager.Instance["DialogErrorTitle"], LocaleManager.Instance["DialogErrorMessage"], errorMessage, secondaryErrorMessage, "", LocaleManager.Instance["InputDialogOk"], 0xF3F2);
+            await ShowContentDialog(owner, LocaleManager.Instance["DialogErrorTitle"], LocaleManager.Instance["DialogErrorMessage"], errorMessage, secondaryErrorMessage, "", LocaleManager.Instance["InputDialogOk"], (int)Symbol.Dismiss);
         }
 
         internal static async Task<bool> CreateChoiceDialog(StyleableWindow window, string title, string primary, string secondaryText)

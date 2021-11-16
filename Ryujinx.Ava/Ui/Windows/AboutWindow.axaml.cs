@@ -21,6 +21,8 @@ namespace Ryujinx.Ava.Ui.Windows
                 Title = $"Ryujinx {Program.Version} - About";
             }
 
+            Version = Program.Version;
+
             DataContext = this;
 
             InitializeComponent();
@@ -32,6 +34,7 @@ namespace Ryujinx.Ava.Ui.Windows
         }
 
         public string Supporters { get; set; }
+        public string Version { get; set; }
 
         public TextBlock SupportersTextBlock { get; set; }
 

@@ -78,7 +78,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             get => _customResolutionScale;
             set
             {
-                _customResolutionScale = MathF.Round(value, 2);
+                _customResolutionScale = MathF.Round(value, 1);
 
                 OnPropertyChanged();
             }

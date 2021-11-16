@@ -39,32 +39,35 @@
         </Border>
     </Design.PreviewWith>
     <Style Selector="Border.small">
-        <Setter Property="Width" Value="100"/>
+        <Setter Property="Width" Value="100" />
     </Style>
     <Style Selector="Border.normal">
-        <Setter Property="Width" Value="130"/>
+        <Setter Property="Width" Value="130" />
     </Style>
     <Style Selector="Border.large">
-        <Setter Property="Width" Value="160"/>
+        <Setter Property="Width" Value="160" />
+    </Style>
+    <Style Selector="RadioButton">
+        <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
     <Style Selector="Border.huge">
-        <Setter Property="Width" Value="200"/>
+        <Setter Property="Width" Value="200" />
     </Style>
     <Style Selector="Image.small">
-      <Setter Property="Width" Value="12"/>
-      <Setter Property="Height" Value="12"/>
+        <Setter Property="Width" Value="12" />
+        <Setter Property="Height" Value="12" />
     </Style>
     <Style Selector="Image.normal">
-      <Setter Property="Width" Value="15"/>
-      <Setter Property="Height" Value="15"/>
+        <Setter Property="Width" Value="15" />
+        <Setter Property="Height" Value="15" />
     </Style>
     <Style Selector="Image.large">
-      <Setter Property="Width" Value="19"/>
-      <Setter Property="Height" Value="19"/>
+        <Setter Property="Width" Value="19" />
+        <Setter Property="Height" Value="19" />
     </Style>
     <Style Selector="Image.huge">
-      <Setter Property="Width" Value="26"/>
-      <Setter Property="Height" Value="26"/>
+        <Setter Property="Width" Value="26" />
+        <Setter Property="Height" Value="26" />
     </Style>
     <Style Selector="DataGridColumnHeader">
         <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundBrush}" />
@@ -212,11 +215,11 @@
         <Setter Property="Foreground" Value="{DynamicResource ThemeForegroundColor}" />
     </Style>
     <Styles.Resources>
-       <StaticResource x:Key="ListViewItemBackgroundSelected" ResourceKey="ThemeAccentColorBrush" />
-       <StaticResource x:Key="ListViewItemBackgroundPressed" ResourceKey="SystemAccentColorDark1" />
-       <StaticResource x:Key="ListViewItemBackgroundPointerOver" ResourceKey="SystemAccentColorDark2" />
-       <StaticResource x:Key="ListViewItemBackgroundSelectedPressed" ResourceKey="ThemeAccentColorBrush" />
-       <StaticResource x:Key="ListViewItemBackgroundSelectedPointerOver" ResourceKey="SystemAccentColorDark2" />
+        <StaticResource x:Key="ListViewItemBackgroundSelected" ResourceKey="ThemeAccentColorBrush" />
+        <StaticResource x:Key="ListViewItemBackgroundPressed" ResourceKey="SystemAccentColorDark1" />
+        <StaticResource x:Key="ListViewItemBackgroundPointerOver" ResourceKey="SystemAccentColorDark2" />
+        <StaticResource x:Key="ListViewItemBackgroundSelectedPressed" ResourceKey="ThemeAccentColorBrush" />
+        <StaticResource x:Key="ListViewItemBackgroundSelectedPointerOver" ResourceKey="SystemAccentColorDark2" />
         <SolidColorBrush x:Key="DataGridGridLinesBrush"
                          Color="{DynamicResource SystemBaseMediumLowColor}"
                          Opacity="0.4" />

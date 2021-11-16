@@ -58,49 +58,49 @@
                 </ItemsControl>
             </ScrollViewer>
         </Border>
-      <DockPanel
-          Grid.Row="2"
-          Margin="0"
-          HorizontalAlignment="Stretch">
-        <DockPanel Margin="0" HorizontalAlignment="Left">
-          <Button
-              Name="AddButton"
-              MinWidth="90"
-              Margin="5"
-              Command="{Binding Add}">
-            <TextBlock Text="{locale:Locale SettingsTabGeneralAdd}" />
-          </Button>
-          <Button
-              Name="RemoveButton"
-              MinWidth="90"
-              Margin="5"
-              Command="{Binding RemoveSelected}">
-            <TextBlock Text="{locale:Locale SettingsTabGeneralRemove}" />
-          </Button>
-          <Button
-              Name="RemoveAllButton"
-              MinWidth="90"
-              Margin="5"
-              Command="{Binding RemoveAll}">
-            <TextBlock Text="{locale:Locale DlcManagerRemoveAllButton}" />
-          </Button>
+        <DockPanel
+            Grid.Row="2"
+            Margin="0"
+            HorizontalAlignment="Stretch">
+            <DockPanel Margin="0" HorizontalAlignment="Left">
+                <Button
+                    Name="AddButton"
+                    MinWidth="90"
+                    Margin="5"
+                    Command="{Binding Add}">
+                    <TextBlock Text="{locale:Locale SettingsTabGeneralAdd}" />
+                </Button>
+                <Button
+                    Name="RemoveButton"
+                    MinWidth="90"
+                    Margin="5"
+                    Command="{Binding RemoveSelected}">
+                    <TextBlock Text="{locale:Locale SettingsTabGeneralRemove}" />
+                </Button>
+                <Button
+                    Name="RemoveAllButton"
+                    MinWidth="90"
+                    Margin="5"
+                    Command="{Binding RemoveAll}">
+                    <TextBlock Text="{locale:Locale DlcManagerRemoveAllButton}" />
+                </Button>
+            </DockPanel>
+            <DockPanel Margin="0" HorizontalAlignment="Right">
+                <Button
+                    Name="SaveButton"
+                    MinWidth="90"
+                    Margin="5"
+                    Command="{Binding Save}">
+                    <TextBlock Text="{locale:Locale SettingsButtonSave}" />
+                </Button>
+                <Button
+                    Name="CancelButton"
+                    MinWidth="90"
+                    Margin="5"
+                    Command="{Binding Close}">
+                    <TextBlock Text="{locale:Locale InputDialogCancel}" />
+                </Button>
+            </DockPanel>
         </DockPanel>
-        <DockPanel Margin="0" HorizontalAlignment="Right">
-          <Button
-              Name="SaveButton"
-              MinWidth="90"
-              Margin="5"
-              Command="{Binding Save}">
-            <TextBlock Text="{locale:Locale SettingsButtonSave}" />
-          </Button>
-          <Button
-              Name="CancelButton"
-              MinWidth="90"
-              Margin="5"
-              Command="{Binding Close}">
-            <TextBlock Text="{locale:Locale InputDialogCancel}" />
-          </Button>
-        </DockPanel>
-      </DockPanel>
     </Grid>
 </window:StyleableWindow>

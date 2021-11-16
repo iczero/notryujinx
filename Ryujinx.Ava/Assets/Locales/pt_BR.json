@@ -426,7 +426,7 @@
   "CommonSort": "Ordenar",
   "CommonShowNames": "Exibir nomes",
   "CommonFavorite": "Favorito",
-  "OrderAscending" :  "Ascendente",
-  "OrderDescending" :  "Descendente",
-  "SettingsTabGraphicsFeatures" : "Recursos"
+  "OrderAscending": "Ascendente",
+  "OrderDescending": "Descendente",
+  "SettingsTabGraphicsFeatures": "Recursos"
 }
