@@ -56,33 +56,33 @@
                                     IsChecked="{Binding IsEnabled}" />
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
-                      <DataGridTemplateColumn.Header>
-                        <TextBlock Text="{locale:Locale DlcManagerTableHeadingEnabledLabel}"/>
-                      </DataGridTemplateColumn.Header>
+                        <DataGridTemplateColumn.Header>
+                            <TextBlock Text="{locale:Locale DlcManagerTableHeadingEnabledLabel}" />
+                        </DataGridTemplateColumn.Header>
                     </DataGridTemplateColumn>
-                  <DataGridTextColumn
-                      Width="190"
-                      Binding="{Binding TitleId}"
-                      CanUserResize="True">
-                    <DataGridTextColumn.Header>
-                      <TextBlock  Text="{locale:Locale DlcManagerTableHeadingTitleIdLabel}"/>
-                    </DataGridTextColumn.Header>
-                  </DataGridTextColumn>
+                    <DataGridTextColumn
+                        Width="190"
+                        Binding="{Binding TitleId}"
+                        CanUserResize="True">
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{locale:Locale DlcManagerTableHeadingTitleIdLabel}" />
+                        </DataGridTextColumn.Header>
+                    </DataGridTextColumn>
                     <DataGridTextColumn
                         Width="*"
                         Binding="{Binding ContainerPath}"
                         CanUserResize="True">
-                      <DataGridTextColumn.Header>
-                        <TextBlock Text="{locale:Locale DlcManagerTableHeadingContainerPathLabel}"/>
-                      </DataGridTextColumn.Header>
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{locale:Locale DlcManagerTableHeadingContainerPathLabel}" />
+                        </DataGridTextColumn.Header>
                     </DataGridTextColumn>
                     <DataGridTextColumn
                         Width="*"
                         Binding="{Binding FullPath}"
                         CanUserResize="True">
-                      <DataGridTextColumn.Header>
-                        <TextBlock Text="{locale:Locale DlcManagerTableHeadingFullPathLabel}"/>
-                      </DataGridTextColumn.Header>
+                        <DataGridTextColumn.Header>
+                            <TextBlock Text="{locale:Locale DlcManagerTableHeadingFullPathLabel}" />
+                        </DataGridTextColumn.Header>
                     </DataGridTextColumn>
                 </DataGrid.Columns>
             </DataGrid>

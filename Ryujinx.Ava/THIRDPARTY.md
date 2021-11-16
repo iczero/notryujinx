@@ -1,7 +1,8 @@
 # ffmpeg (LGPLv3)
+
 <details>
   <summary>See License</summary>
-  
+
   ```
                      GNU LESSER GENERAL PUBLIC LICENSE
                          Version 3, 29 June 2007
@@ -169,12 +170,14 @@
   permanent authorization for you to choose that version for the
   Library.
   ```
+
 </details>
 
 # libvpx (BSD)
+
 <details>
   <summary>See License</summary>
-  
+
   ```
   Copyright (c) 2010, The WebM Project authors. All rights reserved.
 
@@ -207,12 +210,14 @@
   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   ```
+
 </details>
 
 # Atmosphère (MIT)
+
 <details>
   <summary>See License</summary>
-  
+
   ```
   MIT License
 
@@ -236,12 +241,14 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
   SOFTWARE.
   ```
+
 </details>
 
 # OpenAL Soft (LGPLv2)
+
 <details>
   <summary>See License</summary>
-  
+
   ```
                     GNU LIBRARY GENERAL PUBLIC LICENSE
                          Version 2, June 1991
@@ -681,4 +688,5 @@
 
                        END OF TERMS AND CONDITIONS
   ```
+
 </details>
