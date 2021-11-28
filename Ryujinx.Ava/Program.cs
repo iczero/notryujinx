@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 
 namespace Ryujinx.Ava
 {
-    public class Program
+    internal class Program
     {
         public static string Version           { get; private set; }
         public static string ConfigurationPath { get; private set; }
