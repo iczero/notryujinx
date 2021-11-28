@@ -29,6 +29,7 @@ using Ryujinx.HLE.FileSystem.Content;
 using Ryujinx.HLE.HOS;
 using Ryujinx.HLE.HOS.Services.Account.Acc;
 using Ryujinx.HLE.HOS.SystemState;
+using Ryujinx.HLE.Ui;
 using Ryujinx.Input;
 using Ryujinx.Input.Avalonia;
 using Ryujinx.Input.HLE;
@@ -61,6 +62,8 @@ namespace Ryujinx.Ava
 
         private readonly AccountManager _accountManager;
         private UserChannelPersistence _userChannelPersistence;
+        private LibHacHorizonManager _libHacHorizonManager;
+        private IHostUiHandler _hostUiHandler;
 
         private readonly Stopwatch _chrono;
 
@@ -68,7 +71,7 @@ namespace Ryujinx.Ava
 
         private readonly IKeyboard _keyboardInterface;
 
-        private readonly MainWindow _parent;
+        private readonly StyleableWindow _parent;
 
         private readonly long _ticksPerFrame;
 
@@ -88,14 +91,17 @@ namespace Ryujinx.Ava
 
         private long _ticks;
 
-        private bool _toggleDockedMode;
-        private bool _toggleFullscreen;
-        private bool _isMouseInClient;
         private bool _renderingStarted;
         private WindowsMultimediaTimerResolution _windowsMultimediaTimerResolution;
 
         public event EventHandler AppExit;
         public event EventHandler<StatusUpdatedEventArgs> StatusUpdatedEvent;
+        public event EventHandler<IApplicationLoaderTitleInformation> OnStartAppTitle;
+        public event EventHandler OnAppStartsRendering;
+        public event EventHandler<bool> OnMouseEnterOrLeaveRenderWindow;
+        public event EventHandler<bool> OnAppPauseModeChanged;
+        public event EventHandler OnRefreshFirmwareStatusChanged;
+        public event EventHandler<GpuContext> OnGpuContextChanged;
 
         public NativeEmbeddedWindow Window            { get; }
         public VirtualFileSystem    VirtualFileSystem { get; }
@@ -103,6 +109,8 @@ namespace Ryujinx.Ava
         public Switch               Device  { get; set; }
         public NpadManager          NpadManager       { get; }
         public TouchScreenManager   TouchScreenManager { get; }
+
+        public bool IsRunning => _isActive;
 
         public int    Width   { get; private set; }
         public int    Height  { get; private set; }
@@ -118,8 +126,12 @@ namespace Ryujinx.Ava
             ContentManager         contentManager,
             AccountManager         accountManager,
             UserChannelPersistence userChannelPersistence,
-            MainWindow             parent)
+            LibHacHorizonManager   libHacHorizonManager,
+            IHostUiHandler hostUiHandler,
+            StyleableWindow parent)
         {
+            _hostUiHandler = hostUiHandler;
+            _libHacHorizonManager = libHacHorizonManager;
             _parent                 = parent;
             _inputManager           = inputManager;
             _accountManager         = accountManager;
@@ -160,13 +172,12 @@ namespace Ryujinx.Ava
         private void Parent_PointerLeft(object sender, PointerEventArgs e)
         {
             Window.Cursor = ConfigurationState.Instance.Hid.EnableMouse ? InvisibleCursor : Cursor.Default;
-            
-            _isMouseInClient = false;
+            OnMouseEnterOrLeaveRenderWindow?.Invoke(this, false);
         }
 
         private void Parent_PointerEntered(object sender, PointerEventArgs e)
         {
-            _isMouseInClient = true;
+            OnMouseEnterOrLeaveRenderWindow?.Invoke(this, true);
         }
 
         private void SetRendererWindowSize(Size size)
@@ -250,31 +261,9 @@ namespace Ryujinx.Ava
 
                 NpadManager.Initialize(Device, ConfigurationState.Instance.Hid.InputConfig, ConfigurationState.Instance.Hid.EnableKeyboard, ConfigurationState.Instance.Hid.EnableMouse);
                 TouchScreenManager.Initialize(Device);
-                
-                _parent.ViewModel.IsGameRunning = true;
 
-                string titleNameSection = string.IsNullOrWhiteSpace(Device.Application.TitleName)
-                    ? string.Empty
-                    : $" - {Device.Application.TitleName}";
-
-                string titleVersionSection = string.IsNullOrWhiteSpace(Device.Application.DisplayVersion)
-                    ? string.Empty
-                    : $" v{Device.Application.DisplayVersion}";
-
-                string titleIdSection = string.IsNullOrWhiteSpace(Device.Application.TitleIdText)
-                    ? string.Empty
-                    : $" ({Device.Application.TitleIdText.ToUpper()})";
-
-                string titleArchSection = Device.Application.TitleIs64Bit
-                    ? " (64-bit)"
-                    : " (32-bit)";
-
-                Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    _parent.Title = $"Ryujinx {Program.Version}{titleNameSection}{titleVersionSection}{titleIdSection}{titleArchSection}";
-                });
-
-                _parent.ViewModel.HandleShaderProgress(Device);
+                OnStartAppTitle?.Invoke(this, Device.Application);
+                OnGpuContextChanged?.Invoke(this, Device.Gpu);
 
                 Window.SizeChanged += Window_SizeChanged;
 
@@ -415,7 +404,7 @@ namespace Ryujinx.Ava
             
             if (Path.StartsWith("@SystemContent"))
             {
-                Path = _parent.VirtualFileSystem.SwitchPathToSystemPath(Path);
+                Path = VirtualFileSystem.SwitchPathToSystemPath(Path);
 
                 isFirmwareTitle = true;
             }
@@ -455,7 +444,7 @@ namespace Ryujinx.Ava
                     {
                         firmwareVersion = ContentManager.GetCurrentFirmwareVersion();
 
-                        _parent.RefreshFirmwareStatus();
+                        OnRefreshFirmwareStatusChanged?.Invoke(this, null);
 
                         string message = String.Format(LocaleManager.Instance["DialogFirmwareInstallEmbeddedSuccessMessage"],firmwareVersion.VersionString);
 
@@ -573,13 +562,13 @@ namespace Ryujinx.Ava
         internal void Resume()
         {
             Device?.System?.TogglePauseEmulation(false);
-            _parent.ViewModel.IsPaused = false;
+            OnAppPauseModeChanged?.Invoke(this, false);
         }
 
         internal void Pause()
         {
             Device?.System?.TogglePauseEmulation(true);
-            _parent.ViewModel.IsPaused = true;
+            OnAppPauseModeChanged?.Invoke(this, true);
         }
 
         private void InitializeSwitchInstance()
@@ -725,14 +714,14 @@ namespace Ryujinx.Ava
             IntegrityCheckLevel fsIntegrityCheckLevel = ConfigurationState.Instance.System.EnableFsIntegrityChecks ? IntegrityCheckLevel.ErrorOnInvalid : IntegrityCheckLevel.None;
             
             HLE.HLEConfiguration configuration = new HLE.HLEConfiguration(VirtualFileSystem,
-                                                                          _parent.LibHacHorizonManager,
+                                                                          _libHacHorizonManager,
                                                                           ContentManager,
                                                                           _accountManager,
                                                                           _userChannelPersistence,
                                                                           renderer,
                                                                           deviceDriver,
                                                                           memoryConfiguration,
-                                                                          _parent.UiHandler,
+                                                                          _hostUiHandler,
                                                                           (SystemLanguage)ConfigurationState.Instance.System.Language.Value,
                                                                           (RegionCode)ConfigurationState.Instance.System.Region.Value,
                                                                           ConfigurationState.Instance.Graphics.EnableVsync,
@@ -763,6 +752,12 @@ namespace Ryujinx.Ava
             {
                 UpdateFrame();
 
+                if (ScreenshotRequested)
+                {
+                    ScreenshotRequested = false;
+                    _renderer.Screenshot();
+                }
+
                 // Polling becomes expensive if it's not slept
                 Thread.Sleep(1);
             }
@@ -791,16 +786,6 @@ namespace Ryujinx.Ava
         {
             Dispatcher.UIThread.InvokeAsync(() =>
             {
-                if (_parent.ViewModel.StartGamesInFullscreen)
-                {
-                    _parent.WindowState = WindowState.FullScreen;
-                }
-
-                if (_parent.WindowState == WindowState.FullScreen)
-                {
-                    _parent.ViewModel.ShowMenuAndStatusBar = false;
-                }
-
                 Window.IsFullscreen = _parent.WindowState == WindowState.FullScreen;
             });
 
@@ -852,7 +837,7 @@ namespace Ryujinx.Ava
                         if (!_renderingStarted)
                         {
                             _renderingStarted = true;
-                            _parent.SwitchToGameControl();
+                            OnAppStartsRendering?.Invoke(this, null);
                         }
                         
                         Device.PresentFrame(Present);
@@ -893,86 +878,6 @@ namespace Ryujinx.Ava
             Window.Present();
         }
 
-        private async void HandleScreenState(KeyboardStateSnapshot keyboard)
-        {
-            bool toggleFullscreen = keyboard.IsPressed(Key.F11)
-                || ((keyboard.IsPressed(Key.AltLeft) || keyboard.IsPressed(Key.AltRight)) && keyboard.IsPressed(Key.Enter))
-                || keyboard.IsPressed(Key.Escape);
-
-            bool fullScreenToggled = _parent.WindowState == WindowState.FullScreen;
-
-            if (toggleFullscreen != _toggleFullscreen)
-            {
-                if (toggleFullscreen)
-                {
-                    if (fullScreenToggled)
-                    {
-                        _parent.WindowState                    = WindowState.Normal;
-                        _parent.ViewModel.ShowMenuAndStatusBar = true;
-                    }
-                    else
-                    {
-                        if (keyboard.IsPressed(Key.Escape))
-                        {
-                            if (!ConfigurationState.Instance.ShowConfirmExit)
-                            {
-                                Dispose();
-                            }
-                            else
-                            {
-                                bool shouldExit = await ContentDialogHelper.CreateExitDialog(_parent);
-                                if (shouldExit)
-                                {
-                                    Dispose();
-                                }
-                            }
-
-                            (_keyboardInterface as AvaloniaKeyboard).Clear();
-                        }
-                        else
-                        {
-                            _parent.WindowState                    = WindowState.FullScreen;
-                            _parent.ViewModel.ShowMenuAndStatusBar = false;
-                        }
-                    }
-                }
-            }
-
-            Window.IsFullscreen = fullScreenToggled;
-            _toggleFullscreen   = toggleFullscreen;
-
-            bool toggleDockedMode = keyboard.IsPressed(Key.F9);
-
-            if (toggleDockedMode != _toggleDockedMode)
-            {
-                if (toggleDockedMode)
-                {
-                    ConfigurationState.Instance.System.EnableDockedMode.Value = !ConfigurationState.Instance.System.EnableDockedMode.Value;
-                }
-            }
-
-            _toggleDockedMode = toggleDockedMode;
-
-            if (_hideCursorOnIdle && !ConfigurationState.Instance.Hid.EnableMouse)
-            {
-                long cursorMoveDelta = Stopwatch.GetTimestamp() - _lastCursorMoveTime;
-                Dispatcher.UIThread.Post(() =>
-                {
-                    _parent.Cursor = cursorMoveDelta >= CursorHideIdleTime * Stopwatch.Frequency ? InvisibleCursor : Cursor.Default;
-
-                    Window.SetCursor(_parent.Cursor == InvisibleCursor);
-                });
-            }
-            
-            if(ConfigurationState.Instance.Hid.EnableMouse && _isMouseInClient)
-            {
-                Dispatcher.UIThread.Post(() =>
-                {
-                    _parent.Cursor = InvisibleCursor;
-                });
-            }
-        }
-
         private bool UpdateFrame()
         {
             if (!_isActive)
@@ -980,70 +885,9 @@ namespace Ryujinx.Ava
                 return false;
             }
 
-            if (_parent.IsActive || Window.RendererFocused)
-            {
-                Dispatcher.UIThread.Post(() =>
-                {
-                    KeyboardStateSnapshot keyboard = _keyboardInterface.GetKeyboardStateSnapshot();
-
-                    HandleScreenState(keyboard);
-
-                    if (keyboard.IsPressed(Key.Delete))
-                    {
-                        if (_parent.WindowState != WindowState.FullScreen)
-                        {
-                            Ptc.Continue();
-                        }
-                    }
-                });
-            }
-
             NpadManager.Update(ConfigurationState.Instance.Graphics.AspectRatio.Value.ToFloat());
 
-            if (_parent.IsActive || Window.RendererFocused)
-            {
-                KeyboardHotkeyState currentHotkeyState = GetHotkeyState();
-
-                if (currentHotkeyState == KeyboardHotkeyState.ToggleVSync &&
-                    _prevHotkeyState != KeyboardHotkeyState.ToggleVSync)
-                {
-                    Device.EnableDeviceVsync = !Device.EnableDeviceVsync;
-                }
-
-                if ((currentHotkeyState == KeyboardHotkeyState.Screenshot &&
-                     _prevHotkeyState != KeyboardHotkeyState.Screenshot) || ScreenshotRequested)
-                {
-                    ScreenshotRequested = false;
-
-                    _renderer.Screenshot();
-                }
-                
-                if (currentHotkeyState == KeyboardHotkeyState.ShowUi &&
-                     _prevHotkeyState != KeyboardHotkeyState.ShowUi)
-                {
-                    _parent.ViewModel.ShowMenuAndStatusBar = true;
-                }
-
-                if (currentHotkeyState == KeyboardHotkeyState.Pause &&
-                     _prevHotkeyState != KeyboardHotkeyState.Pause)
-                {
-                    if(_parent.ViewModel.IsPaused)
-                    {
-                        Resume();
-                    }
-                    else
-                    {
-                        Pause();
-                    }
-                }
-
-                if (currentHotkeyState != KeyboardHotkeyState.None)
-                {
-                    (_keyboardInterface as AvaloniaKeyboard).Clear();
-                }
-
-                _prevHotkeyState = currentHotkeyState;
-            }
+            
 
             //Touchscreen
             bool hasTouch = false;
@@ -1063,33 +907,6 @@ namespace Ryujinx.Ava
             Device.Hid.DebugPad.Update();
 
             return true;
-        }
-
-        private KeyboardHotkeyState GetHotkeyState()
-        {
-            KeyboardHotkeyState state = KeyboardHotkeyState.None;
-
-            if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.ToggleVsync))
-            {
-                state = KeyboardHotkeyState.ToggleVSync;
-            }
-            
-            if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.Screenshot))
-            {
-                state = KeyboardHotkeyState.Screenshot;
-            }
-            
-            if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.ShowUi))
-            {
-                state = KeyboardHotkeyState.ShowUi;
-            }
-
-            if(_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.Pause))
-            {
-                state = KeyboardHotkeyState.Pause;
-            }
-
-            return state;
         }
     }
 }

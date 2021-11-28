@@ -1,3 +1,4 @@
+using ARMeilleure.Translation.PTC;
 using Avalonia;
 using Avalonia.Collections;
 using Avalonia.Controls;
@@ -23,22 +24,30 @@ using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.FileSystem.Content;
 using Ryujinx.HLE.HOS;
 using Ryujinx.HLE.HOS.Services.Account.Acc;
+using Ryujinx.Input;
 using Ryujinx.Input.Avalonia;
+using Ryujinx.Input.HLE;
 using Ryujinx.Input.SDL2;
 using Ryujinx.Modules;
+using Silk.NET.Vulkan;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using InputManager = Ryujinx.Input.HLE.InputManager;
+using Key = Ryujinx.Input.Key;
 using ProgressBar = Avalonia.Controls.ProgressBar;
 
 namespace Ryujinx.Ava.Ui.Windows
 {
     public class MainWindow : StyleableWindow
     {
+        private const int CursorHideIdleTime = 8; // Hide Cursor seconds
+        private static readonly Cursor InvisibleCursor = new Cursor(StandardCursorType.None);
+
         public static bool ShowKeyErrorOnLoad;
 
         private bool _canUpdate;
@@ -51,30 +60,39 @@ namespace Ryujinx.Ava.Ui.Windows
         private static bool _deferLoad;
         private static string _launchPath;
         private static bool _startFullscreen;
+        private IKeyboard _keyboardInterface;
+        private Thread _mainWindowUIThread;
         internal readonly AvaHostUiHandler UiHandler;
-        
+
+        private bool _hideCursorOnIdle;
+        private long _lastCursorMoveTime;
+        private bool _lastDockmodeKeyState;
+        private bool _lastFullscreenKeyState;
+        private bool _isMouseInClient;
+        private KeyboardHotkeyState _prevHotkeyState;
+
         public SettingsWindow SettingsWindow { get; set; }
-        
+
         public VirtualFileSystem VirtualFileSystem { get; private set; }
-        public ContentManager    ContentManager    { get; private set; }
-        public AccountManager    AccountManager    { get; private set; }
+        public ContentManager ContentManager { get; private set; }
+        public AccountManager AccountManager { get; private set; }
 
         public LibHacHorizonManager LibHacHorizonManager { get; private set; }
 
-        public AppHost      AppHost      { get; private set; }
+        public AppHost AppHost { get; private set; }
         public InputManager InputManager { get; private set; }
 
-        public NativeEmbeddedWindow GlRenderer      { get; private set; }
-        public ContentControl       ContentFrame    { get; private set; }
-        public TextBlock            LoadStatus      { get; private set; }
-        public TextBlock            FirmwareStatus  { get; private set; }
-        public TextBox              SearchBox       { get; private set; }
-        public ProgressBar          LoadProgressBar { get; private set; }
-        public Menu                 Menu            { get; private set; }
-        public MenuItem             UpdateMenuItem  { get; private set; }
-        public GameGridView         GameGrid        { get; private set; }
-        public DataGrid             GameList        { get; private set; }
-        public OffscreenTextBox     HiddenTextBox   { get; private set; }
+        public NativeEmbeddedWindow GlRenderer { get; private set; }
+        public ContentControl ContentFrame { get; private set; }
+        public TextBlock LoadStatus { get; private set; }
+        public TextBlock FirmwareStatus { get; private set; }
+        public TextBox SearchBox { get; private set; }
+        public ProgressBar LoadProgressBar { get; private set; }
+        public Menu Menu { get; private set; }
+        public MenuItem UpdateMenuItem { get; private set; }
+        public GameGridView GameGrid { get; private set; }
+        public DataGrid GameList { get; private set; }
+        public OffscreenTextBox HiddenTextBox { get; private set; }
 
         public MainWindowViewModel ViewModel { get; private set; }
 
@@ -110,6 +128,213 @@ namespace Ryujinx.Ava.Ui.Windows
 
                 LoadGameList();
             }
+
+            _keyboardInterface = (IKeyboard)InputManager.KeyboardDriver.GetGamepad("0");
+            _mainWindowUIThread = new Thread(() =>
+            {
+                while (true)
+                {
+                    var hasRun = UIThreadLoopIteration();
+                    Thread.Sleep(hasRun ? 1 : 100);
+                }
+            })
+            {
+                Name = "GUI.MainWindowUIThread"
+            };
+            _mainWindowUIThread.Start();
+        }
+
+        private bool UIThreadLoopIteration()
+        {
+            // Window is not active
+            if (!IsActive && (!AppHost?.IsRunning ?? true))
+            {
+                return false;
+            }
+
+            KeyboardStateSnapshot keyboard = _keyboardInterface.GetKeyboardStateSnapshot();
+
+            HandleKeyboardPressedStates(keyboard);
+            HandleKeyboardHotkeys();
+
+            return true;
+        }
+
+        private async void HandleKeyboardPressedStates(KeyboardStateSnapshot keyboard)
+        {
+            bool newFullscreenKeyState = keyboard.IsPressed(Key.F11)
+                || ((keyboard.IsPressed(Key.AltLeft) || keyboard.IsPressed(Key.AltRight)) && keyboard.IsPressed(Key.Enter))
+                || keyboard.IsPressed(Key.Escape);
+
+
+            if (newFullscreenKeyState != _lastFullscreenKeyState)
+            {
+                _lastFullscreenKeyState = newFullscreenKeyState;
+
+                WindowState? windowState = null;
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    windowState = WindowState;
+                });
+
+                bool isFullScreenActive = windowState == WindowState.FullScreen;
+
+                if (newFullscreenKeyState)
+                {
+                    if (isFullScreenActive)
+                    {
+                        await Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+                            WindowState = WindowState.Normal;
+                            ViewModel.ShowMenuAndStatusBar = true;
+                        });
+                    }
+                    else
+                    {
+                        if (keyboard.IsPressed(Key.Escape))
+                        {
+                            if (!ConfigurationState.Instance.ShowConfirmExit)
+                            {
+                                AppHost?.Dispose();
+                            }
+                            else
+                            {
+                                await Dispatcher.UIThread.InvokeAsync(async () =>
+                                {
+                                    bool shouldExit = await ContentDialogHelper.CreateExitDialog(this);
+                                    if (shouldExit)
+                                    {
+                                        AppHost?.Dispose();
+                                    }
+                                });
+                            }
+
+                            (_keyboardInterface as AvaloniaKeyboard).Clear();
+                        }
+                        else
+                        {
+                            await Dispatcher.UIThread.InvokeAsync(() =>
+                            {
+                                WindowState = WindowState.FullScreen;
+                                ViewModel.ShowMenuAndStatusBar = false;
+                            });
+                        }
+                    }
+                }
+            }
+
+
+
+            bool isDockedModeKeyPressed = keyboard.IsPressed(Key.F9);
+            if (isDockedModeKeyPressed != _lastDockmodeKeyState)
+            {
+                _lastDockmodeKeyState = isDockedModeKeyPressed;
+
+                if (isDockedModeKeyPressed)
+                {
+                    ConfigurationState.Instance.System.EnableDockedMode.Value = !ConfigurationState.Instance.System.EnableDockedMode.Value;
+                }
+            }
+
+
+
+            if (_hideCursorOnIdle && !ConfigurationState.Instance.Hid.EnableMouse)
+            {
+                long cursorMoveDelta = Stopwatch.GetTimestamp() - _lastCursorMoveTime;
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    Cursor = cursorMoveDelta >= CursorHideIdleTime * Stopwatch.Frequency ? InvisibleCursor : Cursor.Default;
+                });
+            }
+
+            if (ConfigurationState.Instance.Hid.EnableMouse && _isMouseInClient)
+            {
+                await Dispatcher.UIThread.InvokeAsync(() => Cursor = InvisibleCursor);
+            }
+
+            if (keyboard.IsPressed(Key.Delete))
+            {
+                WindowState? windowState = null;
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    windowState = WindowState;
+                });
+
+                if (windowState != WindowState.FullScreen)
+                {
+                    Ptc.Continue();
+                }
+            }
+        }
+
+        private void HandleKeyboardHotkeys()
+        {
+            KeyboardHotkeyState currentHotkeyState = GetHotkeyState();
+
+            if (currentHotkeyState == KeyboardHotkeyState.ToggleVSync &&
+                _prevHotkeyState != KeyboardHotkeyState.ToggleVSync)
+            {
+                AppHost.Device.EnableDeviceVsync = !AppHost.Device.EnableDeviceVsync;
+            }
+
+            if ((currentHotkeyState == KeyboardHotkeyState.Screenshot &&
+                 _prevHotkeyState != KeyboardHotkeyState.Screenshot))
+            {
+                AppHost.ScreenshotRequested = true;
+            }
+
+            if (currentHotkeyState == KeyboardHotkeyState.ShowUi &&
+                 _prevHotkeyState != KeyboardHotkeyState.ShowUi)
+            {
+                ViewModel.ShowMenuAndStatusBar = !ViewModel.ShowMenuAndStatusBar;
+            }
+
+            if (currentHotkeyState == KeyboardHotkeyState.Pause &&
+                 _prevHotkeyState != KeyboardHotkeyState.Pause)
+            {
+                if (ViewModel.IsPaused)
+                {
+                    AppHost.Resume();
+                }
+                else
+                {
+                    AppHost.Pause();
+                }
+            }
+
+            if (currentHotkeyState != KeyboardHotkeyState.None)
+            {
+                (_keyboardInterface as AvaloniaKeyboard).Clear();
+            }
+
+            _prevHotkeyState = currentHotkeyState;
+        }
+
+        private KeyboardHotkeyState GetHotkeyState()
+        {
+            KeyboardHotkeyState state = KeyboardHotkeyState.None;
+
+            if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.ToggleVsync))
+            {
+                state = KeyboardHotkeyState.ToggleVSync;
+            }
+
+            if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.Screenshot))
+            {
+                state = KeyboardHotkeyState.Screenshot;
+            }
+
+            if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.ShowUi))
+            {
+                state = KeyboardHotkeyState.ShowUi;
+            }
+
+            if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.Pause))
+            {
+                state = KeyboardHotkeyState.Pause;
+            }
+
+            return state;
         }
 
         [Conditional("DEBUG")]
@@ -189,7 +414,7 @@ namespace Ryujinx.Ava.Ui.Windows
         {
             if (ConfigurationState.Instance.Logger.EnableDebug.Value)
             {
-                string mainMessage      = LocaleManager.Instance["DialogPerformanceCheckLoggingEnabledMessage"];
+                string mainMessage = LocaleManager.Instance["DialogPerformanceCheckLoggingEnabledMessage"];
                 string secondaryMessage = LocaleManager.Instance["DialogPerformanceCheckLoggingEnabledConfirmMessage"];
 
                 UserResult result = await ContentDialogHelper.CreateConfirmationDialog(this, mainMessage, secondaryMessage);
@@ -204,7 +429,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
             if (!string.IsNullOrWhiteSpace(ConfigurationState.Instance.Graphics.ShadersDumpPath.Value))
             {
-                string mainMessage      = LocaleManager.Instance["DialogPerformanceCheckShaderDumpEnabledMessage"];
+                string mainMessage = LocaleManager.Instance["DialogPerformanceCheckShaderDumpEnabledMessage"];
                 string secondaryMessage = LocaleManager.Instance["DialogPerformanceCheckShaderDumpEnabledConfirmMessage"];
 
                 UserResult result = await ContentDialogHelper.CreateConfirmationDialog(this, mainMessage, secondaryMessage);
@@ -244,7 +469,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
             Logger.RestartTime();
 
-            if(ViewModel.SelectedIcon == null)
+            if (ViewModel.SelectedIcon == null)
             {
                 ViewModel.SelectedIcon = ApplicationLibrary.GetApplicationIcon(path);
             }
@@ -256,7 +481,7 @@ namespace Ryujinx.Ava.Ui.Windows
             _mainViewContent = ContentFrame.Content as Control;
 
             GlRenderer = new OpenGlEmbeddedWindow(3, 3, ConfigurationState.Instance.Logger.GraphicsDebugLevel, PlatformImpl.DesktopScaling);
-            AppHost    = new AppHost(GlRenderer, InputManager, path, VirtualFileSystem, ContentManager, AccountManager, _userChannelPersistence, this);
+            AppHost = new AppHost(GlRenderer, InputManager, path, VirtualFileSystem, ContentManager, AccountManager, _userChannelPersistence, LibHacHorizonManager, UiHandler, this);
 
             GlRenderer.WindowCreated += GlRenderer_Created;
             GlRenderer.Start();
@@ -265,8 +490,30 @@ namespace Ryujinx.Ava.Ui.Windows
 
             SwitchToGameControl(startFullscreen);
 
+            AppHost.OnStartAppTitle += AppHost_OnStartAppTitle;
+            AppHost.OnAppStartsRendering += (sender, args) => SwitchToGameControl();
+            AppHost.OnMouseEnterOrLeaveRenderWindow += (sender, enterState) => _isMouseInClient = enterState;
+            AppHost.OnAppPauseModeChanged += (sender, pauseMode) => ViewModel.IsPaused = pauseMode;
+            AppHost.OnRefreshFirmwareStatusChanged += (s, a) => RefreshFirmwareStatus();
+            AppHost.OnGpuContextChanged += (s, gpuContext) => ViewModel.HandleShaderProgress(gpuContext);
             AppHost.StatusUpdatedEvent += Update_StatusBar;
-            AppHost.AppExit            += AppHost_AppExit;
+            AppHost.AppExit += AppHost_AppExit;
+
+        }
+
+        private void AppHost_OnStartAppTitle(object sender, IApplicationLoaderTitleInformation e)
+        {
+            ViewModel.IsGameRunning = true;
+
+            var titleNameSection = string.IsNullOrWhiteSpace(e.TitleName) ? string.Empty : $" - {e.TitleName}";
+            var titleVersionSection = string.IsNullOrWhiteSpace(e.DisplayVersion) ? string.Empty : $" v{e.DisplayVersion}";
+            var titleIdSection = string.IsNullOrWhiteSpace(e.TitleIdText) ? string.Empty : $" ({e.TitleIdText.ToUpper()})";
+            var titleArchSection = e.TitleIs64Bit ? " (64-bit)" : " (32-bit)";
+
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                Title = $"Ryujinx {Program.Version}{titleNameSection}{titleVersionSection}{titleIdSection}{titleArchSection}";
+            });
         }
 
         public void SwitchToGameControl(bool startFullscreen = false)
@@ -278,7 +525,7 @@ namespace Ryujinx.Ava.Ui.Windows
             {
                 ContentFrame.Content = GlRenderer;
 
-                if(startFullscreen && WindowState != WindowState.FullScreen)
+                if (startFullscreen && WindowState != WindowState.FullScreen)
                 {
                     ViewModel.ToggleFullscreen();
                 }
@@ -289,10 +536,10 @@ namespace Ryujinx.Ava.Ui.Windows
         {
             ViewModel.ShowContent = false;
             ViewModel.ShowLoadProgress = true;
-            
+
             Dispatcher.UIThread.InvokeAsync(() =>
             {
-                if(startFullscreen && WindowState != WindowState.FullScreen)
+                if (startFullscreen && WindowState != WindowState.FullScreen)
                 {
                     ViewModel.ToggleFullscreen();
                 }
@@ -302,7 +549,7 @@ namespace Ryujinx.Ava.Ui.Windows
         private void GlRenderer_Created(object sender, IntPtr e)
         {
             ShowLoading();
-            
+
             AppHost?.Start();
         }
 
@@ -341,7 +588,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
         public void Sort_Checked(object sender, RoutedEventArgs args)
         {
-            if(sender is RadioButton button)
+            if (sender is RadioButton button)
             {
                 var sort = Enum.Parse<ApplicationSort>(button.Tag.ToString());
                 ViewModel.Sort(sort);
@@ -362,22 +609,22 @@ namespace Ryujinx.Ava.Ui.Windows
             UpdateGridColumns();
 
             _userChannelPersistence = new UserChannelPersistence();
-            VirtualFileSystem       = VirtualFileSystem.CreateInstance();
-            LibHacHorizonManager    = new LibHacHorizonManager();
-            ContentManager          = new ContentManager(VirtualFileSystem);
+            VirtualFileSystem = VirtualFileSystem.CreateInstance();
+            LibHacHorizonManager = new LibHacHorizonManager();
+            ContentManager = new ContentManager(VirtualFileSystem);
 
             LibHacHorizonManager.InitializeFsServer(VirtualFileSystem);
             LibHacHorizonManager.InitializeArpServer();
             LibHacHorizonManager.InitializeBcatServer();
             LibHacHorizonManager.InitializeSystemClients();
-            
+
             // Save data created before we supported extra data in directory save data will not work properly if
             // given empty extra data. Luckily some of that extra data can be created using the data from the
             // save data indexer, which should be enough to check access permissions for user saves.
             // Every single save data's extra data will be checked and fixed if needed each time the emulator is opened.
             // Consider removing this at some point in the future when we don't need to worry about old saves.
             VirtualFileSystem.FixExtraData(LibHacHorizonManager.RyujinxClient);
-            
+
             AccountManager = new AccountManager(LibHacHorizonManager.RyujinxClient);
 
             VirtualFileSystem.ReloadKeySet();
@@ -391,14 +638,14 @@ namespace Ryujinx.Ava.Ui.Windows
         {
             base.OnAttachedToLogicalTree(e);
 
-            if(ShowKeyErrorOnLoad)
+            if (ShowKeyErrorOnLoad)
             {
                 ShowKeyErrorOnLoad = false;
 
                 UserErrorDialog.ShowUserErrorDialog(UserError.NoKeys, this);
             }
 
-            if(_deferLoad)
+            if (_deferLoad)
             {
                 _deferLoad = false;
 
@@ -417,7 +664,7 @@ namespace Ryujinx.Ava.Ui.Windows
         public void RefreshFirmwareStatus()
         {
             SystemVersion version = ContentManager.GetCurrentFirmwareVersion();
-            
+
             bool hasApplet = false;
 
             if (version != null)
@@ -439,16 +686,16 @@ namespace Ryujinx.Ava.Ui.Windows
         {
             AvaloniaXamlLoader.Load(this);
 
-            ContentFrame    = this.FindControl<ContentControl>("Content");
-            GameList        = this.FindControl<DataGrid>("GameList");
-            LoadStatus      = this.FindControl<TextBlock>("LoadStatus");
-            FirmwareStatus  = this.FindControl<TextBlock>("FirmwareStatus");
+            ContentFrame = this.FindControl<ContentControl>("Content");
+            GameList = this.FindControl<DataGrid>("GameList");
+            LoadStatus = this.FindControl<TextBlock>("LoadStatus");
+            FirmwareStatus = this.FindControl<TextBlock>("FirmwareStatus");
             LoadProgressBar = this.FindControl<ProgressBar>("LoadProgressBar");
-            SearchBox       = this.FindControl<TextBox>("SearchBox");
-            Menu            = this.FindControl<Menu>("Menu");
-            UpdateMenuItem  = this.FindControl<MenuItem>("UpdateMenuItem");
-            GameGrid        = this.FindControl<GameGridView>("GameGrid");
-            HiddenTextBox   = this.FindControl<OffscreenTextBox>("HiddenTextBox");
+            SearchBox = this.FindControl<TextBox>("SearchBox");
+            Menu = this.FindControl<Menu>("Menu");
+            UpdateMenuItem = this.FindControl<MenuItem>("UpdateMenuItem");
+            GameGrid = this.FindControl<GameGridView>("GameGrid");
+            HiddenTextBox = this.FindControl<OffscreenTextBox>("HiddenTextBox");
 
             GameGrid.ApplicationOpened += Application_Opened;
 
@@ -457,12 +704,12 @@ namespace Ryujinx.Ava.Ui.Windows
 
         public static void UpdateGraphicsConfig()
         {
-            int   resScale       = ConfigurationState.Instance.Graphics.ResScale;
+            int resScale = ConfigurationState.Instance.Graphics.ResScale;
             float resScaleCustom = ConfigurationState.Instance.Graphics.ResScaleCustom;
 
-            GraphicsConfig.ResScale          = resScale == -1 ? resScaleCustom : resScale;
-            GraphicsConfig.MaxAnisotropy     = ConfigurationState.Instance.Graphics.MaxAnisotropy;
-            GraphicsConfig.ShadersDumpPath   = ConfigurationState.Instance.Graphics.ShadersDumpPath;
+            GraphicsConfig.ResScale = resScale == -1 ? resScaleCustom : resScale;
+            GraphicsConfig.MaxAnisotropy = ConfigurationState.Instance.Graphics.MaxAnisotropy;
+            GraphicsConfig.ShadersDumpPath = ConfigurationState.Instance.Graphics.ShadersDumpPath;
             GraphicsConfig.EnableShaderCache = ConfigurationState.Instance.Graphics.EnableShaderCache;
         }
 
@@ -476,7 +723,7 @@ namespace Ryujinx.Ava.Ui.Windows
             ApplicationLibrary.LoadAndSaveMetaData(titleId, appMetadata =>
             {
                 DateTime lastPlayedDateTime = DateTime.Parse(appMetadata.LastPlayed);
-                double   sessionTimePlayed  = DateTime.UtcNow.Subtract(lastPlayedDateTime).TotalSeconds;
+                double sessionTimePlayed = DateTime.UtcNow.Subtract(lastPlayedDateTime).TotalSeconds;
 
                 appMetadata.TimePlayed += Math.Round(sessionTimePlayed, MidpointRounding.AwayFromZero);
             });
@@ -490,9 +737,9 @@ namespace Ryujinx.Ava.Ui.Windows
             {
                 if (sender is ContextMenu menu)
                 {
-                    bool canHaveUserSave   = !Utilities.IsZeros(data.ControlHolder.ByteSpan) && data.ControlHolder.Value.UserAccountSaveDataSize > 0;
+                    bool canHaveUserSave = !Utilities.IsZeros(data.ControlHolder.ByteSpan) && data.ControlHolder.Value.UserAccountSaveDataSize > 0;
                     bool canHaveDeviceSave = !Utilities.IsZeros(data.ControlHolder.ByteSpan) && data.ControlHolder.Value.DeviceSaveDataSize > 0;
-                    bool canHaveBcatSave   = !Utilities.IsZeros(data.ControlHolder.ByteSpan) && data.ControlHolder.Value.BcatDeliveryCacheStorageSize > 0;
+                    bool canHaveBcatSave = !Utilities.IsZeros(data.ControlHolder.ByteSpan) && data.ControlHolder.Value.BcatDeliveryCacheStorageSize > 0;
 
                     ((menu.Items as AvaloniaList<object>)[2] as MenuItem).IsEnabled = canHaveUserSave;
                     ((menu.Items as AvaloniaList<object>)[3] as MenuItem).IsEnabled = canHaveDeviceSave;
@@ -621,7 +868,7 @@ namespace Ryujinx.Ava.Ui.Windows
             }
 
             _isClosing = true;
-            
+
             AppHost?.Dispose();
             InputManager.Dispose();
             Program.Exit();
@@ -635,10 +882,10 @@ namespace Ryujinx.Ava.Ui.Windows
            {
                _isClosing = await ContentDialogHelper.CreateExitDialog(this);
 
-               if(_isClosing)
+               if (_isClosing)
                {
                    Close();
-               }    
+               }
            });
         }
     }
