@@ -45,7 +45,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using InputManager = Ryujinx.Input.HLE.InputManager;
-using Key = Ryujinx.Input.Key;
 using MouseButton = Ryujinx.Input.MouseButton;
 using Size = Avalonia.Size;
 using Switch = Ryujinx.HLE.Switch;
@@ -56,7 +55,6 @@ namespace Ryujinx.Ava
     public class AppHost : IDisposable
     {
         private const int TargetFps          = 60;
-        private const int CursorHideIdleTime = 8; // Hide Cursor seconds
 
         private static readonly Cursor InvisibleCursor = new Cursor(StandardCursorType.None);
 
@@ -92,6 +90,7 @@ namespace Ryujinx.Ava
 
         private bool _renderingStarted;
         private WindowsMultimediaTimerResolution _windowsMultimediaTimerResolution;
+        private double _windowScaleFactor;
 
         public event EventHandler AppExit;
         public event EventHandler<StatusUpdatedEventArgs> StatusUpdatedEvent;
@@ -110,6 +109,7 @@ namespace Ryujinx.Ava
         public TouchScreenManager   TouchScreenManager { get; }
 
         public bool IsRunning => _isActive;
+        public long LastCursorMoveTime => _lastCursorMoveTime;
 
         public int    Width   { get; private set; }
         public int    Height  { get; private set; }
@@ -166,6 +166,9 @@ namespace Ryujinx.Ava
             ConfigurationState.Instance.System.IgnoreMissingServices.Event += UpdateIgnoreMissingServicesState;
             ConfigurationState.Instance.Graphics.AspectRatio.Event         += UpdateAspectRatioState;
             ConfigurationState.Instance.System.EnableDockedMode.Event      += UpdateDockedModeState;
+
+            ForceDpiAware.Windows();
+            _windowScaleFactor = ForceDpiAware.GetWindowScaleFactor();
         }
 
         private void Parent_PointerLeft(object sender, PointerEventArgs e)
@@ -183,8 +186,7 @@ namespace Ryujinx.Ava
         {
             if (_renderer != null)
             {
-                double scale = Program.WindowScaleFactor;
-                _renderer.Window.SetSize((int)(size.Width * scale), (int)(size.Height * scale));
+                _renderer.Window.SetSize((int)(size.Width * _windowScaleFactor), (int)(size.Height * _windowScaleFactor));
             }
         }
 
@@ -447,7 +449,7 @@ namespace Ryujinx.Ava
 
                         string message = String.Format(LocaleManager.Instance["DialogFirmwareInstallEmbeddedSuccessMessage"],firmwareVersion.VersionString);
 
-                        ContentDialogHelper.CreateInfoDialog(_parent, string.Format(LocaleManager.Instance["DialogFirmwareInstalledMessage"], firmwareVersion.VersionString), message);
+                        await ContentDialogHelper.CreateInfoDialog(_parent, string.Format(LocaleManager.Instance["DialogFirmwareInstalledMessage"], firmwareVersion.VersionString), message);
                     }
                 }
                 else
@@ -811,7 +813,7 @@ namespace Ryujinx.Ava
             Width  = (int)Window.Bounds.Width;
             Height = (int)Window.Bounds.Height;
 
-            _renderer.Window.SetSize((int)(Width * Program.WindowScaleFactor), (int)(Height * Program.WindowScaleFactor));
+            _renderer.Window.SetSize((int)(Width * _windowScaleFactor), (int)(Height * _windowScaleFactor));
 
             Device.Gpu.Renderer.RunLoop(() =>
             {

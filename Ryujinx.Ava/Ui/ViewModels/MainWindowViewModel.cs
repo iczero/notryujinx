@@ -27,6 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data.Common;
 using System.Globalization;
 using System.IO;
 using System.Reactive.Linq;
@@ -251,10 +252,10 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 {
                     case ViewMode.List:
                         return _owner.GameList.SelectedItem as ApplicationData;
-                        break;
+                        
                     case ViewMode.Grid:
                         return _owner.GameGrid.SelectedApplication;
-                        break;
+                        
                     default:
                         return null;
                 }
@@ -1070,8 +1071,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 }
             }
             catch (Exception ex)
-            {
-                
+{
+                Logger.Error?.Print(LogClass.Application, ex.Message);
             }
         }
 
@@ -1415,7 +1416,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                         }
                         catch (Exception ex)
                         {
-                            Dispatcher.UIThread.InvokeAsync(async delegate
+                            Dispatcher.UIThread.InvokeAsync(() =>
                             {
                                 waitingDialog.Close();
 

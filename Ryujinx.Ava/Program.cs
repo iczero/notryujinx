@@ -27,7 +27,6 @@ namespace Ryujinx.Ava
 {
     public class Program
     {
-        public static double WindowScaleFactor { get; set; }
         public static string Version           { get; private set; }
         public static string ConfigurationPath { get; private set; }
         public static bool   PreviewerDetached { get; private set; }
@@ -99,10 +98,6 @@ namespace Ryujinx.Ava
                     launchPathArg = arg;
                 }
             }
-
-            // Make process DPI aware for proper window sizing on high-res screens.
-            ForceDpiAware.Windows();
-            WindowScaleFactor = ForceDpiAware.GetWindowScaleFactor();
 
             // Delete backup files after updating.
             Task.Run(Updater.CleanupUpdate);

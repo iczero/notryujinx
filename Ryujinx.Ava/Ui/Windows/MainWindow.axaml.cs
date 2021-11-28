@@ -65,7 +65,6 @@ namespace Ryujinx.Ava.Ui.Windows
         internal readonly AvaHostUiHandler UiHandler;
 
         private bool _hideCursorOnIdle;
-        private long _lastCursorMoveTime;
         private bool _lastDockmodeKeyState;
         private bool _lastFullscreenKeyState;
         private bool _isMouseInClient;
@@ -120,6 +119,8 @@ namespace Ryujinx.Ava.Ui.Windows
 
             Title = $"Ryujinx {Program.Version}";
 
+            _hideCursorOnIdle = ConfigurationState.Instance.HideCursorOnIdle;
+
             if (Program.PreviewerDetached)
             {
                 Initialize();
@@ -132,7 +133,7 @@ namespace Ryujinx.Ava.Ui.Windows
             _keyboardInterface = (IKeyboard)InputManager.KeyboardDriver.GetGamepad("0");
             _mainWindowUIThread = new Thread(() =>
             {
-                while (true)
+                while (IsActive || (AppHost?.IsRunning ?? false))
                 {
                     var hasRun = UIThreadLoopIteration();
                     Thread.Sleep(hasRun ? 1 : 100);
@@ -240,7 +241,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
             if (_hideCursorOnIdle && !ConfigurationState.Instance.Hid.EnableMouse)
             {
-                long cursorMoveDelta = Stopwatch.GetTimestamp() - _lastCursorMoveTime;
+                long cursorMoveDelta = Stopwatch.GetTimestamp() - (AppHost?.LastCursorMoveTime ?? 0); ;
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
                     Cursor = cursorMoveDelta >= CursorHideIdleTime * Stopwatch.Frequency ? InvisibleCursor : Cursor.Default;
@@ -456,7 +457,7 @@ namespace Ryujinx.Ava.Ui.Windows
         {
             if (AppHost != null)
             {
-                ContentDialogHelper.CreateInfoDialog(this,
+                await ContentDialogHelper.CreateInfoDialog(this,
                     LocaleManager.Instance["DialogLoadAppGameAlreadyLoadedMessage"],
                     LocaleManager.Instance["DialogLoadAppGameAlreadyLoadedSubMessage"]);
 
