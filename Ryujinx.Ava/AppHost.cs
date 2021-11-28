@@ -83,7 +83,6 @@ namespace Ryujinx.Ava
 
         private Thread _mainThread;
 
-        private KeyboardHotkeyState _prevHotkeyState;
 
         private IRenderer _renderer;
         private readonly Thread _renderingThread;
