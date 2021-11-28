@@ -18,6 +18,7 @@ using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
 using Ryujinx.Configuration;
+using Ryujinx.Graphics.Gpu;
 using Ryujinx.HLE;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.FileSystem.Content;
@@ -26,6 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data.Common;
 using System.Globalization;
 using System.IO;
 using System.Reactive.Linq;
@@ -250,10 +252,10 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 {
                     case ViewMode.List:
                         return _owner.GameList.SelectedItem as ApplicationData;
-                        break;
+                        
                     case ViewMode.Grid:
                         return _owner.GameGrid.SelectedApplication;
-                        break;
+                        
                     default:
                         return null;
                 }
@@ -805,10 +807,10 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
         }
 
-        public void HandleShaderProgress(Switch emulationContext)
+        public void HandleShaderProgress(GpuContext gpuContext)
         {
-            emulationContext.Gpu.ShaderCacheStateChanged -= ProgressHandler;
-            emulationContext.Gpu.ShaderCacheStateChanged += ProgressHandler;
+            gpuContext.ShaderCacheStateChanged -= ProgressHandler;
+            gpuContext.ShaderCacheStateChanged += ProgressHandler;
         }
 
         private bool Filter(object arg)
@@ -934,27 +936,27 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
         }
 
-        public async void TakeScreenshot()
+        public void TakeScreenshot()
         {
             _owner.AppHost.ScreenshotRequested = true;
         }
 
-        public async void HideUi()
+        public void HideUi()
         {
             ShowMenuAndStatusBar = false;
         }
 
-        public async void SetListMode()
+        public void SetListMode()
         {
             ViewMode = ViewMode.List;
         }
 
-        public async void SetGridMode()
+        public void SetGridMode()
         {
             ViewMode = ViewMode.Grid;
         }
 
-        public async void OpenMiiApplet()
+        public void OpenMiiApplet()
         {
             string contentPath = _owner.ContentManager.GetInstalledContentPath(0x0100000000001009, StorageId.NandSystem, NcaContentType.Program);
 
@@ -1069,8 +1071,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 }
             }
             catch (Exception ex)
-            {
-                
+{
+                Logger.Error?.Print(LogClass.Application, ex.Message);
             }
         }
 
@@ -1414,7 +1416,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                         }
                         catch (Exception ex)
                         {
-                            Dispatcher.UIThread.InvokeAsync(async delegate
+                            Dispatcher.UIThread.InvokeAsync(() =>
                             {
                                 waitingDialog.Close();
 
