@@ -907,21 +907,24 @@ namespace Ryujinx.Ava
 
             // Handle hotkeys
             KeyboardStateSnapshot keyboard = _keyboardInterface.GetKeyboardStateSnapshot();
-            bool needIvokeEvent = false;
-            foreach (var currentHotkey in _enabledHotkeysWhileRunning)
+            if (_enabledHotkeysWhileRunning != null && _enabledHotkeysWhileRunning.Length > 0)
             {
-                var lastState = _lastKeyboardSnapshot?.IsPressed(currentHotkey);
-                var currentState = keyboard.IsPressed(currentHotkey);
-                if (lastState != currentState)
+                bool needIvokeEvent = false;
+                foreach (var currentHotkey in _enabledHotkeysWhileRunning)
                 {
-                    needIvokeEvent = true;
+                    var lastState = _lastKeyboardSnapshot?.IsPressed(currentHotkey);
+                    var currentState = keyboard.IsPressed(currentHotkey);
+                    if (lastState != currentState)
+                    {
+                        needIvokeEvent = true;
+                    }
                 }
-            }
-            _lastKeyboardSnapshot = keyboard;
-            if (needIvokeEvent)
-            {
-                OnHotKeyPressed?.Invoke(this, keyboard);
-                (_keyboardInterface as AvaloniaKeyboard).Clear();
+                _lastKeyboardSnapshot = keyboard;
+                if (needIvokeEvent)
+                {
+                    OnHotKeyPressed?.Invoke(this, keyboard);
+                    (_keyboardInterface as AvaloniaKeyboard).Clear();
+                }
             }
 
 
@@ -935,7 +938,7 @@ namespace Ryujinx.Ava
                 {
                     _lastCursorIdleState = newCursorIdleState;
                     OnCursorChanged?.Invoke(this, newCursorIdleState ? InvisibleCursor : Cursor.Default);
-                }                
+                }
             }
 
             if (ConfigurationState.Instance.Hid.EnableMouse && _isMouseInClient)
