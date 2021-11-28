@@ -29,13 +29,11 @@ using Ryujinx.Input.Avalonia;
 using Ryujinx.Input.HLE;
 using Ryujinx.Input.SDL2;
 using Ryujinx.Modules;
-using Silk.NET.Vulkan;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using InputManager = Ryujinx.Input.HLE.InputManager;
 using Key = Ryujinx.Input.Key;
@@ -45,9 +43,6 @@ namespace Ryujinx.Ava.Ui.Windows
 {
     public class MainWindow : StyleableWindow
     {
-        private const int CursorHideIdleTime = 8; // Hide Cursor seconds
-        private static readonly Cursor InvisibleCursor = new Cursor(StandardCursorType.None);
-
         public static bool ShowKeyErrorOnLoad;
 
         private bool _canUpdate;
@@ -60,15 +55,7 @@ namespace Ryujinx.Ava.Ui.Windows
         private static bool _deferLoad;
         private static string _launchPath;
         private static bool _startFullscreen;
-        private IKeyboard _keyboardInterface;
-        private Thread _mainWindowUIThread;
         internal readonly AvaHostUiHandler UiHandler;
-
-        private bool _hideCursorOnIdle;
-        private bool _lastDockmodeKeyState;
-        private bool _lastFullscreenKeyState;
-        private bool _isMouseInClient;
-        private KeyboardHotkeyState _prevHotkeyState;
 
         public SettingsWindow SettingsWindow { get; set; }
 
@@ -119,8 +106,6 @@ namespace Ryujinx.Ava.Ui.Windows
 
             Title = $"Ryujinx {Program.Version}";
 
-            _hideCursorOnIdle = ConfigurationState.Instance.HideCursorOnIdle;
-
             if (Program.PreviewerDetached)
             {
                 Initialize();
@@ -129,213 +114,6 @@ namespace Ryujinx.Ava.Ui.Windows
 
                 LoadGameList();
             }
-
-            _keyboardInterface = (IKeyboard)InputManager.KeyboardDriver.GetGamepad("0");
-            _mainWindowUIThread = new Thread(() =>
-            {
-                while (IsActive || (AppHost?.IsRunning ?? false))
-                {
-                    var hasRun = UIThreadLoopIteration();
-                    Thread.Sleep(hasRun ? 1 : 100);
-                }
-            })
-            {
-                Name = "GUI.MainWindowUIThread"
-            };
-            _mainWindowUIThread.Start();
-        }
-
-        private bool UIThreadLoopIteration()
-        {
-            // Window is not active
-            if (!IsActive && (!AppHost?.IsRunning ?? true))
-            {
-                return false;
-            }
-
-            KeyboardStateSnapshot keyboard = _keyboardInterface.GetKeyboardStateSnapshot();
-
-            HandleKeyboardPressedStates(keyboard);
-            HandleKeyboardHotkeys();
-
-            return true;
-        }
-
-        private async void HandleKeyboardPressedStates(KeyboardStateSnapshot keyboard)
-        {
-            bool newFullscreenKeyState = keyboard.IsPressed(Key.F11)
-                || ((keyboard.IsPressed(Key.AltLeft) || keyboard.IsPressed(Key.AltRight)) && keyboard.IsPressed(Key.Enter))
-                || keyboard.IsPressed(Key.Escape);
-
-
-            if (newFullscreenKeyState != _lastFullscreenKeyState)
-            {
-                _lastFullscreenKeyState = newFullscreenKeyState;
-
-                WindowState? windowState = null;
-                await Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    windowState = WindowState;
-                });
-
-                bool isFullScreenActive = windowState == WindowState.FullScreen;
-
-                if (newFullscreenKeyState)
-                {
-                    if (isFullScreenActive)
-                    {
-                        await Dispatcher.UIThread.InvokeAsync(() =>
-                        {
-                            WindowState = WindowState.Normal;
-                            ViewModel.ShowMenuAndStatusBar = true;
-                        });
-                    }
-                    else
-                    {
-                        if (keyboard.IsPressed(Key.Escape))
-                        {
-                            if (!ConfigurationState.Instance.ShowConfirmExit)
-                            {
-                                AppHost?.Dispose();
-                            }
-                            else
-                            {
-                                await Dispatcher.UIThread.InvokeAsync(async () =>
-                                {
-                                    bool shouldExit = await ContentDialogHelper.CreateExitDialog(this);
-                                    if (shouldExit)
-                                    {
-                                        AppHost?.Dispose();
-                                    }
-                                });
-                            }
-
-                            (_keyboardInterface as AvaloniaKeyboard).Clear();
-                        }
-                        else
-                        {
-                            await Dispatcher.UIThread.InvokeAsync(() =>
-                            {
-                                WindowState = WindowState.FullScreen;
-                                ViewModel.ShowMenuAndStatusBar = false;
-                            });
-                        }
-                    }
-                }
-            }
-
-
-
-            bool isDockedModeKeyPressed = keyboard.IsPressed(Key.F9);
-            if (isDockedModeKeyPressed != _lastDockmodeKeyState)
-            {
-                _lastDockmodeKeyState = isDockedModeKeyPressed;
-
-                if (isDockedModeKeyPressed)
-                {
-                    ConfigurationState.Instance.System.EnableDockedMode.Value = !ConfigurationState.Instance.System.EnableDockedMode.Value;
-                }
-            }
-
-
-
-            if (_hideCursorOnIdle && !ConfigurationState.Instance.Hid.EnableMouse)
-            {
-                long cursorMoveDelta = Stopwatch.GetTimestamp() - (AppHost?.LastCursorMoveTime ?? 0); ;
-                await Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    Cursor = cursorMoveDelta >= CursorHideIdleTime * Stopwatch.Frequency ? InvisibleCursor : Cursor.Default;
-                });
-            }
-
-            if (ConfigurationState.Instance.Hid.EnableMouse && _isMouseInClient)
-            {
-                await Dispatcher.UIThread.InvokeAsync(() => Cursor = InvisibleCursor);
-            }
-
-            if (keyboard.IsPressed(Key.Delete))
-            {
-                WindowState? windowState = null;
-                await Dispatcher.UIThread.InvokeAsync(() =>
-                {
-                    windowState = WindowState;
-                });
-
-                if (windowState != WindowState.FullScreen)
-                {
-                    Ptc.Continue();
-                }
-            }
-        }
-
-        private void HandleKeyboardHotkeys()
-        {
-            KeyboardHotkeyState currentHotkeyState = GetHotkeyState();
-
-            if (currentHotkeyState == KeyboardHotkeyState.ToggleVSync &&
-                _prevHotkeyState != KeyboardHotkeyState.ToggleVSync)
-            {
-                AppHost.Device.EnableDeviceVsync = !AppHost.Device.EnableDeviceVsync;
-            }
-
-            if ((currentHotkeyState == KeyboardHotkeyState.Screenshot &&
-                 _prevHotkeyState != KeyboardHotkeyState.Screenshot))
-            {
-                AppHost.ScreenshotRequested = true;
-            }
-
-            if (currentHotkeyState == KeyboardHotkeyState.ShowUi &&
-                 _prevHotkeyState != KeyboardHotkeyState.ShowUi)
-            {
-                ViewModel.ShowMenuAndStatusBar = !ViewModel.ShowMenuAndStatusBar;
-            }
-
-            if (currentHotkeyState == KeyboardHotkeyState.Pause &&
-                 _prevHotkeyState != KeyboardHotkeyState.Pause)
-            {
-                if (ViewModel.IsPaused)
-                {
-                    AppHost.Resume();
-                }
-                else
-                {
-                    AppHost.Pause();
-                }
-            }
-
-            if (currentHotkeyState != KeyboardHotkeyState.None)
-            {
-                (_keyboardInterface as AvaloniaKeyboard).Clear();
-            }
-
-            _prevHotkeyState = currentHotkeyState;
-        }
-
-        private KeyboardHotkeyState GetHotkeyState()
-        {
-            KeyboardHotkeyState state = KeyboardHotkeyState.None;
-
-            if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.ToggleVsync))
-            {
-                state = KeyboardHotkeyState.ToggleVSync;
-            }
-
-            if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.Screenshot))
-            {
-                state = KeyboardHotkeyState.Screenshot;
-            }
-
-            if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.ShowUi))
-            {
-                state = KeyboardHotkeyState.ShowUi;
-            }
-
-            if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.Pause))
-            {
-                state = KeyboardHotkeyState.Pause;
-            }
-
-            return state;
         }
 
         [Conditional("DEBUG")]
@@ -492,24 +270,163 @@ namespace Ryujinx.Ava.Ui.Windows
             SwitchToGameControl(startFullscreen);
 
             AppHost.OnStartAppTitle += AppHost_OnStartAppTitle;
-            AppHost.OnAppStartsRendering += (sender, args) => SwitchToGameControl();
-            AppHost.OnMouseEnterOrLeaveRenderWindow += (sender, enterState) => _isMouseInClient = enterState;
-            AppHost.OnAppPauseModeChanged += (sender, pauseMode) => ViewModel.IsPaused = pauseMode;
-            AppHost.OnRefreshFirmwareStatusChanged += (s, a) => RefreshFirmwareStatus();
-            AppHost.OnGpuContextChanged += (s, gpuContext) => ViewModel.HandleShaderProgress(gpuContext);
+            AppHost.OnAppStartsRendering += AppHost_OnAppStartsRendering;
+            AppHost.OnAppPauseModeChanged += AppHost_OnAppPauseModeChanged;
+            AppHost.OnRefreshFirmwareStatusChanged += AppHost_OnRefreshFirmwareStatusChanged;
+            AppHost.OnGpuContextChanged += AppHost_OnGpuContextChanged;
+            AppHost.OnHotKeyPressed += AppHost_OnHotKeyPressed;
+            AppHost.OnCursorChanged += AppHost_OnCursorChanged;
             AppHost.StatusUpdatedEvent += Update_StatusBar;
             AppHost.AppExit += AppHost_AppExit;
 
+            AppHost.RegisterHotKeys(
+                Key.F11, Key.AltLeft, Key.AltRight, Key.Enter, Key.Escape, 
+                Key.F9, 
+                Key.Delete,
+                (Key)ConfigurationState.Instance.Hid.Hotkeys.Value.ToggleVsync,
+                (Key)ConfigurationState.Instance.Hid.Hotkeys.Value.Screenshot,
+                (Key)ConfigurationState.Instance.Hid.Hotkeys.Value.ShowUi,
+                (Key)ConfigurationState.Instance.Hid.Hotkeys.Value.Pause);
+
         }
 
-        private void AppHost_OnStartAppTitle(object sender, IApplicationLoaderTitleInformation e)
+        private void AppHost_OnCursorChanged(object sender, Cursor newCursor)
+        {
+            Dispatcher.UIThread.Post(() => Cursor = newCursor);
+        }
+
+        private async void AppHost_OnHotKeyPressed(object sender, KeyboardStateSnapshot keyboard)
+        {
+            // Toggle Fullscreen
+            bool fullscreenKeyState = keyboard.IsPressed(Key.F11) || ((keyboard.IsPressed(Key.AltLeft) || keyboard.IsPressed(Key.AltRight)) && keyboard.IsPressed(Key.Enter)) || keyboard.IsPressed(Key.Escape);
+            if (fullscreenKeyState)
+            {
+                WindowState? windowState = null;
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    windowState = WindowState;
+                });
+
+                bool isFullScreenActive = windowState == WindowState.FullScreen;
+                if (isFullScreenActive)
+                {
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        WindowState = WindowState.Normal;
+                        ViewModel.ShowMenuAndStatusBar = true;
+                    });
+                }
+                else
+                {
+                    if (keyboard.IsPressed(Key.Escape))
+                    {
+                        if (!ConfigurationState.Instance.ShowConfirmExit)
+                        {
+                            AppHost?.Dispose();
+                        }
+                        else
+                        {
+                            await Dispatcher.UIThread.InvokeAsync(async () =>
+                            {
+                                bool shouldExit = await ContentDialogHelper.CreateExitDialog(this);
+                                if (shouldExit)
+                                {
+                                    AppHost?.Dispose();
+                                }
+                            });
+                        }
+                    }
+                    else
+                    {
+                        await Dispatcher.UIThread.InvokeAsync(() =>
+                        {
+                            WindowState = WindowState.FullScreen;
+                            ViewModel.ShowMenuAndStatusBar = false;
+                        });
+                    }
+                }
+            }
+
+            // Toggle Dockmode
+            if (keyboard.IsPressed(Key.F9))
+            {
+                ConfigurationState.Instance.System.EnableDockedMode.Value = !ConfigurationState.Instance.System.EnableDockedMode.Value;
+            }
+
+            if (keyboard.IsPressed(Key.Delete))
+            {
+                WindowState? windowState = null;
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                {
+                    windowState = WindowState;
+                });
+
+                if (windowState != WindowState.FullScreen)
+                {
+                    Ptc.Continue();
+                }
+            }
+
+            // Toggle VSync
+            if (keyboard.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.ToggleVsync))
+            {
+                AppHost.Device.EnableDeviceVsync = !AppHost.Device.EnableDeviceVsync;
+            }
+
+            // Take Screenshot
+            if (keyboard.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.Screenshot))
+            {
+                AppHost.ScreenshotRequested = true;
+            }
+
+            // Toggle Show / Hide UI
+            if (keyboard.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.ShowUi))
+            {
+                ViewModel.ShowMenuAndStatusBar = !ViewModel.ShowMenuAndStatusBar;
+            }
+
+            // Toggle Pause / Play
+            if (keyboard.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.Pause))
+            {
+                if (ViewModel.IsPaused)
+                {
+                    AppHost.Resume();
+                }
+                else
+                {
+                    AppHost.Pause();
+                }
+            }
+        }
+
+        private void AppHost_OnRefreshFirmwareStatusChanged(object sender, EventArgs e)
+        {
+            RefreshFirmwareStatus();
+        }
+
+        private void AppHost_OnGpuContextChanged(object sender, GpuContext gpuContext)
+        {
+            ViewModel.HandleShaderProgress(gpuContext);
+        }
+
+        private void AppHost_OnAppPauseModeChanged(object sender, bool pauseMode)
+        {
+            ViewModel.IsPaused = pauseMode;
+        }
+
+        private void AppHost_OnAppStartsRendering(object sender, EventArgs e)
+        {
+            SwitchToGameControl();
+        }
+
+        private void AppHost_OnStartAppTitle(object sender, ApplicationLoader loader)
         {
             ViewModel.IsGameRunning = true;
 
-            var titleNameSection = string.IsNullOrWhiteSpace(e.TitleName) ? string.Empty : $" - {e.TitleName}";
-            var titleVersionSection = string.IsNullOrWhiteSpace(e.DisplayVersion) ? string.Empty : $" v{e.DisplayVersion}";
-            var titleIdSection = string.IsNullOrWhiteSpace(e.TitleIdText) ? string.Empty : $" ({e.TitleIdText.ToUpper()})";
-            var titleArchSection = e.TitleIs64Bit ? " (64-bit)" : " (32-bit)";
+            var titleNameSection = string.IsNullOrWhiteSpace(loader.TitleName) ? string.Empty : $" - {loader.TitleName}";
+            var titleVersionSection = string.IsNullOrWhiteSpace(loader.DisplayVersion) ? string.Empty : $" v{loader.DisplayVersion}";
+            var titleIdSection = string.IsNullOrWhiteSpace(loader.TitleIdText) ? string.Empty : $" ({loader.TitleIdText.ToUpper()})";
+            var titleArchSection = loader.TitleIs64Bit ? " (64-bit)" : " (32-bit)";
 
             Dispatcher.UIThread.InvokeAsync(() =>
             {
@@ -574,6 +491,17 @@ namespace Ryujinx.Ava.Ui.Windows
             });
             GlRenderer.WindowCreated -= GlRenderer_Created;
             GlRenderer.Destroy();
+
+
+            AppHost.OnStartAppTitle -= AppHost_OnStartAppTitle;
+            AppHost.OnAppStartsRendering -= AppHost_OnAppStartsRendering;
+            AppHost.OnAppPauseModeChanged -= AppHost_OnAppPauseModeChanged;
+            AppHost.OnRefreshFirmwareStatusChanged -= AppHost_OnRefreshFirmwareStatusChanged;
+            AppHost.OnGpuContextChanged -= AppHost_OnGpuContextChanged;
+            AppHost.OnHotKeyPressed -= AppHost_OnHotKeyPressed;
+            AppHost.OnCursorChanged -= AppHost_OnCursorChanged;
+            AppHost.StatusUpdatedEvent -= Update_StatusBar;
+            AppHost.AppExit -= AppHost_AppExit;
 
             AppHost = null;
 

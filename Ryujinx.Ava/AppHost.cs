@@ -48,6 +48,7 @@ using InputManager = Ryujinx.Input.HLE.InputManager;
 using MouseButton = Ryujinx.Input.MouseButton;
 using Size = Avalonia.Size;
 using Switch = Ryujinx.HLE.Switch;
+using Key = Ryujinx.Input.Key;
 using WindowState = Avalonia.Controls.WindowState;
 
 namespace Ryujinx.Ava
@@ -56,6 +57,7 @@ namespace Ryujinx.Ava
     {
         private const int TargetFps          = 60;
 
+        private const int CursorHideIdleTime = 8; // Hide Cursor seconds
         private static readonly Cursor InvisibleCursor = new Cursor(StandardCursorType.None);
 
         private readonly AccountManager _accountManager;
@@ -76,8 +78,10 @@ namespace Ryujinx.Ava
         private readonly GraphicsDebugLevel _glLogLevel;
 
         private bool _hideCursorOnIdle;
+        private bool _isMouseInClient;
         private bool _isActive;
         private long _lastCursorMoveTime;
+        private bool _lastCursorIdleState;
 
         private Thread _mainThread;
 
@@ -92,14 +96,19 @@ namespace Ryujinx.Ava
         private WindowsMultimediaTimerResolution _windowsMultimediaTimerResolution;
         private double _windowScaleFactor;
 
+        private KeyboardStateSnapshot _lastKeyboardSnapshot;
+        private Key[] _enabledHotkeysWhileRunning;
+
         public event EventHandler AppExit;
         public event EventHandler<StatusUpdatedEventArgs> StatusUpdatedEvent;
-        public event EventHandler<IApplicationLoaderTitleInformation> OnStartAppTitle;
+        public event EventHandler<ApplicationLoader> OnStartAppTitle;
         public event EventHandler OnAppStartsRendering;
         public event EventHandler<bool> OnMouseEnterOrLeaveRenderWindow;
         public event EventHandler<bool> OnAppPauseModeChanged;
         public event EventHandler OnRefreshFirmwareStatusChanged;
         public event EventHandler<GpuContext> OnGpuContextChanged;
+        public event EventHandler<KeyboardStateSnapshot> OnHotKeyPressed;
+        public event EventHandler<Cursor> OnCursorChanged;
 
         public NativeEmbeddedWindow Window            { get; }
         public VirtualFileSystem    VirtualFileSystem { get; }
@@ -171,14 +180,21 @@ namespace Ryujinx.Ava
             _windowScaleFactor = ForceDpiAware.GetWindowScaleFactor();
         }
 
+        public void RegisterHotKeys(params Key[] hotkeys)
+        {
+            _enabledHotkeysWhileRunning = hotkeys;
+        }
+
         private void Parent_PointerLeft(object sender, PointerEventArgs e)
         {
             Window.Cursor = ConfigurationState.Instance.Hid.EnableMouse ? InvisibleCursor : Cursor.Default;
+            _isMouseInClient = false;
             OnMouseEnterOrLeaveRenderWindow?.Invoke(this, false);
         }
 
         private void Parent_PointerEntered(object sender, PointerEventArgs e)
         {
+            _isMouseInClient = true;
             OnMouseEnterOrLeaveRenderWindow?.Invoke(this, true);
         }
 
@@ -888,7 +904,45 @@ namespace Ryujinx.Ava
 
             NpadManager.Update(ConfigurationState.Instance.Graphics.AspectRatio.Value.ToFloat());
 
-            
+
+            // Handle hotkeys
+            KeyboardStateSnapshot keyboard = _keyboardInterface.GetKeyboardStateSnapshot();
+            bool needIvokeEvent = false;
+            foreach (var currentHotkey in _enabledHotkeysWhileRunning)
+            {
+                var lastState = _lastKeyboardSnapshot?.IsPressed(currentHotkey);
+                var currentState = keyboard.IsPressed(currentHotkey);
+                if (lastState != currentState)
+                {
+                    needIvokeEvent = true;
+                }
+            }
+            _lastKeyboardSnapshot = keyboard;
+            if (needIvokeEvent)
+            {
+                OnHotKeyPressed?.Invoke(this, keyboard);
+                (_keyboardInterface as AvaloniaKeyboard).Clear();
+            }
+
+
+            // Handle Mouse events
+            if (_hideCursorOnIdle && !ConfigurationState.Instance.Hid.EnableMouse)
+            {
+                long cursorMoveDelta = Stopwatch.GetTimestamp() - _lastCursorMoveTime;
+
+                var newCursorIdleState = (cursorMoveDelta >= CursorHideIdleTime * Stopwatch.Frequency);
+                if (newCursorIdleState != _lastCursorIdleState)
+                {
+                    _lastCursorIdleState = newCursorIdleState;
+                    OnCursorChanged?.Invoke(this, newCursorIdleState ? InvisibleCursor : Cursor.Default);
+                }                
+            }
+
+            if (ConfigurationState.Instance.Hid.EnableMouse && _isMouseInClient)
+            {
+                OnCursorChanged?.Invoke(this, InvisibleCursor);
+            }
+
 
             //Touchscreen
             bool hasTouch = false;

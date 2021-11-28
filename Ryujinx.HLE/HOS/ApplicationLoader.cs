@@ -30,7 +30,7 @@ namespace Ryujinx.HLE.HOS
 {
     using JsonHelper = Common.Utilities.JsonHelper;
 
-    public class ApplicationLoader : IApplicationLoaderTitleInformation
+    public class ApplicationLoader
     {
         // Binaries from exefs are loaded into mem in this order. Do not change.
         internal static readonly string[] ExeFsPrefixes =
