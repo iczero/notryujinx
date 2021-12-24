@@ -31,6 +31,7 @@ using System.IO;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Path = System.IO.Path;
 using ShaderCacheLoadingState = Ryujinx.Graphics.Gpu.Shader.ShaderCacheState;
 
 namespace Ryujinx.Ava.Ui.ViewModels
@@ -106,6 +107,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 ScreenshotKey = KeyGesture.Parse(ConfigurationState.Instance.Hid.Hotkeys.Value.Screenshot.ToString());
                 PauseKey      = KeyGesture.Parse(ConfigurationState.Instance.Hid.Hotkeys.Value.Pause.ToString());
             }
+
+            Volume = ConfigurationState.Instance.System.AudioVolume / 100;
         }
 
         public string SearchText
@@ -241,6 +244,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private string _showUikey     = "F4";
         private string _pauseKey      = "F5";
         private string _screenshotkey = "F8";
+        private float _volume;
+        private bool _isAscending = true;
 
         public ApplicationData SelectedApplication
         {
@@ -411,6 +416,26 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 _aspectStatusText = value;
 
                 OnPropertyChanged();
+            }
+        }
+        
+        public string VolumeStatusText
+        {
+            get 
+            {
+                string icon = Volume == 0 ? "🔇" : "🔊";
+
+                return $"{icon} {(int)(Volume * 100)}%";
+            }
+        }
+
+        public float Volume
+        {
+            get => _volume;
+            set
+            {
+                _volume = value;
+                OnPropertyChanged(nameof(VolumeStatusText));
             }
         }
 
@@ -731,7 +756,11 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
         }
 
-        public bool IsAscending { get; private set; } = true;
+        public bool IsAscending
+        {
+            get => _isAscending;
+            private set => _isAscending = value;
+        }
 
         public KeyGesture ShowUiKey
         {

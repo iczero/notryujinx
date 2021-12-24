@@ -34,6 +34,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private float _customResolutionScale;
         private int   _resolutionScale;
         private int   _graphicsBackendMultithreadingIndex;
+        private float _previousVolumeLevel;
+        private float _volume;
 
         public int ResolutionScale
         {
@@ -124,6 +126,19 @@ namespace Ryujinx.Ava.Ui.ViewModels
         public int OpenglDebugLevel      { get; set; }
         public int MemoryMode            { get; set; }
         public int BaseStyleIndex        { get; set; }
+
+        public float Volume
+        {
+            get => _volume;
+            set
+            {
+                _volume = value;
+                
+                ConfigurationState.Instance.System.AudioVolume.Value = (float)(_volume / 100);
+                
+                OnPropertyChanged();
+            }
+        }
 
         public DateTimeOffset         DateOffset { get; set; }
         public TimeSpan               TimeOffset { get; set; }
@@ -240,6 +255,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             EnableDebug              = config.Logger.EnableDebug;
             EnableFsAccessLog        = config.Logger.EnableFsAccessLog;
             EnableCustomTheme        = config.Ui.EnableCustomTheme;
+            Volume                   = config.System.AudioVolume;
 
             GraphicsBackendMultithreadingIndex = (int)config.Graphics.BackendThreading.Value;
 
@@ -270,6 +286,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             DateOffset = dateTimeOffset.Date;
             TimeOffset = dateTimeOffset.TimeOfDay;
+
+            _previousVolumeLevel = Volume;
         }
 
         public void SaveSettings()
@@ -332,6 +350,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             config.Graphics.AspectRatio.Value    = (AspectRatio)AspectRatio;
             config.Graphics.ResScale.Value       = ResolutionScale == 0 ? -1 : ResolutionScale;
             config.Graphics.ResScaleCustom.Value = CustomResolutionScale;
+            config.System.AudioVolume.Value      = Volume;
 
             AudioBackend audioBackend = (AudioBackend)AudioBackend;
             if (audioBackend != config.System.AudioBackend.Value)
@@ -344,6 +363,13 @@ namespace Ryujinx.Ava.Ui.ViewModels
             config.ToFileFormat().SaveConfig(Program.ConfigurationPath);
 
             MainWindow.UpdateGraphicsConfig();
+
+            _previousVolumeLevel = Volume;
+        }
+
+        public void RevertIfNotSaved()
+        {
+            Volume = _previousVolumeLevel;
         }
     }
 }

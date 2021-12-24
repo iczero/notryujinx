@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Path = System.IO.Path;
 
 namespace Ryujinx.Ava.Ui.Windows
 {
@@ -96,10 +97,10 @@ namespace Ryujinx.Ava.Ui.Windows
 
                 foreach (DlcNca dlcNca in dlcContainer.DlcNcaList)
                 {
-                    pfs.OpenFile(out IFile ncaFile, dlcNca.Path.ToU8Span(), OpenMode.Read)
-                       .ThrowIfFailure();
+                    using var ncaFile = new UniqueRef<IFile>();
+                    pfs.OpenFile(ref ncaFile.Ref(), dlcNca.Path.ToU8Span(), OpenMode.Read).ThrowIfFailure();
 
-                    Nca nca = TryCreateNca(ncaFile.AsStorage(), dlcContainer.Path);
+                    Nca nca = TryCreateNca(ncaFile.Get.AsStorage(), dlcContainer.Path);
 
                     if (nca != null)
                     {
@@ -141,10 +142,11 @@ namespace Ryujinx.Ava.Ui.Windows
 
                 foreach (DirectoryEntryEx fileEntry in pfs.EnumerateEntries("/", "*.nca"))
                 {
-                    pfs.OpenFile(out IFile ncaFile, fileEntry.FullPath.ToU8Span(), OpenMode.Read)
-                       .ThrowIfFailure();
+                    using var ncaFile = new UniqueRef<IFile>();
 
-                    Nca nca = TryCreateNca(ncaFile.AsStorage(), path);
+                    pfs.OpenFile(ref ncaFile.Ref(), fileEntry.FullPath.ToU8Span(), OpenMode.Read).ThrowIfFailure();
+
+                    Nca nca = TryCreateNca(ncaFile.Get.AsStorage(), path);
 
                     if (nca == null)
                     {

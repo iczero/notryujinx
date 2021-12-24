@@ -1,7 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Mono.Unix;
 using Ryujinx.Modules;
 using System;
 using System.Diagnostics;
@@ -51,19 +50,21 @@ namespace Ryujinx.Ava.Ui.Windows
             ProgressBar = this.FindControl<ProgressBar>("ProgressBar");
             ButtonBox = this.FindControl<StackPanel>("ButtonBox");
         }
+        
+        [DllImport("libc", SetLastError = true)]
+        private static extern int chmod(string path, uint mode);
 
         public void YesPressed()
         {
             if (_restartQuery)
             {
-                string ryuName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "Ryujinx.exe" : "Ryujinx";
+                string ryuName = OperatingSystem.IsWindows() ? "Ryujinx.exe" : "Ryujinx";
                 string ryuExe = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ryuName);
                 string ryuArg = string.Join(" ", Environment.GetCommandLineArgs().AsEnumerable().Skip(1).ToArray());
 
-                if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                if (!OperatingSystem.IsWindows())
                 {
-                    UnixFileInfo unixFileInfo = new(ryuExe);
-                    unixFileInfo.FileAccessPermissions |= FileAccessPermissions.UserExecute;
+                    chmod(ryuExe, 0777);
                 }
 
                 Process.Start(ryuExe, ryuArg);

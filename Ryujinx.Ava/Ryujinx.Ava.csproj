@@ -17,11 +17,8 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
     <ItemGroup>
-        <None Update="alsoft.ini">
+        <None Update="alsoft.ini" Condition="'$(RuntimeIdentifier)' != 'linux-x64' AND '$(RuntimeIdentifier)' != 'osx-x64'">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="Config.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
     <PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
@@ -71,7 +68,7 @@
         <PackageReference Include="Silk.NET.Vulkan" Version="2.2.0" />
         <PackageReference Include="Silk.NET.Vulkan.Extensions.KHR" Version="2.2.0" />
         <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
-        <PackageReference Include="SPB" Version="0.0.3-build15" />
+        <PackageReference Include="SPB" Version="0.0.4-build17" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="Assets\Images\Controller_JoyConLeft.svg" />

@@ -372,6 +372,21 @@
                                     Orientation="Horizontal"
                                     Spacing="20">
                                     <TextBlock VerticalAlignment="Center"
+                                               Text="{locale:Locale SettingsTabSystemAudioVolume}"
+                                               ToolTip.Tip="{locale:Locale AudioVolumeTooltip}" />
+                                    <Slider Value="{Binding Volume}"
+                                            ToolTip.Tip="{locale:Locale AudioVolumeTooltip}"
+                                            Minimum="0"
+                                            Maximum="100"
+                                            SmallChange="1"
+                                            LargeChange="5"
+                                            Width="200"/>
+                                </StackPanel>
+                                <StackPanel
+                                    Margin="0,5"
+                                    Orientation="Horizontal"
+                                    Spacing="20">
+                                    <TextBlock VerticalAlignment="Center"
                                                Text="{locale:Locale SettingsTabSystemMemoryManagerMode}"
                                                ToolTip.Tip="{locale:Locale MemoryManagerTooltip}" />
                                     <ComboBox SelectedIndex="{Binding MemoryMode}"

@@ -50,7 +50,6 @@ namespace Ryujinx.Common.System
             }
             else
             {
-                userDpiScale = 1;
             }
 
             return userDpiScale / _standardDpiScale;

@@ -10,6 +10,8 @@ using Ryujinx.Common.Logging;
 using Ryujinx.Common.Utilities;
 using Ryujinx.Configuration.System;
 using Ryujinx.HLE.FileSystem;
+using Ryujinx.HLE.HOS;
+using Ryujinx.HLE.HOS.SystemState;
 using Ryujinx.HLE.Loaders.Npdm;
 using System;
 using System.Collections.Generic;
@@ -17,6 +19,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using Path = System.IO.Path;
 using SpanHelpers = LibHac.Common.SpanHelpers;
 
 namespace Ryujinx.Ava.Common
@@ -81,8 +84,10 @@ namespace Ryujinx.Ava.Common
 
         public static void ReadControlData(IFileSystem controlFs, Span<byte> outProperty)
         {
-            controlFs.OpenFile(out IFile controlFile, "/control.nacp".ToU8Span(), OpenMode.Read).ThrowIfFailure();
-            controlFile.Read(out _, 0, outProperty, ReadOption.None).ThrowIfFailure();
+            using var controlFile = new UniqueRef<IFile>();
+
+            controlFs.OpenFile(ref controlFile.Ref(), "/control.nacp".ToU8Span(), OpenMode.Read).ThrowIfFailure();
+            controlFile.Get.Read(out _, 0, outProperty, ReadOption.None).ThrowIfFailure();
         }
 
         public static void LoadApplications(List<string> appDirs, VirtualFileSystem virtualFileSystem,
@@ -148,7 +153,7 @@ namespace Ryujinx.Ava.Common
 
                                 if (Path.GetExtension(applicationPath).ToLower() == ".xci")
                                 {
-                                    Xci xci = new(_virtualFileSystem.KeySet, file.AsStorage());
+                                    Xci xci = new Xci(_virtualFileSystem.KeySet, file.AsStorage());
 
                                     pfs = xci.OpenPartition(XciPartitionType.Secure);
                                 }
@@ -163,15 +168,15 @@ namespace Ryujinx.Ava.Common
                                     {
                                         if (Path.GetExtension(fileEntry.FullPath).ToLower() == ".nca")
                                         {
-                                            pfs.OpenFile(out IFile ncaFile, fileEntry.FullPath.ToU8Span(),
-                                                OpenMode.Read).ThrowIfFailure();
+                                            using var ncaFile = new UniqueRef<IFile>();
 
-                                            Nca nca = new(_virtualFileSystem.KeySet, ncaFile.AsStorage());
-                                            int dataIndex = Nca.GetSectionIndexFromType(NcaSectionType.Data,
-                                                NcaContentType.Program);
+                                            pfs.OpenFile(ref ncaFile.Ref(), fileEntry.FullPath.ToU8Span(), OpenMode.Read).ThrowIfFailure();
 
-                                            if (nca.Header.ContentType == NcaContentType.Program &&
-                                                !nca.Header.GetFsHeader(dataIndex).IsPatchSection())
+                                            Nca nca       = new Nca(_virtualFileSystem.KeySet, ncaFile.Get.AsStorage());
+                                            int dataIndex = Nca.GetSectionIndexFromType(NcaSectionType.Data, NcaContentType.Program);
+
+                                            // Some main NCAs don't have a data partition, so check if the partition exists before opening it
+                                            if (nca.Header.ContentType == NcaContentType.Program && !(nca.SectionExists(NcaSectionType.Data) && nca.Header.GetFsHeader(dataIndex).IsPatchSection()))
                                             {
                                                 hasMainNca = true;
 
@@ -196,15 +201,16 @@ namespace Ryujinx.Ava.Common
                                 {
                                     applicationIcon = _nspIcon;
 
-                                    Result result = pfs.OpenFile(out IFile npdmFile, "/main.npdm".ToU8Span(),
-                                        OpenMode.Read);
+                                    using var npdmFile = new UniqueRef<IFile>();
+
+                                    Result result = pfs.OpenFile(ref npdmFile.Ref(), "/main.npdm".ToU8Span(), OpenMode.Read);
 
                                     if (ResultFs.PathNotFound.Includes(result))
                                     {
-                                        Npdm npdm = new(npdmFile.AsStream());
+                                        Npdm npdm = new Npdm(npdmFile.Get.AsStream());
 
                                         titleName = npdm.TitleName;
-                                        titleId = npdm.Aci0.TitleId.ToString("x16");
+                                        titleId   = npdm.Aci0.TitleId.ToString("x16");
                                     }
                                 }
                                 else
@@ -214,27 +220,21 @@ namespace Ryujinx.Ava.Common
 
                                     ReadControlData(controlFs, controlHolder.ByteSpan);
 
-                                    // Creates NACP class from the NACP file
-                                    controlFs.OpenFile(out IFile controlNacpFile, "/control.nacp".ToU8Span(),
-                                        OpenMode.Read).ThrowIfFailure();
-
                                     // Get the title name, title ID, developer name and version number from the NACP
-                                    version = IsUpdateApplied(titleId, out string updateVersion)
-                                        ? updateVersion
-                                        : controlHolder.Value.DisplayVersion.ToString();
+                                    version = IsUpdateApplied(titleId, out string updateVersion) ? updateVersion : controlHolder.Value.DisplayVersion.ToString();
 
                                     GetNameIdDeveloper(ref controlHolder.Value, out titleName, out _, out developer);
 
                                     // Read the icon from the ControlFS and store it as a byte array
                                     try
                                     {
-                                        controlFs.OpenFile(out IFile icon,
-                                                $"/icon_{_desiredTitleLanguage}.dat".ToU8Span(), OpenMode.Read)
-                                            .ThrowIfFailure();
+                                        using var icon = new UniqueRef<IFile>();
 
-                                        using (MemoryStream stream = new())
+                                        controlFs.OpenFile(ref icon.Ref(), $"/icon_{_desiredTitleLanguage}.dat".ToU8Span(), OpenMode.Read).ThrowIfFailure();
+
+                                        using (MemoryStream stream = new MemoryStream())
                                         {
-                                            icon.AsStream().CopyTo(stream);
+                                            icon.Get.AsStream().CopyTo(stream);
                                             applicationIcon = stream.ToArray();
                                         }
                                     }
@@ -247,12 +247,13 @@ namespace Ryujinx.Ava.Common
                                                 continue;
                                             }
 
-                                            controlFs.OpenFile(out IFile icon, entry.FullPath.ToU8Span(), OpenMode.Read)
-                                                .ThrowIfFailure();
+                                            using var icon = new UniqueRef<IFile>();
 
-                                            using (MemoryStream stream = new())
+                                            controlFs.OpenFile(ref icon.Ref(), entry.FullPath.ToU8Span(), OpenMode.Read).ThrowIfFailure();
+
+                                            using (MemoryStream stream = new MemoryStream())
                                             {
-                                                icon.AsStream().CopyTo(stream);
+                                                icon.Get.AsStream().CopyTo(stream);
                                                 applicationIcon = stream.ToArray();
                                             }
 
@@ -264,9 +265,7 @@ namespace Ryujinx.Ava.Common
 
                                         if (applicationIcon == null)
                                         {
-                                            applicationIcon = Path.GetExtension(applicationPath).ToLower() == ".xci"
-                                                ? _xciIcon
-                                                : _nspIcon;
+                                            applicationIcon = Path.GetExtension(applicationPath).ToLower() == ".xci" ? _xciIcon : _nspIcon;
                                         }
                                     }
                                 }
@@ -495,20 +494,16 @@ namespace Ryujinx.Ava.Common
                                     // Store the ControlFS in variable called controlFs
                                     GetControlFsAndTitleId(pfs, out IFileSystem controlFs, out _);
 
-                                    // Creates NACP class from the NACP file
-                                    controlFs.OpenFile(out IFile controlNacpFile, "/control.nacp".ToU8Span(),
-                                        OpenMode.Read).ThrowIfFailure();
-
                                     // Read the icon from the ControlFS and store it as a byte array
                                     try
                                     {
-                                        controlFs.OpenFile(out IFile icon,
-                                                $"/icon_{_desiredTitleLanguage}.dat".ToU8Span(), OpenMode.Read)
-                                            .ThrowIfFailure();
+                                        using var icon = new UniqueRef<IFile>();
 
-                                        using (MemoryStream stream = new())
+                                        controlFs.OpenFile(ref icon.Ref(), $"/icon_{_desiredTitleLanguage}.dat".ToU8Span(), OpenMode.Read).ThrowIfFailure();
+
+                                        using (MemoryStream stream = new MemoryStream())
                                         {
-                                            icon.AsStream().CopyTo(stream);
+                                            icon.Get.AsStream().CopyTo(stream);
                                             applicationIcon = stream.ToArray();
                                         }
                                     }
@@ -521,12 +516,13 @@ namespace Ryujinx.Ava.Common
                                                 continue;
                                             }
 
-                                            controlFs.OpenFile(out IFile icon, entry.FullPath.ToU8Span(), OpenMode.Read)
-                                                .ThrowIfFailure();
+                                            using var icon = new UniqueRef<IFile>();
 
-                                            using (MemoryStream stream = new())
+                                            controlFs.OpenFile(ref icon.Ref(), entry.FullPath.ToU8Span(), OpenMode.Read).ThrowIfFailure();
+
+                                            using (MemoryStream stream = new MemoryStream())
                                             {
-                                                icon.AsStream().CopyTo(stream);
+                                                icon.Get.AsStream().CopyTo(stream);
                                                 applicationIcon = stream.ToArray();
                                             }
 
@@ -538,9 +534,7 @@ namespace Ryujinx.Ava.Common
 
                                         if (applicationIcon == null)
                                         {
-                                            applicationIcon = Path.GetExtension(applicationPath).ToLower() == ".xci"
-                                                ? _xciIcon
-                                                : _nspIcon;
+                                            applicationIcon = Path.GetExtension(applicationPath).ToLower() == ".xci" ? _xciIcon : _nspIcon;
                                         }
                                     }
                                 }
@@ -663,27 +657,11 @@ namespace Ryujinx.Ava.Common
         private static void GetControlFsAndTitleId(PartitionFileSystem pfs, out IFileSystem controlFs,
             out string titleId)
         {
-            Nca controlNca = null;
-
-            // Add keys to key set if needed
-            _virtualFileSystem.ImportTickets(pfs);
-
-            // Find the Control NCA and store it in variable called controlNca
-            foreach (DirectoryEntryEx fileEntry in pfs.EnumerateEntries("/", "*.nca"))
-            {
-                pfs.OpenFile(out IFile ncaFile, fileEntry.FullPath.ToU8Span(), OpenMode.Read).ThrowIfFailure();
-
-                Nca nca = new(_virtualFileSystem.KeySet, ncaFile.AsStorage());
-
-                if (nca.Header.ContentType == NcaContentType.Control)
-                {
-                    controlNca = nca;
-                }
-            }
+            (_, _, Nca controlNca) = ApplicationLoader.GetGameData(_virtualFileSystem, pfs, 0);
 
             // Return the ControlFS
             controlFs = controlNca?.OpenFileSystem(NcaSectionType.Data, IntegrityCheckLevel.None);
-            titleId = controlNca?.Header.TitleId.ToString("x16");
+            titleId   = controlNca?.Header.TitleId.ToString("x16");
         }
 
         internal static ApplicationMetadata LoadAndSaveMetaData(string titleId,
@@ -819,70 +797,34 @@ namespace Ryujinx.Ava.Common
 
         private static bool IsUpdateApplied(string titleId, out string version)
         {
-            string jsonPath = Path.Combine(AppDataManager.GamesDirPath, titleId, "updates.json");
+            string updatePath = "(unknown)";
 
-            if (File.Exists(jsonPath))
+            try
             {
-                string updatePath = JsonHelper.DeserializeFromFile<TitleUpdateMetadata>(jsonPath).Selected;
+                (Nca patchNca, Nca controlNca) = ApplicationLoader.GetGameUpdateData(_virtualFileSystem, titleId, 0, out updatePath);
 
-                if (!File.Exists(updatePath))
+                if (patchNca != null && controlNca != null)
                 {
-                    version = "";
+                    ApplicationControlProperty controlData = new ApplicationControlProperty();
+                    using var nacpFile = new UniqueRef<IFile>();
 
-                    return false;
+                    controlNca.OpenFileSystem(NcaSectionType.Data, IntegrityCheckLevel.None).OpenFile(ref nacpFile.Ref(), "/control.nacp".ToU8Span(), OpenMode.Read).ThrowIfFailure();
+
+                    nacpFile.Get.Read(out _, 0, SpanHelpers.AsByteSpan(ref controlData), ReadOption.None).ThrowIfFailure();
+
+                    version = controlData.DisplayVersion.ToString();
+
+                    return true;
                 }
-
-                using (FileStream file = new(updatePath, FileMode.Open, FileAccess.Read))
-                {
-                    PartitionFileSystem nsp = new(file.AsStorage());
-
-                    _virtualFileSystem.ImportTickets(nsp);
-
-                    foreach (DirectoryEntryEx fileEntry in nsp.EnumerateEntries("/", "*.nca"))
-                    {
-                        nsp.OpenFile(out IFile ncaFile, fileEntry.FullPath.ToU8Span(), OpenMode.Read).ThrowIfFailure();
-
-                        try
-                        {
-                            Nca nca = new(_virtualFileSystem.KeySet, ncaFile.AsStorage());
-
-                            if ($"{nca.Header.TitleId.ToString("x16")[..^3]}000" != titleId)
-                            {
-                                break;
-                            }
-
-                            if (nca.Header.ContentType == NcaContentType.Control)
-                            {
-                                ApplicationControlProperty controlData = new();
-
-                                nca.OpenFileSystem(NcaSectionType.Data, IntegrityCheckLevel.None)
-                                    .OpenFile(out IFile nacpFile, "/control.nacp".ToU8Span(), OpenMode.Read)
-                                    .ThrowIfFailure();
-
-                                nacpFile.Read(out _, 0, SpanHelpers.AsByteSpan(ref controlData), ReadOption.None)
-                                    .ThrowIfFailure();
-
-                                version = controlData.DisplayVersion.ToString();
-
-                                return true;
-                            }
-                        }
-                        catch (InvalidDataException)
-                        {
-                            Logger.Warning?.Print(LogClass.Application,
-                                $"The header key is incorrect or missing and therefore the NCA header content type check has failed. Errored File: {updatePath}");
-
-                            break;
-                        }
-                        catch (MissingKeyException exception)
-                        {
-                            Logger.Warning?.Print(LogClass.Application,
-                                $"Your key set is missing a key with the name: {exception.Name}. Errored File: {updatePath}");
-
-                            break;
-                        }
-                    }
-                }
+            }
+            catch (InvalidDataException)
+            {
+                Logger.Warning?.Print(LogClass.Application,
+                    $"The header key is incorrect or missing and therefore the NCA header content type check has failed. Errored File: {updatePath}");
+            }
+            catch (MissingKeyException exception)
+            {
+                Logger.Warning?.Print(LogClass.Application, $"Your key set is missing a key with the name: {exception.Name}. Errored File: {updatePath}");
             }
 
             version = "";

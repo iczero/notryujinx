@@ -44,15 +44,15 @@ namespace Ryujinx.Modules
             mainWindow.CanUpdate = false;
 
             // Detect current platform
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            if (OperatingSystem.IsMacOS())
             {
                 _platformExt = "osx_x64.zip";
             }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            else if (OperatingSystem.IsWindows())
             {
                 _platformExt = "win_x64.zip";
             }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            else if (OperatingSystem.IsLinux())
             {
                 _platformExt = "linux_x64.tar.gz";
             }
@@ -172,7 +172,7 @@ namespace Ryujinx.Modules
             updateDialog.MainText.Text = LocaleManager.Instance["DialogUpdaterExtractionMessage"];
             updateDialog.ProgressBar.Value = 0;
 
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            if (OperatingSystem.IsLinux())
             {
                 using (Stream inStream = File.OpenRead(updateFile))
                 using (Stream gzipStream = new GZipInputStream(inStream))

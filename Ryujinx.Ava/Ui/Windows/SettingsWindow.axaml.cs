@@ -169,6 +169,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
         private void CloseButton_Clicked(object sender, RoutedEventArgs e)
         {
+            ViewModel.RevertIfNotSaved();
             Close();
         }
 

@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Path = System.IO.Path;
 using SpanHelpers = LibHac.Common.SpanHelpers;
 
 namespace Ryujinx.Ava.Ui.Windows
@@ -132,12 +133,10 @@ namespace Ryujinx.Ava.Ui.Windows
                         {
                             ApplicationControlProperty controlData = new ApplicationControlProperty();
 
-                            controlNca.OpenFileSystem(NcaSectionType.Data, IntegrityCheckLevel.None)
-                                .OpenFile(out IFile nacpFile, "/control.nacp".ToU8Span(), OpenMode.Read)
-                                .ThrowIfFailure();
+                            using var nacpFile = new UniqueRef<IFile>();
 
-                            nacpFile.Read(out _, 0, SpanHelpers.AsByteSpan(ref controlData), ReadOption.None)
-                                .ThrowIfFailure();
+                            controlNca.OpenFileSystem(NcaSectionType.Data, IntegrityCheckLevel.None).OpenFile(ref nacpFile.Ref(), "/control.nacp".ToU8Span(), OpenMode.Read).ThrowIfFailure();
+                            nacpFile.Get.Read(out _, 0, SpanHelpers.AsByteSpan(ref controlData), ReadOption.None).ThrowIfFailure();
 
                             TitleUpdates.Add(new TitleUpdateModel(controlData, path));
                         }

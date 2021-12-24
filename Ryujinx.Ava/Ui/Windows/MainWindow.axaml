@@ -658,6 +658,14 @@
                         TextAlignment="Left" />
                     <TextBlock
                         Margin="5,0,5,0"
+                        Name="VolumeStatus"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        PointerReleased="VolumeStatus_PointerReleased"
+                        Text="{Binding VolumeStatusText}"
+                        TextAlignment="Left" />
+                    <TextBlock
+                        Margin="5,0,5,0"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         Text="{Binding GameStatusText}"

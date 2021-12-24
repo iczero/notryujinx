@@ -155,6 +155,7 @@ namespace Ryujinx.Ava
             ConfigurationState.Instance.System.IgnoreMissingServices.Event += UpdateIgnoreMissingServicesState;
             ConfigurationState.Instance.Graphics.AspectRatio.Event         += UpdateAspectRatioState;
             ConfigurationState.Instance.System.EnableDockedMode.Event      += UpdateDockedModeState;
+            ConfigurationState.Instance.System.AudioVolume.Event           += UpdateAudioVolumeState; 
         }
 
         private void Parent_PointerLeft(object sender, PointerEventArgs e)
@@ -241,7 +242,7 @@ namespace Ryujinx.Ava
         {
             if (LoadGuestApplication().Result)
             {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                if (OperatingSystem.IsWindows())
                 {
                     _windowsMultimediaTimerResolution = new WindowsMultimediaTimerResolution(1);
                 }
@@ -319,10 +320,13 @@ namespace Ryujinx.Ava
 
         private void UpdateDockedModeState(object sender, ReactiveEventArgs<bool> e)
         {
-            if (Device != null)
-            {
-                Device.System.ChangeDockedModeState(e.NewValue);
-            }
+            Device?.System.ChangeDockedModeState(e.NewValue);
+        }
+
+        private void UpdateAudioVolumeState(object sender, ReactiveEventArgs<float> e)
+        {
+            Device?.SetVolume(e.NewValue);
+            _parent.ViewModel.Volume = e.NewValue;
         }
 
         public void Dispose()
@@ -341,14 +345,19 @@ namespace Ryujinx.Ava
                 MainWindow.UpdateGameMetadata(Device.Application.TitleIdText);
             }
 
-            _windowsMultimediaTimerResolution?.Dispose();
-            _windowsMultimediaTimerResolution = null;
+            if (OperatingSystem.IsWindows())
+            {
+                _windowsMultimediaTimerResolution?.Dispose();
+                _windowsMultimediaTimerResolution = null;
+            }
+
             DisplaySleep.Restore();
 
             _isActive = false;
             
             ConfigurationState.Instance.System.IgnoreMissingServices.Event += UpdateIgnoreMissingServicesState;
             ConfigurationState.Instance.Graphics.AspectRatio.Event         += UpdateAspectRatioState;
+            ConfigurationState.Instance.System.EnableDockedMode.Event      += UpdateDockedModeState;
             ConfigurationState.Instance.System.EnableDockedMode.Event      += UpdateDockedModeState;
 
             _mainThread.Join();
@@ -744,7 +753,8 @@ namespace Ryujinx.Ava
                                                                           ConfigurationState.Instance.System.TimeZone,
                                                                           ConfigurationState.Instance.System.MemoryManagerMode,
                                                                           ConfigurationState.Instance.System.IgnoreMissingServices,
-                                                                          ConfigurationState.Instance.Graphics.AspectRatio);
+                                                                          ConfigurationState.Instance.Graphics.AspectRatio,
+                                                                          ConfigurationState.Instance.System.AudioVolume);
 
             Device = new Switch(configuration);
         }
@@ -872,6 +882,7 @@ namespace Ryujinx.Ava
 
                         StatusUpdatedEvent?.Invoke(this, new StatusUpdatedEventArgs(
                             Device.EnableDeviceVsync,
+                            Device.GetVolume(),
                             dockedMode,
                             ConfigurationState.Instance.Graphics.AspectRatio.Value.ToText(),
                             $"Game: {Device.Statistics.GetGameFrameRate():00.00} FPS ({Device.Statistics.GetGameFrameTime():00.00} ms)",
@@ -1036,6 +1047,19 @@ namespace Ryujinx.Ava
                         Pause();
                     }
                 }
+                
+                if (currentHotkeyState == KeyboardHotkeyState.ToggleMute &&
+                    _prevHotkeyState != KeyboardHotkeyState.ToggleMute)
+                {
+                    if (Device.IsAudioMuted()) 
+                    {
+                        Device.SetVolume(ConfigurationState.Instance.System.AudioVolume);
+                    }
+                    else
+                    {
+                        Device.SetVolume(0);
+                    }
+                }
 
                 if (currentHotkeyState != KeyboardHotkeyState.None)
                 {
@@ -1087,6 +1111,11 @@ namespace Ryujinx.Ava
             if(_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.Pause))
             {
                 state = KeyboardHotkeyState.Pause;
+            }
+            
+            if(_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.ToggleMute))
+            {
+                state = KeyboardHotkeyState.ToggleMute;
             }
 
             return state;

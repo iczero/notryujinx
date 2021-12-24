@@ -26,6 +26,7 @@ using Ryujinx.HLE.HOS.Services.Account.Acc;
 using Ryujinx.Input.Avalonia;
 using Ryujinx.Input.SDL2;
 using Ryujinx.Modules;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -532,9 +533,9 @@ namespace Ryujinx.Ava.Ui.Windows
         private void PrepareLoadScreen()
         {
             using MemoryStream stream = new MemoryStream(ViewModel.SelectedIcon);
-            using var gameIconBmp = new System.Drawing.Bitmap(stream);
+            using var gameIconBmp = SixLabors.ImageSharp.Image.Load<Bgra32>(stream);
 
-            var dominantColor = IconColorPicker.GetFilteredColor(gameIconBmp);
+            var dominantColor = IconColorPicker.GetFilteredColor(gameIconBmp).ToPixel<Bgra32>();
 
             const int ColorDivisor = 4;
 
@@ -607,6 +608,23 @@ namespace Ryujinx.Ava.Ui.Windows
             AspectRatio aspectRatio = ConfigurationState.Instance.Graphics.AspectRatio.Value;
 
             ConfigurationState.Instance.Graphics.AspectRatio.Value = (int)aspectRatio + 1 > Enum.GetNames(typeof(AspectRatio)).Length - 1 ? AspectRatio.Fixed4x3 : aspectRatio + 1;
+        }
+        
+        private void VolumeStatus_PointerReleased(object sender, PointerReleasedEventArgs e)
+        {
+            if (AppHost.Device != null)
+            {
+                if (AppHost.Device.IsAudioMuted())
+                {
+                    AppHost.Device.SetVolume(ConfigurationState.Instance.System.AudioVolume);
+                }
+                else
+                {
+                    AppHost.Device.SetVolume(0);
+                }
+
+                ViewModel.Volume = AppHost.Device.GetVolume() / 100;
+            }
         }
 
         protected override void OnClosing(CancelEventArgs e)

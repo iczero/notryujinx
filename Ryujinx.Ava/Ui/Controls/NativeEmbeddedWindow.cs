@@ -141,11 +141,11 @@ namespace Ryujinx.Ava.Ui.Controls
 
         public void Start()
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            if (OperatingSystem.IsLinux())
             {
                 _handle = CreateLinux();
             }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            else if (OperatingSystem.IsWindows())
             {
                 _handle = CreateWin32();
             }
@@ -157,7 +157,7 @@ namespace Ryujinx.Ava.Ui.Controls
 
             Task.Run(async () =>
             {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                if (OperatingSystem.IsLinux())
                 {
                     // Delay deleting the actual window, because avalonia does not release it early enough on Linux.
                     await Task.Delay(2000);

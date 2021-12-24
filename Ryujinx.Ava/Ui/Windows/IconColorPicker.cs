@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Advanced;
+using SixLabors.ImageSharp.PixelFormats;
 using System.Runtime.InteropServices;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace Ryujinx.Ava.Ui.Windows
 {
@@ -37,9 +39,9 @@ namespace Ryujinx.Ava.Ui.Windows
             }
         }
 
-        public static Color GetFilteredColor(Bitmap image)
+        public static Color GetFilteredColor(Image<Bgra32> image)
         {
-            var color = GetColor(image);
+            var color = GetColor(image).ToPixel<Bgra32>();
 
             // We don't want colors that are too dark.
             // If the color is too dark, make it brighter by reducing the range
@@ -47,16 +49,16 @@ namespace Ryujinx.Ava.Ui.Windows
             int luminosity = GetColorApproximateLuminosity(color.R, color.G, color.B);
             if (luminosity < CutOffLuminosity)
             {
-                color = Color.FromArgb(
-                    Math.Min(CutOffLuminosity + color.R, byte.MaxValue),
-                    Math.Min(CutOffLuminosity + color.G, byte.MaxValue),
-                    Math.Min(CutOffLuminosity + color.B, byte.MaxValue));
+                color = Color.FromRgb(
+                    (byte) Math.Min(CutOffLuminosity + color.R, byte.MaxValue),
+                    (byte) Math.Min(CutOffLuminosity + color.G, byte.MaxValue),
+                    (byte) Math.Min(CutOffLuminosity + color.B, byte.MaxValue));
             }
 
             return color;
         }
 
-        public static Color GetColor(Bitmap image)
+        public static Color GetColor(Image<Bgra32> image)
         {
             var colors = new PaletteColor[TotalColors];
 
@@ -75,17 +77,17 @@ namespace Ryujinx.Ava.Ui.Windows
             int i = 0;
             int maxHitCount = 0;
 
-            for (int y = 0; y < h8; y += yStep)
+            for (int y = 0; y < image.Height; y++)
             {
-                int yOffset = (y >> 8) * w;
+                int yOffset = y * image.Width;
 
-                for (int x = 0; x < w8 && i < TotalColors; x += xStep)
+                for (int x = 0; x < image.Width && i < TotalColors; x++)
                 {
-                    int offset = ((x >> 8) + yOffset) * 4;
+                    int offset = x + yOffset;
 
-                    byte cb = buffer[offset];
-                    byte cg = buffer[offset + 1];
-                    byte cr = buffer[offset + 2];
+                    byte cb = buffer[offset].B;
+                    byte cg = buffer[offset].G;
+                    byte cr = buffer[offset].R;
 
                     var qck = GetQuantizedColorKey(cr, cg, cb);
 
@@ -121,17 +123,12 @@ namespace Ryujinx.Ava.Ui.Windows
                 }
             }
 
-            return Color.FromArgb(bestCandidate.R, bestCandidate.G, bestCandidate.B);
+            return Color.FromRgb(bestCandidate.R, bestCandidate.G, bestCandidate.B);
         }
 
-        public static byte[] GetBuffer(Bitmap image)
+        public static Bgra32[] GetBuffer(Image<Bgra32> image)
         {
-            var imgRect = new Rectangle(0, 0, image.Width, image.Height);
-            var imgData = image.LockBits(imgRect, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-            var buffer = new byte[imgData.Stride * imgData.Height];
-            Marshal.Copy(imgData.Scan0, buffer, 0, buffer.Length);
-            image.UnlockBits(imgData);
-            return buffer;
+            return image.TryGetSinglePixelSpan(out var data) ? data.ToArray() : new  Bgra32[0];
         }
 
         private static int GetColorScore(Dictionary<int, int> dominantColorBin, int maxHitCount, PaletteColor color)

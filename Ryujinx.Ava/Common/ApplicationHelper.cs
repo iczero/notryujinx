@@ -22,6 +22,7 @@ using System.IO;
 using System.Threading;
 using static LibHac.Fs.ApplicationSaveDataManagement;
 using ApplicationId = LibHac.Ncm.ApplicationId;
+using Path = System.IO.Path;
 
 namespace Ryujinx.Ava.Common
 {
@@ -203,10 +204,11 @@ namespace Ryujinx.Ava.Common
 
                             foreach (DirectoryEntryEx fileEntry in pfs.EnumerateEntries("/", "*.nca"))
                             {
-                                pfs.OpenFile(out IFile ncaFile, fileEntry.FullPath.ToU8Span(), OpenMode.Read)
-                                    .ThrowIfFailure();
+                                using var ncaFile = new UniqueRef<IFile>();
 
-                                Nca nca = new(_virtualFileSystem.KeySet, ncaFile.AsStorage());
+                                pfs.OpenFile(ref ncaFile.Ref(), fileEntry.FullPath.ToU8Span(), OpenMode.Read).ThrowIfFailure();
+
+                                Nca nca = new(_virtualFileSystem.KeySet, ncaFile.Get.AsStorage());
 
                                 if (nca.Header.ContentType == NcaContentType.Program)
                                 {
@@ -264,8 +266,11 @@ namespace Ryujinx.Ava.Common
                             string source = DateTime.Now.ToFileTime().ToString()[10..];
                             string output = DateTime.Now.ToFileTime().ToString()[10..];
 
-                            fsClient.Register(source.ToU8Span(), ncaFileSystem);
-                            fsClient.Register(output.ToU8Span(), new LocalFileSystem(destination));
+                            using var uniqueSourceFs = new UniqueRef<IFileSystem>(ncaFileSystem);
+                            using var uniqueOutputFs = new UniqueRef<IFileSystem>(new LocalFileSystem(destination));
+
+                            fsClient.Register(source.ToU8Span(), ref uniqueSourceFs.Ref());
+                            fsClient.Register(output.ToU8Span(), ref uniqueOutputFs.Ref());
 
                             (Result? resultCode, bool canceled) = CopyDirectory(fsClient, $"{source}:/", $"{output}:/");
 

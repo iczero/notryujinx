@@ -225,6 +225,11 @@ namespace Ryujinx.Configuration
             /// The selected audio backend
             /// </summary>
             public ReactiveObject<AudioBackend> AudioBackend { get; private set; }
+            
+            /// <summary>
+            /// The audio backend volume
+            /// </summary>
+            public ReactiveObject<float> AudioVolume { get; private set; }
 
             /// <summary>
             /// The selected memory manager mode
@@ -263,6 +268,8 @@ namespace Ryujinx.Configuration
                 ExpandRam.Event               += static (sender, e) => LogValueChange(sender, e, nameof(ExpandRam));
                 IgnoreMissingServices         = new ReactiveObject<bool>();
                 IgnoreMissingServices.Event   += static (sender, e) => LogValueChange(sender, e, nameof(IgnoreMissingServices));
+                AudioVolume                   = new ReactiveObject<float>();
+                AudioVolume.Event             += static (sender, e) => LogValueChange(sender, e, nameof(AudioVolume));
             }
         }
 
@@ -466,6 +473,7 @@ namespace Ryujinx.Configuration
                 EnableFsIntegrityChecks   = System.EnableFsIntegrityChecks,
                 FsGlobalAccessLogMode     = System.FsGlobalAccessLogMode,
                 AudioBackend              = System.AudioBackend,
+                AudioVolume               = System.AudioVolume,
                 MemoryManagerMode         = System.MemoryManagerMode,
                 ExpandRam                 = System.ExpandRam,
                 IgnoreMissingServices     = System.IgnoreMissingServices,
@@ -561,7 +569,10 @@ namespace Ryujinx.Configuration
             Hid.Hotkeys.Value = new KeyboardHotkeys
             {
                 ToggleVsync = Key.Tab,
-                Screenshot = Key.F8
+                ToggleMute = Key.F2,
+                Screenshot = Key.F8,
+                ShowUi = Key.F4,
+                Pause = Key.F5
             };
             Hid.InputConfig.Value = new List<InputConfig>
             {
@@ -933,8 +944,26 @@ namespace Ryujinx.Configuration
 
                 configurationFileUpdated = true;
             }
-
+            
             if (configurationFileFormat.Version < 33)
+            {
+                Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 33.");
+
+                configurationFileFormat.Hotkeys = new KeyboardHotkeys
+                {
+                    ToggleVsync = configurationFileFormat.Hotkeys.ToggleVsync,
+                    Screenshot = configurationFileFormat.Hotkeys.Screenshot,
+                    ShowUi = configurationFileFormat.Hotkeys.ShowUi,
+                    Pause = configurationFileFormat.Hotkeys.Pause,
+                    ToggleMute = Key.F2
+                };
+
+                configurationFileFormat.AudioVolume = 1;
+
+                configurationFileUpdated = true;
+            }
+
+            if (configurationFileFormat.Version < 334)
             {
                 Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 33.");
 
@@ -974,6 +1003,7 @@ namespace Ryujinx.Configuration
             System.EnableFsIntegrityChecks.Value   = configurationFileFormat.EnableFsIntegrityChecks;
             System.FsGlobalAccessLogMode.Value     = configurationFileFormat.FsGlobalAccessLogMode;
             System.AudioBackend.Value              = configurationFileFormat.AudioBackend;
+            System.AudioVolume.Value               = configurationFileFormat.AudioVolume;
             System.MemoryManagerMode.Value         = configurationFileFormat.MemoryManagerMode;
             System.ExpandRam.Value                 = configurationFileFormat.ExpandRam;
             System.IgnoreMissingServices.Value     = configurationFileFormat.IgnoreMissingServices;
