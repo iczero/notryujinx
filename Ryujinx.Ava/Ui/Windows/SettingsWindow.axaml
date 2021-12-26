@@ -341,6 +341,10 @@
                                     <TextBlock Text="{locale:Locale SettingsTabSystemEnablePptc}"
                                                ToolTip.Tip="{locale:Locale PptcToggleTooltip}" />
                                 </CheckBox>
+                                <CheckBox IsChecked="{Binding EnableInternetAccess}">
+                                    <TextBlock Text="{locale:Locale SettingsTabSystemEnableInternetAccess}"
+                                               ToolTip.Tip="{locale:Locale EnableInternetAccessTooltip}" />
+                                </CheckBox>
                                 <CheckBox IsChecked="{Binding EnableFsIntegrityChecks}">
                                     <TextBlock Text="{locale:Locale SettingsTabSystemEnableFsIntegrityChecks}"
                                                ToolTip.Tip="{locale:Locale FsIntegrityToggleTooltip}" />

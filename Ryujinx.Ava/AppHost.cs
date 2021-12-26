@@ -155,7 +155,7 @@ namespace Ryujinx.Ava
             ConfigurationState.Instance.System.IgnoreMissingServices.Event += UpdateIgnoreMissingServicesState;
             ConfigurationState.Instance.Graphics.AspectRatio.Event         += UpdateAspectRatioState;
             ConfigurationState.Instance.System.EnableDockedMode.Event      += UpdateDockedModeState;
-            ConfigurationState.Instance.System.AudioVolume.Event           += UpdateAudioVolumeState; 
+            ConfigurationState.Instance.System.AudioVolume.Event           += UpdateAudioVolumeState;
         }
 
         private void Parent_PointerLeft(object sender, PointerEventArgs e)
@@ -747,6 +747,7 @@ namespace Ryujinx.Ava
                                                                           ConfigurationState.Instance.Graphics.EnableVsync,
                                                                           ConfigurationState.Instance.System.EnableDockedMode,
                                                                           ConfigurationState.Instance.System.EnablePtc,
+                                                                          ConfigurationState.Instance.System.EnableInternetAccess,
                                                                           fsIntegrityCheckLevel,
                                                                           ConfigurationState.Instance.System.FsGlobalAccessLogMode,
                                                                           ConfigurationState.Instance.System.SystemTimeOffset,

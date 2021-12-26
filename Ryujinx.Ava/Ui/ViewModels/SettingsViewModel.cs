@@ -95,6 +95,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         public bool EnableMouse              { get; set; }
         public bool EnableVsync              { get; set; }
         public bool EnablePptc               { get; set; }
+        public bool EnableInternetAccess           { get; set; }
         public bool EnableFsIntegrityChecks  { get; set; }
         public bool IgnoreMissingServices    { get; set; }
         public bool ExpandDramSize           { get; set; }
@@ -242,6 +243,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             EnableMouse              = config.Hid.EnableMouse;
             EnableVsync              = config.Graphics.EnableVsync;
             EnablePptc               = config.System.EnablePtc;
+            EnableInternetAccess     = config.System.EnableInternetAccess;
             EnableFsIntegrityChecks  = config.System.EnableFsIntegrityChecks;
             IgnoreMissingServices    = config.System.IgnoreMissingServices;
             ExpandDramSize           = config.System.ExpandRam;
@@ -318,6 +320,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             config.Graphics.EnableVsync.Value           = EnableVsync;
             config.Graphics.EnableShaderCache.Value     = EnableShaderCache;
             config.System.EnablePtc.Value               = EnablePptc;
+            config.System.EnableInternetAccess.Value    = EnableInternetAccess;
             config.System.EnableFsIntegrityChecks.Value = EnableFsIntegrityChecks;
             config.System.IgnoreMissingServices.Value   = IgnoreMissingServices;
             config.System.ExpandRam.Value               = ExpandDramSize;
