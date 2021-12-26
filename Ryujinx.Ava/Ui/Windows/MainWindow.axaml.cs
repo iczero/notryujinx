@@ -227,7 +227,7 @@ namespace Ryujinx.Ava.Ui.Windows
         }
 
 #pragma warning disable CS1998
-        public async void LoadApplication(string path, bool startFullscreen = false)
+        public async void LoadApplication(string path, bool startFullscreen = false, string titleName = "")
 #pragma warning restore CS1998
         {
             if (AppHost != null)
@@ -252,7 +252,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
             PrepareLoadScreen();
 
-            ViewModel.LoadHeading = $"Loading {ViewModel.SelectedApplication.TitleName}";
+            ViewModel.LoadHeading = string.IsNullOrWhiteSpace(titleName) ? $"Loading {ViewModel.SelectedApplication.TitleName}" : titleName;
 
             _mainViewContent = ContentFrame.Content as Control;
 
@@ -403,7 +403,9 @@ namespace Ryujinx.Ava.Ui.Windows
             {
                 _deferLoad = false;
 
-                LoadApplication(_launchPath, _startFullscreen);
+                string name = new FileInfo(_launchPath).Name;
+
+                LoadApplication(_launchPath, _startFullscreen, name);
             }
 
             if (ConfigurationState.Instance.CheckUpdatesOnStart.Value && Updater.CanUpdate(false, this))
@@ -623,7 +625,7 @@ namespace Ryujinx.Ava.Ui.Windows
                     AppHost.Device.SetVolume(0);
                 }
 
-                ViewModel.Volume = AppHost.Device.GetVolume() / 100;
+                ViewModel.Volume = AppHost.Device.GetVolume();
             }
         }
 

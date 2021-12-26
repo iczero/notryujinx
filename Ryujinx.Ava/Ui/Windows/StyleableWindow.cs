@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
+using FluentAvalonia.Core.ApplicationModel;
 using FluentAvalonia.UI.Controls;
 using System;
 using System.IO;

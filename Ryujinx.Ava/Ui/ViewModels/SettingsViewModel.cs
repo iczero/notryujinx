@@ -255,7 +255,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             EnableDebug              = config.Logger.EnableDebug;
             EnableFsAccessLog        = config.Logger.EnableFsAccessLog;
             EnableCustomTheme        = config.Ui.EnableCustomTheme;
-            Volume                   = config.System.AudioVolume;
+            Volume                   = config.System.AudioVolume * 100;
 
             GraphicsBackendMultithreadingIndex = (int)config.Graphics.BackendThreading.Value;
 
@@ -350,7 +350,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             config.Graphics.AspectRatio.Value    = (AspectRatio)AspectRatio;
             config.Graphics.ResScale.Value       = ResolutionScale == 0 ? -1 : ResolutionScale;
             config.Graphics.ResScaleCustom.Value = CustomResolutionScale;
-            config.System.AudioVolume.Value      = Volume;
+            config.System.AudioVolume.Value      = Volume / 100;
 
             AudioBackend audioBackend = (AudioBackend)AudioBackend;
             if (audioBackend != config.System.AudioBackend.Value)

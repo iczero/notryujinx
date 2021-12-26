@@ -249,6 +249,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
                     _mainWindow.AppHost.NpadManager.BlockInputUpdates();
                 }
 
+                _isProfileLoading = true;
+
                 LoadDevices();
 
                 PlayerId = PlayerIndex.Player1;

@@ -108,7 +108,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 PauseKey      = KeyGesture.Parse(ConfigurationState.Instance.Hid.Hotkeys.Value.Pause.ToString());
             }
 
-            Volume = ConfigurationState.Instance.System.AudioVolume / 100;
+            Volume = ConfigurationState.Instance.System.AudioVolume;
         }
 
         public string SearchText
@@ -944,7 +944,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             if (files != null && files.Length > 0)
             {
-                _owner.LoadApplication(files[0]);
+                string name = new FileInfo(files[0]).Name;
+
+                _owner.LoadApplication(files[0], titleName:name);
             }
         }
 
@@ -959,7 +961,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             if (!string.IsNullOrWhiteSpace(folder) && Directory.Exists(folder))
             {
-                _owner.LoadApplication(folder);
+                string name = new DirectoryInfo(folder).Name;
+
+                _owner.LoadApplication(folder, titleName:name);
             }
         }
 
@@ -989,7 +993,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             if (!string.IsNullOrWhiteSpace(contentPath))
             {
-                _owner.LoadApplication(contentPath);
+                _owner.LoadApplication(contentPath, false, "Mii Applet");
             }
         }
 
