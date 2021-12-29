@@ -1,5 +1,6 @@
 using OpenTK.Graphics.OpenGL;
 using Ryujinx.Graphics.GAL;
+using Ryujinx.Graphics.OpenGL.Helper;
 using Ryujinx.Graphics.OpenGL.Image;
 using System;
 
@@ -11,8 +12,10 @@ namespace Ryujinx.Graphics.OpenGL
 
         private int _width;
         private int _height;
-
+        private bool _sizeChanged;
         private int _copyFramebufferHandle;
+        private int _stagingFrameBuffer;
+        private int _stagingTexture;
 
         internal BackgroundContextWorker BackgroundContext { get; private set; }
 
@@ -23,27 +26,66 @@ namespace Ryujinx.Graphics.OpenGL
             _renderer = renderer;
         }
 
-        public void Present(ITexture texture, ImageCrop crop, Action swapBuffersCallback)
+        public void Present(ITexture texture, ImageCrop crop, Action<int> swapBuffersCallback)
         {
             GL.Disable(EnableCap.FramebufferSrgb);
 
-            CopyTextureToFrameBufferRGB(0, GetCopyFramebufferHandleLazy(), (TextureView)texture, crop);
+            if (_sizeChanged)
+            {
+                if(_stagingFrameBuffer != 0)
+                {
+                    GL.DeleteTexture(_stagingTexture);
+                    GL.DeleteFramebuffer(_stagingFrameBuffer);
+                }
+
+                CreateStagingFramebuffer();
+                _sizeChanged = false;
+            }
+
+            (int oldDrawFramebufferHandle, int oldReadFramebufferHandle) = ((Pipeline)_renderer.Pipeline).GetBoundFramebuffers();
+
+            CopyTextureToFrameBufferRGB(_stagingFrameBuffer, GetCopyFramebufferHandleLazy(), (TextureView)texture, crop);
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+            swapBuffersCallback(_stagingTexture);
+
+            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, oldReadFramebufferHandle);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, oldDrawFramebufferHandle);
+
+            ((Pipeline)_renderer.Pipeline).RestoreScissor0Enable();
+            ((Pipeline)_renderer.Pipeline).RestoreRasterizerDiscard();
 
             GL.Enable(EnableCap.FramebufferSrgb);
+        }
 
-            swapBuffersCallback();
+        private void CreateStagingFramebuffer()
+        {
+            _stagingFrameBuffer = GL.GenFramebuffer();
+            _stagingTexture = GL.GenTexture();
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, _stagingFrameBuffer);
+
+            GL.BindTexture(TextureTarget.Texture2D, _stagingTexture);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, _width, _height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, _stagingTexture, 0);
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
         public void SetSize(int width, int height)
         {
-            _width  = width;
+            _width = width;
             _height = height;
+            _sizeChanged = true;
         }
 
         private void CopyTextureToFrameBufferRGB(int drawFramebuffer, int readFramebuffer, TextureView view, ImageCrop crop)
         {
-            (int oldDrawFramebufferHandle, int oldReadFramebufferHandle) = ((Pipeline)_renderer.Pipeline).GetBoundFramebuffers();
-
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, drawFramebuffer);
             GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, readFramebuffer);
 
@@ -95,13 +137,13 @@ namespace Ryujinx.Graphics.OpenGL
                 srcY1 = (int)Math.Ceiling(srcY1 * scale);
             }
 
-            float ratioX = crop.IsStretched ? 1.0f : MathF.Min(1.0f, _height * crop.AspectRatioX / (_width  * crop.AspectRatioY));
-            float ratioY = crop.IsStretched ? 1.0f : MathF.Min(1.0f, _width  * crop.AspectRatioY / (_height * crop.AspectRatioX));
+            float ratioX = crop.IsStretched ? 1.0f : MathF.Min(1.0f, _height * crop.AspectRatioX / (_width * crop.AspectRatioY));
+            float ratioY = crop.IsStretched ? 1.0f : MathF.Min(1.0f, _width * crop.AspectRatioY / (_height * crop.AspectRatioX));
 
-            int dstWidth  = (int)(_width  * ratioX);
+            int dstWidth = (int)(_width * ratioX);
             int dstHeight = (int)(_height * ratioY);
 
-            int dstPaddingX = (_width  - dstWidth)  / 2;
+            int dstPaddingX = (_width - dstWidth) / 2;
             int dstPaddingY = (_height - dstHeight) / 2;
 
             int dstX0 = crop.FlipX ? _width - dstPaddingX : dstPaddingX;
@@ -138,12 +180,6 @@ namespace Ryujinx.Graphics.OpenGL
             {
                 ((Pipeline)_renderer.Pipeline).RestoreComponentMask(i);
             }
-
-            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, oldReadFramebufferHandle);
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, oldDrawFramebufferHandle);
-
-            ((Pipeline)_renderer.Pipeline).RestoreScissor0Enable();
-            ((Pipeline)_renderer.Pipeline).RestoreRasterizerDiscard();
 
             if (viewConverted != view)
             {
@@ -189,6 +225,14 @@ namespace Ryujinx.Graphics.OpenGL
                 GL.DeleteFramebuffer(_copyFramebufferHandle);
 
                 _copyFramebufferHandle = 0;
+            }
+
+            if (_stagingFrameBuffer != 0)
+            {
+                GL.DeleteTexture(_stagingTexture);
+                GL.DeleteFramebuffer(_stagingFrameBuffer);
+                _stagingFrameBuffer = 0;
+                _stagingTexture = 0;
             }
         }
     }
