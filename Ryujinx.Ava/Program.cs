@@ -1,5 +1,6 @@
 using ARMeilleure.Translation.PTC;
 using Avalonia;
+using Avalonia.OpenGL;
 using FFmpeg.AutoGen;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Ryujinx.Ava.Application.Module;
@@ -31,9 +32,7 @@ namespace Ryujinx.Ava
         public static string Version           { get; private set; }
         public static string ConfigurationPath { get; private set; }
         public static bool   PreviewerDetached { get; private set; }
-
-        [DllImport("libX11")]
-        private static extern int XInitThreads();
+        public static AdjustableRenderTimer RenderTimer { get; private set; }
 
         // NOTE: Initialization code. Don't use any Avalonia, third-party APIs or any SynchronizationContext-reliant code before AppMain is called:
         //       Things aren't initialized yet and stuff might break.
@@ -43,7 +42,11 @@ namespace Ryujinx.Ava
             
             Initialize(args);
 
+            RenderTimer = new AdjustableRenderTimer(60);
+
             BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+
+            RenderTimer.Dispose();
         }
 
         // Avalonia configuration, don't remove; also used by visual designer.
@@ -55,14 +58,22 @@ namespace Ryujinx.Ava
                 {
                     EnableMultiTouch = true,
                     EnableIme        = true,
-                    UseEGL           = false,
-                    UseGpu           = false
+                    UseEGL           = true,
+                    UseGpu           = true,
+                    GlProfiles = new[]
+                    {
+                        new GlVersion(GlProfileType.OpenGL, 3, 3)
+                    }
                 })
                 .With(new Win32PlatformOptions
                 {
                     EnableMultitouch       = true,
-                    UseWgl                 = false,
-                    AllowEglInitialization = false
+                    UseWgl                 = true,
+                    AllowEglInitialization = true,
+                    WglProfiles = new[]
+                    {
+                        new GlVersion(GlProfileType.OpenGL, 4, 3)
+                    }
                 })
                 .UseSkia()
                 .LogToTrace();

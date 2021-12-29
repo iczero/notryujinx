@@ -16,6 +16,7 @@ using System;
 using System.Linq;
 using System.Diagnostics;
 using Ryujinx.Common.Logging;
+using Avalonia.Rendering;
 
 namespace Ryujinx.Ava
 {
@@ -24,6 +25,10 @@ namespace Ryujinx.Ava
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
+
+            AvaloniaLocator.CurrentMutable
+                .Bind<IRenderTimer>().ToConstant(Program.RenderTimer)
+                .Bind<IRenderLoop>().ToConstant(new RenderLoop(Program.RenderTimer, Dispatcher.UIThread));
         }
 
         public override void OnFrameworkInitializationCompleted()
