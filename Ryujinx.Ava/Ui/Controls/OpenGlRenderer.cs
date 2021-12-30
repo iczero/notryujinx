@@ -1,10 +1,14 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.OpenGL;
+using Avalonia.Platform;
+using Avalonia.Win32;
 using OpenTK.Graphics.OpenGL;
 using Ryujinx.Common.Configuration;
 using SPB.Graphics;
 using SPB.Graphics.OpenGL;
 using SPB.Platform;
+using SPB.Platform.Win32;
 using SPB.Windowing;
 using System;
 using System.Collections.Generic;
@@ -53,6 +57,8 @@ namespace Ryujinx.Ava.Ui.Controls
             CreateWindow(mainContext); 
 
             OnInitialized(gl);
+
+            Window.SwapInterval = 0;
         }
 
         protected override void OnRender(GlInterface gl, int fb)
@@ -62,20 +68,9 @@ namespace Ryujinx.Ava.Ui.Controls
                 return;
             }
 
-            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, Image);
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, fb);
-            GL.BlitFramebuffer(0,
-                               0,
-                               (int)Bounds.Width,
-                               (int)Bounds.Height,
-                               0,
-                               (int)Bounds.Height,
-                               (int)Bounds.Width,
-                               0,
-                               ClearBufferMask.ColorBufferBit,
-                               BlitFramebufferFilter.Linear);
+            GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, FramebufferParameterName.FramebufferAttachmentObjectName, out int texture);
 
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fb);
+            GL.CopyImageSubData(Image, ImageTarget.Texture2D, 0, 0, 0, 0, texture, ImageTarget.Texture2D, 0, 0, 0, 0, (int)Bounds.Width, (int)Bounds.Height, 1);
         }
 
         protected override void OnOpenGlDeinit(GlInterface gl, int fb)
@@ -83,6 +78,8 @@ namespace Ryujinx.Ava.Ui.Controls
             base.OnOpenGlDeinit(gl, fb);
             Context.Dispose();
             _window.Dispose();
+
+            Window.SwapInterval = 1;
         }
 
         internal void MakeCurrent()

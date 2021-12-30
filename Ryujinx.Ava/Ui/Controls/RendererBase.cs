@@ -1,12 +1,16 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
+using Avalonia.Platform;
 using Avalonia.Threading;
 using OpenTK.Graphics.OpenGL;
+using SPB.Windowing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ryujinx.Ava.Ui.Controls
@@ -14,6 +18,7 @@ namespace Ryujinx.Ava.Ui.Controls
     public abstract class RendererBase : OpenGlControlBase
     {
         protected int Image { get; private set; }
+        public SwappableNativeWindowBase Window { get; private set; }
 
         public event EventHandler<EventArgs> GlInitialized;
         public event EventHandler<Size> SizeChanged;
@@ -30,7 +35,27 @@ namespace Ryujinx.Ava.Ui.Controls
         private void Resized(Rect rect)
         {
             SizeChanged?.Invoke(this, rect.Size);
-        } 
+        }
+
+        protected override void OnOpenGlInit(GlInterface gl, int fb)
+        {
+            base.OnOpenGlInit(gl, fb);
+
+            if (OperatingSystem.IsWindows())
+            {
+                var window = ((this.VisualRoot as TopLevel).PlatformImpl as Avalonia.Win32.WindowImpl).Handle.Handle;
+
+                Window = new SPB.Platform.WGL.WGLWindow(new NativeHandle(window));
+            }
+            else if (OperatingSystem.IsLinux())
+            {
+                var window = (IPlatformHandle)(this.VisualRoot as TopLevel).PlatformImpl.GetType().GetProperty("Handle").GetValue((this.VisualRoot as TopLevel).PlatformImpl);
+                var display = (this.VisualRoot as TopLevel).PlatformImpl.GetType().GetField("_x11", System.Reflection.BindingFlags.NonPublic).GetValue((this.VisualRoot as TopLevel).PlatformImpl);
+                var displayHandle = (IntPtr)display.GetType().GetProperty("Display").GetValue(display);
+
+                Window = new SPB.Platform.GLX.GLXWindow(new NativeHandle(displayHandle), new NativeHandle(window.Handle));
+            }
+        }
 
         protected override void OnOpenGlRender(GlInterface gl, int fb)
         {
@@ -57,7 +82,7 @@ namespace Ryujinx.Ava.Ui.Controls
         {
             Image = image;
             GL.WaitSync(_waitFence, WaitSyncFlags.None, long.MaxValue);
-            Dispatcher.UIThread.Post(InvalidateVisual, DispatcherPriority.Background);
+            Dispatcher.UIThread.InvokeAsync(InvalidateVisual, DispatcherPriority.Background).Wait();
         }
     }
 }

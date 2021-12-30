@@ -1,6 +1,8 @@
 using ARMeilleure.Translation.PTC;
 using Avalonia;
 using Avalonia.OpenGL;
+using Avalonia.Rendering;
+using Avalonia.Threading;
 using FFmpeg.AutoGen;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Ryujinx.Ava.Application.Module;
@@ -62,7 +64,7 @@ namespace Ryujinx.Ava
                     UseGpu           = true,
                     GlProfiles = new[]
                     {
-                        new GlVersion(GlProfileType.OpenGL, 3, 3)
+                        new GlVersion(GlProfileType.OpenGL, 4, 3)
                     }
                 })
                 .With(new Win32PlatformOptions
@@ -76,6 +78,12 @@ namespace Ryujinx.Ava
                     }
                 })
                 .UseSkia()
+                .AfterSetup(_ =>
+                {
+                    AvaloniaLocator.CurrentMutable
+                        .Bind<IRenderTimer>().ToConstant(RenderTimer)
+                        .Bind<IRenderLoop>().ToConstant(new RenderLoop(RenderTimer, Dispatcher.UIThread));
+                })
                 .LogToTrace();
         }
 

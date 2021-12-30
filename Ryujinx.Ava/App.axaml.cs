@@ -25,10 +25,6 @@ namespace Ryujinx.Ava
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
-
-            AvaloniaLocator.CurrentMutable
-                .Bind<IRenderTimer>().ToConstant(Program.RenderTimer)
-                .Bind<IRenderLoop>().ToConstant(new RenderLoop(Program.RenderTimer, Dispatcher.UIThread));
         }
 
         public override void OnFrameworkInitializationCompleted()

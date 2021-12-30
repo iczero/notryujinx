@@ -876,6 +876,8 @@ namespace Ryujinx.Ava
 
                         string vendor = _renderer is Renderer renderer ? renderer.GpuVendor : "Vulkan Test";
 
+                        Program.RenderTimer.FrameRate = Device.EnableDeviceVsync ? 60 : 240;  // Set Window Framerate to very high value when vsync is not set
+
                         StatusUpdatedEvent?.Invoke(this, new StatusUpdatedEventArgs(
                             Device.EnableDeviceVsync,
                             Device.GetVolume(),
@@ -893,6 +895,8 @@ namespace Ryujinx.Ava
             (Renderer as OpenGlRenderer)?.MakeCurrent(null);
 
             Renderer.SizeChanged -= Window_SizeChanged;
+
+            Program.RenderTimer.FrameRate = 60;
         }
 
         private void Present(int image)

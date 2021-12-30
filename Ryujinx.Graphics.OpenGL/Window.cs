@@ -46,7 +46,9 @@ namespace Ryujinx.Graphics.OpenGL
 
             CopyTextureToFrameBufferRGB(_stagingFrameBuffer, GetCopyFramebufferHandleLazy(), (TextureView)texture, crop);
 
-            swapBuffersCallback(_stagingFrameBuffer);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+            swapBuffersCallback(_stagingTexture);
 
             GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, oldReadFramebufferHandle);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, oldDrawFramebufferHandle);
@@ -64,12 +66,10 @@ namespace Ryujinx.Graphics.OpenGL
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, _stagingFrameBuffer);
             GL.BindTexture(TextureTarget.Texture2D, _stagingTexture);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, _width, _height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, _width, _height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBaseLevel, 0);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 0);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, _stagingTexture, 0);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
@@ -148,8 +148,8 @@ namespace Ryujinx.Graphics.OpenGL
             int dstX0 = crop.FlipX ? _width - dstPaddingX : dstPaddingX;
             int dstX1 = crop.FlipX ? dstPaddingX : _width - dstPaddingX;
 
-            int dstY0 = crop.FlipY ? dstPaddingY : _height - dstPaddingY;
-            int dstY1 = crop.FlipY ? _height - dstPaddingY : dstPaddingY;
+            int dstY0 = !crop.FlipY ? dstPaddingY : _height - dstPaddingY;
+            int dstY1 = !crop.FlipY ? _height - dstPaddingY : dstPaddingY;
 
             if (ScreenCaptureRequested)
             {
