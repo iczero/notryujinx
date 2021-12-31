@@ -15,7 +15,9 @@ namespace Ryujinx.Graphics.OpenGL
         private bool _sizeChanged;
         private int _copyFramebufferHandle;
         private int _stagingFrameBuffer;
-        private int _stagingTexture;
+        private int[] _stagingTextures;
+        private int _currentTexture;
+        private const int MaxTexturesCount = 5;
 
         internal BackgroundContextWorker BackgroundContext { get; private set; }
 
@@ -24,6 +26,7 @@ namespace Ryujinx.Graphics.OpenGL
         public Window(Renderer renderer)
         {
             _renderer = renderer;
+            _stagingTextures = new int[MaxTexturesCount];
         }
 
         public void Present(ITexture texture, ImageCrop crop, Action<int> swapBuffersCallback)
@@ -34,7 +37,7 @@ namespace Ryujinx.Graphics.OpenGL
             {
                 if(_stagingFrameBuffer != 0)
                 {
-                    GL.DeleteTexture(_stagingTexture);
+                    GL.DeleteTextures(_stagingTextures.Length, _stagingTextures);
                     GL.DeleteFramebuffer(_stagingFrameBuffer);
                 }
 
@@ -44,11 +47,15 @@ namespace Ryujinx.Graphics.OpenGL
 
             (int oldDrawFramebufferHandle, int oldReadFramebufferHandle) = ((Pipeline)_renderer.Pipeline).GetBoundFramebuffers();
 
+            BindCurrentTexture();
+
             CopyTextureToFrameBufferRGB(_stagingFrameBuffer, GetCopyFramebufferHandleLazy(), (TextureView)texture, crop);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
-            swapBuffersCallback(_stagingTexture);
+            swapBuffersCallback(_stagingTextures[_currentTexture]);
+
+            _currentTexture = ++_currentTexture % MaxTexturesCount;
 
             GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, oldReadFramebufferHandle);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, oldDrawFramebufferHandle);
@@ -59,18 +66,27 @@ namespace Ryujinx.Graphics.OpenGL
             GL.Enable(EnableCap.FramebufferSrgb);
         }
 
+        private void BindCurrentTexture()
+        {
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, _stagingFrameBuffer);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, _stagingTextures[_currentTexture], 0);
+        }
+
         private void CreateStagingFramebuffer()
         {
             _stagingFrameBuffer = GL.GenFramebuffer();
-            _stagingTexture = GL.GenTexture();
+            GL.GenTextures(MaxTexturesCount, _stagingTextures);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, _stagingFrameBuffer);
-            GL.BindTexture(TextureTarget.Texture2D, _stagingTexture);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, _width, _height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, _stagingTexture, 0);
+            foreach (var texture in _stagingTextures)
+            {
+                GL.BindTexture(TextureTarget.Texture2D, texture);
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, _width, _height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
+
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            }
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             GL.BindTexture(TextureTarget.Texture2D, 0);
@@ -228,10 +244,10 @@ namespace Ryujinx.Graphics.OpenGL
 
             if (_stagingFrameBuffer != 0)
             {
-                GL.DeleteTexture(_stagingTexture);
+                GL.DeleteTextures( _stagingTextures.Length, _stagingTextures);
                 GL.DeleteFramebuffer(_stagingFrameBuffer);
                 _stagingFrameBuffer = 0;
-                _stagingTexture = 0;
+                _stagingTextures = null;
             }
         }
     }

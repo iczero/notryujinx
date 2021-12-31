@@ -860,7 +860,7 @@ namespace Ryujinx.Ava
                             _renderingStarted = true;
                             _parent.SwitchToGameControl();
                         }
-                        
+
                         Device.PresentFrame(Present);
                     }
 

@@ -23,7 +23,7 @@ namespace Ryujinx.Ava.Ui.Controls
         public event EventHandler<EventArgs> GlInitialized;
         public event EventHandler<Size> SizeChanged;
 
-        private IntPtr _waitFence;
+        private IntPtr _waitFence = IntPtr.Zero;
 
         public RendererBase()
         {
@@ -59,7 +59,12 @@ namespace Ryujinx.Ava.Ui.Controls
 
         protected override void OnOpenGlRender(GlInterface gl, int fb)
         {
-            GL.ClientWaitSync(_waitFence, ClientWaitSyncFlags.SyncFlushCommandsBit, long.MaxValue);
+            if(_waitFence != IntPtr.Zero)
+            {
+                GL.WaitSync(_waitFence, WaitSyncFlags.None, ulong.MaxValue);
+                GL.DeleteSync(_waitFence);
+                _waitFence = IntPtr.Zero;
+            }
             OnRender(gl, fb);
         }
 
@@ -68,21 +73,25 @@ namespace Ryujinx.Ava.Ui.Controls
         protected override void OnOpenGlDeinit(GlInterface gl, int fb)
         {
             base.OnOpenGlDeinit(gl, fb);
-            GL.DeleteSync(_waitFence);
+
+            if (_waitFence != IntPtr.Zero)
+            {
+                GL.DeleteSync(_waitFence);
+                _waitFence = IntPtr.Zero;
+            }
         }
 
         protected void OnInitialized(GlInterface gl)
         {
             GL.LoadBindings(new OpenToolkitBindingsContext(gl.GetProcAddress));
-            _waitFence = GL.FenceSync(SyncCondition.SyncGpuCommandsComplete, WaitSyncFlags.None);
             GlInitialized?.Invoke(this, EventArgs.Empty);
         }
 
         internal void Present(int image)
         {
             Image = image;
-            GL.WaitSync(_waitFence, WaitSyncFlags.None, long.MaxValue);
-            Dispatcher.UIThread.InvokeAsync(InvalidateVisual, DispatcherPriority.Background).Wait();
+            _waitFence = GL.FenceSync(SyncCondition.SyncGpuCommandsComplete, WaitSyncFlags.None);
+            Dispatcher.UIThread.InvokeAsync(InvalidateVisual, DispatcherPriority.Render);
         }
     }
 }
