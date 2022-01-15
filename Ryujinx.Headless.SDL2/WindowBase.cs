@@ -192,7 +192,7 @@ namespace Ryujinx.Headless.SDL2
 
                     while (Device.ConsumeFrameAvailable())
                     {
-                        Device.PresentFrame(SwapBuffers);
+                        Device.PresentFrame((texture) => { SwapBuffers(texture); return true; });
                     }
 
                     if (_ticks >= _ticksPerFrame)
