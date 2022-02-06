@@ -698,6 +698,7 @@
                     <TextBlock
                         Margin="5,0,5,0"
                         Name="DockedStatus"
+                        IsVisible="{Binding !ShowLoadProgress}"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         PointerReleased="DockedStatus_PointerReleased"
@@ -713,6 +714,7 @@
                     <TextBlock
                         Margin="5,0,5,0"
                         Name="AspectRatioStatus"
+                        IsVisible="{Binding !ShowLoadProgress}"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         PointerReleased="AspectRatioStatus_PointerReleased"
@@ -726,12 +728,14 @@
                         Height="12"
                         BorderBrush="Gray" />
                     <ui:ToggleSplitButton
-                        Margin="5,0,5,0"
-                        Padding="5,0,5,0"
+                        Margin="-2,0,-3,0"
+                        Padding="5,0,0,5"
                         Name="VolumeStatus"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         IsVisible="{Binding !ShowLoadProgress}"
+                        BorderBrush="{DynamicResource ThemeContentBackgroundColor}"
+                        Background="{DynamicResource ThemeContentBackgroundColor}"
                         IsChecked="{Binding VolumeMuted}"
                         Content="{Binding VolumeStatusText}">
                         <ui:ToggleSplitButton.Flyout>
@@ -759,6 +763,7 @@
                         BorderBrush="Gray" />
                     <TextBlock
                         Margin="5,0,5,0"
+                        IsVisible="{Binding !ShowLoadProgress}"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         Text="{Binding GameStatusText}"
@@ -772,6 +777,7 @@
                         BorderBrush="Gray" />
                     <TextBlock
                         Margin="5,0,5,0"
+                        IsVisible="{Binding !ShowLoadProgress}"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         Text="{Binding FifoStatusText}"
@@ -785,6 +791,7 @@
                         BorderBrush="Gray" />
                     <TextBlock
                         Margin="5,0,5,0"
+                        IsVisible="{Binding !ShowLoadProgress}"
                         HorizontalAlignment="Left"
                         VerticalAlignment="Center"
                         Text="{Binding GpuStatusText}"
