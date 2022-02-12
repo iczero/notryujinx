@@ -412,7 +412,7 @@ namespace Ryujinx.Ui
 
                     while (Device.ConsumeFrameAvailable())
                     {
-                        Device.PresentFrame((texture) => { SwapBuffers(texture); return true; });
+                        Device.PresentFrame((texture) => { SwapBuffers(texture); return false; });
                     }
 
                     if (_ticks >= _ticksPerFrame)
