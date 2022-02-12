@@ -16,6 +16,9 @@ namespace Ryujinx.Graphics.GAL.Multithreading
             _impl = window;
         }
 
+        public event EventHandler<ExternalMemoryObjectCreatedEvent> ExternalImageCreated;
+        public event EventHandler<int> ExternalImageDestroyed;
+
         public void Present(ITexture texture, ImageCrop crop, Func<int, bool> swapBuffersCallback)
         {
             // If there's already a frame in the pipeline, wait for it to be presented first.

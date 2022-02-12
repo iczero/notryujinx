@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Threading;
 using LibHac.FsSystem;
 using LibHac.Tools.FsSystem;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
 using Ryujinx.Audio.Backends.Dummy;
 using Ryujinx.Audio.Backends.OpenAL;
@@ -25,6 +26,7 @@ using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.GAL.Multithreading;
 using Ryujinx.Graphics.Gpu;
 using Ryujinx.Graphics.OpenGL;
+using Ryujinx.Graphics.Vulkan;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.FileSystem.Content;
 using Ryujinx.HLE.HOS;
@@ -142,7 +144,7 @@ namespace Ryujinx.Ava
             TouchScreenManager = _inputManager.CreateTouchScreenManager();
             _lastKeyboardSnapshot = _keyboardInterface.GetKeyboardStateSnapshot();
 
-            Renderer            = renderer;
+            Renderer          = renderer;
             Path              = path;
             VirtualFileSystem = virtualFileSystem;
             ContentManager    = contentManager;
@@ -647,6 +649,16 @@ namespace Ryujinx.Ava
 
             bool threadedGAL = threadingMode == BackendThreading.On || (threadingMode == BackendThreading.Auto && renderer.PreferThreading);
 
+            if (ConfigurationState.Instance.Graphics.GraphicsBackend.Value == GraphicsBackend.Vulkan)
+            {
+                renderer = new VulkanGraphicsDevice((instance, vk) => null,
+                                                    VulkanRenderer.GetRequiredInstanceExtensions);
+            }
+            else
+            {
+                renderer = new Renderer();
+            }
+
             if (threadedGAL)
             {
                 renderer = new ThreadedRenderer(renderer);
@@ -873,7 +885,7 @@ namespace Ryujinx.Ava
             {
                 (_renderer as Renderer).InitializeBackgroundContext(SPBOpenGLContext.CreateBackgroundContext(openGlEmbeddedWindow.Context));
 
-                openGlEmbeddedWindow.MakeCurrent();
+                Renderer.MakeCurrent();
             }
 
             Device.Gpu.Renderer.Initialize(_glLogLevel);
@@ -882,6 +894,12 @@ namespace Ryujinx.Ava
             Height = (int)Renderer.Bounds.Height;
 
             _renderer.Window.SetSize((int)(Width * Program.WindowScaleFactor), (int)(Height * Program.WindowScaleFactor));
+
+            if(ConfigurationState.Instance.Graphics.GraphicsBackend.Value == GraphicsBackend.Vulkan)
+            {
+                _renderer.Window.ExternalImageCreated += Window_ExternalImageCreated;
+                _renderer.Window.ExternalImageDestroyed += Window_ExternalImageDestroyed;
+            }
 
             Device.Gpu.Renderer.RunLoop(() =>
             {
@@ -929,7 +947,11 @@ namespace Ryujinx.Ava
                             dockedMode += $" ({scale}x)";
                         }
 
-                        string vendor = _renderer is Renderer renderer ? renderer.GpuVendor : "Vulkan Test";
+                        string vendor = _renderer switch
+                        {
+                            Renderer renderer => renderer.GpuVendor,
+                            VulkanGraphicsDevice renderer => renderer.GpuVendor
+                        };
 
                         Program.RenderTimer.TargetFrameRate = ConfigurationState.Instance.Graphics.HostRefreshRate.Value == 0 ? 1000 : ConfigurationState.Instance.Graphics.HostRefreshRate.Value;
 
@@ -940,7 +962,8 @@ namespace Ryujinx.Ava
                             ConfigurationState.Instance.Graphics.AspectRatio.Value.ToText(),
                             $"Game: {Device.Statistics.GetGameFrameRate():00.00} FPS ({Device.Statistics.GetGameFrameTime():00.00} ms)",
                             $"FIFO: {Device.Statistics.GetFifoPercent():00.00} %",
-                            $"GPU: {vendor}"));
+                            $"GPU: {vendor}",
+                            ConfigurationState.Instance.Graphics.GraphicsBackend.Value.ToString()));
 
                         _ticks = Math.Min(_ticks - _ticksPerFrame, _ticksPerFrame);
                     }
@@ -951,11 +974,89 @@ namespace Ryujinx.Ava
                 _vsyncResetEvent.Set();
             });
 
-            (Renderer as OpenGlRenderer)?.MakeCurrent(null);
+            Renderer?.MakeCurrent(null);
 
             Renderer.SizeChanged -= Window_SizeChanged;
 
             Program.RenderTimer.TargetFrameRate = 60;
+        }
+
+        private void Window_ExternalImageDestroyed(object sender, int e)
+        {
+            Renderer.MakeCurrent();
+            GL.Ext.DeleteTexture(e);
+            Renderer.MakeCurrent(null);
+        }
+
+        private void Window_ExternalImageCreated(object sender, ExternalMemoryObjectCreatedEvent e)
+        {
+            Renderer.MakeCurrent();
+            GL.Ext.CreateMemoryObjects(1, out int memoryObject);
+
+            if (memoryObject == 0)
+            {
+                throw new NotSupportedException(
+                    $"{GL.GetString(StringName.Renderer)} does not support GL_EXT_memory_object. Vulkan-OpenGl interop is not possible");
+            }
+
+            var vulkanRenderer = Renderer as VulkanRenderer;
+            
+            if (OperatingSystem.IsWindows())
+            {
+                GL.Ext.ImportMemoryWin32Handle(memoryObject, (long)e.MemorySize,
+                    ExternalHandleType.HandleTypeOpaqueWin32Ext, e.MemoryHandle);
+
+                if (e.ReadySemaphoreHandle != IntPtr.Zero)
+                {
+                    int semaphore = GL.Ext.GenSemaphore();
+                    GL.Ext.ImportSemaphoreWin32Handle(semaphore, ExternalHandleType.HandleTypeOpaqueFdExt, e.ReadySemaphoreHandle);
+
+                    vulkanRenderer.ReadySemaphore = semaphore;
+                }
+
+                if (e.CompleteSemaphoreHandle != IntPtr.Zero)
+                {
+                    int semaphore = GL.Ext.GenSemaphore();
+                    GL.Ext.ImportSemaphoreWin32Handle(semaphore, ExternalHandleType.HandleTypeOpaqueFdExt, e.CompleteSemaphoreHandle);
+
+                    vulkanRenderer.CompleteSemaphore = semaphore;
+                }
+            }
+            else if (OperatingSystem.IsLinux())
+            {
+                GL.Ext.ImportMemoryF(memoryObject, (long)e.MemorySize,
+                    ExternalHandleType.HandleTypeOpaqueFdExt, e.MemoryHandle.ToInt32());
+
+                if (e.ReadySemaphoreHandle != IntPtr.Zero)
+                {
+                    int semaphore = GL.Ext.GenSemaphore();
+                    GL.Ext.ImportSemaphoreF(semaphore, ExternalHandleType.HandleTypeOpaqueFdExt, e.ReadySemaphoreHandle.ToInt32());
+
+                    vulkanRenderer.ReadySemaphore = semaphore;
+                }
+
+                if (e.CompleteSemaphoreHandle != IntPtr.Zero)
+                {
+                    int semaphore = GL.Ext.GenSemaphore();
+                    GL.Ext.ImportSemaphoreF(semaphore, ExternalHandleType.HandleTypeOpaqueFdExt, e.CompleteSemaphoreHandle.ToInt32());
+
+                    vulkanRenderer.CompleteSemaphore = semaphore;
+                }
+            }
+
+            if(e.WaitAction != null)
+            {
+                vulkanRenderer.WaitAction = e.WaitAction;
+            }
+
+            GL.CreateTextures(TextureTarget.Texture2D, 1, out int texture);
+            GL.Ext.TextureStorageMem2D(texture, 1, (ExtMemoryObject)InternalFormat.Rgba8, (int)Renderer.Bounds.Width, (int)Renderer.Bounds.Height, memoryObject, 0);
+
+            e.TextureHandle = texture;
+            
+            vulkanRenderer.AddImage(e.TextureHandle, e.Index);
+
+            Renderer.MakeCurrent(null);
         }
 
         private void RenderTimer_Tick(TimeSpan obj)
@@ -972,7 +1073,6 @@ namespace Ryujinx.Ava
                 if (_isActive && !_frameRateUnlocked)
                 {
                     _vsyncResetEvent.Wait();
-
                 }
 
                 _vsyncResetEvent.Reset();

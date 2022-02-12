@@ -5,6 +5,7 @@ using Avalonia.OpenGL.Controls;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using OpenTK.Graphics.OpenGL;
+using SPB.Graphics.OpenGL;
 using SPB.Windowing;
 using System;
 using System.Collections.Concurrent;
@@ -18,17 +19,23 @@ namespace Ryujinx.Ava.Ui.Controls
 {
     public abstract class RendererControl : OpenGlControlBase
     {
-        protected int Image { get; private set; }
+        
+        internal IntPtr GuiFence { get; set; } = IntPtr.Zero;
+        protected int Image { get; set; }
         public SwappableNativeWindowBase Window { get; private set; }
 
         public event EventHandler<EventArgs> GlInitialized;
         public event EventHandler<Size> SizeChanged;
 
-        private bool _presented;
-        private IntPtr _guiFence = IntPtr.Zero;
-        private IntPtr _gameFence = IntPtr.Zero;
+        protected bool Presented { get; set; }
 
         protected Size RenderSize { get;private set; }
+        
+        protected int Framebuffer { get; set; }
+
+        public static OpenGLContextBase PrimaryContext => 
+                AvaloniaLocator.Current.GetService<IPlatformOpenGlInterface>().PrimaryContext.AsOpenGLContextBase();
+        public OpenGLContextBase Context { get; set; }
 
         public RendererControl()
         {
@@ -65,42 +72,29 @@ namespace Ryujinx.Ava.Ui.Controls
 
                 Window = new SPB.Platform.GLX.GLXWindow(new NativeHandle(displayHandle), new NativeHandle(window.Handle));
             }
+
+            OpenGLContextBase mainContext = PrimaryContext;
+
+            CreateGlContext(mainContext);
+
+            OnInitialized(gl);
+
+            Framebuffer = GL.GenFramebuffer();
         }
+
+        protected abstract void CreateGlContext(OpenGLContextBase mainContext);
 
         protected override void OnOpenGlRender(GlInterface gl, int fb)
         {
             lock (this)
             {
-                if (_gameFence != IntPtr.Zero)
-                {
-                    GL.ClientWaitSync(_gameFence, ClientWaitSyncFlags.SyncFlushCommandsBit, Int64.MaxValue);
-                    GL.DeleteSync(_gameFence);
-                    _gameFence = IntPtr.Zero;
-                }
                 OnRender(gl, fb);
 
-                _guiFence = GL.FenceSync(SyncCondition.SyncGpuCommandsComplete, WaitSyncFlags.None);
-
-                _presented = true;
+                Presented = true;
             }
         }
 
         protected abstract void OnRender(GlInterface gl, int fb);
-
-        protected override void OnOpenGlDeinit(GlInterface gl, int fb)
-        {
-            base.OnOpenGlDeinit(gl, fb);
-
-            if (_guiFence != IntPtr.Zero)
-            {
-                GL.DeleteSync(_guiFence);
-            }
-
-            if (_gameFence != IntPtr.Zero)
-            {
-                GL.DeleteSync(_gameFence);
-            }
-        }
 
         protected void OnInitialized(GlInterface gl)
         {
@@ -113,35 +107,10 @@ namespace Ryujinx.Ava.Ui.Controls
             Dispatcher.UIThread.InvokeAsync(InvalidateVisual, DispatcherPriority.Render);
         }
 
-        internal bool Present(int image)
-        {
-            if (_guiFence != IntPtr.Zero)
-            {
-                GL.ClientWaitSync(_guiFence, ClientWaitSyncFlags.SyncFlushCommandsBit, Int64.MaxValue);
-                GL.DeleteSync(_guiFence);
-                _guiFence = IntPtr.Zero;
-            }
-            
-            bool returnValue = _presented;
+        internal abstract bool Present(int image);
 
-            if (_presented)
-            {
-                lock (this)
-                {
-                    Image = image;
-                    _presented = false;
-                }
-            }
-
-            if (_gameFence != IntPtr.Zero)
-            {
-                GL.DeleteSync(_gameFence);
-            }
-            _gameFence = GL.FenceSync(SyncCondition.SyncGpuCommandsComplete, WaitSyncFlags.None);
-
-            QueueRender();
-
-            return returnValue;
-        }
+        public abstract Task DestroyBackgroundContext();
+        internal abstract void MakeCurrent();
+        internal abstract void MakeCurrent(SwappableNativeWindowBase window);
     }
 }

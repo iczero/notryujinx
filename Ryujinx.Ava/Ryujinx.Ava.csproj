@@ -66,8 +66,8 @@
         <PackageReference Include="Avalonia" Version="0.10.12" />
         <PackageReference Include="Avalonia.Desktop" Version="0.10.12" />
         <PackageReference Include="Avalonia.Diagnostics" Version="0.10.12" />
-        <PackageReference Include="Silk.NET.Vulkan" Version="2.2.0" />
-        <PackageReference Include="Silk.NET.Vulkan.Extensions.KHR" Version="2.2.0" />
+        <PackageReference Include="Silk.NET.Vulkan" Version="2.10.1" />
+        <PackageReference Include="Silk.NET.Vulkan.Extensions.KHR" Version="2.10.1" />
         <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
         <PackageReference Include="SPB" Version="0.0.4-build17" />
     </ItemGroup>
@@ -98,6 +98,7 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Ryujinx.Audio.Backends.SDL2\Ryujinx.Audio.Backends.SDL2.csproj" />
+        <ProjectReference Include="..\Ryujinx.Graphics.Vulkan\Ryujinx.Graphics.Vulkan.csproj" />
         <ProjectReference Include="..\Ryujinx.Input\Ryujinx.Input.csproj" />
         <ProjectReference Include="..\Ryujinx.Input.SDL2\Ryujinx.Input.SDL2.csproj" />
         <ProjectReference Include="..\Ryujinx.Audio.Backends.OpenAL\Ryujinx.Audio.Backends.OpenAL.csproj" />

@@ -17,7 +17,7 @@ namespace Ryujinx.Graphics.Vulkan
     public sealed class VulkanGraphicsDevice : IRenderer
     {
         private Instance _instance;
-        private SurfaceKHR _surface;
+        private SurfaceKHR? _surface;
         private PhysicalDevice _physicalDevice;
         private Device _device;
         private Window _window;
@@ -33,6 +33,10 @@ namespace Ryujinx.Graphics.Vulkan
         internal ExtTransformFeedback TransformFeedbackApi { get; private set; }
         internal KhrDrawIndirectCount DrawIndirectCountApi { get; private set; }
         internal ExtDebugReport DebugReportApi { get; private set; }
+        internal KhrExternalMemoryWin32 ExternalMemoryWin32 { get; private set; }
+        internal KhrExternalMemoryFd ExternalMemoryFd { get; private set; }
+        internal KhrExternalSemaphoreWin32 ExternalSemaphoreWin32 { get; private set; }
+        internal KhrExternalSemaphoreFd ExternalSemaphoreFd { get; private set; }
 
         internal bool SupportsIndexTypeUint8 { get; private set; }
         internal bool SupportsCustomBorderColor { get; private set; }
@@ -71,7 +75,9 @@ namespace Ryujinx.Graphics.Vulkan
 
         public IWindow Window => _window;
 
-        private Func<Instance, Vk, SurfaceKHR> GetSurface;
+        public bool IsHeadless => !_surface.HasValue;
+
+        private Func<Instance, Vk, SurfaceKHR?> GetSurface;
         private Func<string[]> GetRequiredExtensions;
 
         internal Vendor Vendor { get; private set; }
@@ -80,11 +86,12 @@ namespace Ryujinx.Graphics.Vulkan
         public string GpuRenderer { get; private set; }
         public string GpuVersion { get; private set; }
 
+
         public bool PreferThreading => true;
 
         public event EventHandler<ScreenCaptureImageInfo> ScreenCaptured;
 
-        public VulkanGraphicsDevice(Func<Instance, Vk, SurfaceKHR> surfaceFunc, Func<string[]> requiredExtensionsFunc)
+        public VulkanGraphicsDevice(Func<Instance, Vk, SurfaceKHR?> surfaceFunc, Func<string[]> requiredExtensionsFunc)
         {
             GetSurface = surfaceFunc;
             GetRequiredExtensions = requiredExtensionsFunc;
@@ -150,6 +157,29 @@ namespace Ryujinx.Graphics.Vulkan
             if (api.TryGetDeviceExtension(_instance, _device, out KhrDrawIndirectCount drawIndirectCountApi))
             {
                 DrawIndirectCountApi = drawIndirectCountApi;
+            }
+
+            if (IsHeadless)
+            {
+                if (api.TryGetDeviceExtension(_instance, _device, out KhrExternalMemoryWin32 externalMemoryWin32))
+                {
+                    ExternalMemoryWin32 = externalMemoryWin32;
+                }
+                
+                if (api.TryGetDeviceExtension(_instance, _device, out KhrExternalMemoryFd externalMemoryFd))
+                {
+                    ExternalMemoryFd = externalMemoryFd;
+                }
+                
+                if (api.TryGetDeviceExtension(_instance, _device, out KhrExternalSemaphoreWin32 externalSemaphoreWin32))
+                {
+                    ExternalSemaphoreWin32 = externalSemaphoreWin32;
+                }
+                
+                if (api.TryGetDeviceExtension(_instance, _device, out KhrExternalSemaphoreFd externalSemaphoreFd))
+                {
+                    ExternalSemaphoreFd = externalSemaphoreFd;
+                }
             }
 
             api.GetDeviceQueue(_device, queueFamilyIndex, 0, out var queue);
@@ -382,7 +412,10 @@ namespace Ryujinx.Graphics.Vulkan
             DescriptorSetManager.Dispose();
             PipelineLayoutCache.Dispose();
 
-            SurfaceApi.DestroySurface(_instance, _surface, null);
+            if (!IsHeadless)
+            {
+                SurfaceApi.DestroySurface(_instance, _surface.Value, null);
+            }
 
             MemoryAllocator.Dispose();
 
