@@ -18,6 +18,9 @@ namespace Ryujinx.Graphics.OpenGL
         private int[] _stagingTextures;
         private int _currentTexture;
 
+        public event EventHandler<ExternalMemoryObjectCreatedEvent> ExternalImageCreated;
+        public event EventHandler<int> ExternalImageDestroyed;
+
         internal BackgroundContextWorker BackgroundContext { get; private set; }
 
         internal bool ScreenCaptureRequested { get; set; }

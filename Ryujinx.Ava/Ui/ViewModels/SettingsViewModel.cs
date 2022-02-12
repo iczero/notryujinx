@@ -126,6 +126,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         public int FsGlobalAccessLogMode { get; set; }
         public int AudioBackend { get; set; }
         public int MaxAnisotropy { get; set; }
+        public int GraphicsBackend { get; set; }
         public int AspectRatio { get; set; }
         public int OpenglDebugLevel { get; set; }
         public int MemoryMode { get; set; }
@@ -273,6 +274,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             Volume = config.System.AudioVolume * 100;
 
             GraphicsBackendMultithreadingIndex = (int)config.Graphics.BackendThreading.Value;
+            GraphicsBackend = (int)config.Graphics.GraphicsBackend.Value;
 
             OpenglDebugLevel = (int)config.Logger.GraphicsDebugLevel.Value;
 
@@ -367,6 +369,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             config.Graphics.AspectRatio.Value = (AspectRatio)AspectRatio;
             config.Graphics.ResScale.Value = ResolutionScale == 0 ? -1 : ResolutionScale;
             config.Graphics.ResScaleCustom.Value = CustomResolutionScale;
+            config.Graphics.GraphicsBackend.Value = (GraphicsBackend)GraphicsBackend;
             config.System.AudioVolume.Value = Volume / 100;
 
             AudioBackend audioBackend = (AudioBackend)AudioBackend;

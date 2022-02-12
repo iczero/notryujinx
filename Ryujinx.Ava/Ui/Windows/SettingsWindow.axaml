@@ -463,6 +463,27 @@
                                 Orientation="Horizontal"
                                 Spacing="20">
                                 <TextBlock VerticalAlignment="Center"
+                                           ToolTip.Tip="{locale:Locale GraphicsBackendTooltip}"
+                                           Text="{locale:Locale SettingsTabGraphicsBackend}"
+                                           Width="230" />
+                                <ComboBox SelectedIndex="{Binding GraphicsBackend}"
+                                          Width="350"
+                                          HorizontalContentAlignment="Left"
+                                          ToolTip.Tip="{locale:Locale GraphicsBackendTooltip}">
+                                    <ComboBoxItem>
+                                        <TextBlock
+                                            Text="Vulkan" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <TextBlock Text="OpenGL" />
+                                    </ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel
+                                Margin="0,5"
+                                Orientation="Horizontal"
+                                Spacing="20">
+                                <TextBlock VerticalAlignment="Center"
                                            ToolTip.Tip="{locale:Locale AnisotropyTooltip}"
                                            Text="{locale:Locale SettingsTabGraphicsAnisotropicFiltering}"
                                            Width="230" />

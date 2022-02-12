@@ -404,6 +404,11 @@ namespace Ryujinx.Configuration
             /// </summary>
             public ReactiveObject<uint> HostRefreshRate { get; private set; }
 
+            /// <summary>
+            /// Graphics backend
+            /// </summary>
+            public ReactiveObject<GraphicsBackend> GraphicsBackend { get; private set; }
+
             public GraphicsSection()
             {
                 BackendThreading        = new ReactiveObject<BackendThreading>();
@@ -421,8 +426,10 @@ namespace Ryujinx.Configuration
                 EnableVsync.Event       += static (sender, e) => LogValueChange(sender, e, nameof(EnableVsync));
                 EnableShaderCache       = new ReactiveObject<bool>();
                 EnableShaderCache.Event += static (sender, e) => LogValueChange(sender, e, nameof(EnableShaderCache));
-                HostRefreshRate           = new ReactiveObject<uint>();
-                HostRefreshRate.Event     += static (sender, e) => LogValueChange(sender, e, nameof(HostRefreshRate));
+                HostRefreshRate         = new ReactiveObject<uint>();
+                HostRefreshRate.Event   += static (sender, e) => LogValueChange(sender, e, nameof(HostRefreshRate));
+                GraphicsBackend         = new ReactiveObject<GraphicsBackend>();
+                GraphicsBackend.Event   += static (sender, e) => LogValueChange(sender, e, nameof(GraphicsBackend));
             }
         }
 
@@ -566,6 +573,7 @@ namespace Ryujinx.Configuration
                 KeyboardConfig            = new List<object>(),
                 ControllerConfig          = new List<object>(),
                 InputConfig               = Hid.InputConfig,
+                GraphicsBackend           = Graphics.GraphicsBackend
             };
 
             return configurationFile;
@@ -599,8 +607,9 @@ namespace Ryujinx.Configuration
             ShowConfirmExit.Value                  = true;
             HideCursorOnIdle.Value                 = false;
             Graphics.EnableVsync.Value             = true;
-            Graphics.HostRefreshRate.Value           = 60;
+            Graphics.HostRefreshRate.Value         = 60;
             Graphics.EnableShaderCache.Value       = true;
+            Graphics.GraphicsBackend.Value         =  GraphicsBackend.OpenGl;
             System.EnablePtc.Value                 = true;
             System.EnableInternetAccess.Value      = false;
             System.EnableFsIntegrityChecks.Value   = true;
@@ -1098,7 +1107,8 @@ namespace Ryujinx.Configuration
             HideCursorOnIdle.Value                 = configurationFileFormat.HideCursorOnIdle;
             Graphics.EnableVsync.Value             = configurationFileFormat.EnableVsync;
             Graphics.EnableShaderCache.Value       = configurationFileFormat.EnableShaderCache;
-            Graphics.HostRefreshRate.Value           = configurationFileFormat.HostRefreshRate;
+            Graphics.HostRefreshRate.Value         = configurationFileFormat.HostRefreshRate;
+            Graphics.GraphicsBackend.Value         = configurationFileFormat.GraphicsBackend;
             System.EnablePtc.Value                 = configurationFileFormat.EnablePtc;
             System.EnableInternetAccess.Value      = configurationFileFormat.EnableInternetAccess;
             System.EnableFsIntegrityChecks.Value   = configurationFileFormat.EnableFsIntegrityChecks;

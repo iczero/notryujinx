@@ -51,7 +51,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private string _dockedStatusText;
         private string _fifoStatusText;
         private string _gameStatusText;
-        private string _gpuStatusText;
+        private string _gpuVendorText;
+        private string _gpuBackendText;
         private bool _isAmiiboRequested;
         private bool _isGameRunning;
         private bool _isLoading;
@@ -389,12 +390,23 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public string FrameRateLimitText => $"{(ConfigurationState.Instance.Graphics.HostRefreshRate == 0 ? "∞" : ConfigurationState.Instance.Graphics.HostRefreshRate.Value.ToString())} Hz";
 
-        public string GpuStatusText
+        public string GpuVendorText
         {
-            get => _gpuStatusText;
+            get => _gpuVendorText;
             set
             {
-                _gpuStatusText = value;
+                _gpuVendorText = value;
+
+                OnPropertyChanged();
+            }
+        }
+        
+        public string GpuBackendText
+        {
+            get => _gpuBackendText;
+            set
+            {
+                _gpuBackendText = value;
 
                 OnPropertyChanged();
             }

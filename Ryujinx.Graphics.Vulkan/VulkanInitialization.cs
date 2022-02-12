@@ -1,5 +1,6 @@
 ﻿using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
+using Silk.NET.Core;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 using Silk.NET.Vulkan.Extensions.KHR;
@@ -28,6 +29,7 @@ namespace Ryujinx.Graphics.Vulkan
             ExtConditionalRendering.ExtensionName,
             ExtExtendedDynamicState.ExtensionName,
             KhrDrawIndirectCount.ExtensionName,
+            "VK_KHR_external_memory",
             "VK_EXT_index_type_uint8",
             "VK_EXT_custom_border_color",
             "VK_EXT_robustness2"
@@ -214,7 +216,7 @@ namespace Ryujinx.Graphics.Vulkan
             return 0;
         }
 
-        public static PhysicalDevice FindSuitablePhysicalDevice(Vk api, Instance instance, SurfaceKHR surface)
+        public static PhysicalDevice FindSuitablePhysicalDevice(Vk api, Instance instance, SurfaceKHR? surface)
         {
             uint physicalDeviceCount;
 
@@ -243,7 +245,7 @@ namespace Ryujinx.Graphics.Vulkan
             throw new VulkanException("Initialization failed, none of the available GPUs meets the minimum requirements.");
         }
 
-        private static bool IsSuitableDevice(Vk api, PhysicalDevice physicalDevice, SurfaceKHR surface)
+        private static bool IsSuitableDevice(Vk api, PhysicalDevice physicalDevice, SurfaceKHR? surface)
         {
             int extensionMatches = 0;
             uint propertiesCount;
@@ -270,7 +272,7 @@ namespace Ryujinx.Graphics.Vulkan
             return extensionMatches == _requiredExtensions.Length && FindSuitableQueueFamily(api, physicalDevice, surface, out _) != InvalidIndex;
         }
 
-        public static uint FindSuitableQueueFamily(Vk api, PhysicalDevice physicalDevice, SurfaceKHR surface, out uint queueCount)
+        public static uint FindSuitableQueueFamily(Vk api, PhysicalDevice physicalDevice, SurfaceKHR? surface, out uint queueCount)
         {
             const QueueFlags RequiredFlags = QueueFlags.QueueGraphicsBit | QueueFlags.QueueComputeBit;
 
@@ -291,9 +293,14 @@ namespace Ryujinx.Graphics.Vulkan
             {
                 var queueFlags = properties[index].QueueFlags;
 
-                khrSurface.GetPhysicalDeviceSurfaceSupport(physicalDevice, index, surface, out var surfaceSupported).ThrowOnError();
+                Bool32 surfaceSupported = false;
 
-                if (queueFlags.HasFlag(RequiredFlags) && surfaceSupported)
+                if (surface.HasValue)
+                {
+                    khrSurface.GetPhysicalDeviceSurfaceSupport(physicalDevice, index, surface.Value, out surfaceSupported).ThrowOnError();
+                }
+
+                if (queueFlags.HasFlag(RequiredFlags) && (surfaceSupported || !surface.HasValue))
                 {
                     queueCount = properties[index].QueueCount;
                     return index;
@@ -389,6 +396,18 @@ namespace Ryujinx.Graphics.Vulkan
             };
 
             var enabledExtensions = _requiredExtensions.Union(_desirableExtensions.Intersect(supportedExtensions)).ToArray();
+
+            if(OperatingSystem.IsWindows())
+            {
+                enabledExtensions = enabledExtensions.Append(KhrExternalMemoryWin32.ExtensionName).ToArray();
+                enabledExtensions = enabledExtensions.Append(KhrExternalSemaphoreWin32.ExtensionName).ToArray();
+            }
+
+            if(OperatingSystem.IsLinux())
+            {
+                enabledExtensions = enabledExtensions.Append(KhrExternalMemoryFd.ExtensionName).ToArray();
+                enabledExtensions = enabledExtensions.Append(KhrExternalSemaphoreFd.ExtensionName).ToArray();
+            }
 
             IntPtr* ppEnabledExtensions = stackalloc IntPtr[enabledExtensions.Length];
 

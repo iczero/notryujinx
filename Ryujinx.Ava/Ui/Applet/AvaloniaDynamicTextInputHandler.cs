@@ -143,7 +143,7 @@ namespace Ryujinx.Ava.Ui.Applet
             Dispatcher.UIThread.Post(() =>
             {
                 _hiddenTextBox.Clear();
-                _parent.GlRenderer.Focus();
+                _parent.Renderer.Focus();
 
                 _parent = null;
             });
