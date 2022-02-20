@@ -505,6 +505,6 @@
   "SettingsTabGraphicsFrameRateTooltip" : "Aktiviert die Host Aktualisierungsrate. Auf 0 setzen, um den Grenzwert aufzuheben.",
   "SettingsTabCpuCache" : "CPU Cache",
   "SettingsTabGraphicsBackend" : "Grafik Backend",
-  "GraphicsBackendTooltip" : "Bestimmt das Grafik Backend",
+  "GraphicsBackendTooltip" : "Ändert das Grafik Backend",
   "SettingsTabCpuMemory" : "CPU Speicher"
 }
