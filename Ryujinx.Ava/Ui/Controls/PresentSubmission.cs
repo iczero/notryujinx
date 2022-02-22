@@ -7,7 +7,6 @@ namespace Ryujinx.Ava.Ui.Controls;
 public class PresentSubmission
 {
     public int Texture { get; set; }
-    public bool Presented { get; private set; }
     public IntPtr Fence { get; private set; }
     public int Semaphore { get; set; }
     public Vector2 Size { get; private set; }
@@ -21,10 +20,15 @@ public class PresentSubmission
         Size = size;
         Index = index;
         Texture = texture;
+
+        Fence = GL.FenceSync(SyncCondition.SyncGpuCommandsComplete, WaitSyncFlags.None);
     }
 
     public void Present(int readFb, int drawFb)
     {
+        GL.ClientWaitSync(Fence, ClientWaitSyncFlags.None, ulong.MaxValue);
+        GL.DeleteSync(Fence);
+
         GL.Clear(ClearBufferMask.ColorBufferBit);
         GL.ClearColor(0,0, 0, 0);
 
@@ -47,9 +51,5 @@ public class PresentSubmission
         GL.BindFramebuffer(FramebufferTarget.Framebuffer, drawFb);
 
         GL.Ext.SignalSemaphore(Semaphore, 0, null, 1, new[] { Texture }, new []{Layout});
-
-        Fence = GL.FenceSync(SyncCondition.SyncGpuCommandsComplete, WaitSyncFlags.None);
-
-        Presented = true;
     }
 }

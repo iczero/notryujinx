@@ -1000,6 +1000,8 @@ namespace Ryujinx.Ava
             }
 
             var vulkanRenderer = Renderer as VulkanRenderer;
+
+            int readySemaphore = 0, completeSemaphore = 0;
             
             if (OperatingSystem.IsWindows())
             {
@@ -1011,7 +1013,7 @@ namespace Ryujinx.Ava
                     int semaphore = GL.Ext.GenSemaphore();
                     GL.Ext.ImportSemaphoreWin32Handle(semaphore, ExternalHandleType.HandleTypeOpaqueFdExt, e.ReadySemaphoreHandle);
 
-                    vulkanRenderer.ReadySemaphore = semaphore;
+                    readySemaphore = semaphore;
                 }
 
                 if (e.CompleteSemaphoreHandle != IntPtr.Zero)
@@ -1019,7 +1021,7 @@ namespace Ryujinx.Ava
                     int semaphore = GL.Ext.GenSemaphore();
                     GL.Ext.ImportSemaphoreWin32Handle(semaphore, ExternalHandleType.HandleTypeOpaqueFdExt, e.CompleteSemaphoreHandle);
 
-                    vulkanRenderer.CompleteSemaphore = semaphore;
+                   completeSemaphore = semaphore;
                 }
             }
             else if (OperatingSystem.IsLinux())
@@ -1032,7 +1034,7 @@ namespace Ryujinx.Ava
                     int semaphore = GL.Ext.GenSemaphore();
                     GL.Ext.ImportSemaphoreF(semaphore, ExternalHandleType.HandleTypeOpaqueFdExt, e.ReadySemaphoreHandle.ToInt32());
 
-                    vulkanRenderer.ReadySemaphore = semaphore;
+                    readySemaphore = semaphore;
                 }
 
                 if (e.CompleteSemaphoreHandle != IntPtr.Zero)
@@ -1040,7 +1042,7 @@ namespace Ryujinx.Ava
                     int semaphore = GL.Ext.GenSemaphore();
                     GL.Ext.ImportSemaphoreF(semaphore, ExternalHandleType.HandleTypeOpaqueFdExt, e.CompleteSemaphoreHandle.ToInt32());
 
-                    vulkanRenderer.CompleteSemaphore = semaphore;
+                    completeSemaphore = semaphore;
                 }
             }
 
@@ -1054,7 +1056,7 @@ namespace Ryujinx.Ava
 
             e.TextureHandle = texture;
             
-            vulkanRenderer.AddImage(e.TextureHandle, e.Index);
+            vulkanRenderer.AddImage(e.TextureHandle, e.Index, readySemaphore, completeSemaphore);
 
             Renderer.MakeCurrent(null);
         }

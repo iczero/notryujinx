@@ -7,46 +7,32 @@ namespace Ryujinx.Ava.Ui.Controls;
 public class PresentImage : IDisposable
 {
     public int Texture { get; set; }
-    public bool Presented { get; set; }
-    public IntPtr Fence { get; set; } = IntPtr.Zero;
-    
-    private ManualResetEventSlim _resetEvent;
-    private CancellationTokenSource _cancellationTokenSource;
-    
-    public PresentImage(int texture)
+
+    public int ReadySemaphore { get; set; }
+    public int CompletedSemaphore { get; set; }
+
+    public IntPtr WaitFence { get; set; } = IntPtr.Zero;
+
+    public PresentImage(int texture, int readySemaphore, int completedSemaphore)
     {
         Texture = texture;
-        _resetEvent = new ManualResetEventSlim(false);
-        _cancellationTokenSource = new CancellationTokenSource();
+        ReadySemaphore = readySemaphore;
+        CompletedSemaphore = completedSemaphore;
     }
-    
+
     public void Dispose()
+    {
+        Dispose(false);
+    }
+
+    public void Dispose(bool disposeSemaphores = false)
     {
         GL.DeleteTexture(Texture);
 
-        if (Fence != IntPtr.Zero)
+        if (disposeSemaphores && ReadySemaphore != 0)
         {
-            GL.DeleteSync(Fence);
+            GL.Ext.DeleteSemaphore(ReadySemaphore);
+            GL.Ext.DeleteSemaphore(CompletedSemaphore);
         }
-        
-        _resetEvent.Set();
-        _cancellationTokenSource.Cancel();
-        _cancellationTokenSource.Dispose();
-        _resetEvent.Dispose();
-    }
-
-    public void WaitTillReady()
-    {
-        _resetEvent.Wait(_cancellationTokenSource.Token);
-    }
-
-    public void SetReady()
-    {
-        _resetEvent.Set();
-    }
-
-    public void Reset()
-    {
-        _resetEvent.Reset();
     }
 }

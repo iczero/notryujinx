@@ -19,9 +19,6 @@ namespace Ryujinx.Ava.Ui.Controls
     internal class VulkanRenderer : RendererControl
     {
         private SwappableNativeWindowBase _window;
-        
-        public int ReadySemaphore { get; set; }
-        public int CompleteSemaphore { get; set; }
 
         private ConcurrentQueue<PresentSubmission> _presentationQueue = new ConcurrentQueue<PresentSubmission>();
         private Dictionary<int, PresentImage> _images = new Dictionary<int, PresentImage>();
@@ -40,11 +37,10 @@ namespace Ryujinx.Ava.Ui.Controls
             if (_presentationQueue.TryDequeue(out var submission))
             {
                 submission.Present(this.Framebuffer, fb);
-                if (_images.TryGetValue(submission.Index, out var image))
+
+                if(_images.TryGetValue(submission.Index, out var image))
                 {
-                    image.Fence = submission.Fence;
-                    image.Presented = true;
-                    image.SetReady();
+                    image.WaitFence = GL.FenceSync(SyncCondition.SyncGpuCommandsComplete, WaitSyncFlags.None);
                 }
             }
 
@@ -70,11 +66,8 @@ namespace Ryujinx.Ava.Ui.Controls
 
             foreach (KeyValuePair<int, PresentImage> image in _images)
             {
-                image.Value?.Dispose();
+                image.Value?.Dispose(true);
             }
-
-            GL.Ext.DeleteSemaphore(CompleteSemaphore);
-            GL.Ext.DeleteSemaphore(ReadySemaphore);
             GL.DeleteFramebuffer(Framebuffer);
             // WGL hangs here when disposing context
             //Context?.Dispose();
@@ -110,13 +103,16 @@ namespace Ryujinx.Ava.Ui.Controls
             };
         }
 
-        public void AddImage(int texture, int index)
+        public void AddImage(int texture, int index, int readySemaphore, int completeSemaphore)
         {
             if (_images.TryGetValue(index, out var oldImage))
             {
-                oldImage.Dispose();
+                oldImage.Dispose(false);
+                readySemaphore = readySemaphore == 0 ? oldImage.ReadySemaphore : readySemaphore;
+                completeSemaphore = readySemaphore == 0 ? oldImage.CompletedSemaphore : completeSemaphore;
             }
-            var image = new PresentImage(texture);
+
+            var image = new PresentImage(texture, readySemaphore, completeSemaphore);
             if (!_images.TryAdd(index, image))
             {
                 _images[index] = image;
@@ -127,34 +123,39 @@ namespace Ryujinx.Ava.Ui.Controls
         {
             MakeCurrent();
 
+            bool presented = false;
+
             if (_images.TryGetValue(index, out var image))
             {
-                if (_presentationQueue.FirstOrDefault(x => x.Index == index) != null)
+                if (image.WaitFence != IntPtr.Zero)
                 {
-                    image.WaitTillReady();
+                    GL.ClientWaitSync(image.WaitFence, ClientWaitSyncFlags.None, long.MaxValue);
+                    GL.DeleteSync(image.WaitFence);
+                    image.WaitFence = IntPtr.Zero;
+
+                    presented = true;
                 }
 
-                if (image.Fence != IntPtr.Zero)
+                if (presented || _presentationQueue.IsEmpty)
                 {
-                    GL.ClientWaitSync(image.Fence, ClientWaitSyncFlags.SyncFlushCommandsBit, Int64.MaxValue);
-                    GL.DeleteSync(image.Fence);
-                    image.Fence = IntPtr.Zero;
-                    image.Presented = false;
+                    GL.Ext.WaitSemaphore(image.CompletedSemaphore, 0, null, 1, new[] { image.Texture },
+                        new[] { PresentSubmission.Layout });
+
+                    _presentationQueue.Enqueue(new PresentSubmission(image.Texture, image.ReadySemaphore,
+                        new Vector2((float)RenderSize.Width, (float)RenderSize.Height), index));
+
+                    QueueRender();
                 }
-
-                _presentationQueue.Enqueue(new PresentSubmission(image.Texture, ReadySemaphore,
-                    new Vector2((float)RenderSize.Width, (float)RenderSize.Height), index));
-                image.Reset();
-
-                GL.Ext.WaitSemaphore(CompleteSemaphore, 0, null, 1, new[] { image.Texture },
-                    new[] { PresentSubmission.Layout });
-
-                QueueRender();
-
-                MakeCurrent(null);
             }
 
-            return true;
+            MakeCurrent(null);
+
+            return presented;
+        }
+
+        public void WaitTillDone()
+        {
+
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Ryujinx.Graphics.Vulkan
     {
         private const int SurfaceWidth = 1280;
         private const int SurfaceHeight = 720;
-        private const int ExternalImageCount = 3;
+        private const int ExternalImageCount = 2;
 
         private readonly VulkanGraphicsDevice _gd;
         private readonly SurfaceKHR? _surface;
@@ -23,6 +23,8 @@ namespace Ryujinx.Graphics.Vulkan
 
         private Semaphore _imageAvailableSemaphore;
         private Semaphore _renderFinishedSemaphore;
+        private Semaphore[] _externalImageRenderedSemaphores = new Semaphore[ExternalImageCount];
+        private Semaphore[] _externalImageAvailableSemaphores = new Semaphore[ExternalImageCount];
 
         private Fence _renderFinishedFence;
 
@@ -56,6 +58,9 @@ namespace Ryujinx.Graphics.Vulkan
             
             ExportSemaphoreCreateInfo exportSemaphoreCreateInfo;
 
+            gd.Api.CreateSemaphore(device, semaphoreCreateInfo, null, out _imageAvailableSemaphore).ThrowOnError();
+            gd.Api.CreateSemaphore(device, semaphoreCreateInfo, null, out _renderFinishedSemaphore).ThrowOnError();
+
             if (_gd.IsHeadless)
             {
                 exportSemaphoreCreateInfo = new ExportSemaphoreCreateInfo()
@@ -66,10 +71,16 @@ namespace Ryujinx.Graphics.Vulkan
                 };
 
                 semaphoreCreateInfo.PNext = &exportSemaphoreCreateInfo;
-            }
 
-            gd.Api.CreateSemaphore(device, semaphoreCreateInfo, null, out _imageAvailableSemaphore).ThrowOnError();
-            gd.Api.CreateSemaphore(device, semaphoreCreateInfo, null, out _renderFinishedSemaphore).ThrowOnError();
+                for(int i = 0; i < ExternalImageCount; i++)
+                {
+                    Semaphore semaphore;
+                    gd.Api.CreateSemaphore(device, semaphoreCreateInfo, null, out semaphore).ThrowOnError();
+                    _externalImageAvailableSemaphores[i] = semaphore;
+                    gd.Api.CreateSemaphore(device, semaphoreCreateInfo, null, out semaphore).ThrowOnError();
+                    _externalImageRenderedSemaphores[i] = semaphore;
+                }
+            }
         }
 
         private void RecreateSwapchain()
@@ -201,7 +212,7 @@ namespace Ryujinx.Graphics.Vulkan
                                 SType = StructureType.SemaphoreGetWin32HandleInfoKhr,
                                 HandleType =
                                     ExternalSemaphoreHandleTypeFlags.ExternalSemaphoreHandleTypeOpaqueWin32Bit,
-                                Semaphore = _imageAvailableSemaphore
+                                Semaphore = _externalImageAvailableSemaphores[i]
                             }, out readySemaphoreHandle);
 
                         _gd.ExternalSemaphoreWin32.GetSemaphoreWin32Handle(_device,
@@ -210,7 +221,7 @@ namespace Ryujinx.Graphics.Vulkan
                                 SType = StructureType.SemaphoreGetWin32HandleInfoKhr,
                                 HandleType =
                                     ExternalSemaphoreHandleTypeFlags.ExternalSemaphoreHandleTypeOpaqueWin32Bit,
-                                Semaphore = _renderFinishedSemaphore
+                                Semaphore = _externalImageRenderedSemaphores[i]
                             }, out completeSemaphoreHandle);
                     }
                     else if (OperatingSystem.IsLinux())
@@ -223,7 +234,7 @@ namespace Ryujinx.Graphics.Vulkan
                                 SType = StructureType.SemaphoreGetFDInfoKhr,
                                 HandleType =
                                     ExternalSemaphoreHandleTypeFlags.ExternalSemaphoreHandleTypeOpaqueFDBit,
-                                Semaphore = _imageAvailableSemaphore
+                                Semaphore = _externalImageAvailableSemaphores[i]
                             }, out handle);
 
                         readySemaphoreHandle = handle;
@@ -234,14 +245,12 @@ namespace Ryujinx.Graphics.Vulkan
                                 SType = StructureType.SemaphoreGetFDInfoKhr,
                                 HandleType =
                                     ExternalSemaphoreHandleTypeFlags.ExternalSemaphoreHandleTypeOpaqueFDBit,
-                                Semaphore = _renderFinishedSemaphore
+                                Semaphore = _externalImageRenderedSemaphores[i]
                             }, out handle);
 
                         completeSemaphoreHandle = handle;
                     }
                 }
-
-                _isSemaphoreExported = true;
 
                 ExternalMemoryObjectCreatedEvent e = new ExternalMemoryObjectCreatedEvent(image.Image.Handle,
                     image.MemorySize, image.ExternalImageMemoryHandle, readySemaphoreHandle,
@@ -255,6 +264,8 @@ namespace Ryujinx.Graphics.Vulkan
 
                 _externalImages[i] = image;
             }
+
+            _isSemaphoreExported = true;
         }
 
         private void Wait()
@@ -468,9 +479,9 @@ namespace Ryujinx.Graphics.Vulkan
 
             _gd.CommandBufferPool.Return(
                 cbs,
-                new[] { _imageAvailableSemaphore },
+                new[] { _gd.IsHeadless ? _externalImageAvailableSemaphores[_nextImage] : _imageAvailableSemaphore },
                 new[] { PipelineStageFlags.PipelineStageColorAttachmentOutputBit },
-                new[] { _renderFinishedSemaphore });
+                new[] { _gd.IsHeadless ? _externalImageRenderedSemaphores[_nextImage] : _renderFinishedSemaphore });
 
             // TODO: Present queue.
             var semaphore = _renderFinishedSemaphore;
@@ -584,6 +595,14 @@ namespace Ryujinx.Graphics.Vulkan
                         }
 
                         _gd.SwapchainApi.DestroySwapchain(_device, _swapchain.Value, null);
+                    }
+                    else
+                    {
+                        for(int i = 0; i < ExternalImageCount; i++)
+                        {
+                            _gd.Api.DestroySemaphore(_device, _externalImageAvailableSemaphores[i], null);
+                            _gd.Api.DestroySemaphore(_device, _externalImageRenderedSemaphores[i], null);
+                        }
                     }
 
                 }
