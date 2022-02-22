@@ -14,6 +14,8 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using Ryujinx.Graphics.Gpu.Engine.Types;
+using Ryujinx.Graphics.Gpu.Image;
 
 namespace Ryujinx.Graphics.Gpu.Shader
 {
@@ -668,6 +670,41 @@ namespace Ryujinx.Graphics.Gpu.Shader
             return cpShader;
         }
 
+        public void UpdatePipelineInfo(ref ThreedClassState state, ref ProgramPipelineState pipeline, GpuChannel channel)
+        {
+            channel.TextureManager.UpdateRenderTargets();
+
+            var rtControl = state.RtControl;
+            var msaaMode = state.RtMsaaMode;
+
+            pipeline.SamplesCount = msaaMode.SamplesInX() * msaaMode.SamplesInY();
+
+            int count = rtControl.UnpackCount();
+
+            for (int index = 0; index < Constants.TotalRenderTargets; index++)
+            {
+                int rtIndex = rtControl.UnpackPermutationIndex(index);
+
+                var colorState = state.RtColorState[rtIndex];
+
+                if (index >= count || colorState.Format == 0 || colorState.WidthOrStride == 0)
+                {
+                    pipeline.AttachmentEnable[index] = false;
+                    pipeline.AttachmentFormats[index] = Format.R8G8B8A8Unorm;
+                }
+                else
+                {
+                    pipeline.AttachmentEnable[index] = true;
+                    pipeline.AttachmentFormats[index] = colorState.Format.Convert().Format;
+                }
+            }
+
+            pipeline.DepthStencilEnable = state.RtDepthStencilEnable;
+            pipeline.DepthStencilFormat = pipeline.DepthStencilEnable ? state.RtDepthStencilState.Format.Convert().Format : Format.D24X8Unorm;
+
+            pipeline.VertexBufferCount = Constants.TotalVertexBuffers;
+        }
+
         /// <summary>
         /// Gets a graphics shader program from the shader cache.
         /// This includes all the specified shader stages.
@@ -676,11 +713,12 @@ namespace Ryujinx.Graphics.Gpu.Shader
         /// This automatically translates, compiles and adds the code to the cache if not present.
         /// </remarks>
         /// <param name="state">GPU state</param>
+        /// <param name="pipeline">Pipeline state</param>
         /// <param name="channel">GPU channel</param>
         /// <param name="gas">GPU accessor state</param>
         /// <param name="addresses">Addresses of the shaders for each stage</param>
         /// <returns>Compiled graphics shader code</returns>
-        public ShaderBundle GetGraphicsShader(ref ThreedClassState state, GpuChannel channel, GpuAccessorState gas, ShaderAddresses addresses)
+        public ShaderBundle GetGraphicsShader(ref ThreedClassState state, ref ProgramPipelineState pipeline, GpuChannel channel, GpuAccessorState gas, ShaderAddresses addresses)
         {
             bool isCached = _gpPrograms.TryGetValue(addresses, out List<ShaderBundle> list);
 
@@ -793,7 +831,9 @@ namespace Ryujinx.Graphics.Gpu.Shader
                     fragmentOutputMap = shaders[fragmentIndex].Info.FragmentOutputMap;
                 }
 
-                IProgram hostProgram = _context.Renderer.CreateProgram(hostShaders.ToArray(), new ShaderInfo(fragmentOutputMap));
+                UpdatePipelineInfo(ref state, ref pipeline, channel);
+
+                IProgram hostProgram = _context.Renderer.CreateProgram(hostShaders.ToArray(), new ShaderInfo(fragmentOutputMap, pipeline));
 
                 gpShaders = new ShaderBundle(hostProgram, shaders);
 
@@ -1092,12 +1132,12 @@ namespace Ryujinx.Graphics.Gpu.Shader
 
         private static ShaderBindings GetBindings(ShaderProgramInfo info)
         {
-            static bool IsBuffer(TextureDescriptor descriptor)
+            static bool IsBuffer(Graphics.Shader.TextureDescriptor descriptor)
             {
                 return (descriptor.Type & SamplerType.Mask) == SamplerType.TextureBuffer;
             }
 
-            static bool IsNotBuffer(TextureDescriptor descriptor)
+            static bool IsNotBuffer(Graphics.Shader.TextureDescriptor descriptor)
             {
                 return !IsBuffer(descriptor);
             }
