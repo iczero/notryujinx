@@ -10,7 +10,7 @@ namespace Ryujinx.Graphics.Vulkan
     {
         private const int SurfaceWidth = 1280;
         private const int SurfaceHeight = 720;
-        private const int ExternalImageCount = 5;
+        private const int ExternalImageCount = 3;
 
         private readonly VulkanGraphicsDevice _gd;
         private readonly SurfaceKHR? _surface;

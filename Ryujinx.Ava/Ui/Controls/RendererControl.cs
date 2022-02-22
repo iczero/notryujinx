@@ -80,6 +80,8 @@ namespace Ryujinx.Ava.Ui.Controls
             OnInitialized(gl);
 
             Framebuffer = GL.GenFramebuffer();
+
+            Window.SwapInterval = 0;
         }
 
         protected abstract void CreateGlContext(OpenGLContextBase mainContext);
@@ -95,6 +97,13 @@ namespace Ryujinx.Ava.Ui.Controls
         }
 
         protected abstract void OnRender(GlInterface gl, int fb);
+
+        protected override void OnOpenGlDeinit(GlInterface gl, int fb)
+        {
+            base.OnOpenGlDeinit(gl, fb);
+
+            Window.SwapInterval = 1;
+        }
 
         protected void OnInitialized(GlInterface gl)
         {

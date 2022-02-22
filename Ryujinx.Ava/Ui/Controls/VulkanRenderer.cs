@@ -44,6 +44,7 @@ namespace Ryujinx.Ava.Ui.Controls
                 {
                     image.Fence = submission.Fence;
                     image.Presented = true;
+                    image.SetReady();
                 }
             }
 
@@ -130,10 +131,7 @@ namespace Ryujinx.Ava.Ui.Controls
             {
                 if (_presentationQueue.FirstOrDefault(x => x.Index == index) != null)
                 {
-                    while (image.Fence == IntPtr.Zero && !image.Presented)
-                    {
-                        Thread.Sleep(1);
-                    }
+                    image.WaitTillReady();
                 }
 
                 if (image.Fence != IntPtr.Zero)
@@ -146,6 +144,7 @@ namespace Ryujinx.Ava.Ui.Controls
 
                 _presentationQueue.Enqueue(new PresentSubmission(image.Texture, ReadySemaphore,
                     new Vector2((float)RenderSize.Width, (float)RenderSize.Height), index));
+                image.Reset();
 
                 GL.Ext.WaitSemaphore(CompleteSemaphore, 0, null, 1, new[] { image.Texture },
                     new[] { PresentSubmission.Layout });
