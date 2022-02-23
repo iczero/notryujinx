@@ -29,9 +29,6 @@ public class PresentSubmission
         GL.ClientWaitSync(Fence, ClientWaitSyncFlags.None, ulong.MaxValue);
         GL.DeleteSync(Fence);
 
-        GL.Clear(ClearBufferMask.ColorBufferBit);
-        GL.ClearColor(0,0, 0, 0);
-
         GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, readFb);
         GL.FramebufferTexture2D(FramebufferTarget.ReadFramebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, Texture, 0);
         GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, drawFb);

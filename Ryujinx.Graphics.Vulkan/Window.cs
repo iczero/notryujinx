@@ -26,8 +26,6 @@ namespace Ryujinx.Graphics.Vulkan
         private Semaphore[] _externalImageRenderedSemaphores = new Semaphore[ExternalImageCount];
         private Semaphore[] _externalImageAvailableSemaphores = new Semaphore[ExternalImageCount];
 
-        private Fence _renderFinishedFence;
-
         private int _width;
         private int _height;
         private bool _isSizeChanged;
@@ -254,7 +252,7 @@ namespace Ryujinx.Graphics.Vulkan
 
                 ExternalMemoryObjectCreatedEvent e = new ExternalMemoryObjectCreatedEvent(image.Image.Handle,
                     image.MemorySize, image.ExternalImageMemoryHandle, readySemaphoreHandle,
-                    completeSemaphoreHandle, Wait, i);
+                    completeSemaphoreHandle, i);
 
                 ExternalImageCreated?.Invoke(this, e);
 
@@ -266,11 +264,6 @@ namespace Ryujinx.Graphics.Vulkan
             }
 
             _isSemaphoreExported = true;
-        }
-
-        private void Wait()
-        {
-            _gd.Api.WaitForFences(_device, new[] { _renderFinishedFence }, true, ulong.MaxValue);
         }
 
         private unsafe Auto<DisposableImageView> CreateImageView(Image image, VkFormat format)
@@ -484,15 +477,15 @@ namespace Ryujinx.Graphics.Vulkan
                 new[] { _gd.IsHeadless ? _externalImageRenderedSemaphores[_nextImage] : _renderFinishedSemaphore });
 
             // TODO: Present queue.
-            var semaphore = _renderFinishedSemaphore;
 
             if (!_gd.IsHeadless)
             {
+                var semaphore = _renderFinishedSemaphore;
                 var swapchain = _swapchain.Value;
                 Result result;
-                
+
                 var nextImage = _nextImage;
-                
+
                 var presentInfo = new PresentInfoKHR()
                 {
                     SType = StructureType.PresentInfoKhr,
@@ -511,16 +504,8 @@ namespace Ryujinx.Graphics.Vulkan
             }
             else
             {
-                _renderFinishedFence = _gd.CommandBufferPool.GetFence(cbs.CommandBufferIndex).GetUnsafe();
-
-                var previous = _nextImage;
-                
+                _gd.Api.QueueWaitIdle(_gd.Queue);
                 _nextImage = swapBuffersCallback((int)_nextImage) ? ++_nextImage % ExternalImageCount : _nextImage;
-
-                if(previous == _nextImage)
-                {
-
-                }
             }
         }
 

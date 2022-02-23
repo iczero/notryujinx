@@ -18,14 +18,13 @@ namespace Ryujinx.Graphics.GAL
         public IntPtr CompleteSemaphoreHandle { get; }
         public Action WaitAction { get; }
 
-        public ExternalMemoryObjectCreatedEvent(ulong imageHandle, ulong memorySize, nint memoryHandle, IntPtr readySemaphoreHandle, IntPtr completeSemaphoreHandle, Action waitAction, int index)
+        public ExternalMemoryObjectCreatedEvent(ulong imageHandle, ulong memorySize, nint memoryHandle, IntPtr readySemaphoreHandle, IntPtr completeSemaphoreHandle, int index)
         {
             ImageHandle = imageHandle;
             MemorySize = memorySize;
             MemoryHandle = memoryHandle;
             ReadySemaphoreHandle = readySemaphoreHandle;
             CompleteSemaphoreHandle = completeSemaphoreHandle;
-            WaitAction = waitAction;
             Index = index;
         }
     }

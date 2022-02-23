@@ -27,6 +27,8 @@ namespace Ryujinx.Ava.Ui.Controls
         
         private CancellationTokenSource _tokenSource = new CancellationTokenSource();
 
+        private ManualResetEventSlim _resetEvent = new ManualResetEventSlim(false); 
+
         protected unsafe override void OnRender(GlInterface gl, int fb)
         {
             if (_presentationQueue.IsEmpty)
@@ -44,10 +46,7 @@ namespace Ryujinx.Ava.Ui.Controls
                 }
             }
 
-            if (!_presentationQueue.IsEmpty)
-            {
-                QueueRender();
-            }
+            _resetEvent.Set();
         }
 
         protected override  void CreateGlContext(OpenGLContextBase mainContext)
@@ -145,17 +144,20 @@ namespace Ryujinx.Ava.Ui.Controls
                         new Vector2((float)RenderSize.Width, (float)RenderSize.Height), index));
 
                     QueueRender();
+
+                    presented = true;
                 }
             }
 
             MakeCurrent(null);
 
+            if(_presentationQueue.Count > 1)
+            {
+                _resetEvent.Reset();
+                _resetEvent.Wait();
+            }
+
             return presented;
-        }
-
-        public void WaitTillDone()
-        {
-
         }
     }
 }
