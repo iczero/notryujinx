@@ -1,4 +1,4 @@
-﻿{
+{
   "MenuBarFile": "_Fichier",
   "MenuBarFileOpenFromFile": "_Charger un jeu depuis un fichier",
   "MenuBarFileOpenUnpacked": "Charger un jeu _extrait",
@@ -22,16 +22,6 @@
   "MenuBarHelpCheckForUpdates": "Vérifier les mises à jour",
   "MenuBarHelpAbout": "Á propos",
   "MenuSearch": "Rechercher...",
-  "GameListHeaderFavorite": "Favoris",
-  "GameListHeaderIcon": "Icône",
-  "GameListHeaderApplication": "Application",
-  "GameListHeaderDeveloper": "Développeur",
-  "GameListHeaderVersion": "Version",
-  "GameListHeaderTimePlayed": "Temps de jeu",
-  "GameListHeaderLastPlayed": "Dernière partie",
-  "GameListHeaderFileExtension": "Extension du Fichier",
-  "GameListHeaderFileSize": "Taille du Fichier",
-  "GameListHeaderPath": "Chemin",
   "GameListContextMenuOpenUserSaveDirectory": "Ouvrir le dossier de sauvegarde utilisateur",
   "GameListContextMenuOpenUserSaveDirectoryToolTip": "Ouvre le dossier contenant la sauvegarde utilisateur du jeu",
   "GameListContextMenuOpenUserDeviceDirectory": "Ouvrir le dossier de sauvegarde console",
