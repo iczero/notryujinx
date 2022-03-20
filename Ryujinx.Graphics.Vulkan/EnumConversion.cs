@@ -413,13 +413,13 @@ namespace Ryujinx.Graphics.Vulkan
             switch (format)
             {
                 case GAL.Format.D16Unorm:
-                case GAL.Format.D24X8Unorm:
                 case GAL.Format.D32Float:
                     return ImageAspectFlags.ImageAspectDepthBit;
                 case GAL.Format.S8Uint:
                     return ImageAspectFlags.ImageAspectStencilBit;
                 case GAL.Format.D24UnormS8Uint:
                 case GAL.Format.D32FloatS8Uint:
+                case GAL.Format.S8UintD24Unorm:
                     return ImageAspectFlags.ImageAspectDepthBit | ImageAspectFlags.ImageAspectStencilBit;
                 default:
                     return ImageAspectFlags.ImageAspectColorBit;
@@ -431,13 +431,13 @@ namespace Ryujinx.Graphics.Vulkan
             switch (format)
             {
                 case GAL.Format.D16Unorm:
-                case GAL.Format.D24X8Unorm:
                 case GAL.Format.D32Float:
                     return ImageAspectFlags.ImageAspectDepthBit;
                 case GAL.Format.S8Uint:
                     return ImageAspectFlags.ImageAspectStencilBit;
                 case GAL.Format.D24UnormS8Uint:
                 case GAL.Format.D32FloatS8Uint:
+                case GAL.Format.S8UintD24Unorm:
                     return depthStencilMode == DepthStencilMode.Stencil ? ImageAspectFlags.ImageAspectStencilBit : ImageAspectFlags.ImageAspectDepthBit;
                 default:
                     return ImageAspectFlags.ImageAspectColorBit;

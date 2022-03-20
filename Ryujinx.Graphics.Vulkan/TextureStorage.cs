@@ -165,7 +165,7 @@ namespace Ryujinx.Graphics.Vulkan
             {
                 GAL.Format.S8Uint => GAL.Format.R8Unorm,
                 GAL.Format.D16Unorm => GAL.Format.R16Unorm,
-                GAL.Format.D24X8Unorm => GAL.Format.R8G8B8A8Unorm,
+                GAL.Format.S8UintD24Unorm => GAL.Format.R8G8B8A8Unorm,
                 GAL.Format.D32Float => GAL.Format.R32Float,
                 GAL.Format.D24UnormS8Uint => GAL.Format.R8G8B8A8Unorm,
                 GAL.Format.D32FloatS8Uint => GAL.Format.R32G32Float,

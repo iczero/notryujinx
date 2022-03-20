@@ -700,7 +700,7 @@ namespace Ryujinx.Graphics.Gpu.Shader
             }
 
             pipeline.DepthStencilEnable = state.RtDepthStencilEnable;
-            pipeline.DepthStencilFormat = pipeline.DepthStencilEnable ? state.RtDepthStencilState.Format.Convert().Format : Format.D24X8Unorm;
+            pipeline.DepthStencilFormat = pipeline.DepthStencilEnable ? state.RtDepthStencilState.Format.Convert().Format : Format.D24UnormS8Uint;
 
             pipeline.VertexBufferCount = Constants.TotalVertexBuffers;
             pipeline.Topology = gas.Topology;
