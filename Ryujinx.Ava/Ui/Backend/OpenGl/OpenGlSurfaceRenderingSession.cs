@@ -1,3 +1,4 @@
+using Avalonia;
 using System;
 
 namespace Ryujinx.Ava.Ui.Backend.OpenGl
@@ -17,7 +18,7 @@ namespace Ryujinx.Ava.Ui.Backend.OpenGl
 
         public float Scaling { get; }
 
-        public bool IsYFlipped { get; } = true;
+        public bool IsYFlipped { get; } = false;
 
         public void Dispose()
         {

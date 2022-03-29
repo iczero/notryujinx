@@ -13,7 +13,6 @@ namespace Ryujinx.Ava.Ui.Backend.OpenGl
     {
         private readonly long? _maxResourceBytes;
         private GRContext _grContext;
-        private GRGlInterface _glInterface;
         private bool _initialized;
         private GRGlInterface _interface;
 

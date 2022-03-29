@@ -8,6 +8,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using Ryujinx.Ava.Application.Module;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Common.Locale;
+using Ryujinx.Ava.Ui.Backend.OpenGl;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.Common;
@@ -64,19 +65,23 @@ namespace Ryujinx.Ava
                     EnableMultiTouch = true,
                     EnableIme = true,
                     UseEGL = false,
-                    UseGpu = true,
+                    UseGpu = false,
                     GlProfiles = new[] { new GlVersion(GlProfileType.OpenGL, 4, 3) }
                 })
                 .With(new Win32PlatformOptions
                 {
                     EnableMultitouch = true,
                     UseWindowsUIComposition = true,
-                    UseWgl = true,
+                    UseWgl = false,
                     AllowEglInitialization = false,
                     CompositionBackdropCornerRadius = 8f,
                     WglProfiles = new[] { new GlVersion(GlProfileType.OpenGL, 4, 3) }
                 })
                 .UseSkia()
+                .With(new SkiaOptions()
+                {
+                    CustomGpuFactory = OpenGlSkiaGpu.CreateGpu
+                })
                 .AfterSetup(_ =>
                 {
                     AvaloniaLocator.CurrentMutable

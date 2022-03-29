@@ -38,7 +38,7 @@ namespace Ryujinx.Ava.Ui.Controls
         public OpenGLContextBase GameContext { get; set; }
 
         public OpenGLContextBase PrimaryContext =>
-                AvaloniaLocator.Current.GetService<IPlatformOpenGlInterface>().PrimaryContext.AsOpenGLContextBase();
+                AvaloniaLocator.Current.GetService<OpenGLContextBase>();
 
         private ManualResetEventSlim _postFrameResetEvent;
         private SwappableNativeWindowBase _gameBackgroundWindow;
