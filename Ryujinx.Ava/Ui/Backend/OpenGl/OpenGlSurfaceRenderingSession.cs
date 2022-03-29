@@ -1,5 +1,7 @@
 using Avalonia;
+using OpenTK.Graphics.OpenGL;
 using System;
+using System.Threading;
 
 namespace Ryujinx.Ava.Ui.Backend.OpenGl
 {
@@ -7,14 +9,20 @@ namespace Ryujinx.Ava.Ui.Backend.OpenGl
     {
         private readonly OpenGlSurface _window;
 
+        public bool IsValid { get; set; }
+
         public OpenGlSurfaceRenderingSession(OpenGlSurface window, float scaling)
         {
             _window = window;
             Scaling = scaling;
-            Begin();
+            _window.MakeCurrent();
         }
 
+        public int Framebuffer => _window.Framebuffer;
+
         public PixelSize Size => _window.Size;
+
+        public PixelSize CurrentSize => _window.CurrentSize;
 
         public float Scaling { get; }
 
@@ -22,13 +30,27 @@ namespace Ryujinx.Ava.Ui.Backend.OpenGl
 
         public void Dispose()
         {
-            _window.SwapBuffers();
-            _window.UnsetCurrent();
-        }
+            if (IsValid)
+            {
+                var size = _window.CurrentSize;
 
-        private void Begin()
-        {
-            _window.MakeCurrent();
+                GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, Framebuffer);
+                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
+                GL.BlitFramebuffer(0,
+                    0,
+                    size.Width,
+                    size.Height,
+                    0,
+                    0,
+                    size.Width,
+                    size.Height,
+                    ClearBufferMask.ColorBufferBit,
+                    BlitFramebufferFilter.Linear);
+
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                _window.SwapBuffers();
+            }
+            _window.UnsetCurrent();
         }
     }
 }

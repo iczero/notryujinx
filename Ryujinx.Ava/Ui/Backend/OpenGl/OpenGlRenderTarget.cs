@@ -41,16 +41,22 @@ namespace Ryujinx.Ava.Ui.Backend.OpenGl
                 {
                     GrContext.ResetContext();
 
-                    var imageInfo = new GRGlFramebufferInfo()
-                    {
-                        FramebufferObjectId = 0,
-                        Format = (uint)InternalFormat.Rgba8
-                    };
+                    GL.Enable(EnableCap.Multisample);
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, session.Framebuffer);
 
-                    var stencils = GL.GetInteger(GetPName.StencilBits);
+                    var maxSamples = GrContext.GetMaxSurfaceSampleCount(SKColorType.Rgba8888);
+                    GL.GetInteger(GetPName.Samples, out var samples);
+                    samples = samples > maxSamples ? maxSamples : samples;
 
-                    var renderTarget =
-                        new GRBackendRenderTarget((int)size.Width, (int)size.Height, 1, stencils, imageInfo);
+                    GRGlFramebufferInfo glInfo = new GRGlFramebufferInfo((uint)session.Framebuffer, SKColorType.Rgba8888.ToGlSizedFormat());
+                    GL.GetInteger(GetPName.StencilBits, out var stencil);
+
+                    stencil = stencil == 0 ? 8 : stencil;
+
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+                     var renderTarget = new GRBackendRenderTarget(session.CurrentSize.Width, session.CurrentSize.Height, samples, stencil, glInfo);
+
                     var surface = SKSurface.Create(GrContext, renderTarget,
                         session.IsYFlipped ? GRSurfaceOrigin.TopLeft : GRSurfaceOrigin.BottomLeft,
                         SKColorType.Rgba8888, SKColorSpace.CreateSrgb());
@@ -60,6 +66,8 @@ namespace Ryujinx.Ava.Ui.Backend.OpenGl
                             $"Surface can't be created with the provided render target");
 
                     success = true;
+
+                    session.IsValid = true;
 
                     return new OpenGlGpuSession(GrContext, renderTarget, surface, session);
                 }

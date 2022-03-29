@@ -281,7 +281,7 @@ namespace Ryujinx.Ava.Ui.Controls
                 if (context is not ISkiaDrawingContextImpl skiaDrawingContextImpl)
                     return;
 
-                var imageInfo = new SKImageInfo((int)Bounds.Width, (int)Bounds.Height, SKColorType.Rgba8888);
+                var imageInfo = new SKImageInfo((int)_control.RenderSize.Width, (int)_control.RenderSize.Height, SKColorType.Rgba8888);
                 var glInfo = new GRGlFramebufferInfo((uint)_framebuffer, SKColorType.Rgba8888.ToGlSizedFormat());
 
                 var stencils = GL.GetInteger(GetPName.StencilBits);
@@ -298,7 +298,7 @@ namespace Ryujinx.Ava.Ui.Controls
                     var rect = new Rect(new Point(), _control.RenderSize);
 
                     using (var snapshot = surface.Snapshot())
-                        skiaDrawingContextImpl.SkCanvas.DrawImage(snapshot, rect.ToSKRect(), rect.ToSKRect(), new SKPaint());
+                        skiaDrawingContextImpl.SkCanvas.DrawImage(snapshot, rect.ToSKRect(), _control.Bounds.ToSKRect(), new SKPaint());
 
                     _control._postFrameResetEvent.Set();
                     _control._inFlight = false;
