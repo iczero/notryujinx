@@ -370,7 +370,7 @@ namespace Ryujinx.Ava
             // TODO fix this on wgl
             if (Renderer != null) 
             {
-                Dispatcher.UIThread.InvokeAsync(Renderer.DestroyBackgroundContext, DispatcherPriority.Render);
+                Renderer.DestroyBackgroundContext();
             }
 
             AppExit?.Invoke(this, EventArgs.Empty);
@@ -384,16 +384,6 @@ namespace Ryujinx.Ava
             {
                 _lastCursorMoveTime = Stopwatch.GetTimestamp();
             }
-        }
-
-        private void Window_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            (_inputManager.MouseDriver as AvaloniaMouseDriver).SetMouseReleased((MouseButton) e.Button);
-        }
-
-        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-            (_inputManager.MouseDriver as AvaloniaMouseDriver).SetMousePressed((MouseButton) e.Button);
         }
 
         private void HideCursorState_Changed(object sender, ReactiveEventArgs<bool> state)

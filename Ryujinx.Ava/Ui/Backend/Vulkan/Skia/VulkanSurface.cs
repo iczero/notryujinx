@@ -17,14 +17,6 @@ namespace Ryujinx.Ava.Ui.Backend.Vulkan
         {
         }
 
-        protected override void CreateFramebuffer(PixelSize size)
-        {
-        }
-
-        protected override void DestroyFramebuffer()
-        {
-        }
-
         public unsafe SurfaceKHR CreateSurface(VulkanInstance instance)
         {
             if (OperatingSystem.IsWindows())

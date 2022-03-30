@@ -40,12 +40,6 @@ namespace Ryujinx.Ava.Ui.Backend
                     size = new PixelSize(attributes.width, attributes.height);
                 }
 
-                if (size != _currentSize)
-                {
-                    DestroyFramebuffer();
-                    CreateFramebuffer(size);
-                }
-
                 _currentSize = size;
 
                 return size;
@@ -64,8 +58,5 @@ namespace Ryujinx.Ava.Ui.Backend
                 Display = IntPtr.Zero;
             }
         }
-
-        protected abstract void DestroyFramebuffer();
-        protected abstract void CreateFramebuffer(PixelSize size);
     }
 }

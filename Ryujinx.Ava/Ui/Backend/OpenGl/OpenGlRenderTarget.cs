@@ -42,20 +42,23 @@ namespace Ryujinx.Ava.Ui.Backend.OpenGl
                     GrContext.ResetContext();
 
                     GL.Enable(EnableCap.Multisample);
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, session.Framebuffer);
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
 
                     var maxSamples = GrContext.GetMaxSurfaceSampleCount(SKColorType.Rgba8888);
                     GL.GetInteger(GetPName.Samples, out var samples);
                     samples = samples > maxSamples ? maxSamples : samples;
 
-                    GRGlFramebufferInfo glInfo = new GRGlFramebufferInfo((uint)session.Framebuffer, SKColorType.Rgba8888.ToGlSizedFormat());
+                    var imageInfo = new GRGlFramebufferInfo()
+                    {
+                        FramebufferObjectId = 0,
+                        Format = (uint)InternalFormat.Rgba8
+                    };
+
                     GL.GetInteger(GetPName.StencilBits, out var stencil);
 
                     stencil = stencil == 0 ? 8 : stencil;
 
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-
-                     var renderTarget = new GRBackendRenderTarget(session.CurrentSize.Width, session.CurrentSize.Height, samples, stencil, glInfo);
+                     var renderTarget = new GRBackendRenderTarget(session.CurrentSize.Width, session.CurrentSize.Height, samples, stencil, imageInfo);
 
                     var surface = SKSurface.Create(GrContext, renderTarget,
                         session.IsYFlipped ? GRSurfaceOrigin.TopLeft : GRSurfaceOrigin.BottomLeft,
@@ -66,8 +69,6 @@ namespace Ryujinx.Ava.Ui.Backend.OpenGl
                             $"Surface can't be created with the provided render target");
 
                     success = true;
-
-                    session.IsValid = true;
 
                     return new OpenGlGpuSession(GrContext, renderTarget, surface, session);
                 }
