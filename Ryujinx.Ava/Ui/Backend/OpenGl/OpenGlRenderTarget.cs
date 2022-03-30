@@ -86,30 +86,21 @@ namespace Ryujinx.Ava.Ui.Backend.OpenGl
             private readonly GRBackendRenderTarget _backendRenderTarget;
             private readonly OpenGlSurfaceRenderingSession _openGlSession;
 
-            private bool _isReady;
-
             public OpenGlGpuSession(GRContext grContext,
                 GRBackendRenderTarget backendRenderTarget,
                 SKSurface surface,
                 OpenGlSurfaceRenderingSession OpenGlSession)
             {
                 GrContext = grContext;
-                _backendRenderTarget = backendRenderTarget;
                 SkSurface = surface;
+                _backendRenderTarget = backendRenderTarget;
                 _openGlSession = OpenGlSession;
 
                 SurfaceOrigin = OpenGlSession.IsYFlipped ? GRSurfaceOrigin.TopLeft : GRSurfaceOrigin.BottomLeft;
-
-                _isReady = true;
             }
 
             public void Dispose()
             {
-                if (!_isReady)
-                {
-                    return;
-                }
-
                 SkSurface.Canvas.Flush();
 
                 SkSurface.Dispose();
@@ -117,8 +108,6 @@ namespace Ryujinx.Ava.Ui.Backend.OpenGl
                 GrContext.Flush();
 
                 _openGlSession.Dispose();
-
-                _isReady = false;
             }
 
             public GRContext GrContext { get; }

@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Platform;
 using Avalonia.Skia;
+using Avalonia.X11;
 using SkiaSharp;
 
 namespace Ryujinx.Ava.Ui.Backend.OpenGl
@@ -53,20 +55,32 @@ namespace Ryujinx.Ava.Ui.Backend.OpenGl
         {
             foreach (var surface in surfaces)
             {
+                OpenGlSurface window = null;
+
                 if (surface is IPlatformHandle handle)
                 {
-                    var window = new OpenGlSurface(handle);
-
-                    var OpenGlRenderTarget = new OpenGlRenderTarget(window);
-
-                    window.MakeCurrent();
-                    Initialize();
-                    window.UnsetCurrent();
-
-                    OpenGlRenderTarget.GrContext = _grContext;
-
-                    return OpenGlRenderTarget;
+                    window = new OpenGlSurface(handle.Handle);
                 }
+                else if (surface is X11FramebufferSurface x11FramebufferSurface)
+                {
+                    var xId = (IntPtr)x11FramebufferSurface.GetType().GetField("_xid", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(x11FramebufferSurface);
+
+                    window = new OpenGlSurface(xId);
+                }
+
+                if(window == null){
+                    return null;
+                }
+
+                var OpenGlRenderTarget = new OpenGlRenderTarget(window);
+
+                window.MakeCurrent();
+                Initialize();
+                window.UnsetCurrent();
+
+                OpenGlRenderTarget.GrContext = _grContext;
+
+                return OpenGlRenderTarget;
             }
 
             return null;

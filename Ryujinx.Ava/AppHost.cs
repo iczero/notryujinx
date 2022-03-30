@@ -862,7 +862,7 @@ namespace Ryujinx.Ava
                     {
                         if (!_renderingStarted)
                         {
-                            Program.RenderTimer.TargetFrameRate = 60;
+                            Program.RenderTimer.SwitchToVSyncTiming();
                             _renderingStarted = true;
                             _parent.SwitchToGameControl();
                         }

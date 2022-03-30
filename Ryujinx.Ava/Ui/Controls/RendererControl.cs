@@ -23,7 +23,6 @@ namespace Ryujinx.Ava.Ui.Controls
     public class RendererControl : Control
     {
         protected int Image { get; set; }
-        public SwappableNativeWindowBase Window { get; private set; }
 
         public event EventHandler<EventArgs> GlInitialized;
         public event EventHandler<Size> SizeChanged;
@@ -115,22 +114,6 @@ namespace Ryujinx.Ava.Ui.Controls
         protected void OnGlInitialized()
         {
             _postFrameResetEvent = new ManualResetEventSlim(false);
-
-            if (OperatingSystem.IsWindows())
-            {
-                var window = ((this.VisualRoot as TopLevel).PlatformImpl as Avalonia.Win32.WindowImpl).Handle.Handle;
-
-                Window = new SPB.Platform.WGL.WGLWindow(new NativeHandle(window));
-            }
-            else if (OperatingSystem.IsLinux())
-            {
-                var platform = (this.VisualRoot as TopLevel).PlatformImpl;
-                var window = (IPlatformHandle)platform.GetType().GetProperty("Handle").GetValue(platform);
-                var display = platform.GetType().GetField("_x11", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).GetValue(platform);
-                var displayHandle = (IntPtr)display.GetType().GetProperty("Display").GetValue(display);
-
-                Window = new SPB.Platform.GLX.GLXWindow(new NativeHandle(displayHandle), new NativeHandle(window.Handle));
-            }
             GlInitialized?.Invoke(this, EventArgs.Empty);
         }
 

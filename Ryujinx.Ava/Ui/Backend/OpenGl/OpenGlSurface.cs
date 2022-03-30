@@ -10,53 +10,50 @@ using SPB.Windowing;
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Ryujinx.Ava.Ui.Backend;
 
 namespace Ryujinx.Ava.Ui.Backend.OpenGl
 {
-    public class OpenGlSurface : IDisposable
+
+    public class OpenGlSurface : BackendSurface
     {
-        public OpenGLContextBase Context{ get; }
-        public IPlatformHandle Handle { get; }
-        public SwappableNativeWindowBase Window{ get; }
-
-        private IntPtr _display = IntPtr.Zero;
-
-        public bool IsDisposed { get; private set; }
+        public OpenGLContextBase Context { get; }
+        public SwappableNativeWindowBase Window { get; }
 
         public int Framebuffer { get; set; }
         private int _texture;
 
-        private PixelSize _oldSize;
-
-        public OpenGlSurface(IPlatformHandle handle)
+        public OpenGlSurface(IntPtr handle) : base(handle)
         {
             if (OperatingSystem.IsWindows())
             {
-                Window = new SPB.Platform.WGL.WGLWindow(new NativeHandle(handle.Handle));
+                Window = new SPB.Platform.WGL.WGLWindow(new NativeHandle(Handle));
             }
             else if (OperatingSystem.IsLinux())
             {
-                _display = XOpenDisplay(IntPtr.Zero);
-                Window = new SPB.Platform.GLX.GLXWindow(new NativeHandle(_display), new NativeHandle(handle.Handle));
+                Window = new SPB.Platform.GLX.GLXWindow(new NativeHandle(Display), new NativeHandle(Handle));
             }
-            Handle = handle;
-
             var primaryContext = AvaloniaLocator.Current.GetService<OpenGLContextBase>();
-            
-            Context = primaryContext != null ? PlatformHelper.CreateOpenGLContext(FramebufferFormat.Default, 3, 2, OpenGLContextFlags.Compat, shareContext:primaryContext)
+
+            Context = primaryContext != null ? PlatformHelper.CreateOpenGLContext(FramebufferFormat.Default, 3, 2, OpenGLContextFlags.Compat, shareContext: primaryContext)
                 : PlatformHelper.CreateOpenGLContext(FramebufferFormat.Default, 3, 2, OpenGLContextFlags.Compat);
             Context.Initialize(Window);
             MakeCurrent();
             GL.LoadBindings(new OpenToolkitBindingsContext(Context.GetProcAddress));
             UnsetCurrent();
 
-            if(primaryContext == null)
+            if (primaryContext == null)
             {
                 AvaloniaLocator.CurrentMutable.Bind<OpenGLContextBase>().ToConstant(Context);
             }
         }
 
-        public void CreateFramebuffer(PixelSize size)
+        public OpenGlSurfaceRenderingSession BeginDraw()
+        {
+            return new OpenGlSurfaceRenderingSession(this, (float)Program.WindowScaleFactor);
+        }
+
+        protected override void CreateFramebuffer(PixelSize size)
         {
             if (Context.IsCurrent)
             {
@@ -77,52 +74,15 @@ namespace Ryujinx.Ava.Ui.Backend.OpenGl
             }
         }
 
-        private void DestroyFramebuffer()
-        {
-            if(Framebuffer != 0)
-            {
-                GL.DeleteTexture(_texture);
-                GL.DeleteFramebuffer(Framebuffer);
-                Framebuffer = 0;
-            }
-        }
-
-        public PixelSize Size
-        {
-            get
-            {
-                if (OperatingSystem.IsWindows())
-                {
-                    GetClientRect(Handle.Handle, out var rect);
-
-                    var size = new PixelSize(rect.right, rect.bottom);
-
-                    if(size != _oldSize)
-                    {
-                        DestroyFramebuffer();
-                        CreateFramebuffer(size);
-                    }
-
-                    _oldSize = size;
-
-                    return size;
-                }
-
-                return new PixelSize();
-            }
-        }
-
-        public PixelSize CurrentSize => _oldSize;
-
-        public OpenGlSurfaceRenderingSession BeginDraw()
-        {
-            return new OpenGlSurfaceRenderingSession(this, (float)Program.WindowScaleFactor);
-        }
-
         public void MakeCurrent()
         {
             Monitor.Enter(this);
             Context.MakeCurrent(Window);
+        }
+
+        public void SwapBuffers()
+        {
+            Window.SwapBuffers();
         }
 
         public void UnsetCurrent()
@@ -131,31 +91,19 @@ namespace Ryujinx.Ava.Ui.Backend.OpenGl
             Monitor.Exit(this);
         }
 
-        public void SwapBuffers()
-        {
-            Window.SwapBuffers();
-        }
-
-        #region Native Methods
-
-        [DllImport("libX11.so.6")]
-        public static extern IntPtr XOpenDisplay(IntPtr display);
-
-        [DllImport("libX11.so.6")]
-        public static extern int XCloseDisplay(IntPtr display);
-
-        [DllImport("user32.dll")]
-        public static extern bool GetClientRect(IntPtr hwnd, out RECT lpRect);
-
-        #endregion
-
-        public void Dispose()
+        public override void Dispose()
         {
             Context?.Dispose();
-            IsDisposed = true;
-            if (_display != IntPtr.Zero)
+            base.Dispose();
+        }
+
+        protected override void DestroyFramebuffer()
+        {
+            if (Framebuffer != 0)
             {
-                XCloseDisplay(_display);
+                GL.DeleteTexture(_texture);
+                GL.DeleteFramebuffer(Framebuffer);
+                Framebuffer = 0;
             }
         }
     }
