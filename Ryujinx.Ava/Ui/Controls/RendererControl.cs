@@ -39,11 +39,9 @@ namespace Ryujinx.Ava.Ui.Controls
         public OpenGLContextBase PrimaryContext =>
                 AvaloniaLocator.Current.GetService<OpenGLContextBase>();
 
-        private ManualResetEventSlim _postFrameResetEvent;
         private SwappableNativeWindowBase _gameBackgroundWindow;
 
         private bool _isInitialized;
-        private bool _inFlight;
 
         private int _drawId;
         private IntPtr _fence;
@@ -84,53 +82,39 @@ namespace Ryujinx.Ava.Ui.Controls
                 _isInitialized = true;
             }
 
-            try
+            if (GameContext == null || !IsStarted || Image == 0)
             {
-                if (GameContext == null || !IsStarted || Image == 0)
-                {
-                    return;
-                }
-
-                if (_glDrawOperation != null)
-                {
-                    context.Custom(_glDrawOperation);
-                }
-
-                base.Render(context);
+                return;
             }
-            finally
+
+            if (_glDrawOperation != null)
             {
-               // _postFrameResetEvent?.Set();
+                context.Custom(_glDrawOperation);
             }
+
+            base.Render(context);
         }
 
         protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
         {
-            _postFrameResetEvent?.Set();
-            _postFrameResetEvent?.Dispose();
             base.OnDetachedFromVisualTree(e);
         }
 
         protected void OnGlInitialized()
         {
-            _postFrameResetEvent = new ManualResetEventSlim(false);
             GlInitialized?.Invoke(this, EventArgs.Empty);
         }
 
         public void QueueRender()
         {
-            //_postFrameResetEvent.Reset();
             Dispatcher.UIThread.InvokeAsync(InvalidateVisual, DispatcherPriority.Render);
 
             Program.RenderTimer.TickNow();
-            //_postFrameResetEvent.Wait(100);
         }
 
         internal bool Present(int image)
         {
             Image = image;
-
-            _inFlight = true;
 
             if (_fence != IntPtr.Zero)
             {
@@ -142,14 +126,6 @@ namespace Ryujinx.Ava.Ui.Controls
             QueueRender();
 
             return true;
-        }
-
-        public void OnPreFrame()
-        {
-            if (_inFlight)
-            {
-                _postFrameResetEvent.Reset();
-            }
         }
 
         internal void Start()
@@ -282,9 +258,6 @@ namespace Ryujinx.Ava.Ui.Controls
 
                     using (var snapshot = surface.Snapshot())
                         skiaDrawingContextImpl.SkCanvas.DrawImage(snapshot, rect.ToSKRect(), _control.Bounds.ToSKRect(), new SKPaint());
-
-                    _control._postFrameResetEvent.Set();
-                    _control._inFlight = false;
                 }
             }
         }
