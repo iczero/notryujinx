@@ -8,6 +8,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using Ryujinx.Ava.Application.Module;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Common.Locale;
+using Ryujinx.Ava.Ui.Backend;
 using Ryujinx.Ava.Ui.Backend.OpenGl;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Windows;
@@ -58,6 +59,7 @@ namespace Ryujinx.Ava
         // Avalonia configuration, don't remove; also used by visual designer.
         public static AppBuilder BuildAvaloniaApp()
         {
+            bool useVulkan = false;
             return AppBuilder.Configure<App>()
                 .UsePlatformDetect()
                 .With(new X11PlatformOptions
@@ -80,7 +82,7 @@ namespace Ryujinx.Ava
                 .UseSkia()
                 .With(new SkiaOptions()
                 {
-                    CustomGpuFactory = OpenGlSkiaGpu.CreateGpu
+                    CustomGpuFactory = useVulkan ? SkiaGpuFactory.CreateVulkanGpu : SkiaGpuFactory.CreateOpenGlGpu
                 })
                 .AfterSetup(_ =>
                 {

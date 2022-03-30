@@ -25,15 +25,6 @@ namespace Ryujinx.Ava.Ui.Backend.OpenGl
             _maxResourceBytes = maxResourceBytes;
         }
 
-        public static ISkiaGpu CreateGpu()
-        {
-            var skiaOptions = AvaloniaLocator.Current.GetService<SkiaOptions>() ?? new SkiaOptions();
-            var gpu = new OpenGlSkiaGpu(skiaOptions.MaxGpuResourceSizeBytes);
-            AvaloniaLocator.CurrentMutable.Bind<OpenGlSkiaGpu>().ToConstant(gpu);
-
-            return gpu;
-        }
-
         private void Initialize()
         {
             if (_initialized)
