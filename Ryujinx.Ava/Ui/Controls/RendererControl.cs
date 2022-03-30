@@ -107,7 +107,7 @@ namespace Ryujinx.Ava.Ui.Controls
 
         public void QueueRender()
         {
-            Dispatcher.UIThread.InvokeAsync(InvalidateVisual, DispatcherPriority.Render);
+            InvalidateVisual();
 
             Program.RenderTimer.TickNow();
         }
