@@ -35,7 +35,7 @@ namespace Ryujinx.Ava.Ui.Backend.OpenGl
             }
             var primaryContext = AvaloniaLocator.Current.GetService<OpenGLContextBase>();
 
-            Context = primaryContext != null ? PlatformHelper.CreateOpenGLContext(FramebufferFormat.Default, 3, 2, OpenGLContextFlags.Compat, shareContext: primaryContext)
+            Context = primaryContext != null ? PlatformHelper.CreateOpenGLContext(GetFramebufferFormat(), 3, 2, OpenGLContextFlags.Compat, shareContext: primaryContext)
                 : PlatformHelper.CreateOpenGLContext(FramebufferFormat.Default, 3, 2, OpenGLContextFlags.Compat);
             Context.Initialize(Window);
             MakeCurrent();
@@ -46,6 +46,11 @@ namespace Ryujinx.Ava.Ui.Backend.OpenGl
             {
                 AvaloniaLocator.CurrentMutable.Bind<OpenGLContextBase>().ToConstant(Context);
             }
+        }
+
+        private FramebufferFormat GetFramebufferFormat()
+        {
+            return Environment.OSVersion.Platform == PlatformID.Unix ? new FramebufferFormat(new ColorFormat(8, 8, 8, 0), 16, 0, ColorFormat.Zero, 0, 2, false) : FramebufferFormat.Default;
         }
 
         public OpenGlSurfaceRenderingSession BeginDraw()

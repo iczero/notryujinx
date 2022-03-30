@@ -60,7 +60,7 @@ namespace Ryujinx.Ava.Ui.Controls
         private bool _isRunning;
         private bool _isSuspended;
 
-        private AutoResetEvent _resetEvent;
+        private ManualResetEventSlim _resetEvent;
         private ManualResetEvent _pauseEvent;
         private bool _useVSync;
 
@@ -68,7 +68,7 @@ namespace Ryujinx.Ava.Ui.Controls
         {
             _targetFrameRate = framerate;
             _timer = new Stopwatch();
-            _resetEvent = new AutoResetEvent(true);
+            _resetEvent = new ManualResetEventSlim(true);
             _pauseEvent = new ManualResetEvent(true);
             _intervalTicks = Stopwatch.Frequency / framerate;
         }
@@ -100,7 +100,8 @@ namespace Ryujinx.Ava.Ui.Controls
         {
             while (_isRunning)
             {
-                _resetEvent.WaitOne();
+                _resetEvent.Wait();
+                _resetEvent.Reset();
                 _tick?.Invoke(TimeSpan.FromMilliseconds(_timer.ElapsedTicks * 1000 / Stopwatch.Frequency));
             }
         }
