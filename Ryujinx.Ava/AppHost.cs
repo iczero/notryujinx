@@ -361,6 +361,16 @@ namespace Ryujinx.Ava
             NpadManager.Dispose();
             TouchScreenManager.Dispose();
             Device.Dispose();
+
+            var disposeThread = new Thread(DisposeGpu) { Name = "GpuDisposalThread"};
+            disposeThread.Start();
+            disposeThread.Join();
+
+            AppExit?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void DisposeGpu()
+        {
             Renderer?.MakeCurrent();
 
             Device.DisposeGpu();
@@ -368,12 +378,10 @@ namespace Ryujinx.Ava
             Renderer?.MakeCurrent(null);
 
             // TODO fix this on wgl
-            if (Renderer != null) 
+            if (Renderer != null)
             {
                 Renderer.DestroyBackgroundContext();
             }
-
-            AppExit?.Invoke(this, EventArgs.Empty);
         }
 
         private void Window_MouseMove(object sender, (double X, double Y) e)
