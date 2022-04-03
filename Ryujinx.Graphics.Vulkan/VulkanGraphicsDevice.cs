@@ -19,8 +19,9 @@ namespace Ryujinx.Graphics.Vulkan
         private Instance _instance;
         private SurfaceKHR _surface;
         private PhysicalDevice _physicalDevice;
+        private readonly uint _queueFamilyIndex;
         private Device _device;
-        private Window _window;
+        private WindowBase _window;
 
         internal FormatCapabilities FormatCapabilities { get; private set; }
         internal HardwareCapabilities Capabilities { get; private set; }
@@ -84,6 +85,8 @@ namespace Ryujinx.Graphics.Vulkan
 
         public event EventHandler<ScreenCaptureImageInfo> ScreenCaptured;
 
+        public bool IsOffScreen { get; }
+
         public VulkanGraphicsDevice(Func<Instance, Vk, SurfaceKHR> surfaceFunc, Func<string[]> requiredExtensionsFunc)
         {
             GetSurface = surfaceFunc;
@@ -91,6 +94,103 @@ namespace Ryujinx.Graphics.Vulkan
             Shaders = new HashSet<ShaderCollection>();
             Textures = new HashSet<ITexture>();
             Samplers = new HashSet<SamplerHolder>();
+        }
+
+        public VulkanGraphicsDevice(Instance instance, Device device, PhysicalDevice physicalDevice, Queue queue, uint queueFamilyIndex, object lockObject)
+        {
+            _instance = instance;
+            _physicalDevice = physicalDevice;
+            _device = device;
+            Queue = queue;
+            QueueLock = lockObject;
+            _queueFamilyIndex = queueFamilyIndex;
+
+            IsOffScreen = true;
+        }
+
+        private unsafe void SetupOffScreenContext(GraphicsDebugLevel logLevel)
+        {
+            var api = Vk.GetApi();
+
+            Api = api;
+
+            VulkanInitialization.CreateDebugCallbacks(api, logLevel, _instance, out var debugReport, out _debugReportCallback);
+
+            DebugReportApi = debugReport;
+
+            FormatCapabilities = new FormatCapabilities(api, _physicalDevice);
+
+            var supportedExtensions = VulkanInitialization.GetSupportedExtensions(api, _physicalDevice);
+
+            Capabilities = new HardwareCapabilities(
+                supportedExtensions.Contains(ExtConditionalRendering.ExtensionName),
+                supportedExtensions.Contains(ExtExtendedDynamicState.ExtensionName));
+
+            SupportsIndexTypeUint8 = supportedExtensions.Contains("VK_EXT_index_type_uint8");
+            SupportsCustomBorderColor = supportedExtensions.Contains("VK_EXT_custom_border_color");
+            SupportsIndirectParameters = supportedExtensions.Contains(KhrDrawIndirectCount.ExtensionName);
+            SupportsFragmentShaderInterlock = supportedExtensions.Contains("VK_EXT_fragment_shader_interlock");
+
+            if (api.TryGetDeviceExtension(_instance, _device, out ExtConditionalRendering conditionalRenderingApi))
+            {
+                ConditionalRenderingApi = conditionalRenderingApi;
+            }
+
+            if (api.TryGetDeviceExtension(_instance, _device, out ExtExtendedDynamicState extendedDynamicStateApi))
+            {
+                ExtendedDynamicStateApi = extendedDynamicStateApi;
+            }
+
+            if (api.TryGetDeviceExtension(_instance, _device, out ExtTransformFeedback transformFeedbackApi))
+            {
+                TransformFeedbackApi = transformFeedbackApi;
+            }
+
+            if (api.TryGetDeviceExtension(_instance, _device, out KhrDrawIndirectCount drawIndirectCountApi))
+            {
+                DrawIndirectCountApi = drawIndirectCountApi;
+            }
+
+            uint propertiesCount;
+
+            api.GetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &propertiesCount, null);
+
+            QueueFamilyProperties[] queueFamilyProperties = new QueueFamilyProperties[propertiesCount];
+
+            fixed (QueueFamilyProperties* pProperties = queueFamilyProperties)
+            {
+                api.GetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &propertiesCount, pProperties);
+            }
+
+            if (queueFamilyProperties[0].QueueCount >= 2)
+            {
+                api.GetDeviceQueue(_device, _queueFamilyIndex, 1, out var backgroundQueue);
+                BackgroundQueue = backgroundQueue;
+                BackgroundQueueLock = new object();
+            }
+
+            Api.GetPhysicalDeviceProperties(_physicalDevice, out var properties);
+
+            MemoryAllocator = new MemoryAllocator(api, _device, properties.Limits.MaxMemoryAllocationCount);
+
+            CommandBufferPool = VulkanInitialization.CreateCommandBufferPool(api, _device, Queue, QueueLock, _queueFamilyIndex);
+
+            DescriptorSetManager = new DescriptorSetManager(_device);
+
+            PipelineLayoutCache = new PipelineLayoutCache();
+
+            BackgroundResources = new BackgroundResources(this, _device);
+
+            BufferManager = new BufferManager(this, _physicalDevice, _device);
+
+            _syncManager = new SyncManager(this, _device);
+            _pipeline = new PipelineFull(this, _device);
+
+            HelperShader = new HelperShader(this, _device);
+
+            _counters = new Counters(this, _device, _pipeline);
+
+            _window = new ImageWindow(this, _physicalDevice, _device);
         }
 
         private void SetupContext(GraphicsDebugLevel logLevel)
@@ -347,7 +447,14 @@ namespace Ryujinx.Graphics.Vulkan
 
         public void Initialize(GraphicsDebugLevel logLevel)
         {
-            SetupContext(logLevel);
+            if (!IsOffScreen)
+            {
+                SetupContext(logLevel);
+            }
+            else
+            {
+                SetupOffScreenContext(logLevel);
+            }
 
             PrintGpuInformation();
         }
