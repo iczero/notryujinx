@@ -1,5 +1,6 @@
 ﻿using ARMeilleure.Translation;
 using ARMeilleure.Translation.PTC;
+using Avalonia;
 using Avalonia.Input;
 using Avalonia.Threading;
 using LibHac.Tools.FsSystem;
@@ -15,6 +16,7 @@ using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Models;
 using Ryujinx.Ava.Ui.Windows;
+using Ryujinx.Ava.Vulkan;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
@@ -24,6 +26,7 @@ using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.GAL.Multithreading;
 using Ryujinx.Graphics.Gpu;
 using Ryujinx.Graphics.OpenGL;
+using Ryujinx.Graphics.Vulkan;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.HOS;
 using Ryujinx.HLE.HOS.Services.Account.Acc;
@@ -88,7 +91,7 @@ namespace Ryujinx.Ava
         public event EventHandler AppExit;
         public event EventHandler<StatusUpdatedEventArgs> StatusUpdatedEvent;
 
-        public RendererControl      Renderer            { get; }
+        public RendererControl        Renderer            { get; }
         public VirtualFileSystem    VirtualFileSystem { get; }
         public ContentManager       ContentManager    { get; }
         public Switch               Device  { get; set; }
@@ -104,7 +107,7 @@ namespace Ryujinx.Ava
         private ManualResetEvent _closeEvent;
 
         public AppHost(
-            RendererControl        renderer,
+            RendererControl          renderer,
             InputManager           inputManager,
             string                 path,
             VirtualFileSystem      virtualFileSystem,
@@ -387,16 +390,16 @@ namespace Ryujinx.Ava
 
             var thread = new Thread(() =>
             {
-                Renderer?.MakeCurrent();
+                (Renderer as OpenGlRendererControl)?.MakeCurrent();
 
                 Device.DisposeGpu();
 
-                Renderer?.MakeCurrent(null);
+                (Renderer as OpenGlRendererControl)?.MakeCurrent(null);
 
                 // TODO fix this on wgl
                 if (Renderer != null)
                 {
-                    Renderer.DestroyBackgroundContext();
+                    (Renderer as OpenGlRendererControl)?.DestroyBackgroundContext();
                 }
             });
             thread.Start();
@@ -606,7 +609,22 @@ namespace Ryujinx.Ava
         {
             VirtualFileSystem.ReloadKeySet();
 
-            IRenderer             renderer     = new Renderer();
+            IRenderer renderer;
+
+            if (ConfigurationState.Instance.Graphics.GraphicsBackend == GraphicsBackend.Vulkan)
+            {
+                var vulkan = AvaloniaLocator.Current.GetService<VulkanPlatformInterface>();
+                renderer = new VulkanGraphicsDevice(vulkan.Instance.InternalHandle,
+                                                        vulkan.Device.InternalHandle,
+                                                        vulkan.PhysicalDevice.InternalHandle,
+                                                        vulkan.Device.Queue.InternalHandle,
+                                                        vulkan.PhysicalDevice.QueueFamilyIndex,
+                                                        vulkan.Device.Lock);
+            }
+            else
+            {
+                renderer = new Renderer();
+            }
             IHardwareDeviceDriver deviceDriver = new DummyHardwareDeviceDriver();
 
             BackendThreading threadingMode = ConfigurationState.Instance.Graphics.BackendThreading;
@@ -835,9 +853,12 @@ namespace Ryujinx.Ava
 
             _renderer.ScreenCaptured += Renderer_ScreenCaptured;
 
-            (_renderer as Renderer).InitializeBackgroundContext(SPBOpenGLContext.CreateBackgroundContext(Renderer.GameContext));
+            if (Renderer is OpenGlRendererControl openGlRenderer)
+            {
+                (_renderer as Renderer)?.InitializeBackgroundContext(SPBOpenGLContext.CreateBackgroundContext(openGlRenderer.GameContext));
 
-            Renderer.MakeCurrent();
+                openGlRenderer.MakeCurrent();
+            }
 
             Device.Gpu.Renderer.Initialize(_glLogLevel);
 
@@ -881,7 +902,7 @@ namespace Ryujinx.Ava
                 Renderer.Stop();
             });
 
-            Renderer?.MakeCurrent(null);
+            (Renderer as OpenGlRendererControl)?.MakeCurrent(null);
 
             Renderer.SizeChanged -= Window_SizeChanged;
 
@@ -890,7 +911,7 @@ namespace Ryujinx.Ava
             Program.RenderTimer.TargetFrameRate = 60;
         }
 
-        private bool Present(int image)
+        private bool Present(object image)
         {
             // Run a status update only when a frame is to be drawn. This prevents from updating the ui and wasting a render when no frame is queued
             string dockedMode = ConfigurationState.Instance.System.EnableDockedMode ? "Docked" : "Handheld";
@@ -901,7 +922,7 @@ namespace Ryujinx.Ava
                 dockedMode += $" ({scale}x)";
             }
 
-            string vendor = _renderer is Renderer renderer ? renderer.GpuVendor : "Vulkan Test";
+            string vendor = !Program.UseVulkan ? (_renderer as Renderer).GpuVendor : (_renderer as VulkanGraphicsDevice).GpuVendor;
 
             StatusUpdatedEvent?.Invoke(this, new StatusUpdatedEventArgs(
                 Device.EnableDeviceVsync,

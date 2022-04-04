@@ -412,6 +412,11 @@ namespace Ryujinx.Configuration
             /// </summary>
             public ReactiveObject<bool> EnableShaderCache { get; private set; }
 
+            /// <summary>
+            /// Graphics backend
+            /// </summary>
+            public ReactiveObject<GraphicsBackend> GraphicsBackend { get; private set; }
+
             public GraphicsSection()
             {
                 BackendThreading        = new ReactiveObject<BackendThreading>();
@@ -429,6 +434,8 @@ namespace Ryujinx.Configuration
                 EnableVsync.Event       += static (sender, e) => LogValueChange(sender, e, nameof(EnableVsync));
                 EnableShaderCache       = new ReactiveObject<bool>();
                 EnableShaderCache.Event += static (sender, e) => LogValueChange(sender, e, nameof(EnableShaderCache));
+                GraphicsBackend         = new ReactiveObject<GraphicsBackend>();
+                GraphicsBackend.Event   += static (sender, e) => LogValueChange(sender, e, nameof(GraphicsBackend));
             }
         }
 

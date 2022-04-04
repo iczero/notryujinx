@@ -20,6 +20,8 @@ using Ryujinx.Common.System;
 using Ryujinx.Common.SystemInfo;
 using Ryujinx.Configuration;
 using Ryujinx.Modules;
+using Silk.NET.Vulkan.Extensions.EXT;
+using Silk.NET.Vulkan.Extensions.KHR;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using System;
 using System.Collections.Generic;
@@ -33,6 +35,7 @@ namespace Ryujinx.Ava
 {
     internal class Program
     {
+        public static bool UseVulkan { get; } = true;
         public static double WindowScaleFactor { get; set; }
         public static string Version           { get; private set; }
         public static string ConfigurationPath { get; private set; }
@@ -59,7 +62,6 @@ namespace Ryujinx.Ava
         // Avalonia configuration, don't remove; also used by visual designer.
         public static AppBuilder BuildAvaloniaApp()
         {
-            bool useVulkan = false;
             return AppBuilder.Configure<App>()
                 .UsePlatformDetect()
                 .With(new X11PlatformOptions
@@ -80,9 +82,26 @@ namespace Ryujinx.Ava
                     WglProfiles = new[] { new GlVersion(GlProfileType.OpenGL, 4, 3) }
                 })
                 .UseSkia()
+                .With(new Vulkan.VulkanOptions()
+                {
+                    ApplicationName = "Ryujinx.Graphics.Vulkan",
+                    VulkanVersion = new Version(1, 2),
+                    DeviceExtensions = new List<string>
+                    {
+                        ExtConditionalRendering.ExtensionName,
+                        ExtExtendedDynamicState.ExtensionName,
+                        KhrDrawIndirectCount.ExtensionName,
+                        "VK_EXT_index_type_uint8",
+                        "VK_EXT_custom_border_color",
+                        "VK_EXT_robustness2"
+                    },
+                    MaxQueueCount = 2,
+                    PreferDiscreteGpu = true,
+                    UseDebug = Configuration.ConfigurationState.Instance.Logger.GraphicsDebugLevel.Value > GraphicsDebugLevel.None,
+                })
                 .With(new SkiaOptions()
                 {
-                    CustomGpuFactory = useVulkan ? SkiaGpuFactory.CreateVulkanGpu : SkiaGpuFactory.CreateOpenGlGpu
+                    CustomGpuFactory = UseVulkan ? SkiaGpuFactory.CreateVulkanGpu : SkiaGpuFactory.CreateOpenGlGpu
                 })
                 .AfterSetup(_ =>
                 {

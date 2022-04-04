@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Silk.NET.Vulkan;
+using Silk.NET.Vulkan.Extensions.EXT;
+using Silk.NET.Vulkan.Extensions.KHR;
 
 namespace Ryujinx.Ava.Vulkan
 {
@@ -13,23 +15,87 @@ namespace Ryujinx.Ava.Vulkan
         /// <inheritdoc/>
         public unsafe Device CreateDevice(Vk api, VulkanInstance instance, VulkanPhysicalDevice physicalDevice, VulkanOptions options)
         {
-            var queuePriorities = stackalloc float[(int)physicalDevice.QueueCount];
+            uint queueCount = options.MaxQueueCount == 0 ? physicalDevice.QueueCount : Math.Min(options.MaxQueueCount, physicalDevice.QueueCount);
 
-            for (var i = 0; i < physicalDevice.QueueCount; i++)
+            var queuePriorities = stackalloc float[(int)queueCount];
+
+            for (var i = 0; i < queueCount; i++)
                 queuePriorities[i] = 1f;
 
-            var features = new PhysicalDeviceFeatures();
+            var features = new PhysicalDeviceFeatures()
+            {
+                DepthBiasClamp = true,
+                DepthClamp = true,
+                DualSrcBlend = true,
+                FragmentStoresAndAtomics = true,
+                GeometryShader = true,
+                ImageCubeArray = true,
+                IndependentBlend = true,
+                LogicOp = true,
+                MultiViewport = true,
+                PipelineStatisticsQuery = true,
+                SamplerAnisotropy = true,
+                ShaderClipDistance = true,
+                ShaderImageGatherExtended = true,
+                // ShaderStorageImageReadWithoutFormat = true,
+                // ShaderStorageImageWriteWithoutFormat = true,
+                TessellationShader = true,
+                VertexPipelineStoresAndAtomics = true
+            };
+
+            var supportedExtensions = physicalDevice.GetSupportedExtensions();
+
+            var featuresIndexU8 = new PhysicalDeviceIndexTypeUint8FeaturesEXT()
+            {
+                SType = StructureType.PhysicalDeviceIndexTypeUint8FeaturesExt,
+                IndexTypeUint8 = true
+            };
+
+            var featuresTransformFeedback = new PhysicalDeviceTransformFeedbackFeaturesEXT()
+            {
+                SType = StructureType.PhysicalDeviceTransformFeedbackFeaturesExt,
+                PNext = supportedExtensions.Contains("VK_EXT_index_type_uint8") ? &featuresIndexU8 : null,
+                TransformFeedback = true
+            };
+
+            var featuresRobustness2 = new PhysicalDeviceRobustness2FeaturesEXT()
+            {
+                SType = StructureType.PhysicalDeviceRobustness2FeaturesExt,
+                PNext = &featuresTransformFeedback,
+                NullDescriptor = true
+            };
+
+            var featuresExtendedDynamicState = new PhysicalDeviceExtendedDynamicStateFeaturesEXT()
+            {
+                SType = StructureType.PhysicalDeviceExtendedDynamicStateFeaturesExt,
+                PNext = &featuresRobustness2,
+                ExtendedDynamicState = supportedExtensions.Contains(ExtExtendedDynamicState.ExtensionName)
+            };
+
+            var featuresVk11 = new PhysicalDeviceVulkan11Features()
+            {
+                SType = StructureType.PhysicalDeviceVulkan11Features,
+                PNext = &featuresExtendedDynamicState,
+                ShaderDrawParameters = true
+            };
+
+            var featuresVk12 = new PhysicalDeviceVulkan12Features()
+            {
+                SType = StructureType.PhysicalDeviceVulkan12Features,
+                PNext = &featuresVk11,
+                DrawIndirectCount = supportedExtensions.Contains(KhrDrawIndirectCount.ExtensionName)
+            };
 
             var queueCreateInfo = new DeviceQueueCreateInfo
             {
                 SType = StructureType.DeviceQueueCreateInfo,
                 QueueFamilyIndex = physicalDevice.QueueFamilyIndex,
-                QueueCount = physicalDevice.QueueCount,
+                QueueCount = queueCount,
                 PQueuePriorities = queuePriorities
             };
 
             var enabledExtensions = VulkanDevice.RequiredDeviceExtensions.Union(
-                options.DeviceExtensions.Intersect(physicalDevice.GetSupportedExtensions())).ToArray();
+                options.DeviceExtensions.Intersect(supportedExtensions)).ToArray();
 
             var ppEnabledExtensions = stackalloc IntPtr[enabledExtensions.Length];
 
@@ -38,6 +104,7 @@ namespace Ryujinx.Ava.Vulkan
 
             var deviceCreateInfo = new DeviceCreateInfo
             {
+                PNext = &featuresVk12,
                 SType = StructureType.DeviceCreateInfo,
                 QueueCreateInfoCount = 1,
                 PQueueCreateInfos = &queueCreateInfo,

@@ -114,7 +114,7 @@ namespace Ryujinx.Ui
 
         public abstract void InitializeRenderer();
 
-        public abstract void SwapBuffers(int image);
+        public abstract void SwapBuffers(object image);
 
         protected abstract string GetGpuBackendName();
 

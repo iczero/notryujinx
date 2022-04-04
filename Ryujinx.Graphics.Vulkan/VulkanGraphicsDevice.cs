@@ -106,6 +106,10 @@ namespace Ryujinx.Graphics.Vulkan
             _queueFamilyIndex = queueFamilyIndex;
 
             IsOffScreen = true;
+            
+            Shaders = new HashSet<ShaderCollection>();
+            Textures = new HashSet<ITexture>();
+            Samplers = new HashSet<SamplerHolder>();
         }
 
         private unsafe void SetupOffScreenContext(GraphicsDebugLevel logLevel)

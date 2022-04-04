@@ -9,7 +9,7 @@ namespace Ryujinx.Graphics.Vulkan
         internal bool ScreenCaptureRequested { get; set; }
 
         public abstract void Dispose();
-        public abstract void Present(ITexture texture, ImageCrop crop, Func<int, bool> swapBuffersCallback);
+        public abstract void Present(ITexture texture, ImageCrop crop, Func<object, bool> swapBuffersCallback);
         public abstract void SetSize(int width, int height);
     }
 }

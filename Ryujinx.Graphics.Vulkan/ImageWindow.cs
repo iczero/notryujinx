@@ -1,7 +1,6 @@
 ﻿using Ryujinx.Graphics.GAL;
 using Silk.NET.Vulkan;
 using System;
-using System.Linq;
 using VkFormat = Silk.NET.Vulkan.Format;
 
 namespace Ryujinx.Graphics.Vulkan
@@ -19,6 +18,8 @@ namespace Ryujinx.Graphics.Vulkan
         private Auto<DisposableImage>[] _images;
         private Auto<DisposableImageView>[] _imageViews;
         private Auto<DisposableMemory>[] _imageMemory;
+        private ulong[] _imageSizes;
+        private ulong[] _imageOffsets;
 
         private Semaphore _imageAvailableSemaphore;
         private Semaphore _renderFinishedSemaphore;
@@ -29,7 +30,7 @@ namespace Ryujinx.Graphics.Vulkan
         private bool _recreateImages;
         private int _nextImage;
 
-        internal bool ScreenCaptureRequested { get; set; }
+        internal new bool ScreenCaptureRequested { get; set; }
 
         public unsafe ImageWindow(VulkanGraphicsDevice gd, PhysicalDevice physicalDevice, Device device)
         {
@@ -41,6 +42,8 @@ namespace Ryujinx.Graphics.Vulkan
 
             _images = new Auto<DisposableImage>[ImageCount];
             _imageMemory = new Auto<DisposableMemory>[ImageCount];
+            _imageSizes = new ulong[ImageCount];
+            _imageOffsets = new ulong[ImageCount];
 
             CreateImages();
 
@@ -55,9 +58,11 @@ namespace Ryujinx.Graphics.Vulkan
 
         private void RecreateImages()
         {
-            for (int i = 0; i < _imageViews.Length; i++)
+            for (int i = 0; i < ImageCount; i++)
             {
-                _imageViews[i].Dispose();
+                _imageViews[i]?.Dispose();
+                _imageMemory[i]?.Dispose();
+                _images[i]?.Dispose();
             }
 
             CreateImages();
@@ -68,6 +73,8 @@ namespace Ryujinx.Graphics.Vulkan
             _imageViews = new Auto<DisposableImageView>[ImageCount];
             unsafe
             {
+
+                var cbs = _gd.CommandBufferPool.Rent();
                 for (int i = 0; i < _images.Length; i++)
                 {
                     var imageCreateInfo = new ImageCreateInfo
@@ -97,12 +104,25 @@ namespace Ryujinx.Graphics.Vulkan
 
                     var allocation = _gd.MemoryAllocator.AllocateDeviceMemory(_physicalDevice, memoryRequirements, MemoryPropertyFlags.MemoryPropertyDeviceLocalBit);
 
+                    _imageSizes[i] = allocation.Size;
+                    _imageOffsets[i] = allocation.Offset;
+
                     _imageMemory[i] = new Auto<DisposableMemory>(new DisposableMemory(_gd.Api, _device, allocation.Memory));
 
                     _gd.Api.BindImageMemory(_device, image, allocation.Memory, 0);
 
                     _imageViews[i] = CreateImageView(image, _format);
+
+                    Transition(
+                        cbs.CommandBuffer,
+                        image,
+                        0,
+                        0,
+                        ImageLayout.Undefined,
+                        ImageLayout.ColorAttachmentOptimal);
                 }
+
+                _gd.CommandBufferPool.Return(cbs);
             }
         }
 
@@ -132,11 +152,12 @@ namespace Ryujinx.Graphics.Vulkan
             return new Auto<DisposableImageView>(new DisposableImageView(_gd.Api, _device, imageView));
         }
 
-        public override unsafe void Present(ITexture texture, ImageCrop crop, Func<int, bool> swapBuffersCallback)
+        public override unsafe void Present(ITexture texture, ImageCrop crop, Func<object, bool> swapBuffersCallback)
         {
             if (_recreateImages)
             {
                 RecreateImages();
+                _recreateImages = false;
             }
 
             var image = _images[_nextImage];
@@ -150,7 +171,7 @@ namespace Ryujinx.Graphics.Vulkan
                 image.GetUnsafe().Value,
                 0,
                 AccessFlags.AccessTransferWriteBit,
-                ImageLayout.Undefined,
+                ImageLayout.ColorAttachmentOptimal,
                 ImageLayout.General);
 
             var view = (TextureView)texture;
@@ -198,10 +219,10 @@ namespace Ryujinx.Graphics.Vulkan
             float ratioX = crop.IsStretched ? 1.0f : MathF.Min(1.0f, _height * crop.AspectRatioX / (_width * crop.AspectRatioY));
             float ratioY = crop.IsStretched ? 1.0f : MathF.Min(1.0f, _width * crop.AspectRatioY / (_height * crop.AspectRatioX));
 
-            int dstWidth  = (int)(_width  * ratioX);
+            int dstWidth = (int)(_width * ratioX);
             int dstHeight = (int)(_height * ratioY);
 
-            int dstPaddingX = (_width  - dstWidth)  / 2;
+            int dstPaddingX = (_width - dstWidth) / 2;
             int dstPaddingY = (_height - dstHeight) / 2;
 
             int dstX0 = crop.FlipX ? _width - dstPaddingX : dstPaddingX;
@@ -233,14 +254,17 @@ namespace Ryujinx.Graphics.Vulkan
 
             _gd.CommandBufferPool.Return(
                 cbs,
-                new[] { _imageAvailableSemaphore },
+                null,
                 new[] { PipelineStageFlags.PipelineStageColorAttachmentOutputBit },
-                new[] { _renderFinishedSemaphore });
+                null);
 
             // TODO: Present queue.
             var semaphore = _renderFinishedSemaphore;
 
-            Result result;
+            var memory = _imageMemory[_nextImage];
+            var presentInfo = new PresentImageInfo(image.GetUnsafe().Value, memory.GetUnsafe().Value, _imageSizes[_nextImage], _imageOffsets[_nextImage], _renderFinishedSemaphore, _imageAvailableSemaphore);
+
+            swapBuffersCallback(presentInfo);
 
             _nextImage = _nextImage % ImageCount;
         }
@@ -290,7 +314,7 @@ namespace Ryujinx.Graphics.Vulkan
 
         public override void SetSize(int width, int height)
         {
-            if(_width != width || _height != height)
+            if (_width != width || _height != height)
             {
                 _recreateImages = true;
             }
@@ -308,16 +332,12 @@ namespace Ryujinx.Graphics.Vulkan
                     _gd.Api.DestroySemaphore(_device, _renderFinishedSemaphore, null);
                     _gd.Api.DestroySemaphore(_device, _imageAvailableSemaphore, null);
 
-                    for (int i = 0; i < _imageViews.Length; i++)
+                    for (int i = 0; i < ImageCount; i++)
                     {
-                        _imageViews[i].Dispose();
+                        _imageViews[i]?.Dispose();
+                        _imageMemory[i]?.Dispose();
+                        _images[i]?.Dispose();
                     }
-
-                    for (int i = 0; i < _images.Length; i++)
-                    {
-                        _images[i].Dispose();
-                    }
-
                 }
             }
         }
@@ -326,5 +346,26 @@ namespace Ryujinx.Graphics.Vulkan
         {
             Dispose(true);
         }
+    }
+
+    public class PresentImageInfo
+    {
+        public PresentImageInfo(Image image, DeviceMemory memory, ulong memorySize, ulong memoryOffset, Semaphore readySemaphore, Semaphore availableSemaphore)
+        {
+            this.Image = image;
+            this.Memory = memory;
+            this.MemorySize = memorySize;
+            this.MemoryOffset = memoryOffset;
+            this.ReadySemaphore = readySemaphore;
+            this.AvailableSemaphore = availableSemaphore;
+
+        }
+        public Image Image { get; }
+        public DeviceMemory Memory { get; }
+        public ulong MemorySize { get; set; }
+        public ulong MemoryOffset { get; set; }
+        public Semaphore ReadySemaphore { get; }
+        public Semaphore AvailableSemaphore { get; }
+
     }
 }

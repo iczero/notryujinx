@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Silk.NET.Vulkan;
+using Silk.NET.Vulkan.Extensions.EXT;
 using Silk.NET.Vulkan.Extensions.KHR;
 
 namespace Ryujinx.Ava.Vulkan
@@ -35,7 +36,12 @@ namespace Ryujinx.Ava.Vulkan
         public VulkanQueue PresentQueue { get; }
         public VulkanCommandBufferPool CommandBufferPool { get; }
 
-        internal static List<string> RequiredDeviceExtensions { get; } = new() { KhrSwapchain.ExtensionName };
+        internal static List<string> RequiredDeviceExtensions { get; } = new()
+        {
+            KhrSwapchain.ExtensionName,
+            "VK_EXT_shader_subgroup_vote",
+            ExtTransformFeedback.ExtensionName
+        };
 
         public void Dispose()
         {
