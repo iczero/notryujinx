@@ -27,6 +27,8 @@ namespace Ryujinx.HLE
 
         public bool EnableDeviceVsync { get; set; } = true;
 
+        public bool IsFrameAvailable => Gpu.Window.IsFrameAvailable;
+
         public Switch(HLEConfiguration configuration)
         {
             if (configuration.GpuRenderer == null)
@@ -110,7 +112,7 @@ namespace Ryujinx.HLE
             return Gpu.Window.ConsumeFrameAvailable();
         }
 
-        public void PresentFrame(Action swapBuffersCallback)
+        public void PresentFrame(Action<object> swapBuffersCallback)
         {
             Gpu.Window.Present(swapBuffersCallback);
         }
