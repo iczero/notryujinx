@@ -930,8 +930,9 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
         public async void OpenSettings()
         {
-            // TODO
-            ContentDialogHelper.ShowNotAvailableMessage(_owner);
+            _owner.SettingsWindow = new(_owner.VirtualFileSystem, _owner.ContentManager);
+
+            await _owner.SettingsWindow.ShowDialog(_owner);
         }
 
         public async void ManageProfiles()
@@ -1360,7 +1361,13 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
                 dialogMessage += LocaleManager.Instance["DialogFirmwareInstallerFirmwareInstallConfirmMessage"];
 
-                UserResult result = await ContentDialogHelper.CreateConfirmationDialog(_owner, dialogTitle, dialogMessage, LocaleManager.Instance["InputDialogYes"], LocaleManager.Instance["InputDialogNo"], LocaleManager.Instance["RyujinxConfirm"]);
+                UserResult result = await ContentDialogHelper.CreateConfirmationDialog(
+                    _owner,
+                    dialogTitle,
+                    dialogMessage,
+                    LocaleManager.Instance["InputDialogYes"],
+                    LocaleManager.Instance["InputDialogNo"],
+                    LocaleManager.Instance["RyujinxConfirm"]);
 
                 UpdateWaitWindow waitingDialog = ContentDialogHelper.CreateWaitingDialog(dialogTitle, LocaleManager.Instance["DialogFirmwareInstallerFirmwareInstallWaitMessage"]);
 
