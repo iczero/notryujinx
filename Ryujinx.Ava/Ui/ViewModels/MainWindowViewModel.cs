@@ -86,9 +86,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             if (Program.PreviewerDetached)
             {
-                ShowUiKey = KeyGesture.Parse(ConfigurationState.Instance.Hid.Hotkeys.Value.ShowUi.ToString());
-                ScreenshotKey = KeyGesture.Parse(ConfigurationState.Instance.Hid.Hotkeys.Value.Screenshot.ToString());
-                PauseKey = KeyGesture.Parse(ConfigurationState.Instance.Hid.Hotkeys.Value.Pause.ToString());
+                LoadConfigurableHotKeys();
 
                 Volume = ConfigurationState.Instance.System.AudioVolume;
             }
@@ -834,6 +832,13 @@ namespace Ryujinx.Ava.Ui.ViewModels
             }
         }
 
+        public void LoadConfigurableHotKeys()
+        {
+            ShowUiKey = KeyGesture.Parse(ConfigurationState.Instance.Hid.Hotkeys.Value.ShowUi.ToString());
+            ScreenshotKey = KeyGesture.Parse(ConfigurationState.Instance.Hid.Hotkeys.Value.Screenshot.ToString());
+            PauseKey = KeyGesture.Parse(ConfigurationState.Instance.Hid.Hotkeys.Value.Pause.ToString());
+        }
+
         public async void TakeScreenshot()
         {
             _owner.AppHost.ScreenshotRequested = true;
@@ -933,6 +938,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             _owner.SettingsWindow = new(_owner.VirtualFileSystem, _owner.ContentManager);
 
             await _owner.SettingsWindow.ShowDialog(_owner);
+            LoadConfigurableHotKeys();
         }
 
         public async void ManageProfiles()

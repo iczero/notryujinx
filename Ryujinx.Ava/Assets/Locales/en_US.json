@@ -537,5 +537,12 @@
   "UpdaterDownloading": "Downloading Update...",
   "Game": "Game",
   "Docked": "Docked",
-  "Handheld": "Handheld"
+  "Handheld": "Handheld",
+  "SettingsTabHotkeys": "Keyboard Hotkeys",
+  "SettingsTabHotkeysHotkeys": "Keyboard Hotkeys",
+  "SettingsTabHotkeysToggleVsyncHotkey": "Toggle VSync:",
+  "SettingsTabHotkeysScreenshotHotkey": "Screenshot:",
+  "SettingsTabHotkeysShowUiHotkey": "Show UI:",
+  "SettingsTabHotkeysPauseHotkey": "Pause:",
+  "SettingsTabHotkeysToggleMuteHotkey":  "Mute:"
 }
