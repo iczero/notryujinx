@@ -16,6 +16,7 @@ namespace Ryujinx.Graphics.Shader.Translation
 
         public bool GpPassthrough { get; }
         public bool GpPassthroughWithHostSupport => GpPassthrough && GpuAccessor.QueryHostSupportsGeometryShaderPassthrough();
+        public bool LastInVertexPipeline { get; private set; }
 
         public int ThreadsPerInputPrimitive { get; }
 
@@ -137,6 +138,7 @@ namespace Ryujinx.Graphics.Shader.Translation
             OmapSampleMask           = header.OmapSampleMask;
             OmapDepth                = header.OmapDepth;
             TransformFeedbackEnabled = gpuAccessor.QueryTransformFeedbackEnabled();
+            LastInVertexPipeline     = header.Stage < ShaderStage.Fragment;
         }
 
         public int GetDepthRegister()
@@ -276,6 +278,11 @@ namespace Ryujinx.Graphics.Shader.Translation
             NextInputAttributesPerPatchComponents = config.ThisInputAttributesPerPatchComponents;
             NextUsesFixedFuncAttributes = config.UsedFeatures.HasFlag(FeatureFlags.FixedFuncAttr);
             MergeOutputUserAttributes(config.UsedInputAttributes, config.UsedInputAttributesPerPatch);
+
+            if (config.Stage < ShaderStage.Fragment)
+            {
+                LastInVertexPipeline = false;
+            }
         }
 
         public void MergeOutputUserAttributes(int mask, int maskPerPatch)

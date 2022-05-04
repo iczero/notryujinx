@@ -176,7 +176,8 @@ namespace Ryujinx.Graphics.Shader.Translation
             }
 
             if (Config.Options.TargetApi == TargetApi.Vulkan &&
-                Config.Stage == ShaderStage.Vertex &&
+                Config.LastInVertexPipeline &&
+                (Config.Stage == ShaderStage.Vertex || Config.Stage == ShaderStage.TessellationEvaluation) &&
                 (Config.Options.Flags & TranslationFlags.VertexA) == 0)
             {
                 if (Config.GpuAccessor.QueryTransformDepthMinusOneToOne())
@@ -236,7 +237,14 @@ namespace Ryujinx.Graphics.Shader.Translation
 
                     Operand src = Register(Config.GetDepthRegister(), RegisterType.Gpr);
 
-                    this.Copy(dest, src);
+                    if (Config.Options.TargetApi == TargetApi.Vulkan && Config.GpuAccessor.QueryTransformDepthMinusOneToOne())
+                    {
+                        this.Copy(dest, this.FPFusedMultiplyAdd(src, ConstF(0.5f), ConstF(0.5f)));
+                    }
+                    else
+                    {
+                        this.Copy(dest, src);
+                    }
                 }
 
                 AlphaTestOp alphaTestOp = Config.GpuAccessor.QueryAlphaTestCompare();

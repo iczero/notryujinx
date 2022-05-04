@@ -206,7 +206,28 @@ namespace Ryujinx.Graphics.Shader.Instructions
 
             if (emit)
             {
-                context.EmitVertex();
+                if (context.Config.Options.TargetApi == TargetApi.Vulkan &&
+                    context.Config.LastInVertexPipeline &&
+                    context.Config.GpuAccessor.QueryTransformDepthMinusOneToOne())
+                {
+                    Operand tempZLocal = Local();
+
+                    context.Copy(tempZLocal, Attribute(AttributeConsts.PositionZ | AttributeConsts.LoadOutputMask));
+
+                    Operand z = Attribute(AttributeConsts.PositionZ | AttributeConsts.LoadOutputMask);
+                    Operand w = Attribute(AttributeConsts.PositionW | AttributeConsts.LoadOutputMask);
+                    Operand halfW = context.FPMultiply(w, ConstF(0.5f));
+
+                    context.Copy(Attribute(AttributeConsts.PositionZ), context.FPFusedMultiplyAdd(z, ConstF(0.5f), halfW));
+
+                    context.EmitVertex();
+
+                    context.Copy(Attribute(AttributeConsts.PositionZ), tempZLocal);
+                }
+                else
+                {
+                    context.EmitVertex();
+                }
             }
 
             if (cut)
