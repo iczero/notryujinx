@@ -14,6 +14,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Threading;
 using static ARMeilleure.IntermediateRepresentation.Operand.Factory;
 
@@ -301,7 +302,7 @@ namespace ARMeilleure.Translation
                 options |= CompilerOptions.Relocatable;
             }
 
-            CompiledFunction compiledFunc = Compiler.Compile(cfg, argTypes, retType, options);
+            CompiledFunction compiledFunc = Compiler.Compile(cfg, argTypes, retType, options, RuntimeInformation.ProcessArchitecture);
 
             if (context.HasPtc && !singleStep)
             {

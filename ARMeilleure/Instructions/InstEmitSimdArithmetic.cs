@@ -440,7 +440,11 @@ namespace ARMeilleure.Instructions
 
         public static void Fadd_S(ArmEmitterContext context)
         {
-            if (Optimizations.FastFP && Optimizations.UseSse2)
+            if (Optimizations.UseAdvSimd)
+            {
+                InstEmitSimdNativeArmHelper.EmitScalarBinaryOpF(context, Intrinsic.Arm64FaddS);
+            }
+            else if (Optimizations.FastFP && Optimizations.UseSse2)
             {
                 EmitScalarBinaryOpF(context, Intrinsic.X86Addss, Intrinsic.X86Addsd);
             }
@@ -459,7 +463,11 @@ namespace ARMeilleure.Instructions
 
         public static void Fadd_V(ArmEmitterContext context)
         {
-            if (Optimizations.FastFP && Optimizations.UseSse2)
+            if (Optimizations.UseAdvSimd)
+            {
+                InstEmitSimdNativeArmHelper.EmitVectorBinaryOpF(context, Intrinsic.Arm64FaddV);
+            }
+            else if (Optimizations.FastFP && Optimizations.UseSse2)
             {
                 EmitVectorBinaryOpF(context, Intrinsic.X86Addps, Intrinsic.X86Addpd);
             }
@@ -534,7 +542,11 @@ namespace ARMeilleure.Instructions
 
         public static void Fdiv_S(ArmEmitterContext context)
         {
-            if (Optimizations.FastFP && Optimizations.UseSse2)
+            if (Optimizations.UseAdvSimd)
+            {
+                InstEmitSimdNativeArmHelper.EmitScalarBinaryOpF(context, Intrinsic.Arm64FdivS);
+            }
+            else if (Optimizations.FastFP && Optimizations.UseSse2)
             {
                 EmitScalarBinaryOpF(context, Intrinsic.X86Divss, Intrinsic.X86Divsd);
             }
@@ -553,7 +565,11 @@ namespace ARMeilleure.Instructions
 
         public static void Fdiv_V(ArmEmitterContext context)
         {
-            if (Optimizations.FastFP && Optimizations.UseSse2)
+            if (Optimizations.UseAdvSimd)
+            {
+                InstEmitSimdNativeArmHelper.EmitVectorBinaryOpF(context, Intrinsic.Arm64FdivV);
+            }
+            else if (Optimizations.FastFP && Optimizations.UseSse2)
             {
                 EmitVectorBinaryOpF(context, Intrinsic.X86Divps, Intrinsic.X86Divpd);
             }
@@ -607,7 +623,11 @@ namespace ARMeilleure.Instructions
 
         public static void Fmax_S(ArmEmitterContext context)
         {
-            if (Optimizations.FastFP && Optimizations.UseSse41)
+            if (Optimizations.UseAdvSimd)
+            {
+                InstEmitSimdNativeArmHelper.EmitScalarBinaryOpF(context, Intrinsic.Arm64FmaxS);
+            }
+            else if (Optimizations.FastFP && Optimizations.UseSse41)
             {
                 EmitSse41ProcessNaNsOpF(context, (op1, op2) =>
                 {
@@ -628,7 +648,11 @@ namespace ARMeilleure.Instructions
 
         public static void Fmax_V(ArmEmitterContext context)
         {
-            if (Optimizations.FastFP && Optimizations.UseSse41)
+            if (Optimizations.UseAdvSimd)
+            {
+                InstEmitSimdNativeArmHelper.EmitVectorBinaryOpF(context, Intrinsic.Arm64FmaxV);
+            }
+            else if (Optimizations.FastFP && Optimizations.UseSse41)
             {
                 EmitSse41ProcessNaNsOpF(context, (op1, op2) =>
                 {
@@ -649,7 +673,11 @@ namespace ARMeilleure.Instructions
 
         public static void Fmaxnm_S(ArmEmitterContext context)
         {
-            if (Optimizations.FastFP && Optimizations.UseSse41)
+            if (Optimizations.UseAdvSimd)
+            {
+                InstEmitSimdNativeArmHelper.EmitScalarBinaryOpF(context, Intrinsic.Arm64FmaxnmS);
+            }
+            else if (Optimizations.FastFP && Optimizations.UseSse41)
             {
                 EmitSse41MaxMinNumOpF(context, isMaxNum: true, scalar: true);
             }
@@ -664,7 +692,11 @@ namespace ARMeilleure.Instructions
 
         public static void Fmaxnm_V(ArmEmitterContext context)
         {
-            if (Optimizations.FastFP && Optimizations.UseSse41)
+            if (Optimizations.UseAdvSimd)
+            {
+                InstEmitSimdNativeArmHelper.EmitVectorBinaryOpF(context, Intrinsic.Arm64FmaxnmV);
+            }
+            else if (Optimizations.FastFP && Optimizations.UseSse41)
             {
                 EmitSse41MaxMinNumOpF(context, isMaxNum: true, scalar: false);
             }
@@ -781,7 +813,11 @@ namespace ARMeilleure.Instructions
 
         public static void Fmin_S(ArmEmitterContext context)
         {
-            if (Optimizations.FastFP && Optimizations.UseSse41)
+            if (Optimizations.UseAdvSimd)
+            {
+                InstEmitSimdNativeArmHelper.EmitScalarBinaryOpF(context, Intrinsic.Arm64FminS);
+            }
+            else if (Optimizations.FastFP && Optimizations.UseSse41)
             {
                 EmitSse41ProcessNaNsOpF(context, (op1, op2) =>
                 {
@@ -802,7 +838,11 @@ namespace ARMeilleure.Instructions
 
         public static void Fmin_V(ArmEmitterContext context)
         {
-            if (Optimizations.FastFP && Optimizations.UseSse41)
+            if (Optimizations.UseAdvSimd)
+            {
+                InstEmitSimdNativeArmHelper.EmitVectorBinaryOpF(context, Intrinsic.Arm64FminV);
+            }
+            else if (Optimizations.FastFP && Optimizations.UseSse41)
             {
                 EmitSse41ProcessNaNsOpF(context, (op1, op2) =>
                 {
@@ -823,7 +863,11 @@ namespace ARMeilleure.Instructions
 
         public static void Fminnm_S(ArmEmitterContext context)
         {
-            if (Optimizations.FastFP && Optimizations.UseSse41)
+            if (Optimizations.UseAdvSimd)
+            {
+                InstEmitSimdNativeArmHelper.EmitScalarBinaryOpF(context, Intrinsic.Arm64FminnmS);
+            }
+            else if (Optimizations.FastFP && Optimizations.UseSse41)
             {
                 EmitSse41MaxMinNumOpF(context, isMaxNum: false, scalar: true);
             }
@@ -838,7 +882,11 @@ namespace ARMeilleure.Instructions
 
         public static void Fminnm_V(ArmEmitterContext context)
         {
-            if (Optimizations.FastFP && Optimizations.UseSse41)
+            if (Optimizations.UseAdvSimd)
+            {
+                InstEmitSimdNativeArmHelper.EmitVectorBinaryOpF(context, Intrinsic.Arm64FminnmV);
+            }
+            else if (Optimizations.FastFP && Optimizations.UseSse41)
             {
                 EmitSse41MaxMinNumOpF(context, isMaxNum: false, scalar: false);
             }
@@ -1190,7 +1238,11 @@ namespace ARMeilleure.Instructions
 
         public static void Fmul_S(ArmEmitterContext context)
         {
-            if (Optimizations.FastFP && Optimizations.UseSse2)
+            if (Optimizations.UseAdvSimd)
+            {
+                InstEmitSimdNativeArmHelper.EmitScalarBinaryOpF(context, Intrinsic.Arm64FmulS);
+            }
+            else if (Optimizations.FastFP && Optimizations.UseSse2)
             {
                 EmitScalarBinaryOpF(context, Intrinsic.X86Mulss, Intrinsic.X86Mulsd);
             }
@@ -1214,7 +1266,11 @@ namespace ARMeilleure.Instructions
 
         public static void Fmul_V(ArmEmitterContext context)
         {
-            if (Optimizations.FastFP && Optimizations.UseSse2)
+            if (Optimizations.UseAdvSimd)
+            {
+                InstEmitSimdNativeArmHelper.EmitVectorBinaryOpF(context, Intrinsic.Arm64FmulV);
+            }
+            else if (Optimizations.FastFP && Optimizations.UseSse2)
             {
                 EmitVectorBinaryOpF(context, Intrinsic.X86Mulps, Intrinsic.X86Mulpd);
             }
@@ -1466,7 +1522,14 @@ namespace ARMeilleure.Instructions
 
         public static void Fnmul_S(ArmEmitterContext context)
         {
-            EmitScalarBinaryOpF(context, (op1, op2) => context.Negate(context.Multiply(op1, op2)));
+            if (Optimizations.UseAdvSimd)
+            {
+                InstEmitSimdNativeArmHelper.EmitScalarBinaryOpF(context, Intrinsic.Arm64FnmulS);
+            }
+            else
+            {
+                EmitScalarBinaryOpF(context, (op1, op2) => context.Negate(context.Multiply(op1, op2)));
+            }
         }
 
         public static void Frecpe_S(ArmEmitterContext context)
@@ -2005,7 +2068,11 @@ namespace ARMeilleure.Instructions
 
         public static void Fsub_S(ArmEmitterContext context)
         {
-            if (Optimizations.FastFP && Optimizations.UseSse2)
+            if (Optimizations.UseAdvSimd)
+            {
+                InstEmitSimdNativeArmHelper.EmitScalarBinaryOpF(context, Intrinsic.Arm64FsubS);
+            }
+            else if (Optimizations.FastFP && Optimizations.UseSse2)
             {
                 EmitScalarBinaryOpF(context, Intrinsic.X86Subss, Intrinsic.X86Subsd);
             }
@@ -2024,7 +2091,11 @@ namespace ARMeilleure.Instructions
 
         public static void Fsub_V(ArmEmitterContext context)
         {
-            if (Optimizations.FastFP && Optimizations.UseSse2)
+            if (Optimizations.UseAdvSimd)
+            {
+                InstEmitSimdNativeArmHelper.EmitVectorBinaryOpF(context, Intrinsic.Arm64FsubV);
+            }
+            else if (Optimizations.FastFP && Optimizations.UseSse2)
             {
                 EmitVectorBinaryOpF(context, Intrinsic.X86Subps, Intrinsic.X86Subpd);
             }

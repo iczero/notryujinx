@@ -13,7 +13,7 @@ namespace ARMeilleure.Translation.Cache
         private const int PageSize = 4 * 1024;
         private const int PageMask = PageSize - 1;
 
-        private const int CodeAlignment = 4; // Bytes.
+        private const int CodeAlignment = 4096; // Bytes.
         private const int CacheSize = 2047 * 1024 * 1024;
 
         private static ReservedRegion _jitRegion;
@@ -24,8 +24,6 @@ namespace ARMeilleure.Translation.Cache
 
         private static readonly object _lock = new object();
         private static bool _initialized;
-
-        public static IntPtr Base => _jitRegion.Pointer;
 
         public static void Initialize(IJitMemoryAllocator allocator)
         {
@@ -39,7 +37,7 @@ namespace ARMeilleure.Translation.Cache
 
                 _cacheAllocator = new CacheMemoryAllocator(CacheSize);
 
-                if (OperatingSystem.IsWindows())
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
                     JitUnwindWindows.InstallFunctionTableHandler(_jitRegion.Pointer, CacheSize, _jitRegion.Pointer + Allocate(PageSize));
                 }
@@ -60,7 +58,7 @@ namespace ARMeilleure.Translation.Cache
 
                 IntPtr funcPtr = _jitRegion.Pointer + funcOffset;
 
-                ReprotectAsWritable(funcOffset, code.Length);
+                // ReprotectAsWritable(funcOffset, code.Length);
 
                 Marshal.Copy(code, 0, funcPtr, code.Length);
 
@@ -74,7 +72,7 @@ namespace ARMeilleure.Translation.Cache
 
         public static void Unmap(IntPtr pointer)
         {
-            lock (_lock)
+            /* lock (_lock)
             {
                 Debug.Assert(_initialized);
 
@@ -86,7 +84,7 @@ namespace ARMeilleure.Translation.Cache
                 _cacheAllocator.Free(funcOffset, AlignCodeSize(entry.Size));
 
                 Remove(funcOffset);
-            }
+            } */
         }
 
         private static void ReprotectAsWritable(int offset, int size)
