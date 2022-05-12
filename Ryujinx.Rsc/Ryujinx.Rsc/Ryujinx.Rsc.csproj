@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Version>1.0.0-dirty</Version>
+    <TieredCompilation>false</TieredCompilation>
+    <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
+    <DefineConstants Condition=" '$(ExtraDefineConstants)' != '' ">$(DefineConstants);$(ExtraDefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>    
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Ryujinx.Input\Ryujinx.Input.csproj" />
+    <ProjectReference Include="..\..\Ryujinx.Input.SDL2\Ryujinx.Input.SDL2.csproj" />
+    <ProjectReference Include="..\..\Ryujinx.Audio.Backends.OpenAL\Ryujinx.Audio.Backends.OpenAL.csproj" />
+    <ProjectReference Include="..\..\Ryujinx.Audio.Backends.SDL2\Ryujinx.Audio.Backends.SDL2.csproj" />
+    <ProjectReference Include="..\..\Ryujinx.Common\Ryujinx.Common.csproj" />
+    <ProjectReference Include="..\..\Ryujinx.HLE\Ryujinx.HLE.csproj" />
+    <ProjectReference Include="..\..\ARMeilleure\ARMeilleure.csproj" />
+    <ProjectReference Include="..\..\Ryujinx.Graphics.OpenGL\Ryujinx.Graphics.OpenGL.csproj" />
+    <ProjectReference Include="..\..\Ryujinx.Graphics.Gpu\Ryujinx.Graphics.Gpu.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="0.10.999-cibuild0020345-beta" />    
+    <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.999-cibuild0020345-beta" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.999-cibuild0020345-beta" />
+    <PackageReference Include="jp2masa.Avalonia.Flexbox" Version="0.2.0" />
+	<PackageReference Include="XamlNameReferenceGenerator" Version="1.3.4" />
+  </ItemGroup>
+</Project>
