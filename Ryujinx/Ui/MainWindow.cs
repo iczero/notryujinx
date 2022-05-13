@@ -20,6 +20,7 @@ using Ryujinx.Configuration;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.GAL.Multithreading;
 using Ryujinx.Graphics.OpenGL;
+using Ryujinx.Graphics.Vulkan;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.HOS;
 using Ryujinx.HLE.HOS.Services.Account.Acc;
@@ -28,11 +29,6 @@ using Ryujinx.Input.GTK3;
 using Ryujinx.Input.HLE;
 using Ryujinx.Input.SDL2;
 using Ryujinx.Modules;
-using Ryujinx.Rsc.Library;
-using Ryujinx.Rsc.Librarylet;
-using Ryujinx.Rsc.Helper;
-using Ryujinx.Rsc.Widgets;
-using Ryujinx.Rsc.Windows;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -78,8 +74,6 @@ namespace Ryujinx.Rsc
 
         public bool IsFocused;
 
-        private static bool UseVulkan = false;
-
 #pragma warning disable CS0169, CS0649, IDE0044
 
         [GUI] public MenuItem ExitMenuItem;
@@ -117,6 +111,7 @@ namespace Ryujinx.Rsc
         [GUI] CheckMenuItem   _fileExtToggle;
         [GUI] CheckMenuItem   _pathToggle;
         [GUI] CheckMenuItem   _fileSizeToggle;
+        [GUI] Label           _gpuBackend;
         [GUI] Label           _dockedMode;
         [GUI] Label           _aspectRatio;
         [GUI] Label           _gameStatus;
@@ -403,9 +398,10 @@ namespace Ryujinx.Rsc
 
             IRenderer renderer;
 
-            if (UseVulkan)
+            if (ConfigurationState.Instance.Graphics.GraphicsBackend == GraphicsBackend.Vulkan)
             {
-                throw new NotImplementedException();
+                renderer = new VulkanGraphicsDevice((instance, vk) => new SurfaceKHR((ulong)((VKRenderer)RendererWidget).CreateWindowSurface(instance.Handle)),
+                                                    VulkanHelper.GetRequiredInstanceExtensions);
             }
             else
             {
@@ -872,7 +868,7 @@ namespace Ryujinx.Rsc
 
         private RendererWidgetBase CreateRendererWidget()
         {
-            if (UseVulkan)
+            if (ConfigurationState.Instance.Graphics.GraphicsBackend == GraphicsBackend.Vulkan)
             {
                 return new VKRenderer(InputManager, ConfigurationState.Instance.Logger.GraphicsDebugLevel);
             }
@@ -943,8 +939,8 @@ namespace Ryujinx.Rsc
             UpdateColumns();
             UpdateGameTable();
 
-            Task.Run(RefreshFirmwareLabel);
-            Task.Run(HandleRelaunch);
+            RefreshFirmwareLabel();
+            HandleRelaunch();
 
             _actionMenu.Sensitive = false;
             _firmwareInstallFile.Sensitive = true;
@@ -1122,6 +1118,7 @@ namespace Ryujinx.Rsc
                 _gpuName.Text      = args.GpuName;
                 _dockedMode.Text   = args.DockedMode;
                 _aspectRatio.Text  = args.AspectRatio;
+                _gpuBackend.Text   = args.GpuBackend;
                 _volumeStatus.Text = GetVolumeLabelText(args.Volume);
 
                 if (args.VSyncEnabled)

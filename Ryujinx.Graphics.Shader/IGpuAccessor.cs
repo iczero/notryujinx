@@ -34,6 +34,21 @@ namespace Ryujinx.Graphics.Shader
         /// <returns>Span of the memory location</returns>
         ReadOnlySpan<ulong> GetCode(ulong address, int minimumSize);
 
+        AlphaTestOp QueryAlphaTestCompare()
+        {
+            return AlphaTestOp.Always;
+        }
+
+        float QueryAlphaTestReference()
+        {
+            return 0f;
+        }
+
+        AttributeType QueryAttributeType(int location)
+        {
+            return AttributeType.Float;
+        }
+
         /// <summary>
         /// Queries the binding number of a constant buffer.
         /// </summary>
@@ -183,6 +198,15 @@ namespace Ryujinx.Graphics.Shader
         }
 
         /// <summary>
+        /// Queries host GPU geometry shader passthrough support.
+        /// </summary>
+        /// <returns>True if the GPU and driver supports geometry shader passthrough, false otherwise</returns>
+        bool QueryHostSupportsGeometryShaderPassthrough()
+        {
+            return true;
+        }
+
+        /// <summary>
         /// Queries host support for readable images without a explicit format declaration on the shader.
         /// </summary>
         /// <returns>True if formatted image load is supported, false otherwise</returns>
@@ -214,6 +238,16 @@ namespace Ryujinx.Graphics.Shader
         /// </summary>
         /// <returns>True if the GPU and driver supports texture shadow LOD, false otherwise</returns>
         bool QueryHostSupportsTextureShadowLod()
+        {
+            return true;
+        }
+
+        float QueryPointSize()
+        {
+            return 1f;
+        }
+
+        bool QueryProgramPointSize()
         {
             return true;
         }
@@ -289,6 +323,11 @@ namespace Ryujinx.Graphics.Shader
         TextureFormat QueryTextureFormat(int handle, int cbufSlot = -1)
         {
             return TextureFormat.R8G8B8A8Unorm;
+        }
+
+        bool QueryTransformDepthMinusOneToOne()
+        {
+            return false;
         }
 
         /// <summary>

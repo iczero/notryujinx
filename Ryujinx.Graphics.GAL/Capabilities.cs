@@ -16,6 +16,7 @@ namespace Ryujinx.Graphics.GAL
         public readonly bool SupportsR4G4Format;
         public readonly bool SupportsFragmentShaderInterlock;
         public readonly bool SupportsFragmentShaderOrderingIntel;
+        public readonly bool SupportsGeometryShaderPassthrough;
         public readonly bool SupportsImageLoadFormatted;
         public readonly bool SupportsMismatchingViewFormat;
         public readonly bool SupportsNonConstantTextureOffset;
@@ -23,6 +24,11 @@ namespace Ryujinx.Graphics.GAL
         public readonly bool SupportsTextureShadowLod;
         public readonly bool SupportsViewportSwizzle;
         public readonly bool SupportsIndirectParameters;
+
+        public readonly uint MaximumUniformBuffersPerStage;
+        public readonly uint MaximumStorageBuffersPerStage;
+        public readonly uint MaximumTexturesPerStage;
+        public readonly uint MaximumImagesPerStage;
 
         public readonly int MaximumComputeSharedMemorySize;
         public readonly float MaximumSupportedAnisotropy;
@@ -39,6 +45,7 @@ namespace Ryujinx.Graphics.GAL
             bool supportsR4G4Format,
             bool supportsFragmentShaderInterlock,
             bool supportsFragmentShaderOrderingIntel,
+            bool supportsGeometryShaderPassthrough,
             bool supportsImageLoadFormatted,
             bool supportsMismatchingViewFormat,
             bool supportsNonConstantTextureOffset,
@@ -46,6 +53,10 @@ namespace Ryujinx.Graphics.GAL
             bool supportsTextureShadowLod,
             bool supportsViewportSwizzle,
             bool supportsIndirectParameters,
+            uint maximumUniformBuffersPerStage,
+            uint maximumStorageBuffersPerStage,
+            uint maximumTexturesPerStage,
+            uint maximumImagesPerStage,
             int maximumComputeSharedMemorySize,
             float maximumSupportedAnisotropy,
             int storageBufferOffsetAlignment)
@@ -60,6 +71,7 @@ namespace Ryujinx.Graphics.GAL
             SupportsR4G4Format = supportsR4G4Format;
             SupportsFragmentShaderInterlock = supportsFragmentShaderInterlock;
             SupportsFragmentShaderOrderingIntel = supportsFragmentShaderOrderingIntel;
+            SupportsGeometryShaderPassthrough = supportsGeometryShaderPassthrough;
             SupportsImageLoadFormatted = supportsImageLoadFormatted;
             SupportsMismatchingViewFormat = supportsMismatchingViewFormat;
             SupportsNonConstantTextureOffset = supportsNonConstantTextureOffset;
@@ -67,6 +79,10 @@ namespace Ryujinx.Graphics.GAL
             SupportsTextureShadowLod = supportsTextureShadowLod;
             SupportsViewportSwizzle = supportsViewportSwizzle;
             SupportsIndirectParameters = supportsIndirectParameters;
+            MaximumUniformBuffersPerStage = maximumUniformBuffersPerStage;
+            MaximumStorageBuffersPerStage = maximumStorageBuffersPerStage;
+            MaximumTexturesPerStage = maximumTexturesPerStage;
+            MaximumImagesPerStage = maximumImagesPerStage;
             MaximumComputeSharedMemorySize = maximumComputeSharedMemorySize;
             MaximumSupportedAnisotropy = maximumSupportedAnisotropy;
             StorageBufferOffsetAlignment = storageBufferOffsetAlignment;

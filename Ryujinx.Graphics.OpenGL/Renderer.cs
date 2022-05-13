@@ -87,6 +87,11 @@ namespace Ryujinx.Graphics.OpenGL
             Buffer.Delete(buffer);
         }
 
+        public HardwareInfo GetHardwareInfo()
+        {
+            return new HardwareInfo(GpuVendor, GpuRenderer);
+        }
+
         public ReadOnlySpan<byte> GetBufferData(BufferHandle buffer, int offset, int size)
         {
             return Buffer.GetData(this, buffer, offset, size);
@@ -105,6 +110,7 @@ namespace Ryujinx.Graphics.OpenGL
                 supportsR4G4Format: false,
                 supportsFragmentShaderInterlock: HwCapabilities.SupportsFragmentShaderInterlock,
                 supportsFragmentShaderOrderingIntel: HwCapabilities.SupportsFragmentShaderOrdering,
+                supportsGeometryShaderPassthrough: HwCapabilities.SupportsGeometryShaderPassthrough,
                 supportsImageLoadFormatted: HwCapabilities.SupportsImageLoadFormatted,
                 supportsMismatchingViewFormat: HwCapabilities.SupportsMismatchingViewFormat,
                 supportsNonConstantTextureOffset: HwCapabilities.SupportsNonConstantTextureOffset,
@@ -112,6 +118,10 @@ namespace Ryujinx.Graphics.OpenGL
                 supportsTextureShadowLod: HwCapabilities.SupportsTextureShadowLod,
                 supportsViewportSwizzle: HwCapabilities.SupportsViewportSwizzle,
                 supportsIndirectParameters: HwCapabilities.SupportsIndirectParameters,
+                maximumUniformBuffersPerStage: 13, // TODO: Avoid hardcoding those limits here and get from driver?
+                maximumStorageBuffersPerStage: 16,
+                maximumTexturesPerStage: 32,
+                maximumImagesPerStage: 8,
                 maximumComputeSharedMemorySize: HwCapabilities.MaximumComputeSharedMemorySize,
                 maximumSupportedAnisotropy: HwCapabilities.MaximumSupportedAnisotropy,
                 storageBufferOffsetAlignment: HwCapabilities.StorageBufferOffsetAlignment);
