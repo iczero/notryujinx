@@ -1,6 +1,6 @@
 ﻿using Ryujinx.Rsc.ViewModels;
 using Ryujinx.Common;
-using Ryujinx.Ui.Common.Configuration;
+using Ryujinx.Rsc.Common.Configuration;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;

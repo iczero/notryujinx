@@ -4,13 +4,13 @@ using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Configuration.Hid.Controller;
 using Ryujinx.Common.Configuration.Hid.Keyboard;
 using Ryujinx.Common.Logging;
-using Ryujinx.Ui.Common.Configuration.System;
-using Ryujinx.Ui.Common.Configuration.Ui;
-using Ryujinx.Ui.Common.Helper;
+using Ryujinx.Rsc.Common.Configuration.System;
+using Ryujinx.Rsc.Common.Configuration.Ui;
+using Ryujinx.Rsc.Common.Helper;
 using System;
 using System.Collections.Generic;
 
-namespace Ryujinx.Ui.Common.Configuration
+namespace Ryujinx.Rsc.Common.Configuration
 {
     public class ConfigurationState
     {

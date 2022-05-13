@@ -1,4 +1,4 @@
-using Ryujinx.Ui.App.Common;
+using Ryujinx.Rsc.Library.Common;
 using System.Collections.Generic;
 
 namespace Ryujinx.Rsc.Models.Generic

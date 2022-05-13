@@ -1,7 +1,7 @@
 ﻿using SPB.Graphics;
 using System;
 
-namespace Ryujinx.Ui
+namespace Ryujinx.Rsc
 {
     public class OpenToolkitBindingsContext : OpenTK.IBindingsContext
     {

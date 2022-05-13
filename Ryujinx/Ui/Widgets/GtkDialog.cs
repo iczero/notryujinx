@@ -3,7 +3,7 @@ using System.Reflection;
 using Ryujinx.Common.Logging;
 using System.Collections.Generic;
 
-namespace Ryujinx.Ui.Widgets
+namespace Ryujinx.Rsc.Widgets
 {
     internal class GtkDialog : MessageDialog
     {
@@ -13,7 +13,7 @@ namespace Ryujinx.Ui.Widgets
             : base(null, DialogFlags.Modal, messageType, buttonsType, null)
         {
             Title              = title;
-            Icon               = new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Ui.Resources.Logo_Ryujinx.png");
+            Icon               = new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Rsc.Resources.Logo_Ryujinx.png");
             Text               = mainText;
             SecondaryText      = secondaryText;
             WindowPosition     = WindowPosition.Center;

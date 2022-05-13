@@ -9,7 +9,7 @@ using SPB.Windowing;
 using System;
 using System.Runtime.InteropServices;
 
-namespace Ryujinx.Ui
+namespace Ryujinx.Rsc
 {
     public class VKRenderer : RendererWidgetBase
     {

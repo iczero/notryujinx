@@ -25,7 +25,7 @@ using System.Text.Json;
 using JsonHelper = Ryujinx.Common.Utilities.JsonHelper;
 using Path = System.IO.Path;
 
-namespace Ryujinx.Ui.App
+namespace Ryujinx.Rsc.Library
 {
     public class ApplicationLibrary
     {
@@ -45,11 +45,11 @@ namespace Ryujinx.Ui.App
         {
             _virtualFileSystem = virtualFileSystem;
 
-            _nspIcon = GetResourceBytes("Ryujinx.Ui.Resources.Icon_NSP.png");
-            _xciIcon = GetResourceBytes("Ryujinx.Ui.Resources.Icon_XCI.png");
-            _ncaIcon = GetResourceBytes("Ryujinx.Ui.Resources.Icon_NCA.png");
-            _nroIcon = GetResourceBytes("Ryujinx.Ui.Resources.Icon_NRO.png");
-            _nsoIcon = GetResourceBytes("Ryujinx.Ui.Resources.Icon_NSO.png");
+            _nspIcon = GetResourceBytes("Ryujinx.Rsc.Resources.Icon_NSP.png");
+            _xciIcon = GetResourceBytes("Ryujinx.Rsc.Resources.Icon_XCI.png");
+            _ncaIcon = GetResourceBytes("Ryujinx.Rsc.Resources.Icon_NCA.png");
+            _nroIcon = GetResourceBytes("Ryujinx.Rsc.Resources.Icon_NRO.png");
+            _nsoIcon = GetResourceBytes("Ryujinx.Rsc.Resources.Icon_NSO.png");
         }
 
         private byte[] GetResourceBytes(string resourceName)

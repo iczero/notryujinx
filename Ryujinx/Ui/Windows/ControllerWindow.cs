@@ -7,7 +7,7 @@ using Ryujinx.Common.Utilities;
 using Ryujinx.Configuration;
 using Ryujinx.Input;
 using Ryujinx.Input.GTK3;
-using Ryujinx.Ui.Widgets;
+using Ryujinx.Rsc.Widgets;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,7 +24,7 @@ using Ryujinx.Common.Configuration.Hid.Controller.Motion;
 using Ryujinx.Common.Logging;
 using Ryujinx.Input.Assigner;
 
-namespace Ryujinx.Ui.Windows
+namespace Ryujinx.Rsc.Windows
 {
     public class ControllerWindow : Window
     {
@@ -117,7 +117,7 @@ namespace Ryujinx.Ui.Windows
         private bool _mousePressed;
         private bool _middleMousePressed;
 
-        public ControllerWindow(MainWindow mainWindow, PlayerIndex controllerId) : this(mainWindow, new Builder("Ryujinx.Ui.Windows.ControllerWindow.glade"), controllerId) { }
+        public ControllerWindow(MainWindow mainWindow, PlayerIndex controllerId) : this(mainWindow, new Builder("Ryujinx.Rsc.Windows.ControllerWindow.glade"), controllerId) { }
 
         private ControllerWindow(MainWindow mainWindow, Builder builder, PlayerIndex controllerId) : base(builder.GetObject("_controllerWin").Handle)
         {
@@ -127,7 +127,7 @@ namespace Ryujinx.Ui.Windows
             // NOTE: To get input in this window, we need to bind a custom keyboard driver instead of using the InputManager one as the main window isn't focused...
             _gtk3KeyboardDriver = new GTK3KeyboardDriver(this);
 
-            Icon = new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Ui.Resources.Logo_Ryujinx.png");
+            Icon = new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Rsc.Resources.Logo_Ryujinx.png");
 
             builder.Autoconnect(this);
 
@@ -381,10 +381,10 @@ namespace Ryujinx.Ui.Windows
 
             _controllerImage.Pixbuf = _controllerType.ActiveId switch
             {
-                "ProController" => new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Ui.Resources.Controller_ProCon.svg", 400, 400),
-                "JoyconLeft"    => new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Ui.Resources.Controller_JoyConLeft.svg", 400, 500),
-                "JoyconRight"   => new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Ui.Resources.Controller_JoyConRight.svg", 400, 500),
-                _               => new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Ui.Resources.Controller_JoyConPair.svg", 400, 500),
+                "ProController" => new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Rsc.Resources.Controller_ProCon.svg", 400, 400),
+                "JoyconLeft"    => new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Rsc.Resources.Controller_JoyConLeft.svg", 400, 500),
+                "JoyconRight"   => new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Rsc.Resources.Controller_JoyConRight.svg", 400, 500),
+                _               => new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Rsc.Resources.Controller_JoyConPair.svg", 400, 500),
             };
         }
 

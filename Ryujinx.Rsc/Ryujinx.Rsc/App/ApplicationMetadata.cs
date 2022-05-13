@@ -1,4 +1,4 @@
-﻿namespace Ryujinx.Ui.App.Common
+﻿namespace Ryujinx.Rsc.Library.Common
 {
     public class ApplicationMetadata
     {

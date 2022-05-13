@@ -9,6 +9,8 @@ namespace Ryujinx.Rsc.Android
     {
         protected override void OnResume()
         {
+            App.PreviewerDetached = true;
+            
             base.OnResume();
 
             StartActivity(new Intent(Application.Context, typeof(MainActivity)));

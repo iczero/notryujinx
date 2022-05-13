@@ -2,12 +2,12 @@ using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.Utilities;
-using Ryujinx.Ui.Common.Configuration.System;
-using Ryujinx.Ui.Common.Configuration.Ui;
+using Ryujinx.Rsc.Common.Configuration.System;
+using Ryujinx.Rsc.Common.Configuration.Ui;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Ryujinx.Ui.Common.Configuration
+namespace Ryujinx.Rsc.Common.Configuration
 {
     public class ConfigurationFileFormat
     {

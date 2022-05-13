@@ -2,7 +2,7 @@
 using System;
 using System.Diagnostics;
 
-namespace Ryujinx.Ui.Common.Helper
+namespace Ryujinx.Rsc.Common.Helper
 {
     public static class OpenHelper
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ryujinx.Ui.App.Common
+namespace Ryujinx.Rsc.Library.Common
 {
     public class ApplicationCountUpdatedEventArgs : EventArgs
     {

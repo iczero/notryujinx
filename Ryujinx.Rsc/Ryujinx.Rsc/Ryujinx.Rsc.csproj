@@ -13,6 +13,21 @@
     <AvaloniaResource Include="Assets\**" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="Assets\Images\Icon_NCA.png" />
+    <None Remove="Assets\Images\Icon_NRO.png" />
+    <None Remove="Assets\Images\Icon_NSO.png" />
+    <None Remove="Assets\Images\Icon_NSP.png" />
+    <None Remove="Assets\Images\Icon_XCI.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Images\Icon_NCA.png" />
+    <EmbeddedResource Include="Assets\Images\Icon_NRO.png" />
+    <EmbeddedResource Include="Assets\Images\Icon_NSO.png" />
+    <EmbeddedResource Include="Assets\Images\Icon_NSP.png" />
+    <EmbeddedResource Include="Assets\Images\Icon_XCI.png" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\Ryujinx.Input\Ryujinx.Input.csproj" />
     <ProjectReference Include="..\..\Ryujinx.Input.SDL2\Ryujinx.Input.SDL2.csproj" />
     <ProjectReference Include="..\..\Ryujinx.Audio.Backends.OpenAL\Ryujinx.Audio.Backends.OpenAL.csproj" />
@@ -28,7 +43,12 @@
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
     <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.999-cibuild0020345-beta" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.999-cibuild0020345-beta" />
+    <PackageReference Include="Avalonia.Skia" Version="0.10.999-cibuild0020345-beta" />
     <PackageReference Include="jp2masa.Avalonia.Flexbox" Version="0.2.0" />
-	<PackageReference Include="XamlNameReferenceGenerator" Version="1.3.4" />
+    <PackageReference Include="Silk.NET.Vulkan" Version="2.10.1" />
+    <PackageReference Include="SPB" Version="0.0.4-build17" />
+	  <PackageReference Include="XamlNameReferenceGenerator" Version="1.3.4" />
+    <PackageReference Include="Silk.NET.Vulkan.Extensions.KHR" Version="2.10.1" />
+    <PackageReference Include="Silk.NET.Vulkan.Extensions.EXT" Version="2.10.1" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,4 @@
-﻿namespace Ryujinx.Ui.Common.Configuration
+﻿namespace Ryujinx.Rsc.Common.Configuration
 {
     public enum AudioBackend
     {

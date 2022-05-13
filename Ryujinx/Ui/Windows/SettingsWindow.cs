@@ -10,8 +10,8 @@ using Ryujinx.Configuration;
 using Ryujinx.Configuration.System;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.HOS.Services.Time.TimeZone;
-using Ryujinx.Ui.Helper;
-using Ryujinx.Ui.Widgets;
+using Ryujinx.Rsc.Helper;
+using Ryujinx.Rsc.Widgets;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 using GUI = Gtk.Builder.ObjectAttribute;
 
-namespace Ryujinx.Ui.Windows
+namespace Ryujinx.Rsc.Windows
 {
     public class SettingsWindow : Window
     {
@@ -105,11 +105,11 @@ namespace Ryujinx.Ui.Windows
 
 #pragma warning restore CS0649, IDE0044
 
-        public SettingsWindow(MainWindow parent, VirtualFileSystem virtualFileSystem, ContentManager contentManager) : this(parent, new Builder("Ryujinx.Ui.Windows.SettingsWindow.glade"), virtualFileSystem, contentManager) { }
+        public SettingsWindow(MainWindow parent, VirtualFileSystem virtualFileSystem, ContentManager contentManager) : this(parent, new Builder("Ryujinx.Rsc.Windows.SettingsWindow.glade"), virtualFileSystem, contentManager) { }
 
         private SettingsWindow(MainWindow parent, Builder builder, VirtualFileSystem virtualFileSystem, ContentManager contentManager) : base(builder.GetObject("_settingsWin").Handle)
         {
-            Icon = new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Ui.Resources.Logo_Ryujinx.png");
+            Icon = new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Rsc.Resources.Logo_Ryujinx.png");
 
             _parent = parent;
 

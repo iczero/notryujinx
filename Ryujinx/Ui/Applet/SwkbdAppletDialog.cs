@@ -1,7 +1,7 @@
 using Gtk;
 using System;
 
-namespace Ryujinx.Ui.Applet
+namespace Ryujinx.Rsc.Librarylet
 {
     public class SwkbdAppletDialog : MessageDialog
     {

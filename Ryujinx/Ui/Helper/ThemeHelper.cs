@@ -3,7 +3,7 @@ using Ryujinx.Common.Logging;
 using Ryujinx.Configuration;
 using System.IO;
 
-namespace Ryujinx.Ui.Helper
+namespace Ryujinx.Rsc.Helper
 {
     static class ThemeHelper
     {

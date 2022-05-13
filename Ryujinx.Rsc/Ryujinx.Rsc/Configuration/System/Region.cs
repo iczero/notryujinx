@@ -1,4 +1,4 @@
-﻿namespace Ryujinx.Ui.Common.Configuration.System
+﻿namespace Ryujinx.Rsc.Common.Configuration.System
 {
     public enum Region
     {

@@ -2,7 +2,7 @@
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Utilities;
-using Ryujinx.Ui.Widgets;
+using Ryujinx.Rsc.Widgets;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +13,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace Ryujinx.Ui.Windows
+namespace Ryujinx.Rsc.Windows
 {
     public partial class AmiiboWindow : Window
     {
@@ -97,7 +97,7 @@ namespace Ryujinx.Ui.Windows
 
         public AmiiboWindow() : base($"Ryujinx {Program.Version} - Amiibo")
         {
-            Icon = new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Ui.Resources.Logo_Ryujinx.png");
+            Icon = new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Rsc.Resources.Logo_Ryujinx.png");
 
             InitializeComponent();
 

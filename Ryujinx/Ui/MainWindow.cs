@@ -28,11 +28,11 @@ using Ryujinx.Input.GTK3;
 using Ryujinx.Input.HLE;
 using Ryujinx.Input.SDL2;
 using Ryujinx.Modules;
-using Ryujinx.Ui.App;
-using Ryujinx.Ui.Applet;
-using Ryujinx.Ui.Helper;
-using Ryujinx.Ui.Widgets;
-using Ryujinx.Ui.Windows;
+using Ryujinx.Rsc.Library;
+using Ryujinx.Rsc.Librarylet;
+using Ryujinx.Rsc.Helper;
+using Ryujinx.Rsc.Widgets;
+using Ryujinx.Rsc.Windows;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -44,7 +44,7 @@ using GUI = Gtk.Builder.ObjectAttribute;
 using PtcLoadingState = ARMeilleure.Translation.PTC.PtcLoadingState;
 using ShaderCacheLoadingState = Ryujinx.Graphics.Gpu.Shader.ShaderCacheState;
 
-namespace Ryujinx.Ui
+namespace Ryujinx.Rsc
 {
     public class MainWindow : Window
     {
@@ -136,7 +136,7 @@ namespace Ryujinx.Ui
 
 #pragma warning restore CS0649, IDE0044, CS0169
 
-        public MainWindow() : this(new Builder("Ryujinx.Ui.MainWindow.glade")) { }
+        public MainWindow() : this(new Builder("Ryujinx.Rsc.MainWindow.glade")) { }
 
         private MainWindow(Builder builder) : base(builder.GetObject("_mainWin").Handle)
         {
@@ -152,7 +152,7 @@ namespace Ryujinx.Ui
             DefaultWidth  = monitorWidth  < 1280 ? monitorWidth  : 1280;
             DefaultHeight = monitorHeight < 760  ? monitorHeight : 760;
 
-            Icon  = new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Ui.Resources.Logo_Ryujinx.png");
+            Icon  = new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Rsc.Resources.Logo_Ryujinx.png");
             Title = $"Ryujinx {Program.Version}";
 
             // Hide emulation context status bar.

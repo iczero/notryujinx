@@ -1,10 +1,10 @@
 ﻿using Ryujinx.Common.Logging;
 using Ryujinx.HLE.FileSystem;
-using Ryujinx.Ui.Widgets;
+using Ryujinx.Rsc.Widgets;
 using System;
 using System.IO;
 
-namespace Ryujinx.Ui.Helper
+namespace Ryujinx.Rsc.Helper
 {
     /// <summary>
     /// Ensure installation validity

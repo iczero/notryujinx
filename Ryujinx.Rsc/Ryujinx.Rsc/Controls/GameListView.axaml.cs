@@ -5,7 +5,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using LibHac.Common;
 using Ryujinx.Rsc.ViewModels;
-using Ryujinx.Ui.App.Common;
+using Ryujinx.Rsc.Library.Common;
 using System;
 
 namespace Ryujinx.Rsc.Controls

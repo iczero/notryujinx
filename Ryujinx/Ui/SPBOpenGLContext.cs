@@ -7,7 +7,7 @@ using SPB.Graphics.OpenGL;
 using SPB.Platform;
 using SPB.Windowing;
 
-namespace Ryujinx.Ui
+namespace Ryujinx.Rsc
 {
     class SPBOpenGLContext : IOpenGLContext
     {

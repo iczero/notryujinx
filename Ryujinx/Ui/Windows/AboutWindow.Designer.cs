@@ -2,7 +2,7 @@
 using Pango;
 using System.Reflection;
 
-namespace Ryujinx.Ui.Windows
+namespace Ryujinx.Rsc.Windows
 {
     public partial class AboutWindow : Window
     {
@@ -87,7 +87,7 @@ namespace Ryujinx.Ui.Windows
             //
             // _ryujinxLogo
             //
-            _ryujinxLogo = new Image(new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Ui.Resources.Logo_Ryujinx.png", 100, 100))
+            _ryujinxLogo = new Image(new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Rsc.Resources.Logo_Ryujinx.png", 100, 100))
             {
                 Margin     = 10,
                 MarginLeft = 15
@@ -205,7 +205,7 @@ namespace Ryujinx.Ui.Windows
             //
             // _patreonLogo
             //
-            _patreonLogo = new Image(new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Ui.Resources.Logo_Patreon.png", 30, 30))
+            _patreonLogo = new Image(new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Rsc.Resources.Logo_Patreon.png", 30, 30))
             {
                 Margin = 10
             };
@@ -235,7 +235,7 @@ namespace Ryujinx.Ui.Windows
             //
             // _githubLogo
             //
-            _githubLogo = new Image(new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Ui.Resources.Logo_GitHub.png", 30, 30))
+            _githubLogo = new Image(new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Rsc.Resources.Logo_GitHub.png", 30, 30))
             {
                 Margin = 10
             };
@@ -265,7 +265,7 @@ namespace Ryujinx.Ui.Windows
             //
             // _discordLogo
             //
-            _discordLogo = new Image(new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Ui.Resources.Logo_Discord.png", 30, 30))
+            _discordLogo = new Image(new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Rsc.Resources.Logo_Discord.png", 30, 30))
             {
                 Margin = 10
             };
@@ -295,7 +295,7 @@ namespace Ryujinx.Ui.Windows
             //
             // _twitterLogo
             //
-            _twitterLogo = new Image(new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Ui.Resources.Logo_Twitter.png", 30, 30))
+            _twitterLogo = new Image(new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Rsc.Resources.Logo_Twitter.png", 30, 30))
             {
                 Margin = 10
             };

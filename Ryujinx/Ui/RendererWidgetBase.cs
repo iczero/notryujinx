@@ -11,7 +11,7 @@ using Ryujinx.Graphics.GAL.Multithreading;
 using Ryujinx.Input;
 using Ryujinx.Input.GTK3;
 using Ryujinx.Input.HLE;
-using Ryujinx.Ui.Widgets;
+using Ryujinx.Rsc.Widgets;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
@@ -22,7 +22,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Ryujinx.Ui
+namespace Ryujinx.Rsc
 {
     using Image = SixLabors.ImageSharp.Image;
     using Key = Input.Key;

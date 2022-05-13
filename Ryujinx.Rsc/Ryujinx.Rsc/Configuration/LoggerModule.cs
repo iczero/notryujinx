@@ -2,7 +2,7 @@
 using Ryujinx.Common.Logging;
 using System;
 
-namespace Ryujinx.Ui.Common.Configuration
+namespace Ryujinx.Rsc.Common.Configuration
 {
     public static class LoggerModule
     {

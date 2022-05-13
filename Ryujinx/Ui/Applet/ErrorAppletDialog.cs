@@ -1,13 +1,13 @@
 ﻿using Gtk;
 using System.Reflection;
 
-namespace Ryujinx.Ui.Applet
+namespace Ryujinx.Rsc.Librarylet
 {
     internal class ErrorAppletDialog : MessageDialog
     {
         public ErrorAppletDialog(Window parentWindow, DialogFlags dialogFlags, MessageType messageType, string[] buttons) : base(parentWindow, dialogFlags, messageType, ButtonsType.None, null)
         {
-            Icon = new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Ui.Resources.Logo_Ryujinx.png");
+            Icon = new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Rsc.Resources.Logo_Ryujinx.png");
 
             int responseId = 0;
 

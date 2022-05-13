@@ -9,7 +9,7 @@ using System.Linq;
 using GUI        = Gtk.Builder.ObjectAttribute;
 using JsonHelper = Ryujinx.Common.Utilities.JsonHelper;
 
-namespace Ryujinx.Ui.Windows
+namespace Ryujinx.Rsc.Windows
 {
     public class CheatWindow : Window
     {
@@ -22,7 +22,7 @@ namespace Ryujinx.Ui.Windows
         [GUI] Button   _saveButton;
 #pragma warning restore CS0649, IDE0044
 
-        public CheatWindow(VirtualFileSystem virtualFileSystem, ulong titleId, string titleName) : this(new Builder("Ryujinx.Ui.Windows.CheatWindow.glade"), virtualFileSystem, titleId, titleName) { }
+        public CheatWindow(VirtualFileSystem virtualFileSystem, ulong titleId, string titleName) : this(new Builder("Ryujinx.Rsc.Windows.CheatWindow.glade"), virtualFileSystem, titleId, titleName) { }
 
         private CheatWindow(Builder builder, VirtualFileSystem virtualFileSystem, ulong titleId, string titleName) : base(builder.GetObject("_cheatWindow").Handle)
         {

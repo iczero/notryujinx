@@ -19,7 +19,7 @@ using System.Reflection;
 
 using Image = SixLabors.ImageSharp.Image;
 
-namespace Ryujinx.Ui.Windows
+namespace Ryujinx.Rsc.Windows
 {
     public class AvatarWindow : Window
     {
@@ -35,7 +35,7 @@ namespace Ryujinx.Ui.Windows
 
         public AvatarWindow() : base($"Ryujinx {Program.Version} - Manage Accounts - Avatar")
         {
-            Icon = new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Ui.Resources.Logo_Ryujinx.png");
+            Icon = new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Rsc.Resources.Logo_Ryujinx.png");
 
             CanFocus  = false;
             Resizable = false;

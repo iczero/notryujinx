@@ -1,18 +1,18 @@
 ﻿using Gtk;
 using Ryujinx.Common.Utilities;
-using Ryujinx.Ui.Helper;
+using Ryujinx.Rsc.Helper;
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Ryujinx.Ui.Windows
+namespace Ryujinx.Rsc.Windows
 {
     public partial class AboutWindow : Window
     {
         public AboutWindow() : base($"Ryujinx {Program.Version} - About")
         {
-            Icon = new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Ui.Resources.Logo_Ryujinx.png");
+            Icon = new Gdk.Pixbuf(Assembly.GetExecutingAssembly(), "Ryujinx.Rsc.Resources.Logo_Ryujinx.png");
             InitializeComponent();
 
             _ = DownloadPatronsJson();

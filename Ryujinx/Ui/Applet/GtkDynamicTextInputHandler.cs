@@ -1,10 +1,10 @@
 using Gtk;
 using Ryujinx.HLE.Ui;
 using Ryujinx.Input.GTK3;
-using Ryujinx.Ui.Widgets;
+using Ryujinx.Rsc.Widgets;
 using System.Threading;
 
-namespace Ryujinx.Ui.Applet
+namespace Ryujinx.Rsc.Librarylet
 {
     /// <summary>
     /// Class that forwards key events to a GTK Entry so they can be processed into text.

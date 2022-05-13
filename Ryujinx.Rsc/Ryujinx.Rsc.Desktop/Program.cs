@@ -1,5 +1,6 @@
 ﻿using System;
 using Avalonia;
+using Ryujinx.Rsc.Backend;
 
 namespace Ryujinx.Rsc.Desktop
 {
@@ -9,13 +10,23 @@ namespace Ryujinx.Rsc.Desktop
         // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
         // yet and stuff might break.
         [STAThread]
-        public static void Main(string[] args) => BuildAvaloniaApp()
-            .StartWithClassicDesktopLifetime(args);
+        public static void Main(string[] args)
+        {
+            App.PreviewerDetached = true;
+            BuildAvaloniaApp()
+                .StartWithClassicDesktopLifetime(args);
+        }
+
 
         // Avalonia configuration, don't remove; also used by visual designer.
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
+                .UseSkia()
+                .With(new SkiaOptions()
+                {
+                    CustomGpuFactory = SkiaGpuFactory.CreateVulkanGpu
+                })
                 .LogToTrace();
     }
 }

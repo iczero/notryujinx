@@ -8,7 +8,7 @@ using LibHac.Tools.FsSystem;
 using LibHac.Tools.FsSystem.NcaUtils;
 using Ryujinx.Common.Configuration;
 using Ryujinx.HLE.FileSystem;
-using Ryujinx.Ui.Widgets;
+using Ryujinx.Rsc.Widgets;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,7 +17,7 @@ using System.Text;
 using GUI        = Gtk.Builder.ObjectAttribute;
 using JsonHelper = Ryujinx.Common.Utilities.JsonHelper;
 
-namespace Ryujinx.Ui.Windows
+namespace Ryujinx.Rsc.Windows
 {
     public class DlcWindow : Window
     {
@@ -32,7 +32,7 @@ namespace Ryujinx.Ui.Windows
         [GUI] TreeSelection _dlcTreeSelection;
 #pragma warning restore CS0649, IDE0044
 
-        public DlcWindow(VirtualFileSystem virtualFileSystem, string titleId, string titleName) : this(new Builder("Ryujinx.Ui.Windows.DlcWindow.glade"), virtualFileSystem, titleId, titleName) { }
+        public DlcWindow(VirtualFileSystem virtualFileSystem, string titleId, string titleName) : this(new Builder("Ryujinx.Rsc.Windows.DlcWindow.glade"), virtualFileSystem, titleId, titleName) { }
 
         private DlcWindow(Builder builder, VirtualFileSystem virtualFileSystem, string titleId, string titleName) : base(builder.GetObject("_dlcWindow").Handle)
         {

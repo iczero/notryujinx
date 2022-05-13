@@ -1,4 +1,4 @@
-﻿namespace Ryujinx.Ui.Widgets
+﻿namespace Ryujinx.Rsc.Widgets
 {
     /// <summary>
     /// Represent a common error that could be reported to the user by the emulator.

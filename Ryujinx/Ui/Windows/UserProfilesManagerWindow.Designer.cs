@@ -1,7 +1,7 @@
 ﻿using Gtk;
 using Pango;
 
-namespace Ryujinx.Ui.Windows
+namespace Ryujinx.Rsc.Windows
 {
     public partial class UserProfilesManagerWindow : Window
     {

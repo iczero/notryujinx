@@ -1,5 +1,5 @@
 using Ryujinx.Ava.Common.Locale;
-using Ryujinx.Ui.App.Common;
+using Ryujinx.Rsc.Library.Common;
 using System;
 using System.Collections.Generic;
 

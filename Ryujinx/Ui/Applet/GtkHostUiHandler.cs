@@ -2,12 +2,12 @@ using Gtk;
 using Ryujinx.HLE.HOS.Applets;
 using Ryujinx.HLE.HOS.Services.Am.AppletOE.ApplicationProxyService.ApplicationProxy.Types;
 using Ryujinx.HLE.Ui;
-using Ryujinx.Ui.Widgets;
+using Ryujinx.Rsc.Widgets;
 using System;
 using System.Threading;
 using Action = System.Action;
 
-namespace Ryujinx.Ui.Applet
+namespace Ryujinx.Rsc.Librarylet
 {
     internal class GtkHostUiHandler : IHostUiHandler
     {

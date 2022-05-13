@@ -9,7 +9,7 @@ using LibHac.Tools.FsSystem.NcaUtils;
 using Ryujinx.Common.Configuration;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.HOS;
-using Ryujinx.Ui.Widgets;
+using Ryujinx.Rsc.Widgets;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,7 +19,7 @@ using System.Text;
 using GUI        = Gtk.Builder.ObjectAttribute;
 using JsonHelper = Ryujinx.Common.Utilities.JsonHelper;
 
-namespace Ryujinx.Ui.Windows
+namespace Ryujinx.Rsc.Windows
 {
     public class TitleUpdateWindow : Window
     {
@@ -38,7 +38,7 @@ namespace Ryujinx.Ui.Windows
         [GUI] RadioButton _noUpdateRadioButton;
 #pragma warning restore CS0649, IDE0044
 
-        public TitleUpdateWindow(MainWindow parent, VirtualFileSystem virtualFileSystem, string titleId, string titleName) : this(new Builder("Ryujinx.Ui.Windows.TitleUpdateWindow.glade"), parent, virtualFileSystem, titleId, titleName) { }
+        public TitleUpdateWindow(MainWindow parent, VirtualFileSystem virtualFileSystem, string titleId, string titleName) : this(new Builder("Ryujinx.Rsc.Windows.TitleUpdateWindow.glade"), parent, virtualFileSystem, titleId, titleName) { }
 
         private TitleUpdateWindow(Builder builder, MainWindow parent, VirtualFileSystem virtualFileSystem, string titleId, string titleName) : base(builder.GetObject("_titleUpdateWindow").Handle)
         {
