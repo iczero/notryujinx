@@ -5,7 +5,7 @@ using Avalonia.Platform;
 using Avalonia.Rendering.SceneGraph;
 using Avalonia.Skia;
 using Ryujinx.Rsc.Backend.Vulkan;
-using Ryujinx.Ava.Vulkan;
+using Ryujinx.Rsc.Vulkan;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Graphics.Vulkan;
 using Silk.NET.Vulkan;
@@ -64,16 +64,6 @@ namespace Ryujinx.Rsc.Controls
             base.Resized(rect);
 
             _vkDrawOperation = new VulkanDrawOperation(this);
-        }
-
-        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
-        {
-            base.OnDetachedFromVisualTree(e);
-        }
-
-        protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
-        {
-            base.OnAttachedToVisualTree(e);
         }
 
         internal override bool Present(object image)

@@ -1,6 +1,6 @@
 using Silk.NET.Vulkan;
 
-namespace Ryujinx.Ava.Vulkan
+namespace Ryujinx.Rsc.Vulkan
 {
     internal static class VulkanMemoryHelper
     {

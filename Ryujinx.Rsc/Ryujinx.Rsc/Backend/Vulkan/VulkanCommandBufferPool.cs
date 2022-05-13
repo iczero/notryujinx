@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Silk.NET.Vulkan;
 
-namespace Ryujinx.Ava.Vulkan
+namespace Ryujinx.Rsc.Vulkan
 {
     public class VulkanCommandBufferPool : IDisposable
     {

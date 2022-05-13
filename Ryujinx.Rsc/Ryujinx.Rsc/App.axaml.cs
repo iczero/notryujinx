@@ -18,6 +18,11 @@ namespace Ryujinx.Rsc
         
         public override void Initialize()
         {
+            AvaloniaXamlLoader.Load(this);
+        }
+
+        public static void LoadConfiguration()
+        {
             if (PreviewerDetached)
             {
                 var basePath = OperatingSystem.IsAndroid() ? System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) : null;
@@ -26,6 +31,10 @@ namespace Ryujinx.Rsc
 
                 // Initialize the configuration.
                 ConfigurationState.Initialize();
+
+                // Initialize the logger system.
+                LoggerModule.Initialize();
+
                 string localConfigurationPath   = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Config.json");
                 string appDataConfigurationPath = Path.Combine(AppDataManager.BaseDirPath,            "Config.json");
 
@@ -63,10 +72,9 @@ namespace Ryujinx.Rsc
                     ConfigurationState.Instance.Ui.GameDirs.Value.Add(GameDirectory);
                 }
             }
-            AvaloniaXamlLoader.Load(this);
         }
 
-        public string ConfigurationPath { get; set; }
+        public static string ConfigurationPath { get; set; }
 
         public override void OnFrameworkInitializationCompleted()
         {

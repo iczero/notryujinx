@@ -1,6 +1,6 @@
 using Avalonia;
 using Avalonia.Skia;
-using Ryujinx.Ava.Vulkan;
+using Ryujinx.Rsc.Vulkan;
 using Ryujinx.Rsc.Backend.Vulkan;
 
 

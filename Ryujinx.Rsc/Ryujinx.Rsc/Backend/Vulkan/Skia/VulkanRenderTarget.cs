@@ -1,8 +1,8 @@
 using System;
 using System.Threading;
 using Avalonia.Skia;
-using Ryujinx.Ava.Vulkan;
-using Ryujinx.Ava.Vulkan.Surfaces;
+using Ryujinx.Rsc.Vulkan;
+using Ryujinx.Rsc.Vulkan.Surfaces;
 using SkiaSharp;
 
 namespace Ryujinx.Rsc.Backend.Vulkan

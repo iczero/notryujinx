@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Platform;
 using Avalonia.Skia;
-using Ryujinx.Ava.Vulkan;
-using Ryujinx.Ava.Vulkan.Surfaces;
+using Ryujinx.Rsc.Vulkan;
+using Ryujinx.Rsc.Vulkan.Surfaces;
 using Silk.NET.Vulkan;
 using SkiaSharp;
 

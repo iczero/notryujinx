@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Silk.NET.Vulkan;
 
-namespace Ryujinx.Ava.Vulkan
+namespace Ryujinx.Rsc.Vulkan
 {
     public class VulkanImage : IDisposable
     {

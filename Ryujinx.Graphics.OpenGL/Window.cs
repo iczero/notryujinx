@@ -23,7 +23,7 @@ namespace Ryujinx.Graphics.OpenGL
             _renderer = renderer;
         }
 
-        public void Present(ITexture texture, ImageCrop crop, Action swapBuffersCallback)
+        public void Present(ITexture texture, ImageCrop crop, Action<object> swapBuffersCallback)
         {
             GL.Disable(EnableCap.FramebufferSrgb);
 
@@ -41,7 +41,7 @@ namespace Ryujinx.Graphics.OpenGL
             _height = height;
         }
 
-        private void CopyTextureToFrameBufferRGB(int drawFramebuffer, int readFramebuffer, TextureView view, ImageCrop crop, Action swapBuffersCallback)
+        private void CopyTextureToFrameBufferRGB(int drawFramebuffer, int readFramebuffer, TextureView view, ImageCrop crop, Action<object> swapBuffersCallback)
         {
             (int oldDrawFramebufferHandle, int oldReadFramebufferHandle) = ((Pipeline)_renderer.Pipeline).GetBoundFramebuffers();
 
@@ -145,7 +145,7 @@ namespace Ryujinx.Graphics.OpenGL
             GL.Viewport(0, 0, _width, _height);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, drawFramebuffer);
 
-            swapBuffersCallback();
+            swapBuffersCallback(0);
 
             GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, oldReadFramebufferHandle);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, oldDrawFramebufferHandle);

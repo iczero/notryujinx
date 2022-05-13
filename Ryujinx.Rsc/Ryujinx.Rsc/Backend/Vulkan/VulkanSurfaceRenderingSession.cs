@@ -1,9 +1,9 @@
 using System;
 using Avalonia;
-using Ryujinx.Ava.Vulkan.Surfaces;
+using Ryujinx.Rsc.Vulkan.Surfaces;
 using Silk.NET.Vulkan;
 
-namespace Ryujinx.Ava.Vulkan
+namespace Ryujinx.Rsc.Vulkan
 {
     public class VulkanSurfaceRenderingSession : IDisposable
     {

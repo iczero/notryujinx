@@ -1,10 +1,10 @@
 using System;
 using Avalonia;
-using Ryujinx.Ava.Vulkan.Surfaces;
+using Ryujinx.Rsc.Vulkan.Surfaces;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
 
-namespace Ryujinx.Ava.Vulkan
+namespace Ryujinx.Rsc.Vulkan
 {
     public class VulkanSurface : IDisposable
     {

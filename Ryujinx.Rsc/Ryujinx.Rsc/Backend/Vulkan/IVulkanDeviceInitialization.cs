@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Silk.NET.Vulkan;
 
-namespace Ryujinx.Ava.Vulkan
+namespace Ryujinx.Rsc.Vulkan
 {
     public interface IVulkanDeviceInitialization
     {

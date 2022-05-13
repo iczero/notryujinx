@@ -53,6 +53,10 @@ namespace Ryujinx.Rsc.ViewModels
         public bool IsGridMedium => ConfigurationState.Instance.Ui.GridSize == 2;
         public bool IsGridLarge => ConfigurationState.Instance.Ui.GridSize == 3;
         public bool IsGridHuge => ConfigurationState.Instance.Ui.GridSize == 4;
+        public bool IsGameRunning { get; set; }
+        public string Title { get; set; }
+        public bool IsPaused { get; set; }
+        public string TitleName { get; set; }
 
         public void Initialize()
         {

@@ -24,7 +24,7 @@ namespace Ryujinx.Rsc.Controls
         protected object Image { get; set; }
 
         public event EventHandler<Size> SizeChanged;
-        public event EventHandler<EventArgs> Initialized;
+        public event EventHandler<EventArgs> RendererInitialized;
 
         public void QueueRender()
         {
@@ -57,12 +57,12 @@ namespace Ryujinx.Rsc.Controls
         {
             SizeChanged?.Invoke(this, rect.Size);
 
-            RenderSize = rect.Size * this.VisualRoot.RenderScaling;
+            RenderSize = rect.Size * MainView.Scaling;
         }
 
         protected void OnInitialized()
         {
-            Initialized?.Invoke(this, EventArgs.Empty);
+            RendererInitialized?.Invoke(this, EventArgs.Empty);
         }
 
     }

@@ -11,10 +11,16 @@
   <Design.DataContext>
     <viewModels:MainViewModel />
   </Design.DataContext>
-    <control:GameListView 
+    <ContentControl HorizontalAlignment="Stretch"
+                    VerticalContentAlignment="Stretch"
+                    HorizontalContentAlignment="Stretch"
+                    x:Name="ContentFrame"
+                    VerticalAlignment="Stretch">
+        <control:GameListView 
         x:Name="GameGrid"
         HorizontalContentAlignment="Stretch"
         HorizontalAlignment="Stretch"
         VerticalContentAlignment="Stretch"
         VerticalAlignment="Stretch"/>
+    </ContentControl>
 </UserControl>

@@ -1,7 +1,7 @@
 using System;
 using Silk.NET.Vulkan;
 
-namespace Ryujinx.Ava.Vulkan
+namespace Ryujinx.Rsc.Vulkan
 {
     internal class VulkanSemaphorePair : IDisposable
     {

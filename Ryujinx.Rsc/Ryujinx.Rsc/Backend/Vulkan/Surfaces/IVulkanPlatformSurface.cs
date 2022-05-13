@@ -2,7 +2,7 @@ using System;
 using Avalonia;
 using Silk.NET.Vulkan;
 
-namespace Ryujinx.Ava.Vulkan.Surfaces
+namespace Ryujinx.Rsc.Vulkan.Surfaces
 {
     public interface IVulkanPlatformSurface : IDisposable
     {

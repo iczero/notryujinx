@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Ryujinx.Ava.Vulkan
+namespace Ryujinx.Rsc.Vulkan
 {
     public class VulkanOptions
     {

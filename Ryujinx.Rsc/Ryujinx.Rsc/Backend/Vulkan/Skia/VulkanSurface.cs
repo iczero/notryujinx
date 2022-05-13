@@ -1,7 +1,7 @@
 using Avalonia;
 using Avalonia.Platform;
-using Ryujinx.Ava.Vulkan;
-using Ryujinx.Ava.Vulkan.Surfaces;
+using Ryujinx.Rsc.Vulkan;
+using Ryujinx.Rsc.Vulkan.Surfaces;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
 using System;
