@@ -17,8 +17,7 @@
     <AndroidManifestMinimumSdkVersion>26</AndroidManifestMinimumSdkVersion>
     <AndroidManifestApplicationPackageName>org.ryujinx.emu</AndroidManifestApplicationPackageName>
     <JavaMaximumHeapSize>1G</JavaMaximumHeapSize>
-    <!--<RunAOTCompilation>true</RunAOTCompilation>
-    <AndroidEnableProfiledAot>true</AndroidEnableProfiledAot>-->
+	<UseInterpreter Condition="'$(Configuration)' == 'Debug'">False</UseInterpreter>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Icon.png" />
