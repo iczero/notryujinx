@@ -33,6 +33,17 @@ namespace Ryujinx.Rsc.Controls
             }
         }
 
+        public void GameList_Tapped(object sender, TappedEventArgs args)
+        {
+            if (OperatingSystem.IsAndroid() && sender is ListBox listBox)
+            {
+                if (listBox.SelectedItem is ApplicationData selected)
+                {
+                    RaiseEvent(new ApplicationOpenedEventArgs(selected, ApplicationOpenedEvent));
+                }
+            }
+        }
+
         public void GameList_SelectionChanged(object sender, SelectionChangedEventArgs args)
         {
             if (sender is ListBox listBox)

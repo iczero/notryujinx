@@ -39,8 +39,8 @@ namespace Ryujinx.Rsc.Vulkan
         internal static List<string> RequiredDeviceExtensions { get; } = new()
         {
             KhrSwapchain.ExtensionName,
-            "VK_EXT_shader_subgroup_vote",
-            ExtTransformFeedback.ExtensionName
+            //"VK_EXT_shader_subgroup_vote",
+           // ExtTransformFeedback.ExtensionName
         };
 
         public void Dispose()

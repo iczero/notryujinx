@@ -17,6 +17,7 @@
         <ListBox Grid.Row="0"
                  Padding="8"
                  HorizontalAlignment="Stretch"
+				 Tapped="GameList_Tapped"
                  DoubleTapped="GameList_DoubleTapped"
                  SelectionChanged="GameList_SelectionChanged"
                  VerticalAlignment="Stretch"
@@ -61,7 +62,7 @@
                             <Grid >
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="10"/>
+                                    <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>

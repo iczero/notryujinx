@@ -15,7 +15,8 @@ namespace Ryujinx.Rsc
     {
         public static bool PreviewerDetached { get; set; }
         public static string GameDirectory { get; set; }
-        
+        public static string BaseDirectory { get; set; }
+
         public override void Initialize()
         {
             AvaloniaXamlLoader.Load(this);
@@ -25,9 +26,13 @@ namespace Ryujinx.Rsc
         {
             if (PreviewerDetached)
             {
-                var basePath = OperatingSystem.IsAndroid() ? System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) : null;
+                if(BaseDirectory != null)
+                {
+                    Directory.CreateDirectory(BaseDirectory);
+                }
+
                 // Setup base data directory.
-                AppDataManager.Initialize(basePath);
+                AppDataManager.Initialize(BaseDirectory);
 
                 // Initialize the configuration.
                 ConfigurationState.Initialize();

@@ -57,6 +57,22 @@ namespace Ryujinx.Rsc.Backend.Vulkan
                     return surface;
                 }
             }
+            else if (OperatingSystem.IsAndroid())
+            {
+                if (instance.Api.TryGetInstanceExtension(new Instance(instance.Handle), out KhrAndroidSurface surfaceExtension))
+                {
+                    var createInfo = new AndroidSurfaceCreateInfoKHR()
+                    {
+                        Window = (nint*)Handle.Handle,
+                        SType = StructureType.AndroidSurfaceCreateInfoKhr
+                    };
+
+                    surfaceExtension.CreateAndroidSurface(new Instance(instance.Handle), createInfo, null, out var surface).ThrowOnError();
+
+                    return surface;
+                }
+
+            }
 
             return new SurfaceKHR();
         }

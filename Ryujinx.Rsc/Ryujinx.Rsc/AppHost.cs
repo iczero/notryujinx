@@ -8,7 +8,6 @@ using Avalonia.VisualTree;
 using LibHac.Tools.FsSystem;
 using Ryujinx.Audio.Backends.Dummy;
 using Ryujinx.Audio.Backends.OpenAL;
-using Ryujinx.Audio.Backends.SDL2;
 using Ryujinx.Audio.Integration;
 using Ryujinx.Ava.Common;
 using Ryujinx.Ava.Common.Locale;
@@ -557,44 +556,11 @@ namespace Ryujinx.Rsc
 
             Logger.Info?.PrintMsg(LogClass.Gpu, $"Backend Threading ({threadingMode}): {isGALthreaded}");
 
-            if (ConfigurationState.Instance.System.AudioBackend.Value == AudioBackend.SDL2)
-            {
-                if (SDL2HardwareDeviceDriver.IsSupported)
-                {
-                    deviceDriver = new SDL2HardwareDeviceDriver();
-                }
-                else
-                {
-                    Logger.Warning?.Print(LogClass.Audio, "SDL2 is not supported, trying to fall back to OpenAL.");
-
-                    if (OpenALHardwareDeviceDriver.IsSupported)
-                    {
-                        Logger.Warning?.Print(LogClass.Audio, "Found OpenAL, changing configuration.");
-
-                        ConfigurationState.Instance.System.AudioBackend.Value = AudioBackend.OpenAl;
-
-                        deviceDriver = new OpenALHardwareDeviceDriver();
-                    }
-                }
-            }
-            else if (ConfigurationState.Instance.System.AudioBackend.Value == AudioBackend.OpenAl)
+             if (ConfigurationState.Instance.System.AudioBackend.Value == AudioBackend.OpenAl)
             {
                 if (OpenALHardwareDeviceDriver.IsSupported)
                 {
                     deviceDriver = new OpenALHardwareDeviceDriver();
-                }
-                else
-                {
-                    Logger.Warning?.Print(LogClass.Audio, "OpenAL is not supported, trying to fall back to SDL2.");
-
-                    if (SDL2HardwareDeviceDriver.IsSupported)
-                    {
-                        Logger.Warning?.Print(LogClass.Audio, "Found SDL2, changing configuration.");
-
-                        ConfigurationState.Instance.System.AudioBackend.Value = AudioBackend.SDL2;
-
-                        deviceDriver = new SDL2HardwareDeviceDriver();
-                    }
                 }
             }
 

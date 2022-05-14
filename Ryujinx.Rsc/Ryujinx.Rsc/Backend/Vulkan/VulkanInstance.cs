@@ -31,16 +31,19 @@ namespace Ryujinx.Rsc.Vulkan
             get
             {
                 var extensions = new List<string> { "VK_KHR_surface" };
-#if NET6_0_OR_GREATER
-                if (OperatingSystem.IsAndroid())
-                    extensions.Add("VK_KHR_android_surface");
-                else
-#endif
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                    extensions.Add("VK_KHR_xlib_surface");
 
+                if (OperatingSystem.IsAndroid())
+                {
+                    extensions.Add("VK_KHR_android_surface");
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    extensions.Add("VK_KHR_xlib_surface");
+                }
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
                     extensions.Add("VK_KHR_win32_surface");
+                }
 
                 return extensions;
             }

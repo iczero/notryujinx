@@ -85,7 +85,7 @@ namespace Ryujinx.Rsc.Views
 
             VirtualFileSystem.ReloadKeySet();
 
-            InputManager = new InputManager(new AvaloniaKeyboardDriver(this), new SDL2GamepadDriver());
+            InputManager = new InputManager(new AvaloniaKeyboardDriver(this), null);
         }
 
         private void Application_Opened(object sender, ApplicationOpenedEventArgs e)

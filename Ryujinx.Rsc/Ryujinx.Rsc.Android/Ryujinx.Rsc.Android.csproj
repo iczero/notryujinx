@@ -2,21 +2,27 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0-android</TargetFramework>
-    <SupportedOSPlatformVersion>21</SupportedOSPlatformVersion>
+    <SupportedOSPlatformVersion>26.0</SupportedOSPlatformVersion>
     <Nullable>enable</Nullable>
-    <ApplicationId>com.ryujinx.emu</ApplicationId>
+    <ApplicationId>org.ryujinx.emu</ApplicationId>
     <ApplicationVersion>1</ApplicationVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <AndroidPackageFormat>apk</AndroidPackageFormat>
     <MSBuildEnableWorkloadResolver>true</MSBuildEnableWorkloadResolver>
+    <AndroidManifestApplicationIcon>ryujinx.png</AndroidManifestApplicationIcon>
+    <AndroidManifestApplicationName>Ryujinx</AndroidManifestApplicationName>
+    <AndroidManifestApplicationVersionNumber>1</AndroidManifestApplicationVersionNumber>
+    <AndroidManifestApplicationVersionName>1.0-test</AndroidManifestApplicationVersionName>
+    <AndroidManifestMinimumSdkVersion>26</AndroidManifestMinimumSdkVersion>
+    <AndroidManifestApplicationPackageName>org.ryujinx.emu</AndroidManifestApplicationPackageName>
+    <JavaMaximumHeapSize>1G</JavaMaximumHeapSize>
     <!--<RunAOTCompilation>true</RunAOTCompilation>
     <AndroidEnableProfiledAot>true</AndroidEnableProfiledAot>-->
   </PropertyGroup>
   <ItemGroup>
-    <AndroidResource Include="Icon.png">
-      <Link>Resources\drawable\Icon.png</Link>
-    </AndroidResource>
+    <None Remove="Icon.png" />
+    <None Remove="Resources\drawable\ryujinx.png" />
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release' and '$(TF_BUILD)' == ''">

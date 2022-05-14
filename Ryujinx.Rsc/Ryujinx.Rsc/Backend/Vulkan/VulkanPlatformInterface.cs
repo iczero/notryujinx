@@ -37,16 +37,15 @@ namespace Ryujinx.Rsc.Vulkan
             {
                 _options = AvaloniaLocator.Current.GetService<VulkanOptions>() ?? new VulkanOptions();
 
-#if NET6_0_OR_GREATER
+
             if (OperatingSystem.IsAndroid())
                 Silk.NET.Core.Loader.SearchPathContainer.Platform = Silk.NET.Core.Loader.UnderlyingPlatform.Android;
-#endif
 
                 var instance = VulkanInstance.Create(_options);
 
                 return new VulkanPlatformInterface(instance);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return null;
             }

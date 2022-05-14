@@ -26,47 +26,57 @@ namespace Ryujinx.Rsc.Vulkan
 
             var features = new PhysicalDeviceFeatures()
             {
-                DepthBiasClamp = true,
-                DepthClamp = true,
-                DualSrcBlend = true,
-                FragmentStoresAndAtomics = true,
-                GeometryShader = true,
-                ImageCubeArray = true,
-                IndependentBlend = true,
-                LogicOp = true,
-                MultiViewport = true,
-                PipelineStatisticsQuery = true,
-                SamplerAnisotropy = true,
-                ShaderClipDistance = true,
+                DepthBiasClamp = supportedFeatures.DepthBiasClamp,
+                DepthClamp = supportedFeatures.DepthClamp,
+                DualSrcBlend = supportedFeatures.DualSrcBlend,
+                FragmentStoresAndAtomics = supportedFeatures.FragmentStoresAndAtomics,
+                GeometryShader = supportedFeatures.GeometryShader,
+                ImageCubeArray = supportedFeatures.ImageCubeArray,
+                IndependentBlend = supportedFeatures.IndependentBlend,
+                LogicOp = supportedFeatures.LogicOp,
+                MultiViewport = supportedFeatures.MultiViewport,
+                PipelineStatisticsQuery = supportedFeatures.PipelineStatisticsQuery,
+                SamplerAnisotropy = supportedFeatures.SamplerAnisotropy,
+                ShaderClipDistance = supportedFeatures.ShaderClipDistance,
                 ShaderFloat64 = supportedFeatures.ShaderFloat64,
-                ShaderImageGatherExtended = true,
+                ShaderImageGatherExtended = supportedFeatures.ShaderImageGatherExtended,
                 // ShaderStorageImageReadWithoutFormat = true,
                 // ShaderStorageImageWriteWithoutFormat = true,
-                TessellationShader = true,
-                VertexPipelineStoresAndAtomics = true
+                TessellationShader = supportedFeatures.TessellationShader,
+                VertexPipelineStoresAndAtomics = supportedFeatures.VertexPipelineStoresAndAtomics
             };
 
             var supportedExtensions = physicalDevice.GetSupportedExtensions();
 
             void* pExtendedFeatures = null;
 
-            var featuresTransformFeedback = new PhysicalDeviceTransformFeedbackFeaturesEXT()
+            PhysicalDeviceTransformFeedbackFeaturesEXT featuresTransformFeedback;
+
+            if (supportedExtensions.Contains("VK_EXT_transform_feedback"))
             {
-                SType = StructureType.PhysicalDeviceTransformFeedbackFeaturesExt,
-                PNext = pExtendedFeatures,
-                TransformFeedback = true
-            };
+                featuresTransformFeedback = new PhysicalDeviceTransformFeedbackFeaturesEXT()
+                {
+                    SType = StructureType.PhysicalDeviceTransformFeedbackFeaturesExt,
+                    PNext = pExtendedFeatures,
+                    TransformFeedback = true
+                };
 
-            pExtendedFeatures = &featuresTransformFeedback;
+                pExtendedFeatures = &featuresTransformFeedback;
+            }
 
-            var featuresRobustness2 = new PhysicalDeviceRobustness2FeaturesEXT()
+            PhysicalDeviceRobustness2FeaturesEXT featuresRobustness2;
+
+            if (supportedExtensions.Contains("VK_EXT_robustness2"))
             {
-                SType = StructureType.PhysicalDeviceRobustness2FeaturesExt,
-                PNext = pExtendedFeatures,
-                NullDescriptor = true
-            };
+                featuresRobustness2 = new PhysicalDeviceRobustness2FeaturesEXT()
+                {
+                    SType = StructureType.PhysicalDeviceRobustness2FeaturesExt,
+                    PNext = pExtendedFeatures,
+                    NullDescriptor = true
+                };
 
-            pExtendedFeatures = &featuresRobustness2;
+                pExtendedFeatures = &featuresRobustness2;
+            }
 
             var featuresExtendedDynamicState = new PhysicalDeviceExtendedDynamicStateFeaturesEXT()
             {
