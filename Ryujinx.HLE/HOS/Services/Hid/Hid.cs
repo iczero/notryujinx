@@ -21,7 +21,7 @@ namespace Ryujinx.HLE.HOS.Services.Hid
 
         private readonly SharedMemoryStorage _storage;
 
-        internal SharedMemory SharedMemory { get; }
+        internal ref SharedMemory SharedMemory => ref _storage.GetRef<SharedMemory>(0);
 
         internal const int SharedMemEntryCount = 17;
 
@@ -46,6 +46,7 @@ namespace Ryujinx.HLE.HOS.Services.Hid
             CheckTypeSizeOrThrow<RingLifo<MouseState>>(0x350);
             CheckTypeSizeOrThrow<RingLifo<KeyboardState>>(0x3D8);
             CheckTypeSizeOrThrow<Array10<NpadState>>(0x32000);
+            CheckTypeSizeOrThrow<SharedMemory>(Horizon.HidSize);
         }
 
         internal Hid(in Switch device, SharedMemoryStorage storage)
@@ -53,7 +54,7 @@ namespace Ryujinx.HLE.HOS.Services.Hid
             _device  = device;
             _storage = storage;
 
-            SharedMemory = SharedMemory.Create(storage);
+            SharedMemory = SharedMemory.Create();
 
             InitDevices();
         }
