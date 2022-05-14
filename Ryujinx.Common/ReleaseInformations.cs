@@ -1,5 +1,7 @@
 ﻿using Ryujinx.Common.Configuration;
 using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 
 namespace Ryujinx.Common
@@ -36,7 +38,12 @@ namespace Ryujinx.Common
             }
             else
             {
-                return Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+                var assembly = Assembly.GetEntryAssembly();
+                if (assembly == null)
+                {
+                    return "ANDROID";
+                }
+                return assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
             }
         }
 

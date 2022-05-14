@@ -45,8 +45,11 @@ namespace Ryujinx.Input.HLE
             _mouseDriver = mouseDriver;
             _inputConfig = new List<InputConfig>();
 
-            _gamepadDriver.OnGamepadConnected += HandleOnGamepadConnected;
-            _gamepadDriver.OnGamepadDisconnected += HandleOnGamepadDisconnected;
+            if (_gamepadDriver != null)
+            {
+                _gamepadDriver.OnGamepadConnected += HandleOnGamepadConnected;
+                _gamepadDriver.OnGamepadDisconnected += HandleOnGamepadDisconnected;
+            }
         }
 
         private void RefreshInputConfigForHLE()
@@ -74,7 +77,7 @@ namespace Ryujinx.Input.HLE
         {
             IGamepadDriver targetDriver = _gamepadDriver;
 
-            if (config is StandardControllerInputConfig)
+            if (config is StandardControllerInputConfig && _gamepadDriver != null)
             {
                 targetDriver = _gamepadDriver;
             }
@@ -288,8 +291,11 @@ namespace Ryujinx.Input.HLE
                     {
                         _cemuHookClient.Dispose();
 
-                        _gamepadDriver.OnGamepadConnected -= HandleOnGamepadConnected;
-                        _gamepadDriver.OnGamepadDisconnected -= HandleOnGamepadDisconnected;
+                        if (_gamepadDriver != null)
+                        {
+                            _gamepadDriver.OnGamepadConnected -= HandleOnGamepadConnected;
+                            _gamepadDriver.OnGamepadDisconnected -= HandleOnGamepadDisconnected;
+                        }
 
                         for (int i = 0; i < _controllers.Length; i++)
                         {
