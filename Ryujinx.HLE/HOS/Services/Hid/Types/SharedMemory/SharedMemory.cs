@@ -1,4 +1,5 @@
 ﻿using Ryujinx.Common.Memory;
+using Ryujinx.HLE.HOS.Kernel.Memory;
 using Ryujinx.HLE.HOS.Services.Hid.Types.SharedMemory.Common;
 using Ryujinx.HLE.HOS.Services.Hid.Types.SharedMemory.DebugPad;
 using Ryujinx.HLE.HOS.Services.Hid.Types.SharedMemory.Keyboard;
@@ -12,42 +13,43 @@ namespace Ryujinx.HLE.HOS.Services.Hid.Types.SharedMemory
     /// <summary>
     /// Represent the shared memory shared between applications for input.
     /// </summary>
-    [StructLayout(LayoutKind.Explicit, Size = 0x40000)]
-    struct SharedMemory
+    class SharedMemory
     {
         /// <summary>
         /// Debug controller.
         /// </summary>
-        [FieldOffset(0)]
-        public RingLifo<DebugPadState> DebugPad;
+        public ref RingLifo<DebugPadState> DebugPad => ref _storage.GetRef<RingLifo<DebugPadState>>(0);
 
         /// <summary>
         /// Touchscreen.
         /// </summary>
-        [FieldOffset(0x400)]
-        public RingLifo<TouchScreenState> TouchScreen;
+        public ref RingLifo<TouchScreenState> TouchScreen => ref _storage.GetRef<RingLifo<TouchScreenState>>(0x400);
 
         /// <summary>
         /// Mouse.
         /// </summary>
-        [FieldOffset(0x3400)]
-        public RingLifo<MouseState> Mouse;
+        public ref RingLifo<MouseState> Mouse => ref _storage.GetRef<RingLifo<MouseState>>(0x3400);
 
         /// <summary>
         /// Keyboard.
         /// </summary>
-        [FieldOffset(0x3800)]
-        public RingLifo<KeyboardState> Keyboard;
+        public ref RingLifo<KeyboardState> Keyboard => ref _storage.GetRef<RingLifo<KeyboardState>>(0x3800);
 
         /// <summary>
         /// Nintendo Pads.
         /// </summary>
-        [FieldOffset(0x9A00)]
-        public Array10<NpadState> Npads;
+        public ref Array10<NpadState> Npads => ref _storage.GetRef<Array10<NpadState>>(0x9A00);
 
-        public static SharedMemory Create()
+        private SharedMemoryStorage _storage;
+
+        public SharedMemory(SharedMemoryStorage storage)
         {
-            SharedMemory result = new SharedMemory
+            _storage = storage;
+        }
+
+        public static SharedMemory Create(SharedMemoryStorage storage)
+        {
+            SharedMemory result = new SharedMemory(storage)
             {
                 DebugPad = RingLifo<DebugPadState>.Create(),
                 TouchScreen = RingLifo<TouchScreenState>.Create(),
