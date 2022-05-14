@@ -107,10 +107,13 @@ namespace Ryujinx.Common.Logging
             m_Time = Stopwatch.StartNew();
 
             // Logger should log to console by default
-            AddTarget(new AsyncLogTargetWrapper(
-                new ConsoleLogTarget("console"),
-                1000,
-                AsyncLogTargetOverflowAction.Discard));
+            if (!OperatingSystem.IsAndroid())
+            {
+                AddTarget(new AsyncLogTargetWrapper(
+                    new ConsoleLogTarget("console"),
+                    1000,
+                    AsyncLogTargetOverflowAction.Discard));
+            }
 
             Notice = new Log(LogLevel.Notice);
             
