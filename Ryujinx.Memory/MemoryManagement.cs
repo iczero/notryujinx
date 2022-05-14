@@ -14,6 +14,10 @@ namespace Ryujinx.Memory
             {
                 return MemoryManagementUnix.Allocate(size);
             }
+            else if (OperatingSystem.IsAndroid())
+            {
+                return MemoryManagementAndroid.Allocate(size);
+            }
             else
             {
                 throw new PlatformNotSupportedException();
@@ -29,6 +33,10 @@ namespace Ryujinx.Memory
             else if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             {
                 return MemoryManagementUnix.Reserve(size);
+            }
+            else if (OperatingSystem.IsAndroid())
+            {
+                return MemoryManagementAndroid.Reserve(size);
             }
             else
             {
@@ -46,6 +54,10 @@ namespace Ryujinx.Memory
             {
                 return MemoryManagementUnix.Commit(address, size);
             }
+            else if (OperatingSystem.IsAndroid())
+            {
+                return MemoryManagementAndroid.Commit(address, size);
+            }
             else
             {
                 throw new PlatformNotSupportedException();
@@ -61,6 +73,10 @@ namespace Ryujinx.Memory
             else if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             {
                 return MemoryManagementUnix.Decommit(address, size);
+            }
+            else if (OperatingSystem.IsAndroid())
+            {
+                return MemoryManagementAndroid.Decommit(address, size);
             }
             else
             {
@@ -85,6 +101,10 @@ namespace Ryujinx.Memory
             {
                 MemoryManagementUnix.MapView(sharedMemory, srcOffset, address, size);
             }
+            else if (OperatingSystem.IsAndroid())
+            {
+                MemoryManagementAndroid.MapView(sharedMemory, srcOffset, address, size);
+            }
             else
             {
                 throw new PlatformNotSupportedException();
@@ -107,6 +127,10 @@ namespace Ryujinx.Memory
             else if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             {
                 MemoryManagementUnix.UnmapView(address, size);
+            }
+            else if (OperatingSystem.IsAndroid())
+            {
+                MemoryManagementAndroid.UnmapView(address, size);
             }
             else
             {
@@ -133,6 +157,10 @@ namespace Ryujinx.Memory
             {
                 result = MemoryManagementUnix.Reprotect(address, size, permission);
             }
+            else if (OperatingSystem.IsAndroid())
+            {
+                result = MemoryManagementAndroid.Reprotect(address, size, permission);
+            }
             else
             {
                 throw new PlatformNotSupportedException();
@@ -154,6 +182,10 @@ namespace Ryujinx.Memory
             {
                 return MemoryManagementUnix.Free(address);
             }
+            else if (OperatingSystem.IsAndroid())
+            {
+                return MemoryManagementAndroid.Free(address);
+            }
             else
             {
                 throw new PlatformNotSupportedException();
@@ -169,6 +201,10 @@ namespace Ryujinx.Memory
             else if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             {
                 return MemoryManagementUnix.CreateSharedMemory(size, reserve);
+            }
+            else if (OperatingSystem.IsAndroid())
+            {
+                return MemoryManagementAndroid.CreateSharedMemory(size, reserve);
             }
             else
             {
@@ -186,6 +222,10 @@ namespace Ryujinx.Memory
             {
                 MemoryManagementUnix.DestroySharedMemory(handle);
             }
+            else if (OperatingSystem.IsAndroid())
+            {
+                MemoryManagementAndroid.DestroySharedMemory(handle);
+            }
             else
             {
                 throw new PlatformNotSupportedException();
@@ -202,6 +242,10 @@ namespace Ryujinx.Memory
             {
                 return MemoryManagementUnix.MapSharedMemory(handle, size);
             }
+            else if (OperatingSystem.IsAndroid())
+            {
+                return MemoryManagementAndroid.MapSharedMemory(handle, size);
+            }
             else
             {
                 throw new PlatformNotSupportedException();
@@ -217,6 +261,10 @@ namespace Ryujinx.Memory
             else if (OperatingSystem.IsLinux() || OperatingSystem.IsMacOS())
             {
                 MemoryManagementUnix.UnmapSharedMemory(address, size);
+            }
+            else if (OperatingSystem.IsAndroid())
+            {
+                MemoryManagementAndroid.UnmapSharedMemory(address, size);
             }
             else
             {
