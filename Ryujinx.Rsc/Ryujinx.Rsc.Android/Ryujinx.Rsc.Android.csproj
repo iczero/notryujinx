@@ -21,6 +21,8 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Icon.png" />
+    <None Remove="libs\arm64-v8a\libshaderc_shared.so" />
+    <None Remove="libs\x86_64\libshaderc_shared.so" />
     <None Remove="Resources\drawable\ryujinx.png" />
   </ItemGroup>
 

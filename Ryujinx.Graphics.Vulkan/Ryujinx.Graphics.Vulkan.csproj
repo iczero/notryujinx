@@ -29,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ContentWithTargetPath Include="Native\shaderc\libs\shaderc_shared.dll" Condition="'$(RuntimeIdentifier)' != 'linux-x64' AND '$(RuntimeIdentifier)' != 'osx-x64'">
+    <ContentWithTargetPath Include="Native\shaderc\libs\shaderc_shared.dll" Condition="'$(RuntimeIdentifier)' == 'windows-x64'">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>shaderc_shared.dll</TargetPath>
     </ContentWithTargetPath>

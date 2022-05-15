@@ -86,9 +86,9 @@ namespace Ryujinx.Input.HLE
                 targetDriver = _keyboardDriver;
             }
 
-            Debug.Assert(targetDriver != null, "Unknown input configuration!");
+            //Debug.Assert(targetDriver != null, "Unknown input configuration!");
 
-            if (controller.GamepadDriver != targetDriver || controller.Id != config.Id)
+            if (targetDriver!= null && (controller.GamepadDriver != targetDriver || controller.Id != config.Id))
             {
                 return controller.UpdateDriverConfiguration(targetDriver, config);
             }
