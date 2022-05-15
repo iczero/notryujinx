@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release' and '$(TF_BUILD)' == ''">
-    <RunAOTCompilation>True</RunAOTCompilation>
+    <RunAOTCompilation>False</RunAOTCompilation>
     <EnableLLVM>True</EnableLLVM>
     <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
   </PropertyGroup>

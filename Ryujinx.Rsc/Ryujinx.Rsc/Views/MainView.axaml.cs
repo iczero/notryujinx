@@ -110,7 +110,7 @@ namespace Ryujinx.Rsc.Views
             }
 
 #if RELEASE
-            await PerformanceCheck();
+            //await PerformanceCheck();
 #endif
 
             Logger.RestartTime();
