@@ -5,10 +5,11 @@ using Avalonia;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Ava.Ui.Vulkan.Surfaces;
 using Silk.NET.Vulkan;
+using Ryujinx.Graphics.Vulkan;
 
 namespace Ryujinx.Ava.Ui.Vulkan
 {
-    public class VulkanPlatformInterface : IDisposable
+    internal class VulkanPlatformInterface : IDisposable
     {
         private static VulkanOptions _options;
 
@@ -20,7 +21,7 @@ namespace Ryujinx.Ava.Ui.Vulkan
 
         public VulkanPhysicalDevice PhysicalDevice { get; private set; }
         public VulkanInstance Instance { get; }
-        public VulkanDevice Device { get; private set; }
+        public VulkanDevice Device { get; set; }
         public Vk Api { get; private set; }
 
         public void Dispose()
@@ -61,16 +62,21 @@ namespace Ryujinx.Ava.Ui.Vulkan
         public VulkanSurfaceRenderTarget CreateRenderTarget(IVulkanPlatformSurface platformSurface)
         {
             var surface = VulkanSurface.CreateSurface(Instance, platformSurface);
-
             try
             {
                 if (Device == null)
                 {
                     PhysicalDevice = VulkanPhysicalDevice.FindSuitablePhysicalDevice(Instance, surface, _options.PreferDiscreteGpu, _options.PreferredDevice);
-                    Device = VulkanDevice.Create(Instance, PhysicalDevice, _options);
+                    var device = VulkanInitialization.CreateDevice(Instance.Api,
+                                                                   PhysicalDevice.InternalHandle,
+                                                                   PhysicalDevice.QueueFamilyIndex,
+                                                                   VulkanInitialization.GetSupportedExtensions(Instance.Api, PhysicalDevice.InternalHandle),
+                                                                   PhysicalDevice.QueueCount);
+
+                    Device = new VulkanDevice(device, PhysicalDevice, Instance.Api);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 surface.Dispose();
             }

@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 
 namespace Ryujinx.Ava.Ui.Backend.Vulkan
 {
-    public class VulkanWindowSurface : BackendSurface, IVulkanPlatformSurface
+    internal class VulkanWindowSurface : BackendSurface, IVulkanPlatformSurface
     {
         public float Scaling => (float)Program.ActualScaleFactor;
 
@@ -49,7 +49,7 @@ namespace Ryujinx.Ava.Ui.Backend.Vulkan
                 }
             }
 
-            return new SurfaceKHR();
+            throw new PlatformNotSupportedException("The current platform does not support surface creation.");
         }
 
         public override void Dispose()

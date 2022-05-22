@@ -3,7 +3,7 @@ using Silk.NET.Vulkan;
 
 namespace Ryujinx.Ava.Ui.Vulkan
 {
-    public class VulkanQueue
+    internal class VulkanQueue
     {
         public VulkanQueue(VulkanDevice device, Queue apiHandle)
         {

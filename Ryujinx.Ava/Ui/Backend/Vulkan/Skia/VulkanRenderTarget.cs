@@ -9,7 +9,7 @@ namespace Ryujinx.Ava.Ui.Backend.Vulkan
 {
     internal class VulkanRenderTarget : ISkiaGpuRenderTarget
     {
-        internal GRContext GrContext { get; set; }
+        public GRContext GrContext { get; set; }
         
         private readonly VulkanSurfaceRenderTarget _surface;
         private readonly IVulkanPlatformSurface _vulkanPlatformSurface;
@@ -76,8 +76,10 @@ namespace Ryujinx.Ava.Ui.Backend.Vulkan
                         _surface.IsRgba ? SKColorType.Rgba8888 : SKColorType.Bgra8888, SKColorSpace.CreateSrgb());
 
                     if (surface == null)
+                    {
                         throw new InvalidOperationException(
-                            $"Surface can't be created with the provided render target");
+                            "Surface can't be created with the provided render target");
+                    }
 
                     success = true;
 
@@ -113,17 +115,16 @@ namespace Ryujinx.Ava.Ui.Backend.Vulkan
 
             public void Dispose()
             {
-                Monitor.Enter(_vulkanSession.Display.Lock);
+                lock (_vulkanSession.Display.Lock)
+                {
+                    SkSurface.Canvas.Flush();
 
-                SkSurface.Canvas.Flush();
+                    SkSurface.Dispose();
+                    _backendRenderTarget.Dispose();
+                    GrContext.Flush();
 
-                SkSurface.Dispose();
-                _backendRenderTarget.Dispose();
-                GrContext.Flush();
-
-                _vulkanSession.Dispose();
-
-                Monitor.Exit(_vulkanSession.Display.Lock);
+                    _vulkanSession.Dispose();
+                }
             }
 
             public GRContext GrContext { get; }

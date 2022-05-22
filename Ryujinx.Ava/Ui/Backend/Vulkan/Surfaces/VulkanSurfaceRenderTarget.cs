@@ -5,7 +5,7 @@ using Silk.NET.Vulkan;
 
 namespace Ryujinx.Ava.Ui.Vulkan.Surfaces
 {
-    public class VulkanSurfaceRenderTarget : IDisposable
+    internal class VulkanSurfaceRenderTarget : IDisposable
     {
         private readonly VulkanPlatformInterface _platformInterface;
 

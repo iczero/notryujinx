@@ -2,17 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Ryujinx.Graphics.Vulkan;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 using Silk.NET.Vulkan.Extensions.KHR;
 
 namespace Ryujinx.Ava.Ui.Vulkan
 {
-    public class VulkanDevice : IDisposable
+    internal class VulkanDevice : IDisposable
     {
         private static object _lock = new object();
 
-        private VulkanDevice(Device apiHandle, VulkanPhysicalDevice physicalDevice, Vk api)
+        public VulkanDevice(Device apiHandle, VulkanPhysicalDevice physicalDevice, Vk api)
         {
             InternalHandle = apiHandle;
             Api = api;
@@ -36,29 +37,11 @@ namespace Ryujinx.Ava.Ui.Vulkan
         public VulkanQueue PresentQueue { get; }
         public VulkanCommandBufferPool CommandBufferPool { get; }
 
-        internal static List<string> RequiredDeviceExtensions { get; } = new()
-        {
-            KhrSwapchain.ExtensionName,
-            //"VK_EXT_shader_subgroup_vote",
-           // ExtTransformFeedback.ExtensionName
-        };
-
         public void Dispose()
         {
             WaitIdle();
             CommandBufferPool?.Dispose();
             Queue = null;
-        }
-
-        public static unsafe VulkanDevice Create(VulkanInstance instance, VulkanPhysicalDevice physicalDevice,
-            VulkanOptions options)
-        {
-            if(options.VulkanDeviceInitialization != null)
-            {
-                return new VulkanDevice(options.VulkanDeviceInitialization.CreateDevice(instance.Api, instance, physicalDevice, options), physicalDevice, instance.Api);
-            }
-            else
-                throw new Exception("VulkanDeviceInitialization is not found. Device can't be created.");
         }
 
         internal void Submit(SubmitInfo submitInfo, Fence fence = new())

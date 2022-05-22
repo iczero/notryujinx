@@ -5,8 +5,7 @@ namespace Ryujinx.Graphics.Vulkan
 {
     internal abstract class WindowBase: IWindow
     {
-
-        internal bool ScreenCaptureRequested { get; set; }
+        public bool ScreenCaptureRequested { get; set; }
 
         public abstract void Dispose();
         public abstract void Present(ITexture texture, ImageCrop crop, Action<object> swapBuffersCallback);

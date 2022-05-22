@@ -12,6 +12,7 @@ using Ryujinx.Common.GraphicsDriver;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.System;
 using Ryujinx.Common.SystemInfo;
+using Ryujinx.Graphics.Vulkan;
 using Ryujinx.Modules;
 using Ryujinx.Ui.Common;
 using Ryujinx.Ui.Common.Configuration;
@@ -41,6 +42,7 @@ namespace Ryujinx.Ava
         public static extern int MessageBoxA(IntPtr hWnd, string text, string caption, uint type);
 
         private const uint MB_ICONWARNING = 0x30;
+        private const int BaseDpi = 96;
 
         public static void Main(string[] args)
         {
@@ -93,22 +95,9 @@ namespace Ryujinx.Ava
                 {
                     ApplicationName = "Ryujinx.Graphics.Vulkan",
                     VulkanVersion = new Version(1, 2),
-                    DeviceExtensions = new List<string>
-                    {
-                        ExtConditionalRendering.ExtensionName,
-                        ExtExtendedDynamicState.ExtensionName,
-                        KhrDrawIndirectCount.ExtensionName,
-                        "VK_EXT_custom_border_color",
-                        "VK_EXT_fragment_shader_interlock",
-                        "VK_EXT_index_type_uint8",
-                        "VK_EXT_robustness2",
-                        "VK_EXT_shader_subgroup_ballot",
-                        "VK_EXT_subgroup_size_control",
-                        "VK_NV_geometry_shader_passthrough"
-                    },
                     MaxQueueCount = 2,
                     PreferDiscreteGpu = true,
-                    UseDebug = !PreviewerDetached ? false : ConfigurationState.Instance.Logger.GraphicsDebugLevel.Value > GraphicsDebugLevel.None,
+                    UseDebug = !PreviewerDetached ? false : ConfigurationState.Instance.Logger.GraphicsDebugLevel.Value != GraphicsDebugLevel.None,
                 })
                 .With(new SkiaOptions()
                 {
@@ -167,7 +156,7 @@ namespace Ryujinx.Ava
             }
 
             WindowScaleFactor = ForceDpiAware.GetWindowScaleFactor();
-            ActualScaleFactor = ForceDpiAware.GetActualScaleFactor() / 96;
+            ActualScaleFactor = ForceDpiAware.GetActualScaleFactor() / BaseDpi;
 
             // Delete backup files after updating.
             Task.Run(Updater.CleanupUpdate);
@@ -196,6 +185,8 @@ namespace Ryujinx.Ava
 
             if (UseVulkan)
             {
+                // With a custom gpu backend, avalonia doesn't enable dpi awareness, so the backend must handle it. This isn't so for the opengl backed, 
+                // as that uses avalonia's gpu backend and it's enabled there.
                 ForceDpiAware.Windows();
             }
 

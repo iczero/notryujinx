@@ -3,7 +3,6 @@ using Avalonia.Skia;
 using Ryujinx.Ava.Ui.Vulkan;
 using Ryujinx.Ava.Ui.Backend.Vulkan;
 
-
 namespace Ryujinx.Ava.Ui.Backend
 {
     public static class SkiaGpuFactory
@@ -12,7 +11,8 @@ namespace Ryujinx.Ava.Ui.Backend
         {
             var skiaOptions = AvaloniaLocator.Current.GetService<SkiaOptions>() ?? new SkiaOptions();
             var platformInterface = AvaloniaLocator.Current.GetService<VulkanPlatformInterface>();
-            if(platformInterface == null) {
+            if (platformInterface == null)
+            {
                 VulkanPlatformInterface.TryInitialize();
             }
             var gpu = new VulkanSkiaGpu(skiaOptions.MaxGpuResourceSizeBytes);

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Ryujinx.Graphics.Vulkan;
 using Silk.NET.Core;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
@@ -16,13 +17,13 @@ namespace Ryujinx.Ava.Ui.Vulkan
             Api = api;
             QueueCount = queueCount;
             QueueFamilyIndex = queueFamilyIndex;
-            
+
             api.GetPhysicalDeviceProperties(apiHandle, out var properties);
-            
+
             DeviceName = Marshal.PtrToStringAnsi((IntPtr)properties.DeviceName);
-            
+
             var version = (Version32)properties.ApiVersion;
-            ApiVersion = new Version((int) version.Major, (int) version.Minor, 0, (int) version.Patch);
+            ApiVersion = new Version((int)version.Major, (int)version.Minor, 0, (int)version.Patch);
         }
 
         internal PhysicalDevice InternalHandle { get; }
@@ -72,18 +73,32 @@ namespace Ryujinx.Ava.Ui.Vulkan
 
                 foreach (var gpu in discreteGpus)
                 {
-                    if (IsSuitableDevice(instance.Api, gpu.Key, gpu.Value, surface.ApiHandle, out var queueCount,
-                    out var queueFamilyIndex))
+                    if (IsSuitableDevice(
+                        instance.Api,
+                        gpu.Key,
+                        gpu.Value,
+                        surface.ApiHandle,
+                        out var queueCount,
+                        out var queueFamilyIndex))
+                    {
                         return new VulkanPhysicalDevice(gpu.Key, instance.Api, queueCount, queueFamilyIndex);
+                    }
 
                     physicalDeviceProperties.Remove(gpu.Key);
                 }
             }
 
             foreach (var physicalDevice in physicalDeviceProperties)
-                if (IsSuitableDevice(instance.Api, physicalDevice.Key, physicalDevice.Value, surface.ApiHandle, out var queueCount,
+                if (IsSuitableDevice(
+                    instance.Api,
+                    physicalDevice.Key,
+                    physicalDevice.Value,
+                    surface.ApiHandle,
+                    out var queueCount,
                     out var queueFamilyIndex))
+                {
                     return new VulkanPhysicalDevice(physicalDevice.Key, instance.Api, queueCount, queueFamilyIndex);
+                }
 
             throw new Exception("No suitable physical device found");
         }
@@ -105,18 +120,24 @@ namespace Ryujinx.Ava.Ui.Vulkan
 
             fixed (ExtensionProperties* pExtensionProperties = extensionProperties)
             {
-                api.EnumerateDeviceExtensionProperties(physicalDevice, (byte*)null, &propertiesCount,
+                api.EnumerateDeviceExtensionProperties(
+                    physicalDevice,
+                    (byte*)null,
+                    &propertiesCount,
                     pExtensionProperties).ThrowOnError();
 
                 for (var i = 0; i < propertiesCount; i++)
                 {
                     var extensionName = Marshal.PtrToStringAnsi((IntPtr)pExtensionProperties[i].ExtensionName);
 
-                    if (VulkanDevice.RequiredDeviceExtensions.Contains(extensionName)) extensionMatches++;
+                    if (VulkanInitialization.RequiredExtensions.Contains(extensionName))
+                    {
+                        extensionMatches++;
+                    }
                 }
             }
 
-            if (extensionMatches == VulkanDevice.RequiredDeviceExtensions.Count)
+            if (extensionMatches == VulkanInitialization.RequiredExtensions.Length)
             {
                 familyIndex = FindSuitableQueueFamily(api, physicalDevice, surface, out queueCount);
 

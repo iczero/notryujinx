@@ -11,12 +11,10 @@ namespace Ryujinx.Ava.Ui.Vulkan
 {
     public class VulkanInstance : IDisposable
     {
-        private readonly DebugUtilsMessengerEXT _messenger;
         private const string EngineName = "Avalonia Vulkan";
 
-        private VulkanInstance(Instance apiHandle, Vk api, DebugUtilsMessengerEXT messenger)
+        private VulkanInstance(Instance apiHandle, Vk api)
         {
-            _messenger = messenger;
             InternalHandle = apiHandle;
             Api = api;
         }
@@ -36,7 +34,7 @@ namespace Ryujinx.Ava.Ui.Vulkan
                 {
                     extensions.Add("VK_KHR_xlib_surface");
                 }
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
                     extensions.Add("VK_KHR_win32_surface");
                 }
@@ -47,14 +45,7 @@ namespace Ryujinx.Ava.Ui.Vulkan
 
         public unsafe void Dispose()
         {
-            if (_messenger.Handle != 0)
-            {
-                if (Api.TryGetInstanceExtension(InternalHandle, out ExtDebugUtils debugUtils))
-                {
-                    debugUtils.DestroyDebugUtilsMessenger(InternalHandle, _messenger, null);
-                }
-            }
-            Api.DestroyInstance(InternalHandle, null);
+            Api?.DestroyInstance(InternalHandle, null);
             Api?.Dispose();
         }
 
@@ -119,46 +110,7 @@ namespace Ryujinx.Ava.Ui.Vulkan
 
             for (var i = 0; i < enabledLayers.Count; i++) Marshal.FreeHGlobal(ppEnabledLayers[i]);
 
-            DebugUtilsMessengerEXT messenger = default;
-
-            if (options.UseDebug && api.TryGetInstanceExtension(instance, out ExtDebugUtils debugUtils))
-            {
-                var createInfo = new DebugUtilsMessengerCreateInfoEXT
-                {
-                    SType = StructureType.DebugUtilsMessengerCreateInfoExt,
-                    MessageSeverity = DebugUtilsMessageSeverityFlagsEXT.DebugUtilsMessageSeverityVerboseBitExt | DebugUtilsMessageSeverityFlagsEXT.DebugUtilsMessageSeverityWarningBitExt | DebugUtilsMessageSeverityFlagsEXT.DebugUtilsMessageSeverityErrorBitExt,
-                    MessageType = DebugUtilsMessageTypeFlagsEXT.DebugUtilsMessageTypeGeneralBitExt | DebugUtilsMessageTypeFlagsEXT.DebugUtilsMessageTypeValidationBitExt | DebugUtilsMessageTypeFlagsEXT.DebugUtilsMessageTypePerformanceBitExt,
-                    PfnUserCallback = new PfnDebugUtilsMessengerCallbackEXT(LogCallback),
-                };
-
-                debugUtils.CreateDebugUtilsMessenger(instance, createInfo, null, out messenger);
-            }
-
-            return new VulkanInstance(instance, api, messenger);
-        }
-
-        private static unsafe uint LogCallback(DebugUtilsMessageSeverityFlagsEXT messageSeverity, DebugUtilsMessageTypeFlagsEXT messageTypes, DebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
-        {
-            var message = Marshal.PtrToStringAnsi((nint)pCallbackData->PMessage);
-            switch (messageSeverity)
-            {
-                case DebugUtilsMessageSeverityFlagsEXT.DebugUtilsMessageSeverityWarningBitExt:
-                    Logger.TryGet(LogEventLevel.Warning, "Vulkan")?.Log(null, message);
-                    break;
-                case DebugUtilsMessageSeverityFlagsEXT.DebugUtilsMessageSeverityInfoBitExt:
-                    Logger.TryGet(LogEventLevel.Information, "Vulkan")?.Log(null, message);
-                    break;
-                case DebugUtilsMessageSeverityFlagsEXT.DebugUtilsMessageSeverityErrorBitExt:
-                    Logger.TryGet(LogEventLevel.Error, "Vulkan")?.Log(null, message);
-                    break;
-                case DebugUtilsMessageSeverityFlagsEXT.DebugUtilsMessageSeverityVerboseBitExt:
-                    Logger.TryGet(LogEventLevel.Verbose, "Vulkan")?.Log(null, message);
-                    break;
-            }
-
-            Ryujinx.Common.Logging.Logger.Info?.Print(Ryujinx.Common.Logging.LogClass.Gpu, message);
-
-            return Vk.False;
+            return new VulkanInstance(instance, api);
         }
 
         private static unsafe bool IsLayerAvailable(Vk api, string layerName)

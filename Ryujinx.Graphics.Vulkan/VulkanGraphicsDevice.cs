@@ -113,32 +113,11 @@ namespace Ryujinx.Graphics.Vulkan
             Samplers = new HashSet<SamplerHolder>();
         }
 
-        private unsafe void SetupContext(GraphicsDebugLevel logLevel)
+        private unsafe void LoadFeatures(string[] supportedExtensions, uint maxQueueCount, uint queueFamilyIndex)
         {
-            var api = Vk.GetApi();
+            FormatCapabilities = new FormatCapabilities(Api, _physicalDevice);
 
-            Api = api;
-
-            _instance = VulkanInitialization.CreateInstance(api, logLevel, GetRequiredExtensions(), out ExtDebugReport debugReport, out _debugReportCallback);
-
-            DebugReportApi = debugReport;
-
-            if (api.TryGetInstanceExtension(_instance, out KhrSurface surfaceApi))
-            {
-                SurfaceApi = surfaceApi;
-            }
-
-            _surface = GetSurface(_instance, api);
-            _physicalDevice = VulkanInitialization.FindSuitablePhysicalDevice(api, _instance, _surface);
-
-            FormatCapabilities = new FormatCapabilities(api, _physicalDevice);
-
-            var queueFamilyIndex = VulkanInitialization.FindSuitableQueueFamily(api, _physicalDevice, _surface, out uint maxQueueCount);
-            var supportedExtensions = VulkanInitialization.GetSupportedExtensions(api, _physicalDevice);
-            var supportedFeatures = api.GetPhysicalDeviceFeature(_physicalDevice);
-
-            _device = VulkanInitialization.CreateDevice(api, _physicalDevice, queueFamilyIndex, supportedExtensions, maxQueueCount);
-
+            var supportedFeatures = Api.GetPhysicalDeviceFeature(_physicalDevice);
             SupportsIndexTypeUint8 = supportedExtensions.Contains("VK_EXT_index_type_uint8");
             SupportsCustomBorderColor = supportedExtensions.Contains("VK_EXT_custom_border_color");
             SupportsIndirectParameters = supportedExtensions.Contains(KhrDrawIndirectCount.ExtensionName);
@@ -146,38 +125,29 @@ namespace Ryujinx.Graphics.Vulkan
             SupportsGeometryShaderPassthrough = supportedExtensions.Contains("VK_NV_geometry_shader_passthrough");
             SupportsSubgroupSizeControl = supportedExtensions.Contains("VK_EXT_subgroup_size_control");
 
-            if (api.TryGetDeviceExtension(_instance, _device, out KhrSwapchain swapchainApi))
-            {
-                SwapchainApi = swapchainApi;
-            }
-
-            if (api.TryGetDeviceExtension(_instance, _device, out ExtConditionalRendering conditionalRenderingApi))
+            if (Api.TryGetDeviceExtension(_instance, _device, out ExtConditionalRendering conditionalRenderingApi))
             {
                 ConditionalRenderingApi = conditionalRenderingApi;
             }
 
-            if (api.TryGetDeviceExtension(_instance, _device, out ExtExtendedDynamicState extendedDynamicStateApi))
+            if (Api.TryGetDeviceExtension(_instance, _device, out ExtExtendedDynamicState extendedDynamicStateApi))
             {
                 ExtendedDynamicStateApi = extendedDynamicStateApi;
             }
 
-            if (api.TryGetDeviceExtension(_instance, _device, out ExtTransformFeedback transformFeedbackApi))
+            if (Api.TryGetDeviceExtension(_instance, _device, out ExtTransformFeedback transformFeedbackApi))
             {
                 TransformFeedbackApi = transformFeedbackApi;
             }
 
-            if (api.TryGetDeviceExtension(_instance, _device, out KhrDrawIndirectCount drawIndirectCountApi))
+            if (Api.TryGetDeviceExtension(_instance, _device, out KhrDrawIndirectCount drawIndirectCountApi))
             {
                 DrawIndirectCountApi = drawIndirectCountApi;
             }
 
-            api.GetDeviceQueue(_device, queueFamilyIndex, 0, out var queue);
-            Queue = queue;
-            QueueLock = new object();
-
             if (maxQueueCount >= 2)
             {
-                api.GetDeviceQueue(_device, queueFamilyIndex, 1, out var backgroundQueue);
+                Api.GetDeviceQueue(_device, queueFamilyIndex, 1, out var backgroundQueue);
                 BackgroundQueue = backgroundQueue;
                 BackgroundQueueLock = new object();
             }
@@ -224,9 +194,9 @@ namespace Ryujinx.Graphics.Vulkan
 
             ref var properties = ref properties2.Properties;
 
-            MemoryAllocator = new MemoryAllocator(api, _device, properties.Limits.MaxMemoryAllocationCount);
+            MemoryAllocator = new MemoryAllocator(Api, _device, properties.Limits.MaxMemoryAllocationCount);
 
-            CommandBufferPool = VulkanInitialization.CreateCommandBufferPool(api, _device, queue, QueueLock, queueFamilyIndex);
+            CommandBufferPool = VulkanInitialization.CreateCommandBufferPool(Api, _device, Queue, QueueLock, queueFamilyIndex);
 
             DescriptorSetManager = new DescriptorSetManager(_device);
 
@@ -242,6 +212,41 @@ namespace Ryujinx.Graphics.Vulkan
             HelperShader = new HelperShader(this, _device);
 
             _counters = new Counters(this, _device, _pipeline);
+        }
+
+        private unsafe void SetupContext(GraphicsDebugLevel logLevel)
+        {
+            var api = Vk.GetApi();
+
+            Api = api;
+
+            _instance = VulkanInitialization.CreateInstance(api, logLevel, GetRequiredExtensions(), out ExtDebugReport debugReport, out _debugReportCallback);
+
+            DebugReportApi = debugReport;
+
+            if (api.TryGetInstanceExtension(_instance, out KhrSurface surfaceApi))
+            {
+                SurfaceApi = surfaceApi;
+            }
+
+            _surface = GetSurface(_instance, api);
+            _physicalDevice = VulkanInitialization.FindSuitablePhysicalDevice(api, _instance, _surface);
+
+            var queueFamilyIndex = VulkanInitialization.FindSuitableQueueFamily(api, _physicalDevice, _surface, out uint maxQueueCount);
+            var supportedExtensions = VulkanInitialization.GetSupportedExtensions(api, _physicalDevice);
+
+            _device = VulkanInitialization.CreateDevice(api, _physicalDevice, queueFamilyIndex, supportedExtensions, maxQueueCount);
+
+            if (api.TryGetDeviceExtension(_instance, _device, out KhrSwapchain swapchainApi))
+            {
+                SwapchainApi = swapchainApi;
+            }
+
+            api.GetDeviceQueue(_device, queueFamilyIndex, 0, out var queue);
+            Queue = queue;
+            QueueLock = new object();
+
+            LoadFeatures(supportedExtensions, maxQueueCount, queueFamilyIndex);
 
             _window = new Window(this, _surface, _physicalDevice, _device);
         }
@@ -256,75 +261,7 @@ namespace Ryujinx.Graphics.Vulkan
 
             DebugReportApi = debugReport;
 
-            FormatCapabilities = new FormatCapabilities(api, _physicalDevice);
-
             var supportedExtensions = VulkanInitialization.GetSupportedExtensions(api, _physicalDevice);
-            var supportedFeatures = api.GetPhysicalDeviceFeature(_physicalDevice);
-
-            PhysicalDeviceProperties2 properties2 = new PhysicalDeviceProperties2()
-            {
-                SType = StructureType.PhysicalDeviceProperties2
-            };
-
-            PhysicalDeviceSubgroupSizeControlPropertiesEXT propertiesSubgroupSizeControl = new PhysicalDeviceSubgroupSizeControlPropertiesEXT()
-            {
-                SType = StructureType.PhysicalDeviceSubgroupSizeControlPropertiesExt
-            };
-
-            if (SupportsSubgroupSizeControl)
-            {
-                properties2.PNext = &propertiesSubgroupSizeControl;
-            }
-
-            bool supportsTransformFeedback = supportedExtensions.Contains(ExtTransformFeedback.ExtensionName);
-
-            PhysicalDeviceTransformFeedbackPropertiesEXT propertiesTransformFeedback = new PhysicalDeviceTransformFeedbackPropertiesEXT()
-            {
-                SType = StructureType.PhysicalDeviceTransformFeedbackPropertiesExt
-            };
-
-            if (supportsTransformFeedback)
-            {
-                propertiesTransformFeedback.PNext = properties2.PNext;
-                properties2.PNext = &propertiesTransformFeedback;
-            }
-
-            Api.GetPhysicalDeviceProperties2(_physicalDevice, &properties2);
-
-            Capabilities = new HardwareCapabilities(
-                supportedExtensions.Contains(ExtConditionalRendering.ExtensionName),
-                supportedExtensions.Contains(ExtExtendedDynamicState.ExtensionName),
-                supportsTransformFeedback,
-                propertiesTransformFeedback.TransformFeedbackQueries,
-                supportedFeatures.GeometryShader,
-                propertiesSubgroupSizeControl.MinSubgroupSize,
-                propertiesSubgroupSizeControl.MaxSubgroupSize,
-                propertiesSubgroupSizeControl.RequiredSubgroupSizeStages);
-
-            SupportsIndexTypeUint8 = supportedExtensions.Contains("VK_EXT_index_type_uint8");
-            SupportsCustomBorderColor = supportedExtensions.Contains("VK_EXT_custom_border_color");
-            SupportsIndirectParameters = supportedExtensions.Contains(KhrDrawIndirectCount.ExtensionName);
-            SupportsFragmentShaderInterlock = supportedExtensions.Contains("VK_EXT_fragment_shader_interlock");
-
-            if (api.TryGetDeviceExtension(_instance, _device, out ExtConditionalRendering conditionalRenderingApi))
-            {
-                ConditionalRenderingApi = conditionalRenderingApi;
-            }
-
-            if (api.TryGetDeviceExtension(_instance, _device, out ExtExtendedDynamicState extendedDynamicStateApi))
-            {
-                ExtendedDynamicStateApi = extendedDynamicStateApi;
-            }
-
-            if (api.TryGetDeviceExtension(_instance, _device, out ExtTransformFeedback transformFeedbackApi))
-            {
-                TransformFeedbackApi = transformFeedbackApi;
-            }
-
-            if (api.TryGetDeviceExtension(_instance, _device, out KhrDrawIndirectCount drawIndirectCountApi))
-            {
-                DrawIndirectCountApi = drawIndirectCountApi;
-            }
 
             uint propertiesCount;
 
@@ -336,34 +273,8 @@ namespace Ryujinx.Graphics.Vulkan
             {
                 api.GetPhysicalDeviceQueueFamilyProperties(_physicalDevice, &propertiesCount, pProperties);
             }
-
-            if (queueFamilyProperties[0].QueueCount >= 2)
-            {
-                api.GetDeviceQueue(_device, _queueFamilyIndex, 1, out var backgroundQueue);
-                BackgroundQueue = backgroundQueue;
-                BackgroundQueueLock = new object();
-            }
-
-            Api.GetPhysicalDeviceProperties(_physicalDevice, out var properties);
-
-            MemoryAllocator = new MemoryAllocator(api, _device, properties.Limits.MaxMemoryAllocationCount);
-
-            CommandBufferPool = VulkanInitialization.CreateCommandBufferPool(api, _device, Queue, QueueLock, _queueFamilyIndex);
-
-            DescriptorSetManager = new DescriptorSetManager(_device);
-
-            PipelineLayoutCache = new PipelineLayoutCache();
-
-            BackgroundResources = new BackgroundResources(this, _device);
-
-            BufferManager = new BufferManager(this, _physicalDevice, _device);
-
-            _syncManager = new SyncManager(this, _device);
-            _pipeline = new PipelineFull(this, _device);
-
-            HelperShader = new HelperShader(this, _device);
-
-            _counters = new Counters(this, _device, _pipeline);
+            
+            LoadFeatures(supportedExtensions, queueFamilyProperties[0].QueueCount, _queueFamilyIndex);
 
             _window = new ImageWindow(this, _physicalDevice, _device);
         }

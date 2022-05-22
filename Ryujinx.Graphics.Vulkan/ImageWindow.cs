@@ -94,8 +94,7 @@ namespace Ryujinx.Graphics.Vulkan
                         Flags = ImageCreateFlags.ImageCreateMutableFormatBit
                     };
 
-                    _gd.Api
-                        .CreateImage(_device, imageCreateInfo, null, out var image).ThrowOnError();
+                    _gd.Api.CreateImage(_device, imageCreateInfo, null, out var image).ThrowOnError();
                     _images[i] = new Auto<DisposableImage>(new DisposableImage(_gd.Api, _device, image));
 
                     _gd.Api.GetImageMemoryRequirements(_device, image,
@@ -108,7 +107,7 @@ namespace Ryujinx.Graphics.Vulkan
 
                     _imageAllocationAuto[i] = new Auto<MemoryAllocation>(allocation);
 
-                    _gd.Api.BindImageMemory(_device, image, allocation.Memory, 0);
+                    _gd.Api.BindImageMemory(_device, image, allocation.Memory, allocation.Offset);
 
                     _imageViews[i] = CreateImageView(image, _format);
 
@@ -346,6 +345,13 @@ namespace Ryujinx.Graphics.Vulkan
 
     public class PresentImageInfo
     {
+        public Image Image { get; }
+        public DeviceMemory Memory { get; }
+        public ulong MemorySize { get; set; }
+        public ulong MemoryOffset { get; set; }
+        public Semaphore ReadySemaphore { get; }
+        public Semaphore AvailableSemaphore { get; }
+
         public PresentImageInfo(Image image, DeviceMemory memory, ulong memorySize, ulong memoryOffset, Semaphore readySemaphore, Semaphore availableSemaphore)
         {
             this.Image = image;
@@ -354,15 +360,6 @@ namespace Ryujinx.Graphics.Vulkan
             this.MemoryOffset = memoryOffset;
             this.ReadySemaphore = readySemaphore;
             this.AvailableSemaphore = availableSemaphore;
-
         }
-
-        public Image Image { get; }
-        public DeviceMemory Memory { get; }
-        public ulong MemorySize { get; set; }
-        public ulong MemoryOffset { get; set; }
-        public Semaphore ReadySemaphore { get; }
-        public Semaphore AvailableSemaphore { get; }
-
     }
 }

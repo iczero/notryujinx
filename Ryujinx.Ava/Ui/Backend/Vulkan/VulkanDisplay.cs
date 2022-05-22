@@ -8,7 +8,7 @@ using Silk.NET.Vulkan.Extensions.KHR;
 
 namespace Ryujinx.Ava.Ui.Vulkan
 {
-    public class VulkanDisplay : IDisposable
+    internal class VulkanDisplay : IDisposable
     {
         private static KhrSwapchain _swapchainExtension;
         private readonly VulkanInstance _instance;
@@ -108,7 +108,7 @@ namespace Ryujinx.Ava.Ui.Vulkan
             var surfaceFormat = surface.GetSurfaceFormat(physicalDevice);
 
             bool supportsIdentityTransform = capabilities.SupportedTransforms.HasFlag(SurfaceTransformFlagsKHR.SurfaceTransformIdentityBitKhr);
-            bool isRotated = capabilities.CurrentTransform.HasFlag(SurfaceTransformFlagsKHR.SurfaceTransformRotate90BitKhr) || 
+            bool isRotated = capabilities.CurrentTransform.HasFlag(SurfaceTransformFlagsKHR.SurfaceTransformRotate90BitKhr) ||
                 capabilities.CurrentTransform.HasFlag(SurfaceTransformFlagsKHR.SurfaceTransformRotate270BitKhr);
 
             if (capabilities.CurrentExtent.Width != uint.MaxValue)
@@ -138,6 +138,15 @@ namespace Ryujinx.Ava.Ui.Vulkan
                 presentMode = PresentModeKHR.PresentModeFifoKhr;
 
             var compositeAlphaFlags = CompositeAlphaFlagsKHR.CompositeAlphaOpaqueBitKhr;
+
+            if (capabilities.SupportedCompositeAlpha.HasFlag(CompositeAlphaFlagsKHR.CompositeAlphaPostMultipliedBitKhr))
+            {
+                compositeAlphaFlags = CompositeAlphaFlagsKHR.CompositeAlphaPostMultipliedBitKhr;
+            }
+            else if (capabilities.SupportedCompositeAlpha.HasFlag(CompositeAlphaFlagsKHR.CompositeAlphaPreMultipliedBitKhr))
+            {
+                compositeAlphaFlags = CompositeAlphaFlagsKHR.CompositeAlphaPreMultipliedBitKhr;
+            }
 
             var swapchainCreateInfo = new SwapchainCreateInfoKHR
             {
@@ -200,14 +209,20 @@ namespace Ryujinx.Ava.Ui.Vulkan
             var surfaceFormat = SurfaceFormat;
 
             for (var i = 0; i < imageCount; i++)
+            {
                 _swapchainImageViews[i] = CreateSwapchainImageView(_swapchainImages[i], surfaceFormat.Format);
+            }
         }
 
         private unsafe void DestroyCurrentImageViews()
         {
             if (_swapchainImageViews.Length > 0)
+            {
                 for (var i = 0; i < _swapchainImageViews.Length; i++)
+                {
                     _instance.Api.DestroyImageView(_device.InternalHandle, _swapchainImageViews[i], null);
+                }
+            }
         }
 
         private void Recreate()
@@ -317,14 +332,13 @@ namespace Ryujinx.Ava.Ui.Vulkan
                     Element0 = new Offset3D(0, 0, 0),
                     Element1 = new Offset3D(Size.Width, Size.Height, 1),
                 },
-                SrcSubresource =
-                    new ImageSubresourceLayers
-                    {
-                        AspectMask = ImageAspectFlags.ImageAspectColorBit,
-                        BaseArrayLayer = 0,
-                        LayerCount = 1,
-                        MipLevel = 0
-                    },
+                SrcSubresource = new ImageSubresourceLayers
+                {
+                    AspectMask = ImageAspectFlags.ImageAspectColorBit,
+                    BaseArrayLayer = 0,
+                    LayerCount = 1,
+                    MipLevel = 0
+                },
                 DstSubresource = new ImageSubresourceLayers
                 {
                     AspectMask = ImageAspectFlags.ImageAspectColorBit,
@@ -340,13 +354,12 @@ namespace Ryujinx.Ava.Ui.Vulkan
                 ImageLayout.TransferDstOptimal,
                 1,
                 srcBlitRegion,
-                Filter.Linear
-                );
+                Filter.Linear);
 
             VulkanMemoryHelper.TransitionLayout(_device, commandBuffer,
                 renderTarget.Image.InternalHandle.Value, ImageLayout.TransferSrcOptimal,
                 AccessFlags.AccessTransferReadBit,
-                (ImageLayout) renderTarget.Image.CurrentLayout,
+                (ImageLayout)renderTarget.Image.CurrentLayout,
                 AccessFlags.AccessNoneKhr,
                 renderTarget.MipLevels);
         }

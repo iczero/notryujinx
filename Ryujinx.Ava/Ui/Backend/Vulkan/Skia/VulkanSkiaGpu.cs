@@ -54,7 +54,6 @@ namespace Ryujinx.Ava.Ui.Backend.Vulkan
 
                 addr = _vulkan.Device.Api.GetInstanceProcAddr(new Instance(_vulkan.Instance.Handle), name);
 
-
                 if (addr == IntPtr.Zero)
                     addr = _vulkan.Device.Api.GetInstanceProcAddr(new Instance(instanceHandle), name);
 
@@ -81,25 +80,18 @@ namespace Ryujinx.Ava.Ui.Backend.Vulkan
         {
             foreach (var surface in surfaces)
             {
-                VulkanWindowSurface window = null;
-
                 if (surface is IPlatformHandle handle)
                 {
-                    window = new VulkanWindowSurface(handle.Handle);
+                    var window = new VulkanWindowSurface(handle.Handle);
+
+                    var vulkanRenderTarget = new VulkanRenderTarget(_vulkan, window);
+
+                    Initialize();
+
+                    vulkanRenderTarget.GrContext = _grContext;
+
+                    return vulkanRenderTarget;
                 }
-
-                if (window == null)
-                {
-                    continue;
-                }
-
-                var vulkanRenderTarget = new VulkanRenderTarget(_vulkan, window);
-
-                Initialize();
-
-                vulkanRenderTarget.GrContext = _grContext;
-
-                return vulkanRenderTarget;
             }
             return null;
         }
@@ -108,6 +100,5 @@ namespace Ryujinx.Ava.Ui.Backend.Vulkan
         {
             return null;
         }
-
     }
 }

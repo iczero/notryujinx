@@ -29,7 +29,7 @@ namespace Ryujinx.Ava.Ui.Controls
 
         public override void DestroyBackgroundContext()
         {
-            
+
         }
 
         protected override ICustomDrawOperation CreateDrawOperation()
@@ -108,7 +108,8 @@ namespace Ryujinx.Ava.Ui.Controls
                     ImageLayout = (uint)ImageLayout.ColorAttachmentOptimal,
                     ImageTiling = (uint)ImageTiling.Optimal,
                     ImageUsageFlags = (uint)(ImageUsageFlags.ImageUsageColorAttachmentBit
-                                        | ImageUsageFlags.ImageUsageTransferSrcBit | ImageUsageFlags.ImageUsageTransferDstBit),
+                                        | ImageUsageFlags.ImageUsageTransferSrcBit
+                                        | ImageUsageFlags.ImageUsageTransferDstBit),
                     LevelCount = 1,
                     SampleCount = 1,
                     Protected = false,
@@ -121,10 +122,17 @@ namespace Ryujinx.Ava.Ui.Controls
                     }
                 };
 
-                using var backendTexture = new GRBackendRenderTarget((int)_control.RenderSize.Width, (int)_control.RenderSize.Height, 1,
-                        imageInfo);
-                using var surface = SKSurface.Create(gpu.GrContext, backendTexture,
-                    GRSurfaceOrigin.TopLeft, SKColorType.Rgba8888);
+                using var backendTexture = new GRBackendRenderTarget(
+                    (int)_control.RenderSize.Width,
+                    (int)_control.RenderSize.Height,
+                    1,
+                    imageInfo);
+
+                using var surface = SKSurface.Create(
+                    gpu.GrContext,
+                    backendTexture,
+                    GRSurfaceOrigin.TopLeft,
+                    SKColorType.Rgba8888);
 
                 if (surface == null)
                 {

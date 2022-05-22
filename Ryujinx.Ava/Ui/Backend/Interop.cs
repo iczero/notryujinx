@@ -43,7 +43,6 @@ namespace Ryujinx.Ava.Ui.Backend
         [DllImport("libX11.so.6")]
         public static extern int XGetWindowAttributes(IntPtr display, IntPtr window, ref XWindowAttributes attributes);
 
-
         [DllImport("libX11.so.6")]
         public static extern IntPtr XOpenDisplay(IntPtr display);
     }

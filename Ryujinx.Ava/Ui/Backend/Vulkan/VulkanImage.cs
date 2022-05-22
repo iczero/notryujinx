@@ -8,7 +8,7 @@ using Silk.NET.Vulkan;
 
 namespace Ryujinx.Ava.Ui.Vulkan
 {
-    public class VulkanImage : IDisposable
+    internal class VulkanImage : IDisposable
     {
         private readonly VulkanDevice _device;
         private readonly VulkanPhysicalDevice _physicalDevice;
@@ -18,26 +18,32 @@ namespace Ryujinx.Ava.Ui.Vulkan
         private ImageUsageFlags _imageUsageFlags { get; }
         private ImageView? _imageView { get; set; }
         private DeviceMemory _imageMemory { get; set; }
-        
+
         internal Image? InternalHandle { get; private set; }
         internal Format Format { get; }
         internal ImageAspectFlags AspectFlags { get; private set; }
-        
+
         public ulong Handle => InternalHandle?.Handle ?? 0;
         public ulong ViewHandle => _imageView?.Handle ?? 0;
-        public uint UsageFlags => (uint) _imageUsageFlags;
+        public uint UsageFlags => (uint)_imageUsageFlags;
         public ulong MemoryHandle => _imageMemory.Handle;
         public uint MipLevels { get; private set; }
         public PixelSize Size { get; }
         public ulong MemorySize { get; private set; }
-        public uint CurrentLayout => (uint) _currentLayout;
+        public uint CurrentLayout => (uint)_currentLayout;
 
-        public VulkanImage(VulkanDevice device, VulkanPhysicalDevice physicalDevice, VulkanCommandBufferPool commandBufferPool, uint format, PixelSize size, uint mipLevels = 0)
+        public VulkanImage(
+            VulkanDevice device,
+            VulkanPhysicalDevice physicalDevice,
+            VulkanCommandBufferPool commandBufferPool,
+            uint format,
+            PixelSize size,
+            uint mipLevels = 0)
         {
             _device = device;
             _physicalDevice = physicalDevice;
             _commandBufferPool = commandBufferPool;
-            Format = (Format) format;
+            Format = (Format)format;
             Size = size;
             MipLevels = mipLevels;
             _imageUsageFlags =
@@ -58,9 +64,7 @@ namespace Ryujinx.Ava.Ui.Vulkan
                     SType = StructureType.ImageCreateInfo,
                     ImageType = ImageType.ImageType2D,
                     Format = Format,
-                    Extent =
-                        new Extent3D((uint?)Size.Width,
-                            (uint?)Size.Height, 1),
+                    Extent = new Extent3D((uint?)Size.Width, (uint?)Size.Height, 1),
                     MipLevels = MipLevels,
                     ArrayLayers = 1,
                     Samples = SampleCountFlags.SampleCount1Bit,
@@ -71,8 +75,7 @@ namespace Ryujinx.Ava.Ui.Vulkan
                     Flags = ImageCreateFlags.ImageCreateMutableFormatBit
                 };
 
-                _device.Api
-                    .CreateImage(_device.InternalHandle, imageCreateInfo, null, out var image).ThrowOnError();
+                _device.Api.CreateImage(_device.InternalHandle, imageCreateInfo, null, out var image).ThrowOnError();
                 InternalHandle = image;
 
                 _device.Api.GetImageMemoryRequirements(_device.InternalHandle, InternalHandle.Value,
