@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Concurrent;
-using System.Linq;
 using Avalonia;
-using Ryujinx.Common.Configuration;
 using Ryujinx.Ava.Ui.Vulkan.Surfaces;
 using Silk.NET.Vulkan;
 using Ryujinx.Graphics.Vulkan;

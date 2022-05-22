@@ -1,7 +1,5 @@
 using Avalonia;
-using Avalonia.Platform;
 using System;
-using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using static Ryujinx.Ava.Ui.Backend.Interop;
 

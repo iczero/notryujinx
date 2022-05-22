@@ -37,7 +37,7 @@ namespace Ryujinx.Graphics.Vulkan
             ExtTransformFeedback.ExtensionName
         };
 
-        public static string[] ExcludedMessages { get; } = new string[]
+        private static string[] _excludedMessages = new string[]
         {
             // NOTE: Done on purpuse right now.
             "UNASSIGNED-CoreValidation-Shader-OutputNotConsumed",
@@ -152,7 +152,7 @@ namespace Ryujinx.Graphics.Vulkan
         {
             var msg = Marshal.PtrToStringAnsi((IntPtr)message);
 
-            foreach (string excludedMessagePart in ExcludedMessages)
+            foreach (string excludedMessagePart in _excludedMessages)
             {
                 if (msg.Contains(excludedMessagePart))
                 {

@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
 using Avalonia;
 using Avalonia.Platform;
 using Avalonia.Skia;
 using Ryujinx.Ava.Ui.Vulkan;
-using Ryujinx.Ava.Ui.Vulkan.Surfaces;
 using Silk.NET.Vulkan;
 using SkiaSharp;
 

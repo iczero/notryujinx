@@ -1,11 +1,9 @@
 using Avalonia;
-using Avalonia.Platform;
 using Ryujinx.Ava.Ui.Vulkan;
 using Ryujinx.Ava.Ui.Vulkan.Surfaces;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
 using System;
-using System.Runtime.InteropServices;
 
 namespace Ryujinx.Ava.Ui.Backend.Vulkan
 {

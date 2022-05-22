@@ -108,8 +108,8 @@ namespace Ryujinx.Ava.Ui.Controls
                     ImageLayout = (uint)ImageLayout.ColorAttachmentOptimal,
                     ImageTiling = (uint)ImageTiling.Optimal,
                     ImageUsageFlags = (uint)(ImageUsageFlags.ImageUsageColorAttachmentBit
-                                        | ImageUsageFlags.ImageUsageTransferSrcBit
-                                        | ImageUsageFlags.ImageUsageTransferDstBit),
+                                             | ImageUsageFlags.ImageUsageTransferSrcBit
+                                             | ImageUsageFlags.ImageUsageTransferDstBit),
                     LevelCount = 1,
                     SampleCount = 1,
                     Protected = false,

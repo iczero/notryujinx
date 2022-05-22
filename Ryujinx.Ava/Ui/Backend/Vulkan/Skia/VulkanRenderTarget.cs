@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using Avalonia.Skia;
 using Ryujinx.Ava.Ui.Vulkan;
 using Ryujinx.Ava.Ui.Vulkan.Surfaces;
