@@ -109,12 +109,12 @@ namespace Ryujinx.Ava.Ui.Backend.Vulkan
                 _vulkanSession = vulkanSession;
 
                 SurfaceOrigin = vulkanSession.IsYFlipped ? GRSurfaceOrigin.TopLeft : GRSurfaceOrigin.BottomLeft;
-
-                Monitor.Enter(_vulkanSession.Display.Lock);
             }
 
             public void Dispose()
             {
+                Monitor.Enter(_vulkanSession.Display.Lock);
+
                 SkSurface.Canvas.Flush();
 
                 SkSurface.Dispose();

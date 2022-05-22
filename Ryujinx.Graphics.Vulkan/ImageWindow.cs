@@ -73,7 +73,6 @@ namespace Ryujinx.Graphics.Vulkan
             _imageViews = new Auto<DisposableImageView>[ImageCount];
             unsafe
             {
-
                 var cbs = _gd.CommandBufferPool.Rent();
                 for (int i = 0; i < _images.Length; i++)
                 {

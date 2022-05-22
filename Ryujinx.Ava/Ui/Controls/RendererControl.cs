@@ -2,17 +2,8 @@
 using Avalonia.Controls;
 using Avalonia.Data;
 using Avalonia.Media;
-using Avalonia.OpenGL;
-using Avalonia.Platform;
 using Avalonia.Rendering.SceneGraph;
-using Avalonia.Skia;
-using Avalonia.Threading;
-using OpenTK.Graphics.OpenGL;
 using Ryujinx.Common.Configuration;
-using SkiaSharp;
-using SPB.Graphics;
-using SPB.Graphics.OpenGL;
-using SPB.Platform;
 using SPB.Windowing;
 using System;
 
