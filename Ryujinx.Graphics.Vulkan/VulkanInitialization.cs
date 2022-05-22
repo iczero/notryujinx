@@ -493,5 +493,43 @@ namespace Ryujinx.Graphics.Vulkan
         {
             return new CommandBufferPool(api, device, queue, queueLock, queueFamilyIndex);
         }
+
+        public unsafe static void CreateDebugCallbacks(Vk api, GraphicsDebugLevel logLevel, Instance instance, out ExtDebugReport debugReport, out DebugReportCallbackEXT debugReportCallback)
+        {
+            debugReport = default;
+
+            if (logLevel != GraphicsDebugLevel.None)
+            {
+                if (!api.TryGetInstanceExtension(instance, out debugReport))
+                {
+                    throw new Exception();
+                    // TODO: Exception.
+                }
+
+                var flags = logLevel switch
+                {
+                    GraphicsDebugLevel.Error => DebugReportFlagsEXT.DebugReportErrorBitExt,
+                    GraphicsDebugLevel.Slowdowns => DebugReportFlagsEXT.DebugReportErrorBitExt | DebugReportFlagsEXT.DebugReportPerformanceWarningBitExt,
+                    GraphicsDebugLevel.All => DebugReportFlagsEXT.DebugReportInformationBitExt |
+                                              DebugReportFlagsEXT.DebugReportWarningBitExt |
+                                              DebugReportFlagsEXT.DebugReportPerformanceWarningBitExt |
+                                              DebugReportFlagsEXT.DebugReportErrorBitExt |
+                                              DebugReportFlagsEXT.DebugReportDebugBitExt,
+                    _ => throw new NotSupportedException()
+                };
+                var debugReportCallbackCreateInfo = new DebugReportCallbackCreateInfoEXT()
+                {
+                    SType = StructureType.DebugReportCallbackCreateInfoExt,
+                    Flags = flags,
+                    PfnCallback = new PfnDebugReportCallbackEXT(DebugReport)
+                };
+
+                debugReport.CreateDebugReportCallback(instance, in debugReportCallbackCreateInfo, null, out debugReportCallback).ThrowOnError();
+            }
+            else
+            {
+                debugReportCallback = default;
+            }
+        }
     }
 }

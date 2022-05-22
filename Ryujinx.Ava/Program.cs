@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.OpenGL;
 using Avalonia.Rendering;
 using Avalonia.Threading;
+using Ryujinx.Ava.Ui.Backend;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Windows;
 using Ryujinx.Common;
@@ -14,6 +15,8 @@ using Ryujinx.Common.SystemInfo;
 using Ryujinx.Modules;
 using Ryujinx.Ui.Common;
 using Ryujinx.Ui.Common.Configuration;
+using Silk.NET.Vulkan.Extensions.EXT;
+using Silk.NET.Vulkan.Extensions.KHR;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,12 +28,14 @@ namespace Ryujinx.Ava
     internal class Program
     {
         public static double WindowScaleFactor { get; set; }
+        public static double ActualScaleFactor { get; set; }
         public static string Version { get; private set; }
         public static string ConfigurationPath { get; private set; }
         public static string CommandLineProfile { get; set; }
         public static bool PreviewerDetached { get; private set; }
 
         public static RenderTimer RenderTimer { get; private set; }
+        public static bool UseVulkan { get; private set; }
 
         [DllImport("user32.dll", SetLastError = true)]
         public static extern int MessageBoxA(IntPtr hWnd, string text, string caption, uint type);
@@ -66,7 +71,7 @@ namespace Ryujinx.Ava
                     EnableMultiTouch = true,
                     EnableIme = true,
                     UseEGL = false,
-                    UseGpu = true,
+                    UseGpu = !UseVulkan,
                     GlProfiles = new List<GlVersion>()
                     {
                         new GlVersion(GlProfileType.OpenGL, 4, 3)
@@ -75,7 +80,7 @@ namespace Ryujinx.Ava
                 .With(new Win32PlatformOptions
                 {
                     EnableMultitouch = true,
-                    UseWgl = true,
+                    UseWgl = !UseVulkan,
                     WglProfiles = new List<GlVersion>()
                     {
                         new GlVersion(GlProfileType.OpenGL, 4, 3)
@@ -84,6 +89,31 @@ namespace Ryujinx.Ava
                     CompositionBackdropCornerRadius = 8f,
                 })
                 .UseSkia()
+                .With(new Ui.Vulkan.VulkanOptions()
+                {
+                    ApplicationName = "Ryujinx.Graphics.Vulkan",
+                    VulkanVersion = new Version(1, 2),
+                    DeviceExtensions = new List<string>
+                    {
+                        ExtConditionalRendering.ExtensionName,
+                        ExtExtendedDynamicState.ExtensionName,
+                        KhrDrawIndirectCount.ExtensionName,
+                        "VK_EXT_custom_border_color",
+                        "VK_EXT_fragment_shader_interlock",
+                        "VK_EXT_index_type_uint8",
+                        "VK_EXT_robustness2",
+                        "VK_EXT_shader_subgroup_ballot",
+                        "VK_EXT_subgroup_size_control",
+                        "VK_NV_geometry_shader_passthrough"
+                    },
+                    MaxQueueCount = 2,
+                    PreferDiscreteGpu = true,
+                    UseDebug = !PreviewerDetached ? false : ConfigurationState.Instance.Logger.GraphicsDebugLevel.Value > GraphicsDebugLevel.None,
+                })
+                .With(new SkiaOptions()
+                {
+                    CustomGpuFactory = UseVulkan ? SkiaGpuFactory.CreateVulkanGpu : null
+                })
                 .AfterSetup(_ =>
                 {
                     AvaloniaLocator.CurrentMutable
@@ -136,9 +166,8 @@ namespace Ryujinx.Ava
                 }
             }
 
-            // Make process DPI aware for proper window sizing on high-res screens.
-            ForceDpiAware.Windows();
             WindowScaleFactor = ForceDpiAware.GetWindowScaleFactor();
+            ActualScaleFactor = ForceDpiAware.GetActualScaleFactor() / 96;
 
             // Delete backup files after updating.
             Task.Run(Updater.CleanupUpdate);
@@ -162,6 +191,13 @@ namespace Ryujinx.Ava
             DiscordIntegrationModule.Initialize();
 
             ReloadConfig();
+
+            UseVulkan = PreviewerDetached ? ConfigurationState.Instance.Graphics.GraphicsBackend.Value == GraphicsBackend.Vulkan : false;
+
+            if (UseVulkan)
+            {
+                ForceDpiAware.Windows();
+            }
 
             // Logging system information.
             PrintSystemInfo();
