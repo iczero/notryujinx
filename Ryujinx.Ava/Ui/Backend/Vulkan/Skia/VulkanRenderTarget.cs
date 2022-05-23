@@ -38,9 +38,8 @@ namespace Ryujinx.Ava.Ui.Backend.Vulkan
                 var scaling = session.Scaling;
                 if (size.Width <= 0 || size.Height <= 0 || scaling < 0)
                 {
-                    session.Dispose();
-                    throw new InvalidOperationException(
-                        $"Can't create drawing context for surface with {size} size and {scaling} scaling");
+                    size = new Avalonia.PixelSize(1, 1);
+                    scaling = 1;
                 }
 
                 lock (GrContext)

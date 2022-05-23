@@ -155,9 +155,6 @@ namespace Ryujinx.Ava
                 }
             }
 
-            WindowScaleFactor = ForceDpiAware.GetWindowScaleFactor();
-            ActualScaleFactor = ForceDpiAware.GetActualScaleFactor() / BaseDpi;
-
             // Delete backup files after updating.
             Task.Run(Updater.CleanupUpdate);
 
@@ -189,6 +186,9 @@ namespace Ryujinx.Ava
                 // as that uses avalonia's gpu backend and it's enabled there.
                 ForceDpiAware.Windows();
             }
+
+            WindowScaleFactor = ForceDpiAware.GetWindowScaleFactor();
+            ActualScaleFactor = ForceDpiAware.GetActualScaleFactor() / BaseDpi;
 
             // Logging system information.
             PrintSystemInfo();
