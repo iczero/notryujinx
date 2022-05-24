@@ -88,13 +88,17 @@ namespace Ryujinx.Ava.Ui.Controls
 
             public void Render(IDrawingContextImpl context)
             {
-                if (_control.Image == null)
+                if (_control.Image == null || _control.RenderSize.Width == 0 || _control.RenderSize.Height == 0)
+                {
                     return;
+                }
 
                 var image = (PresentImageInfo)_control.Image;
 
                 if (context is not ISkiaDrawingContextImpl skiaDrawingContextImpl)
+                {
                     return;
+                }
 
                 _control._platformInterface.Device.QueueWaitIdle();
 
