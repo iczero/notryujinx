@@ -130,6 +130,7 @@
                                           Header="Italian" />
                                 <MenuItem Command="{Binding ChangeLanguage}" CommandParameter="ko_KR" Header="Korean" />
                                 <MenuItem Command="{Binding ChangeLanguage}" CommandParameter="ru_RU" Header="Russian" />
+                                <MenuItem Command="{Binding ChangeLanguage}" CommandParameter="zh_CN" Header="Simplicity Chinese" />
                             </MenuItem>
                             <Separator />
                             <MenuItem Command="{Binding OpenSettings}" Header="{locale:Locale MenuBarOptionsSettings}"
