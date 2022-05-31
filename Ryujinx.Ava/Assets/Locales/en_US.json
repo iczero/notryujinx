@@ -290,9 +290,8 @@
   "SettingsTabGeneralThemeBaseStyleLight": "Light",
   "SettingsTabGeneralThemeEnableCustomTheme": "Enable Custom Theme",
   "ButtonBrowse": "Browse",
-  "ControllerSettingsMotionConfigureCemuHookSettings": "Configure",
+  "ControllerSettingsConfigureGeneral": "Configure",
   "ControllerSettingsRumble": "Rumble",
-  "ControllerSettingsRumbleEnable": "Rumble",
   "ControllerSettingsRumbleStrongMultiplier": "Strong Rumble Multiplier",
   "ControllerSettingsRumbleWeakMultiplier": "Weak Rumble Multiplier",
   "DialogMessageSaveNotAvailableMessage": "There is no savedata for {0} [{1:x16}]",
@@ -556,5 +555,5 @@
   "SettingsTabHotkeysShowUiHotkey": "Show UI:",
   "SettingsTabHotkeysPauseHotkey": "Pause:",
   "SettingsTabHotkeysToggleMuteHotkey": "Mute:",
-  "CemuhookMotionTitle": "Motion Control Settings"
+  "ControllerMotionTitle": "Motion Control Settings"
 }

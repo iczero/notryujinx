@@ -55,7 +55,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
             if (contentDialog != null)
             {
-                contentDialog.Title = LocaleManager.Instance["CemuhookMotionTitle"];
+                contentDialog.Title = LocaleManager.Instance["MotionTitle"];
                 contentDialog.PrimaryButtonText = LocaleManager.Instance["ControllerSettingsSave"];
                 contentDialog.SecondaryButtonText = "";
                 contentDialog.CloseButtonText = LocaleManager.Instance["ControllerSettingsClose"];

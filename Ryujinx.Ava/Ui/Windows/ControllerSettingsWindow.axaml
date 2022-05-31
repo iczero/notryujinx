@@ -1343,13 +1343,14 @@
                         <StackPanel Orientation="Vertical">
                             <CheckBox
                                 IsChecked="{Binding Configuration.EnableMotion, Mode=TwoWay}">
-                                <TextBlock Text="{locale:Locale ControllerSettingsMotionEnableMotionControls}" />
+                                <TextBlock Text="{locale:Locale ControllerSettingsMotionEnableMotionControls}"
+                                           TextWrapping="WrapWithOverflow" />
                             </CheckBox>
                             <Button Command="{Binding ShowMotionConfig}"
                                     Margin="0,5"
                                     HorizontalAlignment="Center">
                                 <TextBlock
-                                    Text="{locale:Locale ControllerSettingsMotionConfigureCemuHookSettings}" />
+                                    Text="{locale:Locale ControllerSettingsConfigureGeneral}" />
                             </Button>
                         </StackPanel>
                     </Border>
@@ -1363,13 +1364,14 @@
                         <StackPanel Orientation="Vertical">
                             <CheckBox
                                 IsChecked="{Binding Configuration.EnableRumble, Mode=TwoWay}">
-                                <TextBlock Text="{locale:Locale ControllerSettingsRumbleEnable}" />
+                                <TextBlock Text="{locale:Locale ControllerSettingsRumble}"
+                                           TextWrapping="WrapWithOverflow" />
                             </CheckBox>
                             <Button Command="{Binding ShowRumbleConfig}"
                                     Margin="0,5"
                                     HorizontalAlignment="Center">
                                 <TextBlock
-                                    Text="{locale:Locale ControllerSettingsMotionConfigureCemuHookSettings}" />
+                                    Text="{locale:Locale ControllerSettingsConfigureGeneral}" />
                             </Button>
                         </StackPanel>
                     </Border>
