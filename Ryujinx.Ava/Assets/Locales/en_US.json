@@ -244,7 +244,7 @@
   "ControllerSettingsTriggerThreshold": "Trigger Threshold:",
   "ControllerSettingsMotion": "Motion",
   "ControllerSettingsCemuHook": "CemuHook",
-  "ControllerSettingsMotionEnableMotionControls": "Enable Motion Controls",
+  "ControllerSettingsMotionEnableMotionControls": "Motion",
   "ControllerSettingsMotionUseCemuhookCompatibleMotion": "Use CemuHook compatible motion",
   "ControllerSettingsMotionControllerSlot": "Controller Slot:",
   "ControllerSettingsMotionMirrorInput": "Mirror Input",
@@ -290,9 +290,9 @@
   "SettingsTabGeneralThemeBaseStyleLight": "Light",
   "SettingsTabGeneralThemeEnableCustomTheme": "Enable Custom Theme",
   "ButtonBrowse": "Browse",
-  "ControllerSettingsMotionConfigureCemuHookSettings": "Configure CemuHook Motion",
+  "ControllerSettingsMotionConfigureCemuHookSettings": "Configure",
   "ControllerSettingsRumble": "Rumble",
-  "ControllerSettingsRumbleEnable": "Enable Rumble",
+  "ControllerSettingsRumbleEnable": "Rumble",
   "ControllerSettingsRumbleStrongMultiplier": "Strong Rumble Multiplier",
   "ControllerSettingsRumbleWeakMultiplier": "Weak Rumble Multiplier",
   "DialogMessageSaveNotAvailableMessage": "There is no savedata for {0} [{1:x16}]",
@@ -556,5 +556,5 @@
   "SettingsTabHotkeysShowUiHotkey": "Show UI:",
   "SettingsTabHotkeysPauseHotkey": "Pause:",
   "SettingsTabHotkeysToggleMuteHotkey": "Mute:",
-  "CemuhookMotionTitle": "CemuHook Input Source Settings"
+  "CemuhookMotionTitle": "Motion Control Settings"
 }

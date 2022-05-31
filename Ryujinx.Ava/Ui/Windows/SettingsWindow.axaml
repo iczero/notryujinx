@@ -176,7 +176,7 @@
                           VerticalScrollBarVisibility="Auto">
                 <Border>
                     <StackPanel Margin="4" Orientation="Vertical">
-                        <window:ControllerSettingsWindow Name="ControllerSettings" Margin="0,0,0,0" Height="600" />
+                        <window:ControllerSettingsWindow Name="ControllerSettings" Margin="0,0,0,0" MinHeight="600" />
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Center">
                             <CheckBox Margin="5,0"
