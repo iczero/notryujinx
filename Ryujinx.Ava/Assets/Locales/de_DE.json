@@ -244,7 +244,6 @@
   "ControllerSettingsTriggerThreshold": "Empfindlichkeit:",
   "ControllerSettingsMotion": "Bewegungssteuerung",
   "ControllerSettingsCemuHook": "CemuHook",
-  "ControllerSettingsMotionEnableMotionControls": "Aktiviere Bewegungssteuerung",
   "ControllerSettingsMotionUseCemuhookCompatibleMotion": "CemuHook kompatible Bewegungssteuerung",
   "ControllerSettingsMotionControllerSlot": "Controller Slot:",
   "ControllerSettingsMotionMirrorInput": "Spiegele Eingabe",
@@ -545,5 +544,7 @@
   "CompilingPPTC": "PTC wird kompiliert",
   "CompilingShaders": "Shader werden kompiliert",
   "SettingsTabGraphicsBackend" : "Grafik-Backend",
-  "GraphicsBackendTooltip" : "Ändert das Grafik-Backend"
+  "GraphicsBackendTooltip" : "Ändert das Grafik-Backend",
+  "ControllerMotionTitle": "Bewegungssteuerung einstellungen",
+  "ControllerRumbleTitle": "Vibration einstellungen"
 }
