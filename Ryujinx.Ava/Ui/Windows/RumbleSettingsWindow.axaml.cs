@@ -48,7 +48,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
             if (contentDialog != null)
             {
-                contentDialog.Title = LocaleManager.Instance["RumbleTitle"];
+                contentDialog.Title = LocaleManager.Instance["ControllerRumbleTitle"];
                 contentDialog.PrimaryButtonText = LocaleManager.Instance["ControllerSettingsSave"];
                 contentDialog.SecondaryButtonText = "";
                 contentDialog.CloseButtonText = LocaleManager.Instance["ControllerSettingsClose"];

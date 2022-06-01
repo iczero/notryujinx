@@ -555,5 +555,6 @@
   "SettingsTabHotkeysShowUiHotkey": "Show UI:",
   "SettingsTabHotkeysPauseHotkey": "Pause:",
   "SettingsTabHotkeysToggleMuteHotkey": "Mute:",
-  "ControllerMotionTitle": "Motion Control Settings"
+  "ControllerMotionTitle": "Motion Control Settings",
+  "ControllerRumbleTitle": "Rumble Settings"
 }

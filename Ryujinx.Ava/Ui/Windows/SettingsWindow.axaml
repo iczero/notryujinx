@@ -177,8 +177,7 @@
                 <Border>
                     <StackPanel Margin="4" Orientation="Vertical">
                         <window:ControllerSettingsWindow Name="ControllerSettings" Margin="0,0,0,0" MinHeight="600" />
-                        <StackPanel Orientation="Horizontal"
-                                    HorizontalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
                             <CheckBox Margin="5,0"
                                       ToolTip.Tip="{locale:Locale DockModeToggleTooltip}"
                                       IsChecked="{Binding EnableDockedMode}">

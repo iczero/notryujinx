@@ -1343,8 +1343,7 @@
                         <StackPanel Orientation="Vertical">
                             <CheckBox
                                 IsChecked="{Binding Configuration.EnableMotion, Mode=TwoWay}">
-                                <TextBlock Text="{locale:Locale ControllerSettingsMotionEnableMotionControls}"
-                                           TextWrapping="WrapWithOverflow" />
+                                <TextBlock Text="{locale:Locale ControllerSettingsMotionEnableMotionControls}" />
                             </CheckBox>
                             <Button Command="{Binding ShowMotionConfig}"
                                     Margin="0,5"
@@ -1364,8 +1363,7 @@
                         <StackPanel Orientation="Vertical">
                             <CheckBox
                                 IsChecked="{Binding Configuration.EnableRumble, Mode=TwoWay}">
-                                <TextBlock Text="{locale:Locale ControllerSettingsRumble}"
-                                           TextWrapping="WrapWithOverflow" />
+                                <TextBlock Text="{locale:Locale ControllerSettingsRumble}" />
                             </CheckBox>
                             <Button Command="{Binding ShowRumbleConfig}"
                                     Margin="0,5"
