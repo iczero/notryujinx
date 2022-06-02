@@ -242,7 +242,6 @@
   "ControllerSettingsMisc": "Misceláneo",
   "ControllerSettingsTriggerThreshold": "Límite de gatillos:",
   "ControllerSettingsMotion": "Movimiento",
-  "ControllerSettingsMotionEnableMotionControls": "Habilitar controles por movimiento",
   "ControllerSettingsMotionUseCemuhookCompatibleMotion": "Usar movimiento compatible con CemuHook",
   "ControllerSettingsMotionControllerSlot": "Puerto del mando:",
   "ControllerSettingsMotionMirrorInput": "Paralelizar derecho e izquierdo",

@@ -243,7 +243,6 @@
   "ControllerSettingsMisc": "Misc.",
   "ControllerSettingsTriggerThreshold": "Tetik Eşiği:",
   "ControllerSettingsMotion": "Hareket",
-  "ControllerSettingsMotionEnableMotionControls": "Hareket Kontrollerini Etkinleştir",
   "ControllerSettingsMotionUseCemuhookCompatibleMotion": "CemuHook Uyumlu Hareket",
   "ControllerSettingsMotionControllerSlot": "Kontrolcü Yuvası:",
   "ControllerSettingsMotionMirrorInput": "Girişi Aynala",

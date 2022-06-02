@@ -242,7 +242,6 @@
   "ControllerSettingsMisc": "Разное",
   "ControllerSettingsTriggerThreshold": "Порог срабатывания:",
   "ControllerSettingsMotion": "Движение",
-  "ControllerSettingsMotionEnableMotionControls": "Включить управление движением",
   "ControllerSettingsMotionUseCemuhookCompatibleMotion": "Используйте движение, совместимое с CemuHook",
   "ControllerSettingsMotionControllerSlot": "Слот контроллера:",
   "ControllerSettingsMotionMirrorInput": "Зеркальный ввод",

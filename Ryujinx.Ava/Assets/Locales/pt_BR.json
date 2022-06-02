@@ -243,7 +243,6 @@
   "ControllerSettingsMisc": "Miscelâneas",
   "ControllerSettingsTriggerThreshold": "Sensibilidade do gatilho:",
   "ControllerSettingsMotion": "Sensor de movimento",
-  "ControllerSettingsMotionEnableMotionControls": "Habilitar sensor de movimento",
   "ControllerSettingsMotionUseCemuhookCompatibleMotion": "Usar sensor compatível com CemuHook",
   "ControllerSettingsMotionControllerSlot": "Slot do controle:",
   "ControllerSettingsMotionMirrorInput": "Espelhar movimento",

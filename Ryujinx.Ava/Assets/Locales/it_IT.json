@@ -243,7 +243,6 @@
     "ControllerSettingsMisc": "Miscellanee",
     "ControllerSettingsTriggerThreshold": "Sensibilità dei grilletti:",
     "ControllerSettingsMotion": "Movimento",
-    "ControllerSettingsMotionEnableMotionControls": "Attiva sensore di movimento",
     "ControllerSettingsMotionUseCemuhookCompatibleMotion": "Usa sensore compatibile con CemuHook",
     "ControllerSettingsMotionControllerSlot": "Slot del controller:",
     "ControllerSettingsMotionMirrorInput": "Input specchiato",

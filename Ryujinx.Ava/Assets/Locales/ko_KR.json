@@ -242,7 +242,6 @@
   "ControllerSettingsMisc": "여러 가지 잡다한",
   "ControllerSettingsTriggerThreshold": "트리거 임계값 :",
   "ControllerSettingsMotion": "운동",
-  "ControllerSettingsMotionEnableMotionControls": "모션 컨트롤 활성화",
   "ControllerSettingsMotionUseCemuhookCompatibleMotion": "CemuHook 호환 모션 사용",
   "ControllerSettingsMotionControllerSlot": "컨트롤러 슬롯 :",
   "ControllerSettingsMotionMirrorInput": "미러 입력",
