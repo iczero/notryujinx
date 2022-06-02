@@ -5,7 +5,8 @@
     <OutputType>Exe</OutputType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Version>1.0.0-dirty</Version>
-    <TieredCompilationQuickJit>true</TieredCompilationQuickJit>
+    <TieredCompilation>false</TieredCompilation>
+    <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
     <DefineConstants Condition=" '$(ExtraDefineConstants)' != '' ">$(DefineConstants);$(ExtraDefineConstants)</DefineConstants>
     <RootNamespace>Ryujinx.Ava</RootNamespace>
     <ApplicationIcon>Ryujinx.ico</ApplicationIcon>
