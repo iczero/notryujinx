@@ -243,7 +243,6 @@
     "ControllerSettingsMisc": "Miscellanee",
     "ControllerSettingsTriggerThreshold": "Sensibilità dei grilletti:",
     "ControllerSettingsMotion": "Movimento",
-    "ControllerSettingsCemuHook": "CemuHook",
     "ControllerSettingsMotionEnableMotionControls": "Attiva sensore di movimento",
     "ControllerSettingsMotionUseCemuhookCompatibleMotion": "Usa sensore compatibile con CemuHook",
     "ControllerSettingsMotionControllerSlot": "Slot del controller:",
@@ -290,9 +289,8 @@
     "SettingsTabGeneralThemeBaseStyleLight": "Chiara",
     "SettingsTabGeneralThemeEnableCustomTheme": "Attiva tema personalizzato",
     "ButtonBrowse": "Sfoglia",
-    "ControllerSettingsMotionConfigureCemuHookSettings": "Configura movimento CemuHook",
+    "ControllerSettingsConfigureGeneral": "Configura",
     "ControllerSettingsRumble": "Vibrazione",
-    "ControllerSettingsRumbleEnable": "Attiva vibrazione",
     "ControllerSettingsRumbleStrongMultiplier": "Moltiplicatore vibrazione forte",
     "ControllerSettingsRumbleWeakMultiplier": "Moltiplicatore vibrazione debole",
     "DialogMessageSaveNotAvailableMessage": "Non ci sono dati di salvataggio per {0} [{1:x16}]",
@@ -543,5 +541,7 @@
     "ApiError": "Errore dell'API.",
     "LoadingHeading": "Caricamento di {0}",
     "CompilingPPTC": "Compilazione PTC",
-    "CompilingShaders": "Compilazione Shaders"
+    "CompilingShaders": "Compilazione Shaders",
+    "ControllerMotionTitle": "Motion Control Settings",
+    "ControllerRumbleTitle": "Rumble Settings"
 }

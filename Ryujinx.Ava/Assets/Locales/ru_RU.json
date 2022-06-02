@@ -242,7 +242,6 @@
   "ControllerSettingsMisc": "Разное",
   "ControllerSettingsTriggerThreshold": "Порог срабатывания:",
   "ControllerSettingsMotion": "Движение",
-  "ControllerSettingsCemuHook": "CemuHook",
   "ControllerSettingsMotionEnableMotionControls": "Включить управление движением",
   "ControllerSettingsMotionUseCemuhookCompatibleMotion": "Используйте движение, совместимое с CemuHook",
   "ControllerSettingsMotionControllerSlot": "Слот контроллера:",
@@ -289,9 +288,8 @@
   "SettingsTabGeneralThemeBaseStyleLight": "Светлая",
   "SettingsTabGeneralThemeEnableCustomTheme": "Включить пользовательскую тему",
   "ButtonBrowse": "Обзор",
-  "ControllerSettingsMotionConfigureCemuHookSettings": "Настройка движения CemuHook",
+  "ControllerSettingsConfigureGeneral": "Настройка",
   "ControllerSettingsRumble": "Вибрация",
-  "ControllerSettingsRumbleEnable": "Включить вибрацию",
   "ControllerSettingsRumbleStrongMultiplier": "Множитель сильной вибрации",
   "ControllerSettingsRumbleWeakMultiplier": "Множитель слабой вибрации",
   "DialogMessageSaveNotAvailableMessage": "Нет сохраненных данных для {0} [{1:x16}]",
@@ -493,5 +491,7 @@
   "SettingsTabGraphicsFrameRate" : "Частота обновления хоста:",
   "SettingsTabGraphicsFrameRateTooltip" : "Устанавливает частоту обновления хоста. Установите на 0, чтобы снять ограничение.",
   "SettingsTabCpuCache" : "Кэш ЦП",
-  "SettingsTabCpuMemory" : "Память ЦП"
+  "SettingsTabCpuMemory" : "Память ЦП",
+  "ControllerMotionTitle": "Motion Control Settings",
+  "ControllerRumbleTitle": "Rumble Settings"
 }

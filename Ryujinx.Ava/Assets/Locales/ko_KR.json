@@ -242,7 +242,6 @@
   "ControllerSettingsMisc": "여러 가지 잡다한",
   "ControllerSettingsTriggerThreshold": "트리거 임계값 :",
   "ControllerSettingsMotion": "운동",
-  "ControllerSettingsCemuHook": "CemuHook",
   "ControllerSettingsMotionEnableMotionControls": "모션 컨트롤 활성화",
   "ControllerSettingsMotionUseCemuhookCompatibleMotion": "CemuHook 호환 모션 사용",
   "ControllerSettingsMotionControllerSlot": "컨트롤러 슬롯 :",
@@ -289,9 +288,8 @@
   "SettingsTabGeneralThemeBaseStyleLight": "빛",
   "SettingsTabGeneralThemeEnableCustomTheme": "사용자 정의 테마 활성화",
   "ButtonBrowse": "검색",
-  "ControllerSettingsMotionConfigureCemuHookSettings": "CemuHook 모션 구성",
+  "ControllerSettingsConfigureGeneral": "션 구성",
   "ControllerSettingsRumble": "하인 좌석",
-  "ControllerSettingsRumbleEnable": "럼블을 활성화",
   "ControllerSettingsRumbleStrongMultiplier": "강력한 럼블 배율기",
   "ControllerSettingsRumbleWeakMultiplier": "약한 럼블 승수",
   "DialogMessageSaveNotAvailableMessage": "에 대한 세이브 데이터가 없습니다 {0} [{1:x16}]",
@@ -493,5 +491,7 @@
   "SettingsTabGraphicsFrameRate" : "호스트 새로 고침 빈도 :",
   "SettingsTabGraphicsFrameRateTooltip" : "호스트 새로 고침 빈도를 설정합니다. 제한을 제거하려면 0으로 설정하십시오.",
   "SettingsTabCpuCache" : "CPU 캐시",
-  "SettingsTabCpuMemory" : "CPU 메모리"
+  "SettingsTabCpuMemory" : "CPU 메모리",
+  "ControllerMotionTitle": "Motion Control Settings",
+  "ControllerRumbleTitle": "Rumble Settings"
 }

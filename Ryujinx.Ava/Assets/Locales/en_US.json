@@ -243,7 +243,6 @@
   "ControllerSettingsMisc": "Miscellaneous",
   "ControllerSettingsTriggerThreshold": "Trigger Threshold:",
   "ControllerSettingsMotion": "Motion",
-  "ControllerSettingsCemuHook": "CemuHook",
   "ControllerSettingsMotionUseCemuhookCompatibleMotion": "Use CemuHook compatible motion",
   "ControllerSettingsMotionControllerSlot": "Controller Slot:",
   "ControllerSettingsMotionMirrorInput": "Mirror Input",

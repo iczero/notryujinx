@@ -242,7 +242,6 @@
   "ControllerSettingsMisc": "Misceláneo",
   "ControllerSettingsTriggerThreshold": "Límite de gatillos:",
   "ControllerSettingsMotion": "Movimiento",
-  "ControllerSettingsCemuHook": "CemuHook",
   "ControllerSettingsMotionEnableMotionControls": "Habilitar controles por movimiento",
   "ControllerSettingsMotionUseCemuhookCompatibleMotion": "Usar movimiento compatible con CemuHook",
   "ControllerSettingsMotionControllerSlot": "Puerto del mando:",
@@ -289,9 +288,8 @@
   "SettingsTabGeneralThemeBaseStyleLight": "Claro",
   "SettingsTabGeneralThemeEnableCustomTheme": "Habilitar tema personalizado",
   "ButtonBrowse": "Buscar",
-  "ControllerSettingsMotionConfigureCemuHookSettings": "Configurar controles por movimiento de CemuHook",
+  "ControllerSettingsConfigureGeneral": "Configurar",
   "ControllerSettingsRumble": "Vibración",
-  "ControllerSettingsRumbleEnable": "Habilitar vibraciones",
   "ControllerSettingsRumbleStrongMultiplier": "Multiplicador de vibraciones fuertes",
   "ControllerSettingsRumbleWeakMultiplier": "Multiplicador de vibraciones débiles",
   "DialogMessageSaveNotAvailableMessage": "No hay datos de guardado para {0} [{1:x16}]",
@@ -493,5 +491,7 @@
   "SettingsTabGraphicsFrameRate" : "Velocidad máxima de fotogramas:",
   "SettingsTabGraphicsFrameRateTooltip" : "Fija el límite de fotogramas del host. Elige 0 para deshabilitar el límite.",
   "SettingsTabCpuCache" : "Caché de CPU",
-  "SettingsTabCpuMemory" : "Memoria de CPU"
+  "SettingsTabCpuMemory" : "Memoria de CPU",
+  "ControllerMotionTitle": "Motion Control Settings",
+  "ControllerRumbleTitle": "Rumble Settings"
 }
