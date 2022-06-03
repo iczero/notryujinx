@@ -482,7 +482,7 @@
   "EnableInternetAccessTooltip": "Guest internet erişimini etkinleştirir. Etkinleştirilmişse, uygulama emüle edilen Switch konsolu internete bağlıymış gibi davranır. Not: Bazı durumlarda uygulamalar bu seçenek devre dışı olmasına rağmen internete erişebilir",
   "GameListContextMenuManageCheatToolTip" : "Hileleri Yönet",
   "GameListContextMenuManageCheat" : "Hileleri Yönet",
-  "ControllerSettingsStickRange" : "Bölge (Range)",
+  "ControllerSettingsStickRange" : "Bölge (Range):",
   "DialogStopEmulationTitle" : "Ryujinx - Emülasyonu Durdur",
   "DialogStopEmulationMessage": "Emülasyonu durdurmak istediğinizden emin misiniz?",
   "SettingsTabCpu": "CPU",

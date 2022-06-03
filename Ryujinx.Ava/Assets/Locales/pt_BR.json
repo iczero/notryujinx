@@ -482,7 +482,7 @@
   "EnableInternetAccessTooltip": "Habilita acesso à internet do programa convidado. Se habilitado, o aplicativo vai se comportar como se o sistema Switch emulado estivesse conectado a Internet. Note que em alguns casos, aplicativos podem acessar a Internet mesmo com essa opção desabilitada",
   "GameListContextMenuManageCheatToolTip": "Gerenciar Cheats",
   "GameListContextMenuManageCheat": "Gerenciar Cheats",
-  "ControllerSettingsStickRange": "Intervalo",
+  "ControllerSettingsStickRange": "Intervalo:",
   "DialogStopEmulationTitle": "Ryujinx - Parar emulação",
   "DialogStopEmulationMessage": "Tem certeza que deseja parar a emulação?",
   "SettingsTabCpu": "CPU",

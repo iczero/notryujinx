@@ -482,7 +482,7 @@
   "EnableInternetAccessTooltip": "Επιτρέπει την πρόσβαση επισκέπτη στο Διαδίκτυο. Εάν ενεργοποιηθεί, η εξομοιωμένη κονσόλα Switch θα συμπεριφέρεται σαν να είναι συνδεδεμένη στο Διαδίκτυο. Λάβετε υπόψη ότι σε ορισμένες περιπτώσεις, οι εφαρμογές ενδέχεται να εξακολουθούν να έχουν πρόσβαση στο Διαδίκτυο, ακόμη και όταν αυτή η επιλογή είναι απενεργοποιημένη",
   "GameListContextMenuManageCheatToolTip" : "Διαχείριση Κόλπων",
   "GameListContextMenuManageCheat" : "Διαχείριση Κόλπων",
-  "ControllerSettingsStickRange" : "Εύρος",
+  "ControllerSettingsStickRange" : "Εύρος:",
   "DialogStopEmulationTitle" : "Ryujinx - Διακοπή εξομοίωσης",
   "DialogStopEmulationMessage": "Είστε βέβαιοι ότι θέλετε να σταματήσετε την εξομοίωση;",
   "SettingsTabCpu": "Επεξεργαστής",

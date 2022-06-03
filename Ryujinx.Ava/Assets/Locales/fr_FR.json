@@ -236,7 +236,6 @@
   "ControllerSettingsTriggerThreshold": "Seuil de gachettes:",
   "ControllerSettingsMotion": "Mouvements",
   "ControllerSettingsConfigureGeneral": "Configurer",
-  "ControllerSettingsMotionEnableMotionControls": "Activer le capteur de mouvements",
   "ControllerSettingsMotionUseCemuhookCompatibleMotion": "Utiliser un capteur de mouvements CemuHook",
   "ControllerSettingsMotionControllerSlot": "Contrôleur ID:",
   "ControllerSettingsMotionMirrorInput": "Inverser les contrôles",

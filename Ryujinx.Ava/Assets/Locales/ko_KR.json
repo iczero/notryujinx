@@ -480,7 +480,7 @@
   "EnableInternetAccessTooltip": "게스트 인터넷 액세스를 활성화합니다. 활성화된 경우 응용 프로그램은 에뮬레이트된 스위치 콘솔이 인터넷에 연결된 것처럼 작동합니다. 경우에 따라 이 옵션이 비활성화된 경우에도 응용 프로그램이 인터넷에 계속 액세스할 수 있습니다",
   "GameListContextMenuManageCheatToolTip" : "치트 관리",
   "GameListContextMenuManageCheat" : "치트 관리",
-  "ControllerSettingsStickRange" : "범위",
+  "ControllerSettingsStickRange" : "범위:",
   "DialogStopEmulationTitle" : "Ryujinx - 에뮬레이션 중지",
   "DialogStopEmulationMessage": "에뮬레이션을 중지하시겠습니까?",
   "SettingsTabCpu": "CPU",

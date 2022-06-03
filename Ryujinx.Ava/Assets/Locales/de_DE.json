@@ -482,7 +482,7 @@
   "EnableInternetAccessTooltip": "Aktiviert den Gast-Internet-Zugang. Die Anwendung verhält sich so, als ob die emulierte Switch-Konsole mit dem Internet verbunden wäre. Beachte, dass in einigen Fällen Anwendungen auch bei deaktivierter Option auf das Internet zugreifen können",
   "GameListContextMenuManageCheatToolTip": "Öffnet den Cheat-Manager",
   "GameListContextMenuManageCheat": "Cheats verwalten",
-  "ControllerSettingsStickRange": "Bereich",
+  "ControllerSettingsStickRange": "Bereich:",
   "DialogStopEmulationTitle": "Ryujinx - Beende Emulation",
   "DialogStopEmulationMessage": "Emulation wirklich beenden?",
   "SettingsTabCpu": "CPU",
