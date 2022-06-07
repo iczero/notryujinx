@@ -9,6 +9,8 @@ using Ryujinx.HLE.HOS.Services.Hid;
 using Ryujinx.HLE.Ui;
 using Ryujinx.Memory;
 using System;
+using System.IO;
+
 
 namespace Ryujinx.HLE
 {
@@ -87,6 +89,26 @@ namespace Ryujinx.HLE
         public void LoadProgram(string fileName)
         {
             Application.LoadProgram(fileName);
+        }
+
+        public void LoadXci(Stream xciStream)
+        {
+            Application.LoadXci(xciStream);
+        }
+
+        public void LoadNca(Stream ncaStream)
+        {
+            Application.LoadNca(ncaStream);
+        }
+
+        public void LoadNsp(Stream nspStream)
+        {
+            Application.LoadNsp(nspStream);
+        }
+
+        public void LoadProgram(Stream stream, bool isNro, string name)
+        {
+            Application.LoadProgram(stream, isNro, name);
         }
 
         public bool WaitFifo()

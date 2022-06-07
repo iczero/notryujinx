@@ -15,6 +15,7 @@ using Ryujinx.HLE.HOS;
 using Ryujinx.HLE.HOS.SystemState;
 using Ryujinx.HLE.Loaders.Npdm;
 using Ryujinx.Ui.Common.Configuration.System;
+using Ryujinx.Ui.Common.Helper;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,13 +38,14 @@ namespace Ryujinx.Ui.App.Common
         private readonly byte[] _ncaIcon;
         private readonly byte[] _nroIcon;
         private readonly byte[] _nsoIcon;
-
+        private IFileSystemHelper       _fileSystemHelper;
         private VirtualFileSystem       _virtualFileSystem;
         private Language                _desiredTitleLanguage;
         private CancellationTokenSource _cancellationToken;
 
-        public ApplicationLibrary(VirtualFileSystem virtualFileSystem)
+        public ApplicationLibrary(VirtualFileSystem virtualFileSystem, IFileSystemHelper fileSystemHelper = null)
         {
+            _fileSystemHelper = fileSystemHelper ?? new FileSystemHelper();
             _virtualFileSystem = virtualFileSystem;
 
             _nspIcon = GetResourceBytes("Ryujinx.Ui.Common.Resources.Icon_NSP.png");
@@ -97,7 +99,7 @@ namespace Ryujinx.Ui.App.Common
                         return;
                     }
 
-                    if (!Directory.Exists(appDir))
+                    if (!_fileSystemHelper.DirectoryExist(appDir))
                     {
                         Logger.Warning?.Print(LogClass.Application, $"The \"game_dirs\" section in \"Config.json\" contains an invalid directory: \"{appDir}\"");
 
@@ -106,7 +108,7 @@ namespace Ryujinx.Ui.App.Common
 
                     try
                     {
-                        foreach (string app in Directory.EnumerateFiles(appDir, "*", SearchOption.AllDirectories))
+                        foreach (string app in _fileSystemHelper.GetFileEntries(appDir, "*", SearchOption.AllDirectories))
                         {
                             if (_cancellationToken.Token.IsCancellationRequested)
                             {
@@ -115,7 +117,7 @@ namespace Ryujinx.Ui.App.Common
                         
                             string extension = Path.GetExtension(app).ToLower();
                         
-                            if (!File.GetAttributes(app).HasFlag(FileAttributes.Hidden) && extension is ".nsp" or ".pfs0" or ".xci" or ".nca" or ".nro" or ".nso")
+                            if (!_fileSystemHelper.IsFileHidden(app) && extension is ".nsp" or ".pfs0" or ".xci" or ".nca" or ".nro" or ".nso")
                             {
                                 applications.Add(app);
                                 numApplicationsFound++;
@@ -136,7 +138,7 @@ namespace Ryujinx.Ui.App.Common
                         return;
                     }
 
-                    double fileSize = new FileInfo(applicationPath).Length * 0.000000000931;
+                    double fileSize = _fileSystemHelper.GetFileLength(applicationPath) * 0.000000000931;
                     string titleName = "Unknown";
                     string titleId = "0000000000000000";
                     string developer = "Unknown";
@@ -149,7 +151,7 @@ namespace Ryujinx.Ui.App.Common
                     {
                         string extension = Path.GetExtension(applicationPath).ToLower();
 
-                        using (FileStream file = new FileStream(applicationPath, FileMode.Open, FileAccess.Read))
+                        using (var stream = _fileSystemHelper.GetContentStream(applicationPath))
                         {
                             if (extension == ".nsp" || extension == ".pfs0" || extension == ".xci")
                             {
@@ -161,13 +163,13 @@ namespace Ryujinx.Ui.App.Common
 
                                     if (extension == ".xci")
                                     {
-                                        Xci xci = new Xci(_virtualFileSystem.KeySet, file.AsStorage());
+                                        Xci xci = new Xci(_virtualFileSystem.KeySet, stream.AsStorage());
 
                                         pfs = xci.OpenPartition(XciPartitionType.Secure);
                                     }
                                     else
                                     {
-                                        pfs = new PartitionFileSystem(file.AsStorage());
+                                        pfs = new PartitionFileSystem(stream.AsStorage());
 
                                         // If the NSP doesn't have a main NCA, decrement the number of applications found and then continue to the next application.
                                         bool hasMainNca = false;
@@ -243,10 +245,10 @@ namespace Ryujinx.Ui.App.Common
 
                                             controlFs.OpenFile(ref icon.Ref(), $"/icon_{_desiredTitleLanguage}.dat".ToU8Span(), OpenMode.Read).ThrowIfFailure();
 
-                                            using (MemoryStream stream = new MemoryStream())
+                                            using (MemoryStream memStream = new MemoryStream())
                                             {
-                                                icon.Get.AsStream().CopyTo(stream);
-                                                applicationIcon = stream.ToArray();
+                                                icon.Get.AsStream().CopyTo(memStream);
+                                                applicationIcon = memStream.ToArray();
                                             }
                                         }
                                         catch (HorizonResultException)
@@ -262,10 +264,10 @@ namespace Ryujinx.Ui.App.Common
 
                                                 controlFs.OpenFile(ref icon.Ref(), entry.FullPath.ToU8Span(), OpenMode.Read).ThrowIfFailure();
 
-                                                using (MemoryStream stream = new MemoryStream())
+                                                using (MemoryStream memStream = new MemoryStream())
                                                 {
-                                                    icon.Get.AsStream().CopyTo(stream);
-                                                    applicationIcon = stream.ToArray();
+                                                    icon.Get.AsStream().CopyTo(memStream);
+                                                    applicationIcon = memStream.ToArray();
                                                 }
 
                                                 if (applicationIcon != null)
@@ -304,18 +306,18 @@ namespace Ryujinx.Ui.App.Common
                             }
                             else if (extension == ".nro")
                             {
-                                BinaryReader reader = new BinaryReader(file);
+                                BinaryReader reader = new BinaryReader(stream);
 
                                 byte[] Read(long position, int size)
                                 {
-                                    file.Seek(position, SeekOrigin.Begin);
+                                    stream.Seek(position, SeekOrigin.Begin);
 
                                     return reader.ReadBytes(size);
                                 }
 
                                 try
                                 {
-                                    file.Seek(24, SeekOrigin.Begin);
+                                    stream.Seek(24, SeekOrigin.Begin);
 
                                     int assetOffset = reader.ReadInt32();
 
@@ -525,11 +527,11 @@ namespace Ryujinx.Ui.App.Common
             try
             {
                 // Look for icon only if applicationPath is not a directory
-                if (!Directory.Exists(applicationPath))
+                if (!_fileSystemHelper.DirectoryExist(applicationPath))
                 {
                     string extension = Path.GetExtension(applicationPath).ToLower();
 
-                    using (FileStream file = new FileStream(applicationPath, FileMode.Open, FileAccess.Read))
+                    using (var stream = _fileSystemHelper.GetContentStream(applicationPath))
                     {
                         if (extension == ".nsp" || extension == ".pfs0" || extension == ".xci")
                         {
@@ -541,13 +543,13 @@ namespace Ryujinx.Ui.App.Common
 
                                 if (extension == ".xci")
                                 {
-                                    Xci xci = new(_virtualFileSystem.KeySet, file.AsStorage());
+                                    Xci xci = new(_virtualFileSystem.KeySet, stream.AsStorage());
 
                                     pfs = xci.OpenPartition(XciPartitionType.Secure);
                                 }
                                 else
                                 {
-                                    pfs = new PartitionFileSystem(file.AsStorage());
+                                    pfs = new PartitionFileSystem(stream.AsStorage());
 
                                     foreach (DirectoryEntryEx fileEntry in pfs.EnumerateEntries("/", "*"))
                                     {
@@ -574,10 +576,10 @@ namespace Ryujinx.Ui.App.Common
 
                                         controlFs.OpenFile(ref icon.Ref(), $"/icon_{_desiredTitleLanguage}.dat".ToU8Span(), OpenMode.Read).ThrowIfFailure();
 
-                                        using (MemoryStream stream = new MemoryStream())
+                                        using (MemoryStream memStream = new MemoryStream())
                                         {
-                                            icon.Get.AsStream().CopyTo(stream);
-                                            applicationIcon = stream.ToArray();
+                                            icon.Get.AsStream().CopyTo(memStream);
+                                            applicationIcon = memStream.ToArray();
                                         }
                                     }
                                     catch (HorizonResultException)
@@ -593,10 +595,10 @@ namespace Ryujinx.Ui.App.Common
 
                                             controlFs.OpenFile(ref icon.Ref(), entry.FullPath.ToU8Span(), OpenMode.Read).ThrowIfFailure();
 
-                                            using (MemoryStream stream = new MemoryStream())
+                                            using (MemoryStream memStream = new MemoryStream())
                                             {
-                                                icon.Get.AsStream().CopyTo(stream);
-                                                applicationIcon = stream.ToArray();
+                                                icon.Get.AsStream().CopyTo(memStream);
+                                                applicationIcon = memStream.ToArray();
                                             }
 
                                             if (applicationIcon != null)
@@ -632,18 +634,18 @@ namespace Ryujinx.Ui.App.Common
                         }
                         else if (extension == ".nro")
                         {
-                            BinaryReader reader = new(file);
+                            BinaryReader reader = new(stream);
 
                             byte[] Read(long position, int size)
                             {
-                                file.Seek(position, SeekOrigin.Begin);
+                                stream.Seek(position, SeekOrigin.Begin);
 
                                 return reader.ReadBytes(size);
                             }
 
                             try
                             {
-                                file.Seek(24, SeekOrigin.Begin);
+                                stream.Seek(24, SeekOrigin.Begin);
 
                                 int assetOffset = reader.ReadInt32();
 

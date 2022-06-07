@@ -37,12 +37,14 @@ namespace Ryujinx.HLE.FileSystem
 
         private struct AocItem
         {
-            public readonly string ContainerPath;
+            public readonly Stream ContainerStream;
             public readonly string NcaPath;
+            public readonly string Extension;
 
-            public AocItem(string containerPath, string ncaPath)
+            public AocItem(Stream containerStream, string ncaPath, string extension)
             {
-                ContainerPath = containerPath;
+                ContainerStream = containerStream;
+                Extension = extension;
                 NcaPath = ncaPath;
             }
         }
@@ -201,7 +203,7 @@ namespace Ryujinx.HLE.FileSystem
         }
 
         // fs must contain AOC nca files in its root
-        public void AddAocData(IFileSystem fs, string containerPath, ulong aocBaseId, IntegrityCheckLevel integrityCheckLevel)
+        public void AddAocData(IFileSystem fs, Stream containerStream, ulong aocBaseId, IntegrityCheckLevel integrityCheckLevel, string extension)
         {
             _virtualFileSystem.ImportTickets(fs);
 
@@ -231,14 +233,14 @@ namespace Ryujinx.HLE.FileSystem
 
                 string ncaId = BitConverter.ToString(cnmt.ContentEntries[0].NcaId).Replace("-", "").ToLower();
 
-                AddAocItem(cnmt.TitleId, containerPath, $"{ncaId}.nca", true);
+                AddAocItem(cnmt.TitleId, containerStream, $"{ncaId}.nca", extension, true);
             }
         }
 
-        public void AddAocItem(ulong titleId, string containerPath, string ncaPath, bool mergedToContainer = false)
+        public void AddAocItem(ulong titleId, Stream containerStream, string ncaPath, string extension, bool mergedToContainer = false)
         {
             // TODO: Check Aoc version.
-            if (!_aocData.TryAdd(titleId, new AocItem(containerPath, ncaPath)))
+            if (!_aocData.TryAdd(titleId, new AocItem(containerStream, ncaPath, extension)))
             {
                 Logger.Warning?.Print(LogClass.Application, $"Duplicate AddOnContent detected. TitleId {titleId:X16}");
             }
@@ -248,15 +250,22 @@ namespace Ryujinx.HLE.FileSystem
 
                 if (!mergedToContainer)
                 {
-                    using FileStream          fileStream          = File.OpenRead(containerPath);
-                    using PartitionFileSystem partitionFileSystem = new(fileStream.AsStorage());
+                    using PartitionFileSystem partitionFileSystem = new(containerStream.AsStorage());
 
                     _virtualFileSystem.ImportTickets(partitionFileSystem);
                 }
             }
         }
 
-        public void ClearAocData() => _aocData.Clear();
+        public void ClearAocData()
+        {
+            foreach (var aoc in _aocData)
+            {
+                aoc.Value.ContainerStream?.Dispose();
+            }
+
+            _aocData.Clear();
+        }
 
         public int GetAocCount() => _aocData.Count;
 
@@ -268,18 +277,17 @@ namespace Ryujinx.HLE.FileSystem
 
             if (_aocData.TryGetValue(aocTitleId, out AocItem aoc))
             {
-                var file = new FileStream(aoc.ContainerPath, FileMode.Open, FileAccess.Read);
                 using var ncaFile = new UniqueRef<IFile>();
                 PartitionFileSystem pfs;
 
-                switch (Path.GetExtension(aoc.ContainerPath))
+                switch (aoc.Extension)
                 {
                     case ".xci":
-                        pfs = new Xci(_virtualFileSystem.KeySet, file.AsStorage()).OpenPartition(XciPartitionType.Secure);
+                        pfs = new Xci(_virtualFileSystem.KeySet, aoc.ContainerStream.AsStorage()).OpenPartition(XciPartitionType.Secure);
                         pfs.OpenFile(ref ncaFile.Ref(), aoc.NcaPath.ToU8Span(), OpenMode.Read);
                         break;
                     case ".nsp":
-                        pfs = new PartitionFileSystem(file.AsStorage());
+                        pfs = new PartitionFileSystem(aoc.ContainerStream.AsStorage());
                         pfs.OpenFile(ref ncaFile.Ref(), aoc.NcaPath.ToU8Span(), OpenMode.Read);
                         break;
                     default:
