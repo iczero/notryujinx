@@ -60,7 +60,7 @@ namespace Ryujinx.Ava.Ui.Vulkan
 
             if (!string.IsNullOrWhiteSpace(preferredDevice))
             {
-                var physicalDevice = physicalDeviceProperties.FirstOrDefault(x => $"0x{x.Value.VendorID:X}_0x{x.Value.DeviceID:X}" == preferredDevice);
+                var physicalDevice = physicalDeviceProperties.FirstOrDefault(x => VulkanInitialization.StringFromIdPair(x.Value.VendorID, x.Value.DeviceID) == preferredDevice);
                 if (physicalDevice.Key.Handle != 0 && IsSuitableDevice(instance.Api, physicalDevice.Key,
                     physicalDevice.Value, surface.ApiHandle, out var queueCount,
                     out var queueFamilyIndex))
