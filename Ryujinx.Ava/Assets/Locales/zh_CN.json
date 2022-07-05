@@ -288,7 +288,7 @@
   "SettingsTabGeneralThemeBaseStyleLight": "浅色",
   "SettingsTabGeneralThemeEnableCustomTheme": "使用自选主题界面",
   "ButtonBrowse": "浏览",
-  "ControllerSettingsMotionConfigureCemuHookSettings": "配置 CemuHook 体感",
+  "ControllerSettingsConfigureGeneral": "配置",
   "ControllerSettingsRumble": "震动",
   "ControllerSettingsRumbleStrongMultiplier": "强震动调节",
   "ControllerSettingsRumbleWeakMultiplier": "弱震动调节",
