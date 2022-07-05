@@ -248,7 +248,7 @@
   "ControllerSettingsMotionMirrorInput": "镜像操作",
   "ControllerSettingsMotionRightJoyConSlot": "右 JoyCon:",
   "ControllerSettingsMotionServerHost": "服务器 Host:",
-  "ControllerSettingsMotionGyroSensitivity ": "陀螺仪敏感度:",
+  "ControllerSettingsMotionGyroSensitivity": "陀螺仪敏感度:",
   "ControllerSettingsMotionGyroDeadzone": "陀螺仪死区:",
   "ControllerSettingsSave": "保存",
   "ControllerSettingsClose": "关闭",
