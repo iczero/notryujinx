@@ -420,10 +420,10 @@ namespace Ryujinx.Ava.Ui.ViewModels
             config.System.Region.Value = (Region)Region;
 
             var selectedGpu = _gpuIds.ElementAtOrDefault(PreferredGpuIndex);
-            if(!requiresRestart)
+            if (!requiresRestart)
             {
                 var platform = AvaloniaLocator.Current.GetService<VulkanPlatformInterface>();
-                if(platform!= null)
+                if (platform != null)
                 {
                     var physicalDevice = platform.PhysicalDevice;
 
@@ -480,7 +480,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
                     LocaleManager.Instance["SettingsGpuBackendRestartMessage"],
                     LocaleManager.Instance["SettingsGpuBackendRestartSubMessage"]);
 
-                if(choice)
+                if (choice)
                 {
                     Process.Start(Environment.ProcessPath);
                     Environment.Exit(0);

@@ -1,12 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using Avalonia;
 using Ryujinx.Graphics.Vulkan;
 using Silk.NET.Core;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Ryujinx.Ava.Ui.Vulkan
 {
@@ -63,12 +62,13 @@ namespace Ryujinx.Ava.Ui.Vulkan
                 PhysicalDevices.Add(physicalDevice, properties);
             }
 
-            SuitableDevices = PhysicalDevices.Where(x => IsSuitableDevice(instance.Api,
-                        x.Key,
-                        x.Value,
-                        surface.ApiHandle,
-                        out _,
-                        out _)).ToList();
+            SuitableDevices = PhysicalDevices.Where(x => IsSuitableDevice(
+                instance.Api,
+                x.Key,
+                x.Value,
+                surface.ApiHandle,
+                out _,
+                out _)).ToList();
         }
 
         internal static unsafe VulkanPhysicalDevice FindSuitablePhysicalDevice(VulkanInstance instance,
