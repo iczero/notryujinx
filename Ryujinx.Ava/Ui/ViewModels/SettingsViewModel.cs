@@ -29,6 +29,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using TimeZone = Ryujinx.Ava.Ui.Models.TimeZone;
 
 namespace Ryujinx.Ava.Ui.ViewModels
@@ -234,16 +235,19 @@ namespace Ryujinx.Ava.Ui.ViewModels
                 var devices = VulkanGraphicsDevice.GetPhysicalDevices();
                 foreach (var device in devices)
                 {
-                    _gpuIds.Add(VulkanInitialization.StringFromIdPair(uint.Parse(device.Vendor), uint.Parse(device.Id)));
+                    _gpuIds.Add(device.Id);
                     names.Add($"{device.Name} {(device.IsDiscrete ? "(dGpu)" : "")}");
                 }
             }
-            foreach (var device in VulkanPhysicalDevice.SuitableDevices)
+            else
             {
-                _gpuIds.Add(VulkanInitialization.StringFromIdPair(device.Value.VendorID, device.Value.DeviceID));
-                var value = device.Value;
-                var name = value.DeviceName;
-                names.Add($"{Marshal.PtrToStringAnsi((IntPtr)name)} {(device.Value.DeviceType == PhysicalDeviceType.DiscreteGpu ? "(dGpu)" : "")}");
+                foreach (var device in VulkanPhysicalDevice.SuitableDevices)
+                {
+                    _gpuIds.Add(VulkanInitialization.StringFromIdPair(device.Value.VendorID, device.Value.DeviceID));
+                    var value = device.Value;
+                    var name = value.DeviceName;
+                    names.Add($"{Marshal.PtrToStringAnsi((IntPtr)name)} {(device.Value.DeviceType == PhysicalDeviceType.DiscreteGpu ? "(dGpu)" : "")}");
+                }
             }
 
             AvailableGpus.Clear();
@@ -370,7 +374,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
             _previousVolumeLevel = Volume;
         }
 
-        public async void SaveSettings()
+        public async Task SaveSettings()
         {
             List<string> gameDirs = new List<string>(GameDirectories);
 
