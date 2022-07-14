@@ -544,4 +544,9 @@
     "LoadingHeading": "Caricamento di {0}",
     "CompilingPPTC": "Compilazione PTC",
     "CompilingShaders": "Compilazione Shaders"
+    "AllKeyboards": "Tutte le tastiere",
+    "OpenFileDialogTitle": "Seleziona un file supportato da aprire",
+    "OpenFolderDialogTitle": "Seleziona una cartella con un gioco decompresso",
+    "AllSupportedFormats": "Tutti I Formati Supportati",
+    "RyujinxUpdater": "Updater di Ryujinx"
 }
