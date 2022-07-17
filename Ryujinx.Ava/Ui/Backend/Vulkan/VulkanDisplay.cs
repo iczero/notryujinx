@@ -130,10 +130,10 @@ namespace Ryujinx.Ava.Ui.Vulkan
             PresentModeKHR presentMode;
             var modes = presentModes.ToList();
 
-            if (modes.Contains(PresentModeKHR.PresentModeImmediateKhr))
-                presentMode = PresentModeKHR.PresentModeImmediateKhr;
-            else if (modes.Contains(PresentModeKHR.PresentModeMailboxKhr))
+            if (modes.Contains(PresentModeKHR.PresentModeMailboxKhr))
                 presentMode = PresentModeKHR.PresentModeMailboxKhr;
+            else if (modes.Contains(PresentModeKHR.PresentModeImmediateKhr))
+                presentMode = PresentModeKHR.PresentModeImmediateKhr;
             else
                 presentMode = PresentModeKHR.PresentModeFifoKhr;
 
