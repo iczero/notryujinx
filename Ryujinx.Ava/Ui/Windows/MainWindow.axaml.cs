@@ -14,6 +14,7 @@ using Ryujinx.Ava.Ui.Applet;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Models;
 using Ryujinx.Ava.Ui.ViewModels;
+using Ryujinx.Ava.Ui.Vulkan;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.Gpu;
@@ -381,6 +382,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
                 HandleRelaunch();
             });
+
             RendererControl.RendererInitialized -= GlRenderer_Created;
             RendererControl = null;
 
