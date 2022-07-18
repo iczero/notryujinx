@@ -368,6 +368,7 @@ namespace Ryujinx.Ava
             ConfigurationState.Instance.System.IgnoreMissingServices.Event -= UpdateIgnoreMissingServicesState;
             ConfigurationState.Instance.Graphics.AspectRatio.Event -= UpdateAspectRatioState;
             ConfigurationState.Instance.System.EnableDockedMode.Event -= UpdateDockedModeState;
+            ConfigurationState.Instance.System.AudioVolume.Event -= UpdateAudioVolumeState;
 
             _gpuCancellationTokenSource.Cancel();
             _gpuCancellationTokenSource.Dispose();
@@ -823,6 +824,8 @@ namespace Ryujinx.Ava
             Width = (int)Renderer.Bounds.Width;
             Height = (int)Renderer.Bounds.Height;
 
+            _parent.SignalVSyncStateChanged();
+
             _renderer.Window.SetSize((int)(Width * _parent.PlatformImpl.RenderScaling), (int)(Height * _parent.PlatformImpl.RenderScaling));
 
             Device.Gpu.Renderer.RunLoop(() =>
@@ -966,6 +969,7 @@ namespace Ryujinx.Ava
                     {
                         case KeyboardHotkeyState.ToggleVSync:
                             Device.EnableDeviceVsync = !Device.EnableDeviceVsync;
+                            _parent.SignalVSyncStateChanged();
                             break;
                         case KeyboardHotkeyState.Screenshot:
                             ScreenshotRequested = true;

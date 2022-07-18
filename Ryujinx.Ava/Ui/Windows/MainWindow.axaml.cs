@@ -14,6 +14,7 @@ using Ryujinx.Ava.Ui.Applet;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Models;
 using Ryujinx.Ava.Ui.ViewModels;
+using Ryujinx.Ava.Ui.Vulkan;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.Gpu;
@@ -364,6 +365,8 @@ namespace Ryujinx.Ava.Ui.Windows
 
             ViewModel.IsGameRunning = false;
 
+            SignalVSyncStateChanged();
+
             Dispatcher.UIThread.InvokeAsync(() =>
             {
                 if (ContentFrame.Content != _mainViewContent)
@@ -381,6 +384,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
                 HandleRelaunch();
             });
+
             RendererControl.RendererInitialized -= GlRenderer_Created;
             RendererControl = null;
 
@@ -640,6 +644,21 @@ namespace Ryujinx.Ava.Ui.Windows
             AppHost.Device.EnableDeviceVsync = !AppHost.Device.EnableDeviceVsync;
 
             Logger.Info?.Print(LogClass.Application, $"VSync toggled to: {AppHost.Device.EnableDeviceVsync}");
+
+            SignalVSyncStateChanged();
+        }
+
+        public void SignalVSyncStateChanged()
+        {
+            if (Program.UseVulkan)
+            {
+                var platformInterface = AvaloniaLocator.Current.GetService<VulkanPlatformInterface>();
+
+                if (platformInterface != null)
+                {
+                    platformInterface.MainSurface.Display.SignalVSyncStateChanged(ViewModel.IsGameRunning ? true : AppHost.Device.EnableDeviceVsync);
+                }
+            }
         }
 
         private void DockedStatus_PointerReleased(object sender, PointerReleasedEventArgs e)
