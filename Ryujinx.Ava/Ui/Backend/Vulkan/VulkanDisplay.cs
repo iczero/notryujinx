@@ -194,7 +194,7 @@ namespace Ryujinx.Ava.Ui.Vulkan
         internal static VulkanDisplay CreateDisplay(VulkanInstance instance, VulkanDevice device,
             VulkanPhysicalDevice physicalDevice, VulkanSurface surface)
         {
-            var swapchain = CreateSwapchain(instance, device, physicalDevice, surface, out var extent, null, false);
+            var swapchain = CreateSwapchain(instance, device, physicalDevice, surface, out var extent, null, true);
 
             return new VulkanDisplay(instance, device, physicalDevice, surface, swapchain, extent);
         }
@@ -237,7 +237,7 @@ namespace Ryujinx.Ava.Ui.Vulkan
             }
         }
 
-        internal void SignalVSyncStateChanged(bool vsyncEnabled)
+        internal void ChangeVSyncMode(bool vsyncEnabled)
         {
             _vsyncStateChanged = true;
             _vsyncEnabled = vsyncEnabled;
