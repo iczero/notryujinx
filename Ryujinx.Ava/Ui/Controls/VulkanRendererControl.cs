@@ -78,7 +78,7 @@ namespace Ryujinx.Ava.Ui.Controls
 
             public bool Equals(ICustomDrawOperation other)
             {
-                return other is VulkanDrawOperation operation && Equals(this, operation) && operation.Bounds == Bounds;
+                return other is VulkanDrawOperation operation && Equals(this, operation) && operation.Bounds == Bounds && _control.Bounds == Bounds;
             }
 
             public bool HitTest(Point p)
@@ -95,7 +95,7 @@ namespace Ryujinx.Ava.Ui.Controls
 
                 var image = (PresentImageInfo)_control.Image;
 
-                if (context is not ISkiaDrawingContextImpl skiaDrawingContextImpl)
+                if (context is not ISkiaDrawingContextImpl skiaDrawingContextImpl || !image.IsValid)
                 {
                     return;
                 }

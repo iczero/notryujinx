@@ -75,8 +75,7 @@ namespace Ryujinx.Ava.Ui.Backend.Vulkan
 
                     if (surface == null)
                     {
-                        throw new InvalidOperationException(
-                            "Surface can't be created with the provided render target");
+                        return new VulkanGpuSession(GrContext, renderTarget, null, session);
                     }
 
                     success = true;
@@ -113,6 +112,10 @@ namespace Ryujinx.Ava.Ui.Backend.Vulkan
 
             public void Dispose()
             {
+                if(SkSurface == null) {
+                    return;
+                }
+
                 lock (_vulkanSession.Display.Lock)
                 {
                     SkSurface.Canvas.Flush();

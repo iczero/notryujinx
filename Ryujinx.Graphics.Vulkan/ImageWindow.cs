@@ -20,6 +20,7 @@ namespace Ryujinx.Graphics.Vulkan
         private Auto<MemoryAllocation>[] _imageAllocationAuto;
         private ulong[] _imageSizes;
         private ulong[] _imageOffsets;
+        private PresentImageInfo[] _presentedImageInfos;
 
         private Semaphore _imageAvailableSemaphore;
         private Semaphore _renderFinishedSemaphore;
@@ -44,6 +45,7 @@ namespace Ryujinx.Graphics.Vulkan
             _imageAllocationAuto = new Auto<MemoryAllocation>[ImageCount];
             _imageSizes = new ulong[ImageCount];
             _imageOffsets = new ulong[ImageCount];
+            _presentedImageInfos = new PresentImageInfo[ImageCount];
 
             CreateImages();
 
@@ -58,8 +60,11 @@ namespace Ryujinx.Graphics.Vulkan
 
         private void RecreateImages()
         {
+            _gd.Api.DeviceWaitIdle(_device);
+            
             for (int i = 0; i < ImageCount; i++)
             {
+                _presentedImageInfos[i]?.Invalidate();
                 _imageViews[i]?.Dispose();
                 _imageAllocationAuto[i]?.Dispose();
                 _images[i]?.Dispose();
@@ -257,11 +262,15 @@ namespace Ryujinx.Graphics.Vulkan
                 null);
 
             var memory = _imageAllocationAuto[_nextImage].GetUnsafe().Memory;
-            var presentInfo = new PresentImageInfo(image.GetUnsafe().Value, memory, _imageSizes[_nextImage], _imageOffsets[_nextImage], _renderFinishedSemaphore, _imageAvailableSemaphore);
 
-            swapBuffersCallback(presentInfo);
+            if (_presentedImageInfos[_nextImage] == null || !_presentedImageInfos[_nextImage].IsValid)
+            {
+                _presentedImageInfos[_nextImage] = new PresentImageInfo(image.GetUnsafe().Value, memory, _imageSizes[_nextImage], _imageOffsets[_nextImage], _renderFinishedSemaphore, _imageAvailableSemaphore);
+            }
 
-            _nextImage %= ImageCount;
+            swapBuffersCallback(_presentedImageInfos[_nextImage]);
+
+            _nextImage = (_nextImage + 1) % ImageCount;
         }
 
         private unsafe void Transition(
@@ -329,6 +338,7 @@ namespace Ryujinx.Graphics.Vulkan
 
                     for (int i = 0; i < ImageCount; i++)
                     {
+                        _presentedImageInfos[i]?.Invalidate();
                         _imageViews[i]?.Dispose();
                         _imageAllocationAuto[i]?.Dispose();
                         _images[i]?.Dispose();
@@ -352,6 +362,8 @@ namespace Ryujinx.Graphics.Vulkan
         public Semaphore ReadySemaphore { get; }
         public Semaphore AvailableSemaphore { get; }
 
+        public bool IsValid { get; private set; } = true;
+
         public PresentImageInfo(Image image, DeviceMemory memory, ulong memorySize, ulong memoryOffset, Semaphore readySemaphore, Semaphore availableSemaphore)
         {
             this.Image = image;
@@ -360,6 +372,11 @@ namespace Ryujinx.Graphics.Vulkan
             this.MemoryOffset = memoryOffset;
             this.ReadySemaphore = readySemaphore;
             this.AvailableSemaphore = availableSemaphore;
+        }
+
+        public void Invalidate()
+        {
+            IsValid = false;
         }
     }
 }

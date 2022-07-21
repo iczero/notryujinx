@@ -82,6 +82,8 @@ namespace Ryujinx.Ava.Ui.Vulkan
                 _swapchainExtension = extension;
             }
 
+            device.WaitIdle();
+
             while (!surface.CanSurfacePresent(physicalDevice))
             {
                 Thread.Sleep(16);
