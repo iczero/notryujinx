@@ -18,7 +18,18 @@ namespace Ryujinx.Ava.Ui.Backend.Vulkan
         private GRVkBackendContext _grVkBackend;
         private bool _initialized;
 
-        public GRContext GrContext { get => _grContext; set => _grContext = value; }
+        public GRContext GrContext 
+        {
+            get
+            {
+                if (_grContext == null || _grContext.IsAbandoned)
+                {
+                    RecreateContext();
+                }
+
+                return _grContext;
+            }
+        }
 
         public VulkanSkiaGpu(long? maxResourceBytes)
         {
@@ -74,6 +85,14 @@ namespace Ryujinx.Ava.Ui.Backend.Vulkan
             }
         }
 
+        public void RecreateContext()
+        {
+            _grVkBackend?.Dispose();
+            _grContext?.Dispose();
+            _initialized = false;
+            Initialize();
+        }
+
         public ISkiaGpuRenderTarget TryCreateRenderTarget(IEnumerable<object> surfaces)
         {
             foreach (var surface in surfaces)
@@ -101,8 +120,6 @@ namespace Ryujinx.Ava.Ui.Backend.Vulkan
                 var vulkanRenderTarget = new VulkanRenderTarget(_vulkan, window);
 
                 Initialize();
-
-                vulkanRenderTarget.GrContext = _grContext;
 
                 return vulkanRenderTarget;
             }

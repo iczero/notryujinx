@@ -56,8 +56,6 @@ namespace Ryujinx.Ava.Ui.Controls
             if (!rect.IsEmpty)
             {
                 RenderSize = rect.Size * VisualRoot.RenderScaling;
-
-                DrawOperation?.Dispose();
                 DrawOperation = CreateDrawOperation();
             }
         }

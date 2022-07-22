@@ -12,12 +12,12 @@ namespace Ryujinx.Ava.Ui.Vulkan
             InternalHandle = apiHandle;
             Api = api;
 
-            api.GetDeviceQueue(apiHandle, physicalDevice.QueueFamilyIndex, 0, out var queue);
+            // pick last queue in family
+            api.GetDeviceQueue(apiHandle, physicalDevice.QueueFamilyIndex, Math.Min(1, physicalDevice.QueueCount - 1), out var queue);
 
-            var vulkanQueue = new VulkanQueue(this, queue);
-            Queue = vulkanQueue;
+            Queue = new VulkanQueue(this, queue);
 
-            PresentQueue = vulkanQueue;
+            PresentQueue = Queue;
 
             CommandBufferPool = new VulkanCommandBufferPool(this, physicalDevice);
         }
@@ -42,7 +42,7 @@ namespace Ryujinx.Ava.Ui.Vulkan
         {
             lock (_lock)
             {
-                Api.QueueSubmit(Queue.InternalHandle, 1, submitInfo, fence);
+                Api.QueueSubmit(Queue.InternalHandle, 1, submitInfo, fence).ThrowOnError();
             }
         }
 

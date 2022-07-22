@@ -21,6 +21,7 @@ namespace Ryujinx.Ava.Ui.Controls
     internal class VulkanRendererControl : RendererControl
     {
         private VulkanPlatformInterface _platformInterface;
+        private VulkanDrawOperation _currentDrawOperation;
 
         public VulkanRendererControl(GraphicsDebugLevel graphicsDebugLevel) : base(graphicsDebugLevel)
         {
@@ -34,7 +35,21 @@ namespace Ryujinx.Ava.Ui.Controls
 
         protected override ICustomDrawOperation CreateDrawOperation()
         {
-            return new VulkanDrawOperation(this);
+            var newDrawOperation = new VulkanDrawOperation(this);
+
+            if(_currentDrawOperation != newDrawOperation)
+            {
+                _currentDrawOperation?.Destroy();
+            }
+            _currentDrawOperation = newDrawOperation;
+            return newDrawOperation;
+        }
+
+        protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
+        {
+            base.OnDetachedFromVisualTree(e);
+
+            _currentDrawOperation?.Destroy();
         }
 
         protected override void CreateWindow()
@@ -64,6 +79,8 @@ namespace Ryujinx.Ava.Ui.Controls
             public Rect Bounds { get; }
 
             private readonly VulkanRendererControl _control;
+            private VulkanImage _stagingImage;
+            private bool _isDestroyed;
 
             public VulkanDrawOperation(VulkanRendererControl control)
             {
@@ -73,7 +90,18 @@ namespace Ryujinx.Ava.Ui.Controls
 
             public void Dispose()
             {
+            }
 
+            public void Destroy()
+            {
+                if(_isDestroyed)
+                {
+                    return;
+                }
+
+                _isDestroyed = true;
+                _control._platformInterface.Device.QueueWaitIdle();
+                _stagingImage?.Dispose();
             }
 
             public bool Equals(ICustomDrawOperation other)
@@ -86,18 +114,56 @@ namespace Ryujinx.Ava.Ui.Controls
                 return Bounds.Contains(p);
             }
 
-            public void Render(IDrawingContextImpl context)
+            public unsafe void Render(IDrawingContextImpl context)
             {
-                if (_control.Image == null || _control.RenderSize.Width == 0 || _control.RenderSize.Height == 0)
+                if (_control.Image == null || _control.RenderSize.Width == 0 || _control.RenderSize.Height == 0 ||
+                    context is not ISkiaDrawingContextImpl skiaDrawingContextImpl)
                 {
                     return;
                 }
 
                 var image = (PresentImageInfo)_control.Image;
 
-                if (context is not ISkiaDrawingContextImpl skiaDrawingContextImpl)
+                lock (image.State)
                 {
-                    return;
+                    if (!image.State.IsValid)
+                    {
+                        return;
+                    }
+
+                    if (_stagingImage != null && _stagingImage.InternalHandle == null)
+                    {
+                        return;
+                    }
+
+                    if (_stagingImage == null)
+                    {
+                        _stagingImage = new VulkanImage(_control._platformInterface.Device,
+                            _control._platformInterface.PhysicalDevice,
+                            _control._platformInterface.Device.CommandBufferPool,
+                            (uint)Format.R8G8B8A8Unorm,
+                            new PixelSize((int)_control.Bounds.Size.Width, (int)_control.Bounds.Size.Height),
+                            1);
+
+                        _stagingImage.TransitionLayout(ImageLayout.TransferDstOptimal, AccessFlags.AccessTransferWriteBit | AccessFlags.AccessTransferWriteBit);
+                    }
+
+                    var commandBuffer = _control._platformInterface.Device.CommandBufferPool.CreateCommandBuffer();
+
+                    commandBuffer.BeginRecording();
+
+                    image.CopyImage(_control._platformInterface.Device.InternalHandle,
+                        _control._platformInterface.PhysicalDevice.InternalHandle, commandBuffer.InternalHandle, new Extent2D((uint)_stagingImage.Size.Width, (uint)_stagingImage.Size.Height),
+                        _stagingImage.InternalHandle.Value);
+
+                    commandBuffer.Submit();
+
+                    commandBuffer.WaitForFence();
+
+                    if (!image.State.IsValid)
+                    {
+                        return;
+                    }
                 }
 
                 _control._platformInterface.Device.QueueWaitIdle();
@@ -108,8 +174,8 @@ namespace Ryujinx.Ava.Ui.Controls
                 {
                     CurrentQueueFamily = _control._platformInterface.PhysicalDevice.QueueFamilyIndex,
                     Format = (uint)Format.R8G8B8A8Unorm,
-                    Image = image.Image.Handle,
-                    ImageLayout = (uint)ImageLayout.ColorAttachmentOptimal,
+                    Image = _stagingImage.Handle,
+                    ImageLayout = (uint)ImageLayout.TransferDstOptimal,
                     ImageTiling = (uint)ImageTiling.Optimal,
                     ImageUsageFlags = (uint)(ImageUsageFlags.ImageUsageColorAttachmentBit
                                              | ImageUsageFlags.ImageUsageTransferSrcBit
@@ -119,16 +185,16 @@ namespace Ryujinx.Ava.Ui.Controls
                     Protected = false,
                     Alloc = new GRVkAlloc()
                     {
-                        Memory = image.Memory.Handle,
+                        Memory = _stagingImage.MemoryHandle,
                         Flags = 0,
-                        Offset = image.MemoryOffset,
-                        Size = image.MemorySize
+                        Offset = 0,
+                        Size = _stagingImage.MemorySize
                     }
                 };
 
                 using var backendTexture = new GRBackendRenderTarget(
-                    (int)_control.RenderSize.Width,
-                    (int)_control.RenderSize.Height,
+                    _stagingImage.Size.Width,
+                    _stagingImage.Size.Height,
                     1,
                     imageInfo);
 
@@ -143,10 +209,11 @@ namespace Ryujinx.Ava.Ui.Controls
                     return;
                 }
 
-                var rect = new Rect(new Point(), _control.RenderSize);
+                var rect = new Rect(new Point(), _stagingImage.Size.ToSize(1));
 
                 using var snapshot = surface.Snapshot();
-                skiaDrawingContextImpl.SkCanvas.DrawImage(snapshot, rect.ToSKRect(), _control.Bounds.ToSKRect(), new SKPaint());
+                skiaDrawingContextImpl.SkCanvas.DrawImage(snapshot, rect.ToSKRect(), _control.Bounds.ToSKRect(),
+                    new SKPaint());
             }
         }
     }
