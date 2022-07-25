@@ -21,7 +21,6 @@ namespace Ryujinx.Ava.Ui.Controls
     internal class VulkanRendererControl : RendererControl
     {
         private VulkanPlatformInterface _platformInterface;
-        private VulkanDrawOperation _currentDrawOperation;
 
         public VulkanRendererControl(GraphicsDebugLevel graphicsDebugLevel) : base(graphicsDebugLevel)
         {
@@ -35,21 +34,12 @@ namespace Ryujinx.Ava.Ui.Controls
 
         protected override ICustomDrawOperation CreateDrawOperation()
         {
-            var newDrawOperation = new VulkanDrawOperation(this);
-
-            if(_currentDrawOperation != newDrawOperation)
-            {
-                _currentDrawOperation?.Destroy();
-            }
-            _currentDrawOperation = newDrawOperation;
-            return newDrawOperation;
+            return new VulkanDrawOperation(this);
         }
 
         protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
         {
             base.OnDetachedFromVisualTree(e);
-
-            _currentDrawOperation?.Destroy();
         }
 
         protected override void CreateWindow()
@@ -90,11 +80,7 @@ namespace Ryujinx.Ava.Ui.Controls
 
             public void Dispose()
             {
-            }
-
-            public void Destroy()
-            {
-                if(_isDestroyed)
+                if (_isDestroyed)
                 {
                     return;
                 }
@@ -116,7 +102,7 @@ namespace Ryujinx.Ava.Ui.Controls
 
             public unsafe void Render(IDrawingContextImpl context)
             {
-                if (_control.Image == null || _control.RenderSize.Width == 0 || _control.RenderSize.Height == 0 ||
+                if (_isDestroyed || _control.Image == null || _control.RenderSize.Width == 0 || _control.RenderSize.Height == 0 ||
                     context is not ISkiaDrawingContextImpl skiaDrawingContextImpl)
                 {
                     return;
