@@ -21,7 +21,7 @@ namespace Ryujinx.Ava.Ui.Vulkan
         private Extent2D _swapchainExtent;
         private Image[] _swapchainImages;
         private VulkanDevice _device { get; }
-        private ImageView[] _swapchainImageViews = new ImageView[0];
+        private ImageView[] _swapchainImageViews = Array.Empty<ImageView>();
         private bool _surfaceChanged;
 
         public bool NotifySurfaceChanged {
