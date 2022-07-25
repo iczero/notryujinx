@@ -578,7 +578,6 @@
   "GameUpdateWindowHeading": "Updates Available for {0} [{1}]",
   "SettingsTabHotkeysResScaleUpHotkey": "Increase resolution:",
   "SettingsTabHotkeysResScaleDownHotkey": "Decrease resolution:",
-  "GameUpdateWindowHeading": "Updates Available for {0} [{1}]",
   "SettingsTabGraphicsBackend": "Graphics Backend",
   "SettingsTabGraphicsBackendTooltip": "Graphics Backend to use",
   "SettingsEnableTextureRecompression": "Enable Texture Recompression",
