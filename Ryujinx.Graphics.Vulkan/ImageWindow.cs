@@ -216,144 +216,145 @@ namespace Ryujinx.Graphics.Vulkan
                 _recreateImages = false;
             }
 
-            _fences[_nextImage]?.Wait();
-
             var image = _images[_nextImage];
 
             _gd.FlushAllCommands();
 
-            var cbs = _gd.CommandBufferPool.Rent();
-
-            Transition(
-                _gd.Api,
-                cbs.CommandBuffer,
-                image.GetUnsafe().Value,
-                0,
-                AccessFlags.AccessTransferWriteBit,
-                ImageLayout.TransferSrcOptimal,
-                ImageLayout.General);
-
-            var view = (TextureView)texture;
-
-            int srcX0, srcX1, srcY0, srcY1;
-            float scale = view.ScaleFactor;
-
-            if (crop.Left == 0 && crop.Right == 0)
+            lock (_states[_nextImage])
             {
-                srcX0 = 0;
-                srcX1 = (int)(view.Width / scale);
-            }
-            else
-            {
-                srcX0 = crop.Left;
-                srcX1 = crop.Right;
-            }
+                var cbs = _gd.CommandBufferPool.Rent();
 
-            if (crop.Top == 0 && crop.Bottom == 0)
-            {
-                srcY0 = 0;
-                srcY1 = (int)(view.Height / scale);
-            }
-            else
-            {
-                srcY0 = crop.Top;
-                srcY1 = crop.Bottom;
-            }
-
-            if (scale != 1f)
-            {
-                srcX0 = (int)(srcX0 * scale);
-                srcY0 = (int)(srcY0 * scale);
-                srcX1 = (int)Math.Ceiling(srcX1 * scale);
-                srcY1 = (int)Math.Ceiling(srcY1 * scale);
-            }
-
-            if (ScreenCaptureRequested)
-            {
-                CaptureFrame(view, srcX0, srcY0, srcX1 - srcX0, srcY1 - srcY0, view.Info.Format.IsBgr(), crop.FlipX,
-                    crop.FlipY);
-
-                ScreenCaptureRequested = false;
-            }
-
-            float ratioX = crop.IsStretched
-                ? 1.0f
-                : MathF.Min(1.0f, _height * crop.AspectRatioX / (_width * crop.AspectRatioY));
-            float ratioY = crop.IsStretched
-                ? 1.0f
-                : MathF.Min(1.0f, _width * crop.AspectRatioY / (_height * crop.AspectRatioX));
-
-            int dstWidth = (int)(_width * ratioX);
-            int dstHeight = (int)(_height * ratioY);
-
-            int dstPaddingX = (_width - dstWidth) / 2;
-            int dstPaddingY = (_height - dstHeight) / 2;
-
-            int dstX0 = crop.FlipX ? _width - dstPaddingX : dstPaddingX;
-            int dstX1 = crop.FlipX ? dstPaddingX : _width - dstPaddingX;
-
-            int dstY0 = crop.FlipY ? dstPaddingY : _height - dstPaddingY;
-            int dstY1 = crop.FlipY ? _height - dstPaddingY : dstPaddingY;
-
-            _gd.HelperShader.Blit(
-                _gd,
-                cbs,
-                view,
-                _imageViews[_nextImage],
-                _width,
-                _height,
-                Format,
-                new Extents2D(srcX0, srcY0, srcX1, srcY1),
-                new Extents2D(dstX0, dstY1, dstX1, dstY0),
-                true,
-                true);
-
-            Transition(
-                _gd.Api,
-                cbs.CommandBuffer,
-                image.GetUnsafe().Value,
-                0,
-                0,
-                ImageLayout.General,
-                ImageLayout.TransferSrcOptimal);
-
-            _gd.CommandBufferPool.Return(
-                cbs,
-                null,
-                new[] { PipelineStageFlags.PipelineStageAllCommandsBit },
-                null);
-
-            var j = _nextImage;
-
-            _fences[_nextImage]?.Put();
-            _fences[_nextImage] = cbs.GetFence();
-            cbs.GetFence().Get();
-
-            PresentImageInfo info = _presentedImages[_nextImage];
-            if (info == null)
-            {
-                info = new PresentImageInfo(
+                Transition(
+                    _gd.Api,
+                    cbs.CommandBuffer,
                     image.GetUnsafe().Value,
-                    _imageMemory[_nextImage].GetUnsafe().Memory,
-                    _device,
-                    _instance,
-                    _physicalDevice,
-                    _imageSizes[_nextImage],
-                    _imageOffsets[_nextImage],
-                    _renderFinishedSemaphore,
-                    _imageAvailableSemaphore,
-                    new Extent2D((uint)_width, (uint)_height),
-                    _states[_nextImage],
-                    cbs.GetFence());
+                    0,
+                    AccessFlags.AccessTransferWriteBit,
+                    ImageLayout.TransferSrcOptimal,
+                    ImageLayout.General);
 
-                _presentedImages[_nextImage] = info;
-            }
-            else
-            {
-                info.Fence = cbs.GetFence();
-            }
+                var view = (TextureView)texture;
 
-            swapBuffersCallback(info);
+                int srcX0, srcX1, srcY0, srcY1;
+                float scale = view.ScaleFactor;
+
+                if (crop.Left == 0 && crop.Right == 0)
+                {
+                    srcX0 = 0;
+                    srcX1 = (int)(view.Width / scale);
+                }
+                else
+                {
+                    srcX0 = crop.Left;
+                    srcX1 = crop.Right;
+                }
+
+                if (crop.Top == 0 && crop.Bottom == 0)
+                {
+                    srcY0 = 0;
+                    srcY1 = (int)(view.Height / scale);
+                }
+                else
+                {
+                    srcY0 = crop.Top;
+                    srcY1 = crop.Bottom;
+                }
+
+                if (scale != 1f)
+                {
+                    srcX0 = (int)(srcX0 * scale);
+                    srcY0 = (int)(srcY0 * scale);
+                    srcX1 = (int)Math.Ceiling(srcX1 * scale);
+                    srcY1 = (int)Math.Ceiling(srcY1 * scale);
+                }
+
+                if (ScreenCaptureRequested)
+                {
+                    CaptureFrame(view, srcX0, srcY0, srcX1 - srcX0, srcY1 - srcY0, view.Info.Format.IsBgr(), crop.FlipX,
+                        crop.FlipY);
+
+                    ScreenCaptureRequested = false;
+                }
+
+                float ratioX = crop.IsStretched
+                    ? 1.0f
+                    : MathF.Min(1.0f, _height * crop.AspectRatioX / (_width * crop.AspectRatioY));
+                float ratioY = crop.IsStretched
+                    ? 1.0f
+                    : MathF.Min(1.0f, _width * crop.AspectRatioY / (_height * crop.AspectRatioX));
+
+                int dstWidth = (int)(_width * ratioX);
+                int dstHeight = (int)(_height * ratioY);
+
+                int dstPaddingX = (_width - dstWidth) / 2;
+                int dstPaddingY = (_height - dstHeight) / 2;
+
+                int dstX0 = crop.FlipX ? _width - dstPaddingX : dstPaddingX;
+                int dstX1 = crop.FlipX ? dstPaddingX : _width - dstPaddingX;
+
+                int dstY0 = crop.FlipY ? dstPaddingY : _height - dstPaddingY;
+                int dstY1 = crop.FlipY ? _height - dstPaddingY : dstPaddingY;
+
+                _gd.HelperShader.Blit(
+                    _gd,
+                    cbs,
+                    view,
+                    _imageViews[_nextImage],
+                    _width,
+                    _height,
+                    Format,
+                    new Extents2D(srcX0, srcY0, srcX1, srcY1),
+                    new Extents2D(dstX0, dstY1, dstX1, dstY0),
+                    true,
+                    true);
+
+                Transition(
+                    _gd.Api,
+                    cbs.CommandBuffer,
+                    image.GetUnsafe().Value,
+                    0,
+                    0,
+                    ImageLayout.General,
+                    ImageLayout.TransferSrcOptimal);
+
+                _gd.CommandBufferPool.Return(
+                    cbs,
+                    null,
+                    new[] { PipelineStageFlags.PipelineStageAllCommandsBit },
+                    null);
+
+                var j = _nextImage;
+
+                _fences[_nextImage]?.Put();
+                _fences[_nextImage] = cbs.GetFence();
+                cbs.GetFence().Get();
+
+                PresentImageInfo info = _presentedImages[_nextImage];
+                if (info == null)
+                {
+                    info = new PresentImageInfo(
+                        image.GetUnsafe().Value,
+                        _imageMemory[_nextImage].GetUnsafe().Memory,
+                        _device,
+                        _instance,
+                        _physicalDevice,
+                        _imageSizes[_nextImage],
+                        _imageOffsets[_nextImage],
+                        _renderFinishedSemaphore,
+                        _imageAvailableSemaphore,
+                        new Extent2D((uint)_width, (uint)_height),
+                        _states[_nextImage],
+                        cbs.GetFence());
+
+                    _presentedImages[_nextImage] = info;
+                }
+                else
+                {
+                    info.Fence = cbs.GetFence();
+                }
+
+                swapBuffersCallback(info);
+            }
 
             _nextImage = (_nextImage + 1) % ImageCount;
         }
