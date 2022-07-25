@@ -71,6 +71,7 @@ namespace Ryujinx.Ava.Ui.Controls
             private readonly VulkanRendererControl _control;
             private VulkanImage _stagingImage;
             private bool _isDestroyed;
+            private VulkanCommandBufferPool.VulkanCommandBuffer _lastBuffer;
 
             public VulkanDrawOperation(VulkanRendererControl control)
             {
@@ -86,7 +87,7 @@ namespace Ryujinx.Ava.Ui.Controls
                 }
 
                 _isDestroyed = true;
-                _control._platformInterface.Device.QueueWaitIdle();
+                _lastBuffer?.WaitForFence();
                 _stagingImage?.Dispose();
             }
 
@@ -142,8 +143,13 @@ namespace Ryujinx.Ava.Ui.Controls
                         _control._platformInterface.PhysicalDevice.InternalHandle, commandBuffer.InternalHandle, new Extent2D((uint)_stagingImage.Size.Width, (uint)_stagingImage.Size.Height),
                         _stagingImage.InternalHandle.Value);
 
-                    commandBuffer.Submit();
+                    commandBuffer.Submit(
+                        new[] { image.ImportRenderingFinishedSemaphore },
+                        new[] { PipelineStageFlags.PipelineStageAllCommandsBit },
+                        new[] { image.ImportImageAvailableSemaphore }
+                        );
 
+                    _lastBuffer = commandBuffer;
                     commandBuffer.WaitForFence();
 
                     if (!image.State.IsValid)

@@ -87,6 +87,8 @@ namespace Ryujinx.Ava.Ui.Vulkan
             private readonly Fence _fence;
             private bool _hasEnded;
             private bool _hasStarted;
+            private bool _isDisposed;
+            private object _lock = new object();
 
             public IntPtr Handle => InternalHandle.Handle;
 
@@ -110,14 +112,31 @@ namespace Ryujinx.Ava.Ui.Vulkan
 
             public unsafe void Dispose()
             {
-                _device.Api.WaitForFences(_device.InternalHandle, 1, _fence, true, ulong.MaxValue);
-                _device.Api.FreeCommandBuffers(_device.InternalHandle, _commandBufferPool._commandPool, 1, InternalHandle);
-                _device.Api.DestroyFence(_device.InternalHandle, _fence, null);
+                lock (_lock)
+                {
+                    if (!_isDisposed)
+                    {
+                        _isDisposed = true;
+
+                        _device.Api.WaitForFences(_device.InternalHandle, 1, _fence, true, ulong.MaxValue);
+                        _device.Api.FreeCommandBuffers(_device.InternalHandle, _commandBufferPool._commandPool, 1, InternalHandle);
+                        _device.Api.DestroyFence(_device.InternalHandle, _fence, null);
+                    }
+                }
             }
 
             public void WaitForFence()
             {
-                _device.Api.WaitForFences(_device.InternalHandle, 1, _fence, true, ulong.MaxValue);
+                if (!_isDisposed)
+                {
+                    lock (_lock)
+                    {
+                        if (!_isDisposed)
+                        {
+                            _device.Api.WaitForFences(_device.InternalHandle, 1, _fence, true, ulong.MaxValue);
+                        }
+                    }
+                }
             }
 
             public void BeginRecording()

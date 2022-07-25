@@ -31,7 +31,9 @@ namespace Ryujinx.Graphics.Vulkan
             "VK_EXT_shader_subgroup_ballot",
             "VK_EXT_subgroup_size_control",
             "VK_NV_geometry_shader_passthrough",
-            "VK_KHR_external_memory"
+            "VK_KHR_external_memory",
+            KhrGetPhysicalDeviceProperties2.ExtensionName,
+            KhrExternalSemaphoreCapabilities.ExtensionName
         };
 
         public static string[] RequiredExtensions { get; } = new string[]
@@ -506,7 +508,9 @@ namespace Ryujinx.Graphics.Vulkan
             }
 
             var enabledExtensions = RequiredExtensions.Union(DesirableExtensions
-                .Union(OperatingSystem.IsWindows() ? new string[] { KhrExternalMemoryWin32.ExtensionName } : new string[] { KhrExternalMemoryFd.ExtensionName })
+                .Union(OperatingSystem.IsWindows() ? 
+                    new string[] { KhrExternalMemoryWin32.ExtensionName, KhrExternalSemaphoreWin32.ExtensionName } : 
+                    new string[] { KhrExternalMemoryFd.ExtensionName, KhrExternalSemaphoreFd.ExtensionName })
                 .Intersect(supportedExtensions)).ToArray();
 
             IntPtr* ppEnabledExtensions = stackalloc IntPtr[enabledExtensions.Length];

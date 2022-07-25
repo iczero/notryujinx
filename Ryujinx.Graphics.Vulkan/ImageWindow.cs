@@ -30,8 +30,10 @@ namespace Ryujinx.Graphics.Vulkan
         private ulong[] _imageSizes;
         private ulong[] _imageOffsets;
 
-        private Semaphore _imageAvailableSemaphore;
-        private Semaphore _renderFinishedSemaphore;
+        private Semaphore[] _imageAvailableSemaphores;
+        private Semaphore[] _renderFinishedSemaphores;
+        private IntPtr[] _exportImageAvailableSemaphores;
+        private IntPtr[] _exportRenderFinishedSemaphores;
 
         private int _width = SurfaceWidth;
         private int _height = SurfaceHeight;
@@ -53,13 +55,74 @@ namespace Ryujinx.Graphics.Vulkan
             _imageOffsets = new ulong[ImageCount];
             _states = new ImageState[ImageCount];
             _presentedImages = new PresentImageInfo[ImageCount];
+            _imageAvailableSemaphores = new Semaphore[ImageCount];
+            _renderFinishedSemaphores = new Semaphore[ImageCount];
+            _exportImageAvailableSemaphores = new IntPtr[ImageCount];
+            _exportRenderFinishedSemaphores = new IntPtr[ImageCount];
 
             CreateImages();
 
-            var semaphoreCreateInfo = new SemaphoreCreateInfo() { SType = StructureType.SemaphoreCreateInfo };
+            var exportSemaphoreCreateInfo = new ExportSemaphoreCreateInfo()
+            {
+                SType = StructureType.ExportSemaphoreCreateInfo,
+                HandleTypes = OperatingSystem.IsWindows() ? ExternalSemaphoreHandleTypeFlags.ExternalSemaphoreHandleTypeOpaqueWin32Bit :
+                    ExternalSemaphoreHandleTypeFlags.ExternalSemaphoreHandleTypeOpaqueFDBit
+            };
 
-            gd.Api.CreateSemaphore(device, semaphoreCreateInfo, null, out _imageAvailableSemaphore).ThrowOnError();
-            gd.Api.CreateSemaphore(device, semaphoreCreateInfo, null, out _renderFinishedSemaphore).ThrowOnError();
+            var semaphoreCreateInfo = new SemaphoreCreateInfo() { SType = StructureType.SemaphoreCreateInfo, PNext = &exportSemaphoreCreateInfo };
+
+            for (int i = 0; i < ImageCount; i++)
+            {
+                gd.Api.CreateSemaphore(device, semaphoreCreateInfo, null, out var semaphore).ThrowOnError();
+                _imageAvailableSemaphores[i] = semaphore;
+                gd.Api.CreateSemaphore(device, semaphoreCreateInfo, null, out semaphore).ThrowOnError();
+                _renderFinishedSemaphores[i] = semaphore;
+
+                if (OperatingSystem.IsWindows())
+                {
+                    if (gd.Api.TryGetDeviceExtension<KhrExternalSemaphoreWin32>(_instance, _device, out var ext))
+                    {
+                        SemaphoreGetWin32HandleInfoKHR getInfo = new SemaphoreGetWin32HandleInfoKHR
+                        {
+                            SType = StructureType.SemaphoreGetWin32HandleInfoKhr,
+                            Semaphore = _imageAvailableSemaphores[i],
+                            HandleType = ExternalSemaphoreHandleTypeFlags.ExternalSemaphoreHandleTypeOpaqueWin32Bit
+                        };
+
+                        ext.GetSemaphoreWin32Handle(_device, getInfo, out var handle).ThrowOnError();
+
+                        _exportImageAvailableSemaphores[i] = handle;
+
+                        getInfo.Semaphore = _renderFinishedSemaphores[i];
+
+                        ext.GetSemaphoreWin32Handle(_device, getInfo, out handle).ThrowOnError();
+
+                        _exportRenderFinishedSemaphores[i] = handle;
+                    }
+                }
+                else if (OperatingSystem.IsLinux())
+                {
+                    if (gd.Api.TryGetDeviceExtension<KhrExternalSemaphoreFd>(_instance, _device, out var ext))
+                    {
+                        SemaphoreGetFdInfoKHR getInfo = new SemaphoreGetFdInfoKHR
+                        {
+                            SType = StructureType.SemaphoreGetFDInfoKhr,
+                            Semaphore = _imageAvailableSemaphores[i],
+                            HandleType = ExternalSemaphoreHandleTypeFlags.ExternalSemaphoreHandleTypeOpaqueWin32Bit
+                        };
+
+                        ext.GetSemaphoreF(_device, getInfo, out var handle).ThrowOnError();
+
+                        _exportImageAvailableSemaphores[i] = (IntPtr)handle;
+
+                        getInfo.Semaphore = _renderFinishedSemaphores[i];
+
+                        ext.GetSemaphoreF(_device, getInfo, out handle).ThrowOnError();
+
+                        _exportRenderFinishedSemaphores[i] = (IntPtr)handle;
+                    }
+                }
+            }
         }
 
         private void RecreateImages()
@@ -319,9 +382,9 @@ namespace Ryujinx.Graphics.Vulkan
 
                 _gd.CommandBufferPool.Return(
                     cbs,
-                    null,
+                    new[] { _imageAvailableSemaphores[_nextImage] },
                     new[] { PipelineStageFlags.PipelineStageAllCommandsBit },
-                    null);
+                    new[] { _renderFinishedSemaphores[_nextImage] });
 
                 var j = _nextImage;
 
@@ -340,8 +403,8 @@ namespace Ryujinx.Graphics.Vulkan
                         _physicalDevice,
                         _imageSizes[_nextImage],
                         _imageOffsets[_nextImage],
-                        _renderFinishedSemaphore,
-                        _imageAvailableSemaphore,
+                        _exportRenderFinishedSemaphores[_nextImage],
+                        _exportImageAvailableSemaphores[_nextImage],
                         new Extent2D((uint)_width, (uint)_height),
                         _states[_nextImage],
                         cbs.GetFence());
@@ -420,14 +483,13 @@ namespace Ryujinx.Graphics.Vulkan
             {
                 unsafe
                 {
-                    _gd.Api.DestroySemaphore(_device, _renderFinishedSemaphore, null);
-                    _gd.Api.DestroySemaphore(_device, _imageAvailableSemaphore, null);
-
                     for (int i = 0; i < ImageCount; i++)
                     {
                         _states[i].IsValid = false;
                         _fences[i]?.Wait();
                         _fences[i]?.Put();
+                        _gd.Api.DestroySemaphore(_device, _renderFinishedSemaphores[i], null);
+                        _gd.Api.DestroySemaphore(_device, _imageAvailableSemaphores[i], null);
                         _imageViews[i]?.Dispose();
                         _imageMemory[i]?.Dispose();
                         _images[i]?.Dispose();
@@ -472,11 +534,14 @@ namespace Ryujinx.Graphics.Vulkan
         public PhysicalDevice PhysicalDevice { get; }
         public ulong MemorySize { get; }
         public ulong MemoryOffset { get; }
-        public Semaphore ReadySemaphore { get; }
-        public Semaphore AvailableSemaphore { get; }
+        public IntPtr ReadySemaphore { get; }
+        public IntPtr AvailableSemaphore { get; }
         public Extent2D Extent { get; }
         public ImageState State { get; internal set; }
         internal FenceHolder Fence { get; set; }
+
+        public Semaphore ImportImageAvailableSemaphore { get; private set; }
+        public Semaphore ImportRenderingFinishedSemaphore { get; private set; }
 
         internal PresentImageInfo(
             Image image,
@@ -486,8 +551,8 @@ namespace Ryujinx.Graphics.Vulkan
             PhysicalDevice physicalDevice,
             ulong memorySize,
             ulong memoryOffset,
-            Semaphore readySemaphore,
-            Semaphore availableSemaphore,
+            IntPtr readySemaphore,
+            IntPtr availableSemaphore,
             Extent2D extent2D,
             ImageState state,
             FenceHolder fence)
@@ -508,7 +573,7 @@ namespace Ryujinx.Graphics.Vulkan
             state.StateChanged += StateChanged;
         }
 
-        private void StateChanged(object sender, bool e)
+        private unsafe void StateChanged(object sender, bool e)
         {
             lock (State)
             {
@@ -518,6 +583,10 @@ namespace Ryujinx.Graphics.Vulkan
                     {
                         _externalImage.Dispose();
                         _externalMemory.Dispose();
+
+                        var api = Vk.GetApi();
+                        api.DestroySemaphore(Device, ImportImageAvailableSemaphore, null);
+                        api.DestroySemaphore(Device, ImportRenderingFinishedSemaphore, null);
                     }
                 }
             }
@@ -534,8 +603,6 @@ namespace Ryujinx.Graphics.Vulkan
             {
                 return;
             }
-
-            Fence?.Wait();
 
             if (_externalImage != null)
             {
@@ -633,6 +700,24 @@ namespace Ryujinx.Graphics.Vulkan
                     memoryRequirements.MemoryTypeBits, MemoryPropertyFlags.MemoryPropertyDeviceLocalBit)
             };
 
+
+            var exportSemaphoreCreateInfo = new ExportSemaphoreCreateInfo()
+            {
+                SType = StructureType.ExportSemaphoreCreateInfo,
+                HandleTypes = OperatingSystem.IsWindows() ? ExternalSemaphoreHandleTypeFlags.ExternalSemaphoreHandleTypeOpaqueWin32Bit :
+                    ExternalSemaphoreHandleTypeFlags.ExternalSemaphoreHandleTypeOpaqueFDBit
+            };
+
+            var semaphoreCreateInfo = new SemaphoreCreateInfo() { SType = StructureType.SemaphoreCreateInfo, PNext = &exportSemaphoreCreateInfo };
+
+            api.CreateSemaphore(device, semaphoreCreateInfo, null, out var semaphore).ThrowOnError();
+
+            ImportRenderingFinishedSemaphore = semaphore;
+
+            api.CreateSemaphore(device, semaphoreCreateInfo, null, out semaphore).ThrowOnError();
+
+            ImportImageAvailableSemaphore = semaphore;
+
             if (OperatingSystem.IsWindows())
             {
                 nint handle = 0;
@@ -661,6 +746,24 @@ namespace Ryujinx.Graphics.Vulkan
                 else
                 {
                     throw new Exception();
+                }
+
+                var importInfo = new ImportSemaphoreWin32HandleInfoKHR()
+                {
+                    SType = StructureType.ImportSemaphoreWin32HandleInfoKhr,
+                    HandleType = ExternalSemaphoreHandleTypeFlags.ExternalSemaphoreHandleTypeOpaqueWin32Bit,
+                    Semaphore = ImportImageAvailableSemaphore,
+                    Handle = AvailableSemaphore,
+                };
+
+                if(api.TryGetDeviceExtension<KhrExternalSemaphoreWin32>(Instance, device, out var ext))
+                {
+                    ext.ImportSemaphoreWin32Handle(device, importInfo).ThrowOnError();
+
+                    importInfo.Semaphore = ImportRenderingFinishedSemaphore;
+                    importInfo.Handle = ReadySemaphore;
+
+                    ext.ImportSemaphoreWin32Handle(device, importInfo).ThrowOnError();
                 }
             }
             else if (OperatingSystem.IsLinux())
@@ -692,9 +795,27 @@ namespace Ryujinx.Graphics.Vulkan
                 {
                     throw new Exception();
                 }
+
+                var importInfo = new ImportSemaphoreFdInfoKHR()
+                {
+                    SType = StructureType.ImportSemaphoreWin32HandleInfoKhr,
+                    HandleType = ExternalSemaphoreHandleTypeFlags.ExternalSemaphoreHandleTypeOpaqueWin32Bit,
+                    Semaphore = ImportImageAvailableSemaphore,
+                    Fd = (int)AvailableSemaphore,
+                };
+
+                if (api.TryGetDeviceExtension<KhrExternalSemaphoreFd>(Instance, device, out var ext))
+                {
+                    ext.ImportSemaphoreF(device, importInfo).ThrowOnError();
+
+                    importInfo.Semaphore = ImportRenderingFinishedSemaphore;
+                    importInfo.Fd = (int)ReadySemaphore;
+
+                    ext.ImportSemaphoreF(device, importInfo).ThrowOnError();
+                }
             }
 
-            DeviceMemory memory = default;
+            DeviceMemory memory;
             try
             {
                 api.AllocateMemory(device, memoryAllocateInfo, null,
