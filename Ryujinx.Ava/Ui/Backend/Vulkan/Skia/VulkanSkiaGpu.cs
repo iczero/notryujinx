@@ -18,7 +18,7 @@ namespace Ryujinx.Ava.Ui.Backend.Vulkan
         private GRVkBackendContext _grVkBackend;
         private bool _initialized;
 
-        public GRContext GrContext 
+        public GRContext GrContext
         {
             get
             {
@@ -68,7 +68,7 @@ namespace Ryujinx.Ava.Ui.Backend.Vulkan
 
                 return addr;
             };
-            
+
             _grVkBackend = new GRVkBackendContext()
             {
                 VkInstance = _vulkan.Device.Handle,

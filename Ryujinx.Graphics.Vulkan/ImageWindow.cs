@@ -353,7 +353,6 @@ namespace Ryujinx.Graphics.Vulkan
                 info.Fence = cbs.GetFence();
             }
 
-
             swapBuffersCallback(info);
 
             _nextImage = (_nextImage + 1) % ImageCount;
@@ -396,8 +395,7 @@ namespace Ryujinx.Graphics.Vulkan
                 barrier);
         }
 
-        private void CaptureFrame(TextureView texture, int x, int y, int width, int height, bool isBgra, bool flipX,
-            bool flipY)
+        private void CaptureFrame(TextureView texture, int x, int y, int width, int height, bool isBgra, bool flipX, bool flipY)
         {
             byte[] bitmap = texture.GetData(x, y, width, height);
 

@@ -24,7 +24,8 @@ namespace Ryujinx.Ava.Ui.Vulkan
         private ImageView[] _swapchainImageViews = Array.Empty<ImageView>();
         private bool _surfaceChanged;
 
-        public bool NotifySurfaceChanged {
+        public bool NotifySurfaceChanged
+        {
             get
             {
                 var changed = _surfaceChanged;
@@ -417,7 +418,7 @@ namespace Ryujinx.Ava.Ui.Vulkan
             {
                 _swapchainExtension.QueuePresent(_device.PresentQueue.InternalHandle, presentInfo);
             }
-            
+
             CommandBufferPool.FreeUsedCommandBuffers();
         }
     }

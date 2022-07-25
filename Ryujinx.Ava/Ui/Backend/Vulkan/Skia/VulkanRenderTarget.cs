@@ -9,7 +9,8 @@ namespace Ryujinx.Ava.Ui.Backend.Vulkan
 {
     internal class VulkanRenderTarget : ISkiaGpuRenderTarget
     {
-        public GRContext GrContext {
+        public GRContext GrContext
+        {
             get
             {
                 var gpu = AvaloniaLocator.Current.GetService<VulkanSkiaGpu>();
