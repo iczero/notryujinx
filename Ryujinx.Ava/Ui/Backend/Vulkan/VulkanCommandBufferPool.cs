@@ -63,7 +63,10 @@ namespace Ryujinx.Ava.Ui.Vulkan
         {
             lock (_lock)
             {
-                foreach (var usedCommandBuffer in _usedCommandBuffers) usedCommandBuffer.Dispose();
+                foreach (var usedCommandBuffer in _usedCommandBuffers)
+                {
+                    usedCommandBuffer.Dispose();
+                }
 
                 _usedCommandBuffers.Clear();
             }
