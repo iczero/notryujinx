@@ -12,8 +12,7 @@ namespace Ryujinx.Ava.Ui.Vulkan
             InternalHandle = apiHandle;
             Api = api;
 
-            // pick last queue in family
-            api.GetDeviceQueue(apiHandle, physicalDevice.QueueFamilyIndex, Math.Min(1, physicalDevice.QueueCount - 1), out var queue);
+            api.GetDeviceQueue(apiHandle, physicalDevice.QueueFamilyIndex, 0, out var queue);
 
             Queue = new VulkanQueue(this, queue);
 
