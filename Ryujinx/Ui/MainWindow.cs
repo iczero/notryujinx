@@ -46,6 +46,7 @@ using System.Threading.Tasks;
 using GUI = Gtk.Builder.ObjectAttribute;
 using PtcLoadingState = ARMeilleure.Translation.PTC.PtcLoadingState;
 using ShaderCacheLoadingState = Ryujinx.Graphics.Gpu.Shader.ShaderCacheState;
+using ProgramSpecifyKind = Ryujinx.HLE.HOS.Services.Am.AppletOE.ApplicationProxyService.ApplicationProxy.Types.ProgramSpecifyKind;
 
 namespace Ryujinx.Ui
 {
@@ -72,6 +73,7 @@ namespace Ryujinx.Ui
         private bool _ending;
 
         private string _currentEmulatedGamePath = null;
+        private string _mostRecentlyLaunchedGamePath = null;
 
         private string _lastScannedAmiiboId = "";
         private bool   _lastScannedAmiiboShowAll = false;
@@ -100,6 +102,7 @@ namespace Ryujinx.Ui
         [GUI] MenuItem        _pauseEmulation;
         [GUI] MenuItem        _resumeEmulation;
         [GUI] MenuItem        _stopEmulation;
+        [GUI] MenuItem        _restartEmulation;
         [GUI] MenuItem        _simulateWakeUpMessage;
         [GUI] MenuItem        _scanAmiibo;
         [GUI] MenuItem        _takeScreenshot;
@@ -678,7 +681,7 @@ namespace Ryujinx.Ui
             }
         }
 
-        public void LoadApplication(string path, bool startFullscreen = false)
+        public void LoadApplication(string path, bool startFullscreen = false, bool isUserSpecifiedPath = false)
         {
             if (_gameLoaded)
             {
@@ -839,6 +842,11 @@ namespace Ryujinx.Ui
 
                 _currentEmulatedGamePath = path;
 
+                if (isUserSpecifiedPath)
+                {
+                    _mostRecentlyLaunchedGamePath = path;
+                }
+
                 _deviceExitStatus.Reset();
 
                 Translator.IsReadyForTranslation.Reset();
@@ -857,12 +865,14 @@ namespace Ryujinx.Ui
 #endif
 
                 _gameLoaded           = true;
-                _actionMenu.Sensitive = true;
+                _lastScannedAmiiboId  = "";
 
-                _lastScannedAmiiboId = "";
-
-                _firmwareInstallFile.Sensitive      = false;
-                _firmwareInstallDirectory.Sensitive = false;
+                Application.Invoke(delegate
+                {
+                    _actionMenu.Sensitive               = true;
+                    _firmwareInstallFile.Sensitive      = false;
+                    _firmwareInstallDirectory.Sensitive = false;
+                });
 
                 DiscordIntegrationModule.SwitchToPlayingState(_emulationContext.Application.TitleIdText, _emulationContext.Application.TitleName);
 
@@ -947,9 +957,11 @@ namespace Ryujinx.Ui
             UpdateGameTable();
 
             Task.Run(RefreshFirmwareLabel);
-            Task.Run(HandleRelaunch);
 
             _actionMenu.Sensitive = false;
+
+            Task.Run(HandleRelaunch);
+
             _firmwareInstallFile.Sensitive = true;
             _firmwareInstallDirectory.Sensitive = true;
         }
@@ -1171,7 +1183,7 @@ namespace Ryujinx.Ui
 
             string path = (string)_tableStore.GetValue(treeIter, 9);
 
-            LoadApplication(path);
+            LoadApplication(path, startFullscreen: false, isUserSpecifiedPath: true);
         }
 
         private void VSyncStatus_Clicked(object sender, ButtonReleaseEventArgs args)
@@ -1257,7 +1269,7 @@ namespace Ryujinx.Ui
 
                 if (fileChooser.Run() == (int)ResponseType.Accept)
                 {
-                    LoadApplication(fileChooser.Filename);
+                    LoadApplication(fileChooser.Filename, startFullscreen: false, isUserSpecifiedPath: true);
                 }
             }
         }
@@ -1268,7 +1280,7 @@ namespace Ryujinx.Ui
             {
                 if (fileChooser.Run() == (int)ResponseType.Accept)
                 {
-                    LoadApplication(fileChooser.Filename);
+                    LoadApplication(fileChooser.Filename, startFullscreen: false, isUserSpecifiedPath: true);
                 }
             }
         }
@@ -1321,6 +1333,15 @@ namespace Ryujinx.Ui
             }
         }
 
+        private void RestartEmulation_Pressed(object sender, EventArgs args)
+        {
+            if (_emulationContext != null)
+            {
+                _userChannelPersistence.ExecuteProgram(ProgramSpecifyKind.RestartProgram, 0);
+                StopEmulation_Pressed(sender, args);
+            }
+        }
+
         private void StopEmulation_Pressed(object sender, EventArgs args)
         {
             if (_emulationContext != null)
@@ -1330,6 +1351,7 @@ namespace Ryujinx.Ui
 
             _pauseEmulation.Sensitive = false;
             _resumeEmulation.Sensitive = false;
+
             RendererWidget?.Exit();
         }
 
@@ -1505,7 +1527,7 @@ namespace Ryujinx.Ui
             {
                 _userChannelPersistence.ShouldRestart = false;
 
-                LoadApplication(_currentEmulatedGamePath);
+                LoadApplication(_mostRecentlyLaunchedGamePath);
             }
             else
             {
