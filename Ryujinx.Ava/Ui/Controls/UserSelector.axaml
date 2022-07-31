@@ -32,11 +32,9 @@
             SelectionChanged="SelectingItemsControl_SelectionChanged">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <flex:FlexPanel
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
-                        AlignContent="FlexStart"
-                        JustifyContent="Center" />
+                    <WrapPanel
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Stretch"/>
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
             <ListBox.ItemTemplate>

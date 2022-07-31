@@ -620,7 +620,7 @@ namespace Ryujinx.Ava.Ui.Windows
 
         private void VolumeStatus_CheckedChanged(object sender, SplitButtonClickEventArgs e)
         {
-            var volumeSplitButton = sender as ToggleSplitButton;
+            var volumeSplitButton = sender as FluentAvalonia.UI.Controls.ToggleSplitButton;
             if (ViewModel.IsGameRunning)
             {
                 if (!volumeSplitButton.IsChecked)

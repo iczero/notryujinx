@@ -149,8 +149,14 @@ namespace Ryujinx.Ava.Ui.Controls
 
             public unsafe void Render(IDrawingContextImpl context)
             {
-                if (_isDestroyed || _control.Image == null || _control.RenderSize.Width == 0 || _control.RenderSize.Height == 0 ||
-                    context is not ISkiaDrawingContextImpl skiaDrawingContextImpl)
+                var leaseFeature = context.GetFeature<ISkiaSharpApiLeaseFeature>();
+
+                if (leaseFeature == null)
+                {
+                    return;
+                }
+
+                if (_isDestroyed || _control.Image == null || _control.RenderSize.Width == 0 || _control.RenderSize.Height == 0)
                 {
                     return;
                 }
@@ -212,7 +218,10 @@ namespace Ryujinx.Ava.Ui.Controls
                 var rect = new Rect(new Point(), new Size(image.Extent.Width, image.Extent.Height));
 
                 using var snapshot = surface.Snapshot();
-                skiaDrawingContextImpl.SkCanvas.DrawImage(snapshot, rect.ToSKRect(), _control.Bounds.ToSKRect(),
+
+                using var lease = leaseFeature.Lease();
+
+                lease.SkCanvas.DrawImage(snapshot, rect.ToSKRect(), _control.Bounds.ToSKRect(),
                     new SKPaint());
             }
         }

@@ -147,7 +147,7 @@ namespace Ryujinx.Ava
 
             ConfigurationState.Instance.HideCursorOnIdle.Event += HideCursorState_Changed;
 
-            _parent.PointerLeave += Parent_PointerLeft;
+            _parent.PointerExited += Parent_PointerLeft;
             _parent.PointerMoved += Parent_PointerMoved;
 
             ConfigurationState.Instance.System.IgnoreMissingServices.Event += UpdateIgnoreMissingServicesState;

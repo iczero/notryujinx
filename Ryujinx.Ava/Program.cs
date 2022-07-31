@@ -16,8 +16,6 @@ using Ryujinx.Graphics.Vulkan;
 using Ryujinx.Modules;
 using Ryujinx.Ui.Common;
 using Ryujinx.Ui.Common.Configuration;
-using Silk.NET.Vulkan.Extensions.EXT;
-using Silk.NET.Vulkan.Extensions.KHR;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -74,6 +72,7 @@ namespace Ryujinx.Ava
                     EnableIme = true,
                     UseEGL = false,
                     UseGpu = !UseVulkan,
+                    UseCompositor = false,
                     GlProfiles = new List<GlVersion>()
                     {
                         new GlVersion(GlProfileType.OpenGL, 4, 3)
@@ -81,13 +80,14 @@ namespace Ryujinx.Ava
                 })
                 .With(new Win32PlatformOptions
                 {
-                    EnableMultitouch = true,
                     UseWgl = !UseVulkan,
                     WglProfiles = new List<GlVersion>()
                     {
                         new GlVersion(GlProfileType.OpenGL, 4, 3)
                     },
                     AllowEglInitialization = false,
+                    UseCompositor = false,
+                    UseDeferredRendering = true,
                     CompositionBackdropCornerRadius = 8f,
                 })
                 .UseSkia()

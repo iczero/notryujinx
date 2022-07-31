@@ -164,7 +164,9 @@ namespace Ryujinx.Ava.Ui.Controls
                 GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, (int)image, 0);
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, currentFramebuffer);
 
-                if (context is not ISkiaDrawingContextImpl skiaDrawingContextImpl)
+                var leaseFeature = context.GetFeature<ISkiaSharpApiLeaseFeature>();
+
+                if (leaseFeature  == null)
                 {
                     return;
                 }
@@ -174,8 +176,10 @@ namespace Ryujinx.Ava.Ui.Controls
 
                 GL.WaitSync(fence, WaitSyncFlags.None, ulong.MaxValue);
 
+                using var lease = leaseFeature.Lease();
+
                 using var backendTexture = new GRBackendRenderTarget(imageInfo.Width, imageInfo.Height, 1, 0, glInfo);
-                using var surface = SKSurface.Create(skiaDrawingContextImpl.GrContext, backendTexture, GRSurfaceOrigin.BottomLeft, SKColorType.Rgba8888);
+                using var surface = SKSurface.Create(lease.GrContext, backendTexture, GRSurfaceOrigin.BottomLeft, SKColorType.Rgba8888);
 
                 if (surface == null)
                 {
@@ -185,7 +189,7 @@ namespace Ryujinx.Ava.Ui.Controls
                 var rect = new Rect(new Point(), _control.RenderSize);
 
                 using var snapshot = surface.Snapshot();
-                skiaDrawingContextImpl.SkCanvas.DrawImage(snapshot, rect.ToSKRect(), _control.Bounds.ToSKRect(), new SKPaint());
+                lease.SkCanvas.DrawImage(snapshot, rect.ToSKRect(), _control.Bounds.ToSKRect(), new SKPaint());
             }
         }
     }

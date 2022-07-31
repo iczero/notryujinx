@@ -40,6 +40,8 @@ namespace Ryujinx.Ava.Ui.Controls
 
         private AutoResetEvent _resetEvent;
 
+        public bool RunsInBackground => false;
+
         public RenderTimer()
         {
             _timer = new System.Timers.Timer(15);
