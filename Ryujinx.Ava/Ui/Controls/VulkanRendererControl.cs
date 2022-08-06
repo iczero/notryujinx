@@ -204,8 +204,9 @@ namespace Ryujinx.Ava.Ui.Controls
                 
                 var vulkan = AvaloniaLocator.Current.GetService<VulkanPlatformInterface>();
 
+                using var lease = leaseFeature.Lease();
                 using var surface = SKSurface.Create(
-                    skiaDrawingContextImpl.GrContext,
+                    lease.GrContext,
                     backendTexture,
                     GRSurfaceOrigin.TopLeft,
                     SKColorType.Rgba8888);
@@ -218,8 +219,6 @@ namespace Ryujinx.Ava.Ui.Controls
                 var rect = new Rect(new Point(), new Size(image.Extent.Width, image.Extent.Height));
 
                 using var snapshot = surface.Snapshot();
-
-                using var lease = leaseFeature.Lease();
 
                 lease.SkCanvas.DrawImage(snapshot, rect.ToSKRect(), _control.Bounds.ToSKRect(),
                     new SKPaint());
