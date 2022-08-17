@@ -16,6 +16,7 @@ namespace Ryujinx.Graphics.OpenGL
         private int _copyFramebufferHandle;
         private int _stagingFrameBuffer;
         private int[] _stagingTextures;
+        private PostProcessingEffect _effect;
         private int _currentTexture;
 
         internal BackgroundContextWorker BackgroundContext { get; private set; }
@@ -31,6 +32,11 @@ namespace Ryujinx.Graphics.OpenGL
         public void Present(ITexture texture, ImageCrop crop, Action<object> swapBuffersCallback)
         {
             GL.Disable(EnableCap.FramebufferSrgb);
+
+            if (_effect == null)
+            {
+                _effect = new PostProcessingEffect("Ryujinx.Graphics.OpenGL/Shaders/Tint.glsl");
+            }
 
             if (_sizeChanged)
             {
@@ -95,6 +101,8 @@ namespace Ryujinx.Graphics.OpenGL
             GL.FramebufferTexture2D(FramebufferTarget.DrawFramebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, _stagingTextures[_currentTexture], 0);
 
             TextureView viewConverted = view.Format.IsBgr() ? _renderer.TextureCopy.BgraSwap(view) : view;
+
+            _effect.Run(viewConverted);
 
             GL.FramebufferTexture(
                 FramebufferTarget.ReadFramebuffer,
@@ -254,6 +262,8 @@ namespace Ryujinx.Graphics.OpenGL
                 _stagingFrameBuffer = 0;
                 _stagingTextures = null;
             }
+
+            _effect?.Dispose();
         }
     }
 }
