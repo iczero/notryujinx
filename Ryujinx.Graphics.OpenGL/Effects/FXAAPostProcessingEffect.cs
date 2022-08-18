@@ -93,7 +93,7 @@ namespace Ryujinx.Graphics.OpenGL.Effects
             view.Bind(0);
 
             _vertexShader.Bind();
-            GL.Uniform2(_resolutionUniform, 1f, 1f);
+            GL.Uniform2(_resolutionUniform, (float)_width, (float)_height);
             GL.Uniform1(_textureUniform, 0);
             GL.DrawElements(PrimitiveType.Triangles, _vertexShader.ElementCount, DrawElementsType.UnsignedInt, 0);
 
