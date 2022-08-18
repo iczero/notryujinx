@@ -1,5 +1,6 @@
 using OpenTK.Graphics.OpenGL;
 using Ryujinx.Graphics.GAL;
+using Ryujinx.Graphics.OpenGL.Effects;
 using Ryujinx.Graphics.OpenGL.Image;
 using System;
 
@@ -16,7 +17,7 @@ namespace Ryujinx.Graphics.OpenGL
         private int _copyFramebufferHandle;
         private int _stagingFrameBuffer;
         private int[] _stagingTextures;
-        private PostProcessingEffect _effect;
+        private IPostProcessingEffect _effect;
         private int _currentTexture;
 
         internal BackgroundContextWorker BackgroundContext { get; private set; }
@@ -35,7 +36,7 @@ namespace Ryujinx.Graphics.OpenGL
 
             if (_effect == null)
             {
-                _effect = new PostProcessingEffect("Ryujinx.Graphics.OpenGL/Shaders/Tint.glsl");
+                _effect = new FXAAPostProcessingEffect(_renderer);
             }
 
             if (_sizeChanged)
@@ -102,7 +103,12 @@ namespace Ryujinx.Graphics.OpenGL
 
             TextureView viewConverted = view.Format.IsBgr() ? _renderer.TextureCopy.BgraSwap(view) : view;
 
-            _effect.Run(viewConverted);
+            if (_effect != null)
+            {
+                viewConverted = _effect.Run(viewConverted);
+                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, drawFramebuffer);
+                GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, readFramebuffer);
+            }
 
             GL.FramebufferTexture(
                 FramebufferTarget.ReadFramebuffer,
