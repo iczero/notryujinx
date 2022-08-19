@@ -1,11 +1,12 @@
-// https://gist.github.com/doxas/db88570fbc01b364fa3aa01e39227fe8
-#version 420
+// https://www.shadertoy.com/view/ls3GWS
+#version 430 core
 precision mediump float;
 
-layout(location = 0) out vec4 outputColor;
+layout (local_size_x = 10, local_size_y = 10, local_size_z = 10) in;
+layout(rgba8, binding = 0) uniform image2D imgOutput;
 
-uniform sampler2D textureUnit;
-uniform vec2      invResolution; // 1.0 / resolution
+uniform sampler2D input;
+layout( location=0 ) uniform vec2 invResolution; // 1.0 / resolution
 
 
 #define FXAA_SPAN_MAX 8.0
@@ -13,8 +14,7 @@ uniform vec2      invResolution; // 1.0 / resolution
 #define FXAA_REDUCE_MIN   (1.0/128.0)
 #define FXAA_SUBPIX_SHIFT (1.0/4.0)
 
-vec3 FxaaPixelShader( vec4 uv, sampler2D tex, vec2 rcpFrame) {
-    
+vec3 FxaaPixelShader( vec4 uv, sampler2D tex, vec2 rcpFrame) {    
     vec3 rgbNW = textureLod(tex, uv.zw, 0.0).xyz;
     vec3 rgbNE = textureLod(tex, uv.zw + vec2(1,0)*rcpFrame.xy, 0.0).xyz;
     vec3 rgbSW = textureLod(tex, uv.zw + vec2(0,1)*rcpFrame.xy, 0.0).xyz;
@@ -59,7 +59,7 @@ vec3 FxaaPixelShader( vec4 uv, sampler2D tex, vec2 rcpFrame) {
 }
 
 
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
+vec4 mainImage(vec2 fragCoord)
 {
     vec2 rcpFrame = 1./invResolution.xy;
   	vec2 uv2 = fragCoord.xy / invResolution.xy;
@@ -67,13 +67,17 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     vec3 col;
     
 	vec4 uv = vec4( uv2, uv2 - (rcpFrame * (0.5 + FXAA_SUBPIX_SHIFT)));
-	col = FxaaPixelShader( uv, textureUnit, 1./invResolution.xy );
+	col = FxaaPixelShader( uv, input, rcpFrame );
 
     
-    fragColor = vec4( col, 1. );
+    vec4 fragColor = vec4( col, 1. );
+
+    return fragColor;
 }
 
-void main(void)
+void main()
 {
-    mainImage(outputColor, gl_FragCoord.xy);
+    ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
+    vec4 outColor = mainImage(vec2(texelCoord.x, texelCoord.y));
+    imageStore(imgOutput, texelCoord, outColor);
 }

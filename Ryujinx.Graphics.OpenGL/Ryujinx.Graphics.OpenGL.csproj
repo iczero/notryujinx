@@ -10,7 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Shaders\simple.vert.glsl" />
     <EmbeddedResource Include="Shaders\fxaa.glsl" />
   </ItemGroup>
 
