@@ -4,6 +4,7 @@ using Ryujinx.Graphics.Shader.Translation;
 using Ryujinx.Graphics.Vulkan.Shaders;
 using Silk.NET.Vulkan;
 using System;
+
 using VkFormat = Silk.NET.Vulkan.Format;
 
 namespace Ryujinx.Graphics.Vulkan

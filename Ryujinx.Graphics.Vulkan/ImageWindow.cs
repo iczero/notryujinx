@@ -1,4 +1,5 @@
 ﻿using Ryujinx.Graphics.GAL;
+using Ryujinx.Graphics.Vulkan.Effects;
 using Silk.NET.Vulkan;
 using System;
 using VkFormat = Silk.NET.Vulkan.Format;
@@ -31,6 +32,7 @@ namespace Ryujinx.Graphics.Vulkan
         private int _height = SurfaceHeight;
         private bool _recreateImages;
         private int _nextImage;
+        private IPostProcessingEffect _effect;
 
         public unsafe ImageWindow(VulkanRenderer gd, PhysicalDevice physicalDevice, Device device)
         {
@@ -171,6 +173,13 @@ namespace Ryujinx.Graphics.Vulkan
                 ImageLayout.General);
 
             var view = (TextureView)texture;
+
+            if(_effect == null)
+            {
+                _effect = new FXAAPostProcessingEffect(_gd, _device);
+            }
+
+            _effect?.Run(view, cbs);
 
             int srcX0, srcX1, srcY0, srcY1;
             float scale = view.ScaleFactor;
