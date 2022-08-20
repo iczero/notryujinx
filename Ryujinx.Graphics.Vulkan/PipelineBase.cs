@@ -126,6 +126,28 @@ namespace Ryujinx.Graphics.Vulkan
                 null);
         }
 
+        public unsafe void ComputeBarrier()
+        {
+            MemoryBarrier memoryBarrier = new MemoryBarrier()
+            {
+                SType = StructureType.MemoryBarrier,
+                SrcAccessMask = AccessFlags.AccessMemoryReadBit | AccessFlags.AccessMemoryWriteBit,
+                DstAccessMask = AccessFlags.AccessMemoryReadBit | AccessFlags.AccessMemoryWriteBit
+            };
+
+            Gd.Api.CmdPipelineBarrier(
+                CommandBuffer,
+                PipelineStageFlags.PipelineStageComputeShaderBit,
+                PipelineStageFlags.PipelineStageAllCommandsBit,
+                0,
+                1,
+                memoryBarrier,
+                0,
+                null,
+                0,
+                null);
+        }
+
         public void BeginTransformFeedback(GAL.PrimitiveTopology topology)
         {
             _tfEnabled = true;

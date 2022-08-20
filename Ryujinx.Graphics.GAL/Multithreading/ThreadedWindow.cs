@@ -32,5 +32,7 @@ namespace Ryujinx.Graphics.GAL.Multithreading
         }
 
         public void ChangeVSyncMode(bool vsyncEnabled) { }
+
+        public void ApplyEffect(EffectType effect) { }
     }
 }

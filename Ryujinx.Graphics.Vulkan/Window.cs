@@ -1,4 +1,5 @@
 ﻿using Ryujinx.Graphics.GAL;
+using Ryujinx.Graphics.Vulkan.Effects;
 using Silk.NET.Vulkan;
 using System;
 using System.Linq;
@@ -28,6 +29,8 @@ namespace Ryujinx.Graphics.Vulkan
         private bool _vsyncEnabled;
         private bool _vsyncModeChanged;
         private VkFormat _format;
+        private EffectType _currentEffect;
+        private FXAAPostProcessingEffect _effect;
 
         public unsafe Window(VulkanRenderer gd, SurfaceKHR surface, PhysicalDevice physicalDevice, Device device)
         {
@@ -260,6 +263,11 @@ namespace Ryujinx.Graphics.Vulkan
 
             var view = (TextureView)texture;
 
+            if (_effect != null)
+            {
+                view = _effect?.Run(view, cbs);
+            }
+
             int srcX0, srcX1, srcY0, srcY1;
             float scale = view.ScaleFactor;
 
@@ -365,6 +373,24 @@ namespace Ryujinx.Graphics.Vulkan
             }
         }
 
+        public void ApplyEffect(EffectType effect)
+        {
+            if (_currentEffect == effect && _effect != null)
+            {
+                return;
+            }
+
+            _effect?.Dispose();
+            _effect = null;
+
+            switch (effect)
+            {
+                case EffectType.Fxaa:
+                    _effect = new FXAAPostProcessingEffect(_gd, _device);
+                    break;
+            }
+        }
+
         private unsafe void Transition(
             CommandBuffer commandBuffer,
             Image image,
@@ -434,8 +460,9 @@ namespace Ryujinx.Graphics.Vulkan
                     }
 
                     _gd.SwapchainApi.DestroySwapchain(_device, _swapchain, null);
-
                 }
+
+                _effect?.Dispose();
             }
         }
 

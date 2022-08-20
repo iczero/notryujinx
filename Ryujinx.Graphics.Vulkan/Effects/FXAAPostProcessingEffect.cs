@@ -53,11 +53,18 @@ namespace Ryujinx.Graphics.Vulkan.Effects
 
         public TextureView Run(TextureView view, CommandBufferScoped cbs)
         {
-            if(_texture == null || _texture.Width != view.Width || _texture.Height != view.Height)
+            if (_texture == null || _texture.Width != view.Width || _texture.Height != view.Height)
             {
                 _texture?.Dispose();
                 _texture = _renderer.CreateTexture(view.Info, view.ScaleFactor) as TextureView;
             }
+            Transition(cbs.CommandBuffer,
+                       view.GetImage().GetUnsafe().Value,
+                       AccessFlags.AccessNoneKhr,
+                       AccessFlags.AccessNoneKhr,
+                       ImageLayout.General,
+                       ImageLayout.TransferDstOptimal);
+
             _pipeline.SetCommandBuffer(cbs);
             _pipeline.SetProgram(_shaderProgram);
             _pipeline.SetTextureAndSampler(ShaderStage.Compute, 1, view, _samplerLinear);
@@ -66,12 +73,12 @@ namespace Ryujinx.Graphics.Vulkan.Effects
             int rangeSize = resolutionBuffer.Length * sizeof(float);
             var bufferHandle = _renderer.BufferManager.CreateWithHandle(_renderer, rangeSize, false);
 
-            _renderer.BufferManager.SetData<float>(bufferHandle, 0, resolutionBuffer);
+            _renderer.BufferManager.SetData(bufferHandle, 0, resolutionBuffer);
 
             Span<BufferRange> bufferRanges = stackalloc BufferRange[1];
 
             bufferRanges[0] = new BufferRange(bufferHandle, 0, rangeSize);
-            _pipeline.SetUniformBuffers(0, bufferRanges);
+            _pipeline.SetUniformBuffers(2, bufferRanges);
 
             Span<GAL.Viewport> viewports = stackalloc GAL.Viewport[1];
 
@@ -95,7 +102,59 @@ namespace Ryujinx.Graphics.Vulkan.Effects
 
             _renderer.BufferManager.Delete(bufferHandle);
 
-            return view;
+            var memoryBarrier = new MemoryBarrier()
+            {
+                SType = StructureType.MemoryBarrier,
+                SrcAccessMask = AccessFlags.AccessShaderWriteBit,
+                DstAccessMask = AccessFlags.AccessNoneKhr,
+            };
+
+            _pipeline.ComputeBarrier();
+
+            Transition(cbs.CommandBuffer,
+                       _texture.GetImage().GetUnsafe().Value,
+                       AccessFlags.AccessNoneKhr,
+                       AccessFlags.AccessNoneKhr,
+                       ImageLayout.TransferDstOptimal,
+                       ImageLayout.General);
+
+            return _texture;
+        }
+
+        private unsafe void Transition(
+            CommandBuffer commandBuffer,
+            Image image,
+            AccessFlags srcAccess,
+            AccessFlags dstAccess,
+            ImageLayout srcLayout,
+            ImageLayout dstLayout)
+        {
+            var subresourceRange = new ImageSubresourceRange(ImageAspectFlags.ImageAspectColorBit, 0, 1, 0, 1);
+
+            var barrier = new ImageMemoryBarrier()
+            {
+                SType = StructureType.ImageMemoryBarrier,
+                SrcAccessMask = srcAccess,
+                DstAccessMask = dstAccess,
+                OldLayout = srcLayout,
+                NewLayout = dstLayout,
+                SrcQueueFamilyIndex = Vk.QueueFamilyIgnored,
+                DstQueueFamilyIndex = Vk.QueueFamilyIgnored,
+                Image = image,
+                SubresourceRange = subresourceRange
+            };
+
+            _renderer.Api.CmdPipelineBarrier(
+                commandBuffer,
+                PipelineStageFlags.PipelineStageTopOfPipeBit,
+                PipelineStageFlags.PipelineStageAllCommandsBit,
+                0,
+                0,
+                null,
+                0,
+                null,
+                1,
+                barrier);
         }
     }
 }

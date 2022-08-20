@@ -19,6 +19,7 @@ namespace Ryujinx.Graphics.OpenGL
         private int[] _stagingTextures;
         private IPostProcessingEffect _effect;
         private int _currentTexture;
+        private EffectType _currentEffect;
 
         internal BackgroundContextWorker BackgroundContext { get; private set; }
 
@@ -33,11 +34,6 @@ namespace Ryujinx.Graphics.OpenGL
         public void Present(ITexture texture, ImageCrop crop, Action<object> swapBuffersCallback)
         {
             GL.Disable(EnableCap.FramebufferSrgb);
-
-            if (_effect == null)
-            {
-                _effect = new FXAAPostProcessingEffect(_renderer);
-            }
 
             if (_sizeChanged)
             {
@@ -270,6 +266,24 @@ namespace Ryujinx.Graphics.OpenGL
             }
 
             _effect?.Dispose();
+        }
+
+        public void ApplyEffect(EffectType effect)
+        {
+            if(_currentEffect == effect && _effect != null)
+            {
+                return;
+            }
+
+            _effect?.Dispose();
+            _effect = null;
+
+            switch (effect)
+            {
+                case EffectType.Fxaa:
+                    _effect = new FXAAPostProcessingEffect(_renderer);
+                    break;
+            }
         }
     }
 }

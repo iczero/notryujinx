@@ -9,5 +9,7 @@ namespace Ryujinx.Graphics.GAL
         void SetSize(int width, int height);
 
         void ChangeVSyncMode(bool vsyncEnabled);
+
+        void ApplyEffect(EffectType effect);
     }
 }

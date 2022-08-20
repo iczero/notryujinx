@@ -33,6 +33,7 @@ namespace Ryujinx.Graphics.Vulkan
         private bool _recreateImages;
         private int _nextImage;
         private IPostProcessingEffect _effect;
+        private EffectType _currentEffect;
 
         public unsafe ImageWindow(VulkanRenderer gd, PhysicalDevice physicalDevice, Device device)
         {
@@ -174,12 +175,10 @@ namespace Ryujinx.Graphics.Vulkan
 
             var view = (TextureView)texture;
 
-            if(_effect == null)
+            if(_effect != null)
             {
-                _effect = new FXAAPostProcessingEffect(_gd, _device);
+               view = _effect?.Run(view, cbs);
             }
-
-            _effect?.Run(view, cbs);
 
             int srcX0, srcX1, srcY0, srcY1;
             float scale = view.ScaleFactor;
@@ -289,6 +288,24 @@ namespace Ryujinx.Graphics.Vulkan
             _nextImage = (_nextImage + 1) % ImageCount;
         }
 
+        public void ApplyEffect(EffectType effect)
+        {
+            if (_currentEffect == effect && _effect != null)
+            {
+                return;
+            }
+
+            _effect?.Dispose();
+            _effect = null;
+
+            switch (effect)
+            {
+                case EffectType.Fxaa:
+                    _effect = new FXAAPostProcessingEffect(_gd, _device);
+                    break;
+            }
+        }
+
         private unsafe void Transition(
             CommandBuffer commandBuffer,
             Image image,
@@ -359,6 +376,8 @@ namespace Ryujinx.Graphics.Vulkan
                         _images[i]?.Dispose();
                     }
                 }
+
+                _effect?.Dispose();
             }
         }
 
