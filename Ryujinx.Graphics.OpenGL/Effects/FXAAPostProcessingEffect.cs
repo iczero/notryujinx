@@ -12,7 +12,9 @@ namespace Ryujinx.Graphics.OpenGL.Effects
         private readonly OpenGLRenderer _renderer;
         private int _resolutionUniform;
         private int _inputUniform;
+        private int _outputUniform;
         private int _shaderProgram;
+        private TextureStorage _textureStorage;
 
         public FXAAPostProcessingEffect(OpenGLRenderer renderer)
         {
@@ -25,6 +27,7 @@ namespace Ryujinx.Graphics.OpenGL.Effects
             if (_shaderProgram != 0)
             {
                 GL.DeleteProgram(_shaderProgram);
+                _textureStorage?.Dispose();
             }
         }
 
@@ -56,17 +59,27 @@ namespace Ryujinx.Graphics.OpenGL.Effects
 
             _resolutionUniform = GL.GetUniformLocation(_shaderProgram, "invResolution");
             _inputUniform = GL.GetUniformLocation(_shaderProgram, "input");
+            _outputUniform = GL.GetUniformLocation(_shaderProgram, "imgOutput");
         }
 
         public TextureView Run(TextureView view)
         {
+            if(_textureStorage == null || _textureStorage.Info.Width != view.Width || _textureStorage.Info.Height != view.Height)
+            {
+                _textureStorage?.Dispose();
+                _textureStorage = new TextureStorage(_renderer, view.Info, view.ScaleFactor);
+                _textureStorage.CreateDefaultView();
+            }
+            var textureView = _textureStorage.CreateView(view.Info, 0, 0) as TextureView;
+
             int previousProgram = GL.GetInteger(GetPName.CurrentProgram);
-            GL.BindImageTexture(0, view.Handle, 0, false, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba8);
+            GL.BindImageTexture(0, textureView.Handle, 0, false, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba8);
             GL.UseProgram(_shaderProgram);
 
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, view.Handle);
             GL.Uniform1(_inputUniform, 0);
+            GL.Uniform1(_outputUniform, 0);
             GL.Uniform2(_resolutionUniform, (float)view.Width, (float)view.Height);
             GL.DispatchCompute(view.Width / LocalGroupSize, view.Height / LocalGroupSize, 1);
             GL.UseProgram(previousProgram);
@@ -74,7 +87,7 @@ namespace Ryujinx.Graphics.OpenGL.Effects
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
 
-            return view;
+            return textureView;
         }
     }
 }
