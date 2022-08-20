@@ -672,6 +672,29 @@
                                 </ComboBox>
                             </StackPanel>
                         </StackPanel>
+                        <StackPanel
+                            Margin="10,0,0,0"
+                            HorizontalAlignment="Stretch"
+                            Orientation="Vertical"
+                            Spacing="10">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock VerticalAlignment="Center"
+                                           ToolTip.Tip="{locale:Locale GraphicsPostProcessingTooltip}"
+                                           Text="{locale:Locale GraphicsPostProcessingLabel}"
+                                           Width="250" />
+                                <ComboBox Width="350"
+                                          HorizontalContentAlignment="Left"
+                                          ToolTip.Tip="{locale:Locale GraphicsPostProcessingTooltip}"
+                                          SelectedIndex="{Binding PostProcessingEffect}">
+                                    <ComboBoxItem>
+                                        <TextBlock Text="{locale:Locale SettingsTabLoggingOpenglLogLevelNone}" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <TextBlock Text="FXAA" />
+                                    </ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
+                        </StackPanel>
                         <Separator Height="1" />
                         <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGraphicsDeveloperOptions}" />
                         <StackPanel

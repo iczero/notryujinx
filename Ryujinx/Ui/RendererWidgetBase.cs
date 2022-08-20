@@ -115,6 +115,7 @@ namespace Ryujinx.Ui
             _lastCursorMoveTime = Stopwatch.GetTimestamp();
 
             ConfigurationState.Instance.HideCursorOnIdle.Event += HideCursorStateChanged;
+            ConfigurationState.Instance.Graphics.PostProcessingEffect.Event += UpdatePostProcessingEffect;
         }
 
         public abstract void InitializeRenderer();
@@ -148,9 +149,15 @@ namespace Ryujinx.Ui
         private void Renderer_Destroyed(object sender, EventArgs e)
         {
             ConfigurationState.Instance.HideCursorOnIdle.Event -= HideCursorStateChanged;
+            ConfigurationState.Instance.Graphics.PostProcessingEffect.Event -= UpdatePostProcessingEffect;
 
             NpadManager.Dispose();
             Dispose();
+        }
+
+        private void UpdatePostProcessingEffect(object sender, ReactiveEventArgs<PostProcessingEffect> e)
+        {
+            Renderer?.Window.ApplyEffect((EffectType)e.NewValue);
         }
 
         protected override bool OnMotionNotifyEvent(EventMotion evnt)
@@ -392,6 +399,8 @@ namespace Ryujinx.Ui
             InitializeRenderer();
 
             Device.Gpu.Renderer.Initialize(_glLogLevel);
+
+            Renderer.Window.ApplyEffect((EffectType)ConfigurationState.Instance.Graphics.PostProcessingEffect.Value);
 
             _gpuBackendName = GetGpuBackendName();
             _gpuVendorName = GetGpuVendorName();

@@ -422,6 +422,11 @@ namespace Ryujinx.Ui.Common.Configuration
             public ReactiveObject<GraphicsBackend> GraphicsBackend { get; private set; }
 
             /// <summary>
+            /// Applies a shader effect to the renderer.
+            /// </summary>
+            public ReactiveObject<PostProcessingEffect> PostProcessingEffect { get; private set; }
+
+            /// <summary>
             /// Preferred GPU
             /// </summary>
             public ReactiveObject<string> PreferredGpu { get; private set; }
@@ -449,6 +454,8 @@ namespace Ryujinx.Ui.Common.Configuration
                 GraphicsBackend.Event            += static (sender, e) => LogValueChange(sender, e, nameof(GraphicsBackend));
                 PreferredGpu                     = new ReactiveObject<string>();
                 PreferredGpu.Event               += static (sender, e) => LogValueChange(sender, e, nameof(PreferredGpu));
+                PostProcessingEffect             = new ReactiveObject<PostProcessingEffect>();
+                PostProcessingEffect.Event       += static (sender, e) => LogValueChange(sender, e, nameof(PostProcessingEffect));
             }
         }
 
@@ -526,6 +533,7 @@ namespace Ryujinx.Ui.Common.Configuration
                 ResScaleCustom             = Graphics.ResScaleCustom,
                 MaxAnisotropy              = Graphics.MaxAnisotropy,
                 AspectRatio                = Graphics.AspectRatio,
+                PostProcessingEffect       = Graphics.PostProcessingEffect,
                 GraphicsShadersDumpPath    = Graphics.ShadersDumpPath,
                 LoggingEnableDebug         = Logger.EnableDebug,
                 LoggingEnableStub          = Logger.EnableStub,
@@ -1156,6 +1164,15 @@ namespace Ryujinx.Ui.Common.Configuration
                 configurationFileUpdated = true;
             }
 
+            if (configurationFileFormat.Version < 41)
+            {
+                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 41.");
+
+                configurationFileFormat.PostProcessingEffect = PostProcessingEffect.None;
+
+                configurationFileUpdated = true;
+            }
+
             Logger.EnableFileLog.Value                = configurationFileFormat.EnableFileLog;
             Graphics.ResScale.Value                   = configurationFileFormat.ResScale;
             Graphics.ResScaleCustom.Value             = configurationFileFormat.ResScaleCustom;
@@ -1165,6 +1182,7 @@ namespace Ryujinx.Ui.Common.Configuration
             Graphics.BackendThreading.Value           = configurationFileFormat.BackendThreading;
             Graphics.GraphicsBackend.Value            = configurationFileFormat.GraphicsBackend;
             Graphics.PreferredGpu.Value               = configurationFileFormat.PreferredGpu;
+            Graphics.PostProcessingEffect.Value       = configurationFileFormat.PostProcessingEffect;
             Logger.EnableDebug.Value                  = configurationFileFormat.LoggingEnableDebug;
             Logger.EnableStub.Value                   = configurationFileFormat.LoggingEnableStub;
             Logger.EnableInfo.Value                   = configurationFileFormat.LoggingEnableInfo;

@@ -94,6 +94,7 @@ namespace Ryujinx.Ui.Windows
         [GUI] Entry           _graphicsShadersDumpPath;
         [GUI] ComboBoxText    _anisotropy;
         [GUI] ComboBoxText    _aspectRatio;
+        [GUI] ComboBoxText    _postProcessingEffect;
         [GUI] ComboBoxText    _graphicsBackend;
         [GUI] ComboBoxText    _preferredGpu;
         [GUI] ComboBoxText    _resScaleCombo;
@@ -332,6 +333,7 @@ namespace Ryujinx.Ui.Windows
             _anisotropy.SetActiveId(ConfigurationState.Instance.Graphics.MaxAnisotropy.Value.ToString());
             _aspectRatio.SetActiveId(((int)ConfigurationState.Instance.Graphics.AspectRatio.Value).ToString());
             _graphicsBackend.SetActiveId(((int)ConfigurationState.Instance.Graphics.GraphicsBackend.Value).ToString());
+            _postProcessingEffect.SetActiveId(((int)ConfigurationState.Instance.Graphics.PostProcessingEffect.Value).ToString());
 
             UpdatePreferredGpuComboBox();
 
@@ -589,6 +591,7 @@ namespace Ryujinx.Ui.Windows
             ConfigurationState.Instance.Graphics.ResScale.Value                   = int.Parse(_resScaleCombo.ActiveId);
             ConfigurationState.Instance.Graphics.ResScaleCustom.Value             = resScaleCustom;
             ConfigurationState.Instance.System.AudioVolume.Value                  = (float)_audioVolumeSlider.Value / 100.0f;
+            ConfigurationState.Instance.Graphics.PostProcessingEffect.Value       = Enum.Parse<PostProcessingEffect>(_postProcessingEffect.ActiveId);
 
             _previousVolumeLevel = ConfigurationState.Instance.System.AudioVolume.Value;
 

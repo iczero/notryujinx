@@ -2231,6 +2231,57 @@
                                     <property name="position">4</property>
                                   </packing>
                                 </child>
+                                <child>
+                                    <object class="GtkBox">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="margin-top">5</property>
+                                        <property name="margin-bottom">5</property>
+                                        <child>
+                                            <object class="GtkLabel">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">False</property>
+                                                <property name="tooltip-text"
+                                                        translatable="yes">Applies a final effect to the game render</property>
+                                                <property name="label"
+                                                        translatable="yes">Post Processing Effect</property>
+                                            </object>
+                                            <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="padding">5</property>
+                                                <property name="position">0</property>
+                                            </packing>
+                                        </child>
+                                        <child>
+                                            <object class="GtkComboBoxText"
+                                                    id="_postProcessingEffect">
+                                                <property name="visible">True</property>
+                                                <property name="can-focus">False</property>
+                                                <property name="tooltip-text"
+                                                        translatable="yes">Applies a final effect to the game render</property>
+                                                <property name="active-id">1</property>
+                                                <items>
+                                                    <item id="0"
+                                                        translatable="yes">None</item>
+                                                    <item id="1"
+                                                        translatable="yes">FXAA</item>
+                                                </items>
+                                            </object>
+                                            <packing>
+                                                <property name="expand">False</property>
+                                                <property name="fill">True</property>
+                                                <property name="position">1</property>
+                                            </packing>
+                                        </child>
+                                    </object>
+                                    <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="padding">5</property>
+                                        <property name="position">4</property>
+                                    </packing>
+                                </child>
                               </object>
                               <packing>
                                 <property name="expand">False</property>

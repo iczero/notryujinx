@@ -165,6 +165,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         public int AudioBackend { get; set; }
         public int MaxAnisotropy { get; set; }
         public int AspectRatio { get; set; }
+        public int PostProcessingEffect { get; set; }
         public int OpenglDebugLevel { get; set; }
         public int MemoryMode { get; set; }
         public int BaseStyleIndex { get; set; }
@@ -391,6 +392,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             MaxAnisotropy = anisotropy == -1 ? 0 : (int)(MathF.Log2(anisotropy));
             AspectRatio = (int)config.Graphics.AspectRatio.Value;
+            PostProcessingEffect = (int)config.Graphics.PostProcessingEffect.Value;
 
             int resolution = config.Graphics.ResScale;
 
@@ -488,6 +490,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             config.Graphics.MaxAnisotropy.Value = anisotropy;
             config.Graphics.AspectRatio.Value = (AspectRatio)AspectRatio;
+            config.Graphics.PostProcessingEffect.Value = (PostProcessingEffect)PostProcessingEffect;
             config.Graphics.ResScale.Value = ResolutionScale == 0 ? -1 : ResolutionScale;
             config.Graphics.ResScaleCustom.Value = CustomResolutionScale;
             config.System.AudioVolume.Value = Volume / 100;

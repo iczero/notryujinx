@@ -152,6 +152,7 @@ namespace Ryujinx.Ava
 
             ConfigurationState.Instance.System.IgnoreMissingServices.Event += UpdateIgnoreMissingServicesState;
             ConfigurationState.Instance.Graphics.AspectRatio.Event += UpdateAspectRatioState;
+            ConfigurationState.Instance.Graphics.PostProcessingEffect.Event += UpdatePostProcessingEffect;
             ConfigurationState.Instance.System.EnableDockedMode.Event += UpdateDockedModeState;
             ConfigurationState.Instance.System.AudioVolume.Event += UpdateAudioVolumeState;
 
@@ -306,6 +307,11 @@ namespace Ryujinx.Ava
             }
         }
 
+        private void UpdatePostProcessingEffect(object sender, ReactiveEventArgs<PostProcessingEffect> e)
+        {
+            _renderer?.Window?.ApplyEffect((EffectType)e.NewValue);
+        }
+
         private void UpdateDockedModeState(object sender, ReactiveEventArgs<bool> e)
         {
             Device?.System.ChangeDockedModeState(e.NewValue);
@@ -373,6 +379,7 @@ namespace Ryujinx.Ava
             ConfigurationState.Instance.Graphics.AspectRatio.Event -= UpdateAspectRatioState;
             ConfigurationState.Instance.System.EnableDockedMode.Event -= UpdateDockedModeState;
             ConfigurationState.Instance.System.AudioVolume.Event -= UpdateAudioVolumeState;
+            ConfigurationState.Instance.Graphics.PostProcessingEffect.Event -= UpdatePostProcessingEffect;
 
             _gpuCancellationTokenSource.Cancel();
             _gpuCancellationTokenSource.Dispose();
@@ -829,6 +836,8 @@ namespace Ryujinx.Ava
             AvaloniaLocator.Current.GetService<VulkanPlatformInterface>()?.MainSurface?.Display?.ChangeVSyncMode(Device.EnableDeviceVsync);
 
             Device.Gpu.Renderer.Initialize(_glLogLevel);
+
+            _renderer?.Window?.ApplyEffect((EffectType)ConfigurationState.Instance.Graphics.PostProcessingEffect.Value);
 
             Width = (int)Renderer.Bounds.Width;
             Height = (int)Renderer.Bounds.Height;

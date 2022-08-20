@@ -270,10 +270,13 @@ namespace Ryujinx.Graphics.OpenGL
 
         public void ApplyEffect(EffectType effect)
         {
-            if(_currentEffect == effect && _effect != null)
+            if (_currentEffect == effect && _effect != null)
             {
+                _currentEffect = effect;
                 return;
             }
+
+            _currentEffect = effect;
 
             _effect?.Dispose();
             _effect = null;

@@ -14,7 +14,7 @@ namespace Ryujinx.Ui.Common.Configuration
         /// <summary>
         /// The current version of the file format
         /// </summary>
-        public const int CurrentVersion = 40;
+        public const int CurrentVersion = 41;
 
         /// <summary>
         /// Version of the configuration file format
@@ -50,6 +50,11 @@ namespace Ryujinx.Ui.Common.Configuration
         /// Aspect Ratio applied to the renderer window.
         /// </summary>
         public AspectRatio AspectRatio { get; set; }
+
+        /// <summary>
+        /// Applies a shader effect to the renderer.
+        /// </summary>
+        public PostProcessingEffect PostProcessingEffect { get; set; }
 
         /// <summary>
         /// Dumps shaders in this local directory

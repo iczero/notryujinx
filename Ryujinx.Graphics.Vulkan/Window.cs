@@ -373,12 +373,15 @@ namespace Ryujinx.Graphics.Vulkan
             }
         }
 
-        public void ApplyEffect(EffectType effect)
+        public override void ApplyEffect(EffectType effect)
         {
             if (_currentEffect == effect && _effect != null)
             {
+                _currentEffect = effect;
                 return;
             }
+
+            _currentEffect = effect;
 
             _effect?.Dispose();
             _effect = null;
