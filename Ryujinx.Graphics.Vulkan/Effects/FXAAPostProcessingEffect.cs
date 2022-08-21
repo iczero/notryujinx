@@ -6,7 +6,7 @@ using System;
 
 namespace Ryujinx.Graphics.Vulkan.Effects
 {
-    internal partial class FXAAPostProcessingEffect : IPostProcessingEffect
+    internal partial class FxaaPostProcessingEffect : IPostProcessingEffect
     {
         private const int LocalGroupSize = 10;
         private readonly VulkanRenderer _renderer;
@@ -18,7 +18,7 @@ namespace Ryujinx.Graphics.Vulkan.Effects
         private PipelineHelperShader _pipeline;
         private TextureView _texture;
 
-        public FXAAPostProcessingEffect(VulkanRenderer renderer, Device device)
+        public FxaaPostProcessingEffect(VulkanRenderer renderer, Device device)
         {
             _renderer = renderer;
             _pipeline = new PipelineHelperShader(renderer, device);
@@ -59,7 +59,7 @@ namespace Ryujinx.Graphics.Vulkan.Effects
                 _texture = _renderer.CreateTexture(view.Info, view.ScaleFactor) as TextureView;
             }
             Transition(cbs.CommandBuffer,
-                       view.GetImage().GetUnsafe().Value,
+                       _texture.GetImage().GetUnsafe().Value,
                        AccessFlags.AccessNoneKhr,
                        AccessFlags.AccessNoneKhr,
                        ImageLayout.General,

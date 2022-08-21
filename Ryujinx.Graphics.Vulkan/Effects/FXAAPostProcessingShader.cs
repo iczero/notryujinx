@@ -1,6 +1,6 @@
 namespace Ryujinx.Graphics.Vulkan.Effects
 {
-    internal partial class FXAAPostProcessingEffect
+    internal partial class FxaaPostProcessingEffect
     {
         private readonly byte[] Shader = new byte[]{
             0x03, 0x02, 0x23, 0x07, 0x00, 0x00, 0x01, 0x00, 0x0a, 0x00, 0x08, 0x00, 0x35, 0x01, 0x00, 0x00,  // ..#.........5...

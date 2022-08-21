@@ -30,7 +30,7 @@ namespace Ryujinx.Graphics.Vulkan
         private bool _vsyncModeChanged;
         private VkFormat _format;
         private EffectType _currentEffect;
-        private FXAAPostProcessingEffect _effect;
+        private IPostProcessingEffect _effect;
 
         public unsafe Window(VulkanRenderer gd, SurfaceKHR surface, PhysicalDevice physicalDevice, Device device)
         {
@@ -383,13 +383,64 @@ namespace Ryujinx.Graphics.Vulkan
 
             _currentEffect = effect;
 
-            _effect?.Dispose();
-            _effect = null;
-
             switch (effect)
             {
                 case EffectType.Fxaa:
-                    _effect = new FXAAPostProcessingEffect(_gd, _device);
+                    _effect?.Dispose();
+                    _effect = null;
+                    _effect = new FxaaPostProcessingEffect(_gd, _device);
+                    break;
+                case EffectType.None:
+                    _effect?.Dispose();
+                    _effect = null;
+                    break;
+                case EffectType.SmaaLow:
+                    if (_effect is SmaaPostProcessingEffect smaa)
+                    {
+                        smaa.Quality = 0;
+                    }
+                    else
+                    {
+                        _effect?.Dispose();
+                        smaa = new SmaaPostProcessingEffect(_gd, _device);
+                        smaa.Quality = 0;
+                    }
+                    break;
+                case EffectType.SmaaMedium:
+                    if (_effect is SmaaPostProcessingEffect smaam)
+                    {
+                        smaam.Quality = 1;
+                    }
+                    else
+                    {
+                        _effect?.Dispose();
+                        smaa = new SmaaPostProcessingEffect(_gd, _device);
+                        smaa.Quality = 1;
+                    }
+                    break;
+                case EffectType.SmaaHigh:
+                    if (_effect is SmaaPostProcessingEffect smaah)
+                    {
+                        smaah.Quality = 2;
+                    }
+                    else
+                    {
+                        _effect?.Dispose();
+                        smaa = new SmaaPostProcessingEffect(_gd, _device);
+                        smaa.Quality = 2;
+                    }
+                    break;
+                case EffectType.SmaaUltra:
+                    if (_effect is SmaaPostProcessingEffect smaau)
+                    {
+                        smaau.Quality = 3;
+                    }
+                    else
+                    {
+                        _effect?.Dispose();
+                        smaa = new SmaaPostProcessingEffect(_gd, _device);
+                        smaa.Quality = 3;
+                    }
                     break;
             }
         }
