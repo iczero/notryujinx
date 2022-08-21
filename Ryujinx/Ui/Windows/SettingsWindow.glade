@@ -2266,6 +2266,14 @@
                                                         translatable="yes">None</item>
                                                     <item id="1"
                                                         translatable="yes">FXAA</item>
+                                                    <item id="1"
+                                                          translatable="yes">SMAA Low</item>
+                                                    <item id="1"
+                                                        translatable="yes">SMAA Medium</item>
+                                                    <item id="1"
+                                                          translatable="yes">SMAA High</item>
+                                                    <item id="1"
+                                                        translatable="yes">SMAA Ultra</item>
                                                 </items>
                                             </object>
                                             <packing>

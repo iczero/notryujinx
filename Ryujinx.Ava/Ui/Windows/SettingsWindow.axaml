@@ -692,6 +692,18 @@
                                     <ComboBoxItem>
                                         <TextBlock Text="FXAA" />
                                     </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <TextBlock Text="SMAA Low" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <TextBlock Text="SMAA Medium" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <TextBlock Text="SMAA High" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <TextBlock Text="SMAA Ultra" />
+                                    </ComboBoxItem>
                                 </ComboBox>
                             </StackPanel>
                         </StackPanel>

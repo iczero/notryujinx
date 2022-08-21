@@ -9,6 +9,10 @@ namespace Ryujinx.Graphics.GAL
     public enum EffectType
     {
         None,
-        Fxaa
+        Fxaa,
+        SmaaLow,
+        SmaaMedium,
+        SmaaHigh,
+        SmaaUltra,
     }
 }

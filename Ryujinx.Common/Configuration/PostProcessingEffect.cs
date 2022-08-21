@@ -9,6 +9,10 @@ namespace Ryujinx.Common.Configuration
     public enum PostProcessingEffect
     {
         None,
-        Fxaa
+        Fxaa,
+        SmaaLow,
+        SmaaMedium,
+        SmaaHigh,
+        SmaaUltra,
     }
 }

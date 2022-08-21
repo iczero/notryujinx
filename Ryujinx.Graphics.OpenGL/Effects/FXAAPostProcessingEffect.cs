@@ -6,9 +6,8 @@ using System;
 
 namespace Ryujinx.Graphics.OpenGL.Effects
 {
-    internal class FXAAPostProcessingEffect : IPostProcessingEffect
+    internal class FxaaPostProcessingEffect : IPostProcessingEffect
     {
-        private const int LocalGroupSize = 10;
         private readonly OpenGLRenderer _renderer;
         private int _resolutionUniform;
         private int _inputUniform;
@@ -16,7 +15,7 @@ namespace Ryujinx.Graphics.OpenGL.Effects
         private int _shaderProgram;
         private TextureStorage _textureStorage;
 
-        public FXAAPostProcessingEffect(OpenGLRenderer renderer)
+        public FxaaPostProcessingEffect(OpenGLRenderer renderer)
         {
             Initialize();
             _renderer = renderer;
@@ -62,7 +61,7 @@ namespace Ryujinx.Graphics.OpenGL.Effects
             _outputUniform = GL.GetUniformLocation(_shaderProgram, "imgOutput");
         }
 
-        public TextureView Run(TextureView view)
+        public TextureView Run(TextureView view, int width, int height)
         {
             if(_textureStorage == null || _textureStorage.Info.Width != view.Width || _textureStorage.Info.Height != view.Height)
             {
@@ -81,7 +80,7 @@ namespace Ryujinx.Graphics.OpenGL.Effects
             GL.Uniform1(_inputUniform, 0);
             GL.Uniform1(_outputUniform, 0);
             GL.Uniform2(_resolutionUniform, (float)view.Width, (float)view.Height);
-            GL.DispatchCompute(view.Width / LocalGroupSize, view.Height / LocalGroupSize, 1);
+            GL.DispatchCompute(view.Width / IPostProcessingEffect.LocalGroupSize, view.Height / IPostProcessingEffect.LocalGroupSize, 1);
             GL.UseProgram(previousProgram);
             GL.BindImageTexture(0, 0, 0, false, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba8);
 

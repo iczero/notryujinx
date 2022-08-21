@@ -5,7 +5,8 @@ namespace Ryujinx.Graphics.OpenGL.Effects
 {
     internal interface IPostProcessingEffect :  IDisposable
     {
+        protected const int LocalGroupSize = 10;
         protected void Initialize();
-        internal TextureView Run(TextureView view);
+        internal TextureView Run(TextureView view, int width, int height);
     }
 }

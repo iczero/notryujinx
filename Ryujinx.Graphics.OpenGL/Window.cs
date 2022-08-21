@@ -1,6 +1,7 @@
 using OpenTK.Graphics.OpenGL;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.OpenGL.Effects;
+using Ryujinx.Graphics.OpenGL.Effects.Smaa;
 using Ryujinx.Graphics.OpenGL.Image;
 using System;
 
@@ -101,7 +102,7 @@ namespace Ryujinx.Graphics.OpenGL
 
             if (_effect != null)
             {
-                viewConverted = _effect.Run(viewConverted);
+                viewConverted = _effect.Run(viewConverted, _width, _height);
                 GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, drawFramebuffer);
                 GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, readFramebuffer);
             }
@@ -278,13 +279,60 @@ namespace Ryujinx.Graphics.OpenGL
 
             _currentEffect = effect;
 
-            _effect?.Dispose();
-            _effect = null;
-
             switch (effect)
             {
                 case EffectType.Fxaa:
-                    _effect = new FXAAPostProcessingEffect(_renderer);
+                    _effect?.Dispose();
+                    _effect = null;
+                    _effect = new FxaaPostProcessingEffect(_renderer);
+                    break;
+                case EffectType.None:
+                    _effect?.Dispose();
+                    _effect = null;
+                    break;
+                case EffectType.SmaaLow:
+                    if(_effect is SmaaPostProcessingEffect smaa)
+                    {
+                        smaa.Quality = 0;
+                    }
+                    else
+                    {
+                        _effect?.Dispose();
+                        _effect = new SmaaPostProcessingEffect(_renderer, 0);
+                    }
+                    break;
+                case EffectType.SmaaMedium:
+                    if (_effect is SmaaPostProcessingEffect smaam)
+                    {
+                        smaam.Quality = 1;
+                    }
+                    else
+                    {
+                        _effect?.Dispose();
+                        _effect = new SmaaPostProcessingEffect(_renderer, 1);
+                    }
+                    break;
+                case EffectType.SmaaHigh:
+                    if (_effect is SmaaPostProcessingEffect smaah)
+                    {
+                        smaah.Quality = 2;
+                    }
+                    else
+                    {
+                        _effect?.Dispose();
+                        _effect = new SmaaPostProcessingEffect(_renderer, 2);
+                    }
+                    break;
+                case EffectType.SmaaUltra:
+                    if (_effect is SmaaPostProcessingEffect smaau)
+                    {
+                        smaau.Quality = 3;
+                    }
+                    else
+                    {
+                        _effect?.Dispose();
+                        _effect = new SmaaPostProcessingEffect(_renderer, 3);
+                    }
                     break;
             }
         }
