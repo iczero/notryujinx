@@ -26,12 +26,12 @@ void main() {
         invResolution.x, invResolution.y,  // The size of the input image.
         outvResolution.x, outvResolution.y); // The output resolution.
 
-    vec2 coord = vec2((gl_GlobalInvocationID.x +0.5) / invResolution.x, (gl_GlobalInvocationID.y +0.5) / invResolution.y);
+    vec2 coord = vec2((gl_GlobalInvocationID.x) / outvResolution.x, (gl_GlobalInvocationID.y) / outvResolution.y);
     AU2 gxy = AU2(coord * outvResolution.xy); // Integer pixel position in output.
     AF3 Gamma2Color = AF3(0, 0, 0);
     FsrEasuF(Gamma2Color, gxy, con0, con1, con2, con3);
 
     vec4 outColor = vec4(Gamma2Color, 1.0);
-
-    imageStore(imgOutput, ivec2(gxy.xy), outColor);
+    ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
+    imageStore(imgOutput, texelCoord, outColor);
 }
