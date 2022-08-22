@@ -101,14 +101,6 @@ namespace Ryujinx.Graphics.Vulkan.Effects
             _pipeline.DispatchCompute(view.Width / LocalGroupSize, view.Height / LocalGroupSize, 1);
 
             _renderer.BufferManager.Delete(bufferHandle);
-
-            var memoryBarrier = new MemoryBarrier()
-            {
-                SType = StructureType.MemoryBarrier,
-                SrcAccessMask = AccessFlags.AccessShaderWriteBit,
-                DstAccessMask = AccessFlags.AccessNoneKhr,
-            };
-
             _pipeline.ComputeBarrier();
 
             Transition(cbs.CommandBuffer,

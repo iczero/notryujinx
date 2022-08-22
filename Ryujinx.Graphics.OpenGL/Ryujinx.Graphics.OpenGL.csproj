@@ -10,7 +10,6 @@
     <None Remove="Shaders\smaa_blend.glsl" />
     <None Remove="Shaders\smaa_edge.glsl" />
     <None Remove="Shaders\smaa_neighbour.glsl" />
-    <None Remove="Shaders\test.hlsl" />
   </ItemGroup>
 
   <ItemGroup>
@@ -23,7 +22,6 @@
     <EmbeddedResource Include="Shaders\smaa_blend.glsl" />
     <EmbeddedResource Include="Shaders\smaa_edge.glsl" />
     <EmbeddedResource Include="Shaders\smaa_neighbour.glsl" />
-    <EmbeddedResource Include="Shaders\test.hlsl" />
   </ItemGroup>
 
   <ItemGroup>

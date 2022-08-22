@@ -125,7 +125,7 @@ namespace Ryujinx.Ava.Ui.Windows
                 switch (navitem.Tag.ToString())
                 {
                     case "UiPage":
-                        NavPanel.Content = GraphicsPage;
+                        NavPanel.Content = UiPage;
                         break;
                     case "InputPage":
                         NavPanel.Content = InputPage;

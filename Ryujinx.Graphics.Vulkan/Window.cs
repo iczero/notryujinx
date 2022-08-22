@@ -30,6 +30,7 @@ namespace Ryujinx.Graphics.Vulkan
         private bool _vsyncModeChanged;
         private VkFormat _format;
         private EffectType _currentEffect;
+        private bool _changeEffect;
         private IPostProcessingEffect _effect;
 
         public unsafe Window(VulkanRenderer gd, SurfaceKHR surface, PhysicalDevice physicalDevice, Device device)
@@ -263,6 +264,8 @@ namespace Ryujinx.Graphics.Vulkan
 
             var view = (TextureView)texture;
 
+            UpdateEffect();
+
             if (_effect != null)
             {
                 view = _effect?.Run(view, cbs);
@@ -303,6 +306,18 @@ namespace Ryujinx.Graphics.Vulkan
 
             if (ScreenCaptureRequested)
             {
+                if (_effect != null)
+                {
+                    _gd.CommandBufferPool.Return(
+                        cbs,
+                        null,
+                        stackalloc[] { PipelineStageFlags.PipelineStageColorAttachmentOutputBit },
+                        null);
+                    _gd.FlushAllCommands();
+                    cbs.GetFence().Wait();
+                    cbs = _gd.CommandBufferPool.Rent();
+                }
+
                 CaptureFrame(view, srcX0, srcY0, srcX1 - srcX0, srcY1 - srcY0, view.Info.Format.IsBgr(), crop.FlipX, crop.FlipY);
 
                 ScreenCaptureRequested = false;
@@ -383,7 +398,13 @@ namespace Ryujinx.Graphics.Vulkan
 
             _currentEffect = effect;
 
-            switch (effect)
+            _changeEffect = true;
+        }
+
+        private void UpdateEffect()
+        {
+            _changeEffect = false;
+            switch (_currentEffect)
             {
                 case EffectType.Fxaa:
                     _effect?.Dispose();
@@ -404,6 +425,7 @@ namespace Ryujinx.Graphics.Vulkan
                         _effect?.Dispose();
                         smaa = new SmaaPostProcessingEffect(_gd, _device);
                         smaa.Quality = 0;
+                        _effect = smaa;
                     }
                     break;
                 case EffectType.SmaaMedium:
@@ -416,6 +438,7 @@ namespace Ryujinx.Graphics.Vulkan
                         _effect?.Dispose();
                         smaa = new SmaaPostProcessingEffect(_gd, _device);
                         smaa.Quality = 1;
+                        _effect = smaa;
                     }
                     break;
                 case EffectType.SmaaHigh:
@@ -428,6 +451,7 @@ namespace Ryujinx.Graphics.Vulkan
                         _effect?.Dispose();
                         smaa = new SmaaPostProcessingEffect(_gd, _device);
                         smaa.Quality = 2;
+                        _effect = smaa;
                     }
                     break;
                 case EffectType.SmaaUltra:
@@ -440,6 +464,7 @@ namespace Ryujinx.Graphics.Vulkan
                         _effect?.Dispose();
                         smaa = new SmaaPostProcessingEffect(_gd, _device);
                         smaa.Quality = 3;
+                        _effect = smaa;
                     }
                     break;
             }

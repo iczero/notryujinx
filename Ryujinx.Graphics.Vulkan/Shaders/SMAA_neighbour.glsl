@@ -1,9 +1,12 @@
 #version 430 core 
 #define SMAA_GLSL_4 1 
 
-layout (constant_id = 0) const int SMAA_PRESET_LOW = 1;
-layout (constant_id = 1) const float METRIC_WIDTH = 1920.0;
-layout (constant_id = 2) const float METRIC_HEIGHT = 1080.0;
+layout (constant_id = 0) const int SMAA_PRESET_LOW = 0;
+layout (constant_id = 1) const int SMAA_PRESET_MEDIUM = 0;
+layout (constant_id = 2) const int SMAA_PRESET_HIGH = 0;
+layout (constant_id = 3) const int SMAA_PRESET_ULTRA = 0;
+layout (constant_id = 4) const float METRIC_WIDTH = 1920.0;
+layout (constant_id = 5) const float METRIC_HEIGHT = 1080.0;
 
 #define SMAA_RT_METRICS float4(1.0 / METRIC_WIDTH, 1.0 / METRIC_HEIGHT, METRIC_WIDTH, METRIC_HEIGHT)
 
