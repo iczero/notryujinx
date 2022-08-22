@@ -403,7 +403,13 @@ namespace Ryujinx.Graphics.Vulkan
 
         private void UpdateEffect()
         {
+            if(!_changeEffect)
+            {
+                return;
+            }
+
             _changeEffect = false;
+
             switch (_currentEffect)
             {
                 case EffectType.Fxaa:

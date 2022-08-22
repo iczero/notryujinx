@@ -21,6 +21,7 @@ namespace Ryujinx.Graphics.OpenGL
         private IPostProcessingEffect _effect;
         private int _currentTexture;
         private EffectType _currentEffect;
+        private bool _changeEffect;
 
         internal BackgroundContextWorker BackgroundContext { get; private set; }
 
@@ -99,6 +100,8 @@ namespace Ryujinx.Graphics.OpenGL
             GL.FramebufferTexture2D(FramebufferTarget.DrawFramebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, _stagingTextures[_currentTexture], 0);
 
             TextureView viewConverted = view.Format.IsBgr() ? _renderer.TextureCopy.BgraSwap(view) : view;
+
+            UpdateEffect();
 
             if (_effect != null)
             {
@@ -279,7 +282,19 @@ namespace Ryujinx.Graphics.OpenGL
 
             _currentEffect = effect;
 
-            switch (effect)
+            _changeEffect = true;
+        }
+
+        private void UpdateEffect()
+        {
+            if (!_changeEffect)
+            {
+                return;
+            }
+
+            _changeEffect = false;
+
+            switch (_currentEffect)
             {
                 case EffectType.Fxaa:
                     _effect?.Dispose();
@@ -291,7 +306,7 @@ namespace Ryujinx.Graphics.OpenGL
                     _effect = null;
                     break;
                 case EffectType.SmaaLow:
-                    if(_effect is SmaaPostProcessingEffect smaa)
+                    if (_effect is SmaaPostProcessingEffect smaa)
                     {
                         smaa.Quality = 0;
                     }
