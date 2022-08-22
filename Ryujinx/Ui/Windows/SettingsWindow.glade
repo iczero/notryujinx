@@ -2266,13 +2266,13 @@
                                                         translatable="yes">None</item>
                                                     <item id="1"
                                                         translatable="yes">FXAA</item>
-                                                    <item id="1"
+                                                    <item id="2"
                                                           translatable="yes">SMAA Low</item>
-                                                    <item id="1"
+                                                    <item id="3"
                                                         translatable="yes">SMAA Medium</item>
-                                                    <item id="1"
+                                                    <item id="4"
                                                           translatable="yes">SMAA High</item>
-                                                    <item id="1"
+                                                    <item id="5"
                                                         translatable="yes">SMAA Ultra</item>
                                                 </items>
                                             </object>
