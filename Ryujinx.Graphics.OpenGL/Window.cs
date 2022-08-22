@@ -299,7 +299,7 @@ namespace Ryujinx.Graphics.OpenGL
                 case EffectType.Fxaa:
                     _effect?.Dispose();
                     _effect = null;
-                    _effect = new FxaaPostProcessingEffect(_renderer);
+                    _effect = new FsrUpscaler(_renderer);
                     break;
                 case EffectType.None:
                     _effect?.Dispose();

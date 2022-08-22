@@ -22,6 +22,9 @@
     <EmbeddedResource Include="Shaders\smaa_blend.glsl" />
     <EmbeddedResource Include="Shaders\smaa_edge.glsl" />
     <EmbeddedResource Include="Shaders\smaa_neighbour.glsl" />
+    <EmbeddedResource Include="Shaders\ffx_fsr1.h" />
+    <EmbeddedResource Include="Shaders\ffx_a.h" />
+    <EmbeddedResource Include="Shaders\fsr_scaling.glsl" />
   </ItemGroup>
 
   <ItemGroup>
