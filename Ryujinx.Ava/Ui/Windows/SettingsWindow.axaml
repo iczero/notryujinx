@@ -728,17 +728,15 @@
                                         <TextBlock Text="FSR" />
                                     </ComboBoxItem>
                                 </ComboBox>
-                                <ui:NumberBox Value="{Binding UpscaleLevel}"
+                                <ProgressBar Value="{Binding UpscaleLevel}"
                                               ToolTip.Tip="{locale:Locale GraphicsUpscalingLevelTooltip}"
                                               MinWidth="150"
                                               Margin="10,0,0,0"
                                               IsVisible="{Binding IsUpscalingActive}"
                                               SmallChange="1"
                                               LargeChange="0.1"
-                                              SimpleNumberFormat="F2"
-                                              SpinButtonPlacementMode="Inline"
-                                              Minimum="1"
-                                              Maximum="10" />
+                                              Minimum="0.01"
+                                              Maximum="1.5" />
                             </StackPanel>
                         </StackPanel>
                         <Separator Height="1" />

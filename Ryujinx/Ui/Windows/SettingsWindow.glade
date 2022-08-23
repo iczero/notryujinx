@@ -40,6 +40,13 @@
     <property name="inline-completion">True</property>
     <property name="inline-selection">True</property>
   </object>
+  <object class="GtkAdjustment" id="_upscaleLevel">
+    <property name="lower">0.01</property>
+    <property name="upper">1.5</property>
+    <property name="step-increment">0.01</property>
+    <property name="page-increment">0.10</property>
+    <property name="page-size">0.10</property>
+  </object>
   <object class="GtkWindow" id="_settingsWin">
     <property name="can-focus">False</property>
     <property name="title" translatable="yes">Ryujinx - Settings</property>
@@ -2282,6 +2289,7 @@
                                 </child>
                                 <child>
                                   <object class="GtkBox">
+                                    <property name="width-request">100</property>
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="margin-top">5</property>
@@ -2318,19 +2326,19 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkEntry" id="_upscaleLevel">
+                                      <object class="GtkScale" id="_upscaleSlider">
+                                        <property name="width-request">200</property>
                                         <property name="visible">True</property>
                                         <property name="can-focus">True</property>
-                                        <property name="tooltip-text" translatable="yes">Set Upscaling Level</property>
-                                        <property name="valign">center</property>
-                                        <property name="caps-lock-warning">False</property>
-                                        <property name="placeholder-text">1.0</property>
-                                        <property name="input-purpose">number</property>
+                                        <property name="margin-start">5</property>
+                                        <property name="adjustment">_upscaleLevel</property>
+                                        <property name="round-digits">1</property>
+                                        <property name="value-pos">right</property>
                                       </object>
                                       <packing>
-                                        <property name="expand">True</property>
+                                        <property name="expand">False</property>
                                         <property name="fill">True</property>
-                                        <property name="position">2</property>
+                                        <property name="position">3</property>
                                       </packing>
                                     </child>
                                   </object>
