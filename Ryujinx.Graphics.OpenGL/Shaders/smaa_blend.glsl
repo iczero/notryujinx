@@ -6,7 +6,7 @@ uniform sampler2D samplerArea;
 uniform sampler2D samplerSearch;
 
 void main() {
-    vec2 coord = vec2((gl_GlobalInvocationID.x) / invResolution.x, (gl_GlobalInvocationID.y) / invResolution.y);
+    vec2 coord = vec2(gl_GlobalInvocationID.x / invResolution.x, gl_GlobalInvocationID.y / invResolution.y);
 	vec2 pixCoord;
 	vec4 offset[3];
 

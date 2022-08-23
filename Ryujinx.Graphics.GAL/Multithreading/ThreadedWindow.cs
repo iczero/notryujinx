@@ -34,5 +34,9 @@ namespace Ryujinx.Graphics.GAL.Multithreading
         public void ChangeVSyncMode(bool vsyncEnabled) { }
 
         public void ApplyEffect(EffectType effect) { }
+
+        public void ApplyScaler(PostProcessingScalerType scalerType) { }
+
+        public void SetUpscalerScale(float scale) { }
     }
 }

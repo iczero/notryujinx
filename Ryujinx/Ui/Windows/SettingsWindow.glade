@@ -2232,63 +2232,114 @@
                                   </packing>
                                 </child>
                                 <child>
-                                    <object class="GtkBox">
+                                  <object class="GtkBox">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="margin-top">5</property>
+                                    <property name="margin-bottom">5</property>
+                                    <child>
+                                      <object class="GtkLabel">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="margin-top">5</property>
-                                        <property name="margin-bottom">5</property>
-                                        <child>
-                                            <object class="GtkLabel">
-                                                <property name="visible">True</property>
-                                                <property name="can-focus">False</property>
-                                                <property name="tooltip-text"
-                                                        translatable="yes">Applies a final effect to the game render</property>
-                                                <property name="label"
-                                                        translatable="yes">Post Processing Effect</property>
-                                            </object>
-                                            <packing>
-                                                <property name="expand">False</property>
-                                                <property name="fill">True</property>
-                                                <property name="padding">5</property>
-                                                <property name="position">0</property>
-                                            </packing>
-                                        </child>
-                                        <child>
-                                            <object class="GtkComboBoxText"
-                                                    id="_postProcessingEffect">
-                                                <property name="visible">True</property>
-                                                <property name="can-focus">False</property>
-                                                <property name="tooltip-text"
-                                                        translatable="yes">Applies a final effect to the game render</property>
-                                                <property name="active-id">1</property>
-                                                <items>
-                                                    <item id="0"
-                                                        translatable="yes">None</item>
-                                                    <item id="1"
-                                                        translatable="yes">FXAA</item>
-                                                    <item id="2"
-                                                          translatable="yes">SMAA Low</item>
-                                                    <item id="3"
-                                                        translatable="yes">SMAA Medium</item>
-                                                    <item id="4"
-                                                          translatable="yes">SMAA High</item>
-                                                    <item id="5"
-                                                        translatable="yes">SMAA Ultra</item>
-                                                </items>
-                                            </object>
-                                            <packing>
-                                                <property name="expand">False</property>
-                                                <property name="fill">True</property>
-                                                <property name="position">1</property>
-                                            </packing>
-                                        </child>
-                                    </object>
-                                    <packing>
+                                        <property name="tooltip-text" translatable="yes">Applies a final effect to the game render</property>
+                                        <property name="label" translatable="yes">Post Processing Effect:</property>
+                                      </object>
+                                      <packing>
                                         <property name="expand">False</property>
                                         <property name="fill">True</property>
                                         <property name="padding">5</property>
-                                        <property name="position">4</property>
-                                    </packing>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkComboBoxText" id="_postProcessingEffect">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="tooltip-text" translatable="yes">Applies a final effect to the game render</property>
+                                        <property name="active-id">1</property>
+                                        <items>
+                                          <item id="0" translatable="yes">None</item>
+                                          <item id="1" translatable="yes">FXAA</item>
+                                          <item id="2" translatable="yes">SMAA Low</item>
+                                          <item id="3" translatable="yes">SMAA Medium</item>
+                                          <item id="4" translatable="yes">SMAA High</item>
+                                          <item id="5" translatable="yes">SMAA Ultra</item>
+                                        </items>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="padding">5</property>
+                                    <property name="position">5</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="margin-top">5</property>
+                                    <property name="margin-bottom">5</property>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="tooltip-text" translatable="yes">Enables Framebuffer Upscaling</property>
+                                        <property name="label" translatable="yes">Upscale: </property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="padding">5</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkComboBoxText" id="_upscaleType">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="tooltip-text" translatable="yes">Enables Framebuffer Upscaling</property>
+                                        <property name="active-id">1</property>
+                                        <items>
+                                          <item id="0" translatable="yes">None</item>
+                                          <item id="1" translatable="yes">FSR</item>
+                                        </items>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkEntry" id="_upscaleLevel">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="tooltip-text" translatable="yes">Set Upscaling Level</property>
+                                        <property name="valign">center</property>
+                                        <property name="caps-lock-warning">False</property>
+                                        <property name="placeholder-text">1.0</property>
+                                        <property name="input-purpose">number</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">True</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">2</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="padding">5</property>
+                                    <property name="position">6</property>
+                                  </packing>
                                 </child>
                               </object>
                               <packing>

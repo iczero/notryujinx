@@ -116,6 +116,20 @@ namespace Ryujinx.Ui
 
             ConfigurationState.Instance.HideCursorOnIdle.Event += HideCursorStateChanged;
             ConfigurationState.Instance.Graphics.PostProcessingEffect.Event += UpdatePostProcessingEffect;
+            ConfigurationState.Instance.Graphics.UpscaleType.Event += UpdateUpscaleType;
+            ConfigurationState.Instance.Graphics.UpscaleLevel.Event += UpdateUpscaleLevel;
+        }
+
+        private void UpdateUpscaleLevel(object sender, ReactiveEventArgs<float> e)
+        {
+            Renderer.Window.ApplyScaler((PostProcessingScalerType)ConfigurationState.Instance.Graphics.UpscaleType.Value);
+            Renderer.Window.SetUpscalerScale(ConfigurationState.Instance.Graphics.UpscaleLevel.Value);
+        }
+
+        private void UpdateUpscaleType(object sender, ReactiveEventArgs<UpscaleType> e)
+        {
+            Renderer.Window.ApplyScaler((PostProcessingScalerType)ConfigurationState.Instance.Graphics.UpscaleType.Value);
+            Renderer.Window.SetUpscalerScale(ConfigurationState.Instance.Graphics.UpscaleLevel.Value);
         }
 
         public abstract void InitializeRenderer();
@@ -150,6 +164,8 @@ namespace Ryujinx.Ui
         {
             ConfigurationState.Instance.HideCursorOnIdle.Event -= HideCursorStateChanged;
             ConfigurationState.Instance.Graphics.PostProcessingEffect.Event -= UpdatePostProcessingEffect;
+            ConfigurationState.Instance.Graphics.UpscaleType.Event -= UpdateUpscaleType;
+            ConfigurationState.Instance.Graphics.UpscaleLevel.Event -= UpdateUpscaleLevel;
 
             NpadManager.Dispose();
             Dispose();
@@ -401,6 +417,8 @@ namespace Ryujinx.Ui
             Device.Gpu.Renderer.Initialize(_glLogLevel);
 
             Renderer.Window.ApplyEffect((EffectType)ConfigurationState.Instance.Graphics.PostProcessingEffect.Value);
+            Renderer.Window.ApplyScaler((PostProcessingScalerType)ConfigurationState.Instance.Graphics.UpscaleType.Value);
+            Renderer.Window.SetUpscalerScale(ConfigurationState.Instance.Graphics.UpscaleLevel.Value);
 
             _gpuBackendName = GetGpuBackendName();
             _gpuVendorName = GetGpuVendorName();

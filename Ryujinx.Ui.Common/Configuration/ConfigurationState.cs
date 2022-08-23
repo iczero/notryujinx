@@ -427,6 +427,16 @@ namespace Ryujinx.Ui.Common.Configuration
             public ReactiveObject<PostProcessingEffect> PostProcessingEffect { get; private set; }
 
             /// <summary>
+            /// Sets the framebuffer upscaling type.
+            /// </summary>
+            public ReactiveObject<UpscaleType> UpscaleType { get; private set; }
+
+            /// <summary>
+            /// Sets the framebuffer upscaling level.
+            /// </summary>
+            public ReactiveObject<float> UpscaleLevel { get; private set; }
+
+            /// <summary>
             /// Preferred GPU
             /// </summary>
             public ReactiveObject<string> PreferredGpu { get; private set; }
@@ -456,6 +466,10 @@ namespace Ryujinx.Ui.Common.Configuration
                 PreferredGpu.Event               += static (sender, e) => LogValueChange(sender, e, nameof(PreferredGpu));
                 PostProcessingEffect             = new ReactiveObject<PostProcessingEffect>();
                 PostProcessingEffect.Event       += static (sender, e) => LogValueChange(sender, e, nameof(PostProcessingEffect));
+                UpscaleType                      = new ReactiveObject<UpscaleType>();
+                UpscaleType.Event                += static (sender, e) => LogValueChange(sender, e, nameof(UpscaleType));
+                UpscaleLevel                     = new ReactiveObject<float>();
+                UpscaleLevel.Event               += static (sender, e) => LogValueChange(sender, e, nameof(UpscaleLevel));
             }
         }
 
@@ -534,6 +548,8 @@ namespace Ryujinx.Ui.Common.Configuration
                 MaxAnisotropy              = Graphics.MaxAnisotropy,
                 AspectRatio                = Graphics.AspectRatio,
                 PostProcessingEffect       = Graphics.PostProcessingEffect,
+                UpscaleType                = Graphics.UpscaleType,
+                UpscaleLevel               = Graphics.UpscaleLevel,
                 GraphicsShadersDumpPath    = Graphics.ShadersDumpPath,
                 LoggingEnableDebug         = Logger.EnableDebug,
                 LoggingEnableStub          = Logger.EnableStub,
@@ -642,6 +658,9 @@ namespace Ryujinx.Ui.Common.Configuration
             Graphics.EnableVsync.Value                = true;
             Graphics.EnableShaderCache.Value          = true;
             Graphics.EnableTextureRecompression.Value = false;
+            Graphics.PostProcessingEffect.Value       = PostProcessingEffect.None;
+            Graphics.UpscaleType.Value                = UpscaleType.None;
+            Graphics.UpscaleLevel.Value               = 1;
             System.EnablePtc.Value                    = true;
             System.EnableInternetAccess.Value         = false;
             System.EnableFsIntegrityChecks.Value      = true;
@@ -1169,6 +1188,8 @@ namespace Ryujinx.Ui.Common.Configuration
                 Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 41.");
 
                 configurationFileFormat.PostProcessingEffect = PostProcessingEffect.None;
+                configurationFileFormat.UpscaleType = UpscaleType.None;
+                configurationFileFormat.UpscaleLevel = 1;
 
                 configurationFileUpdated = true;
             }
@@ -1183,6 +1204,8 @@ namespace Ryujinx.Ui.Common.Configuration
             Graphics.GraphicsBackend.Value            = configurationFileFormat.GraphicsBackend;
             Graphics.PreferredGpu.Value               = configurationFileFormat.PreferredGpu;
             Graphics.PostProcessingEffect.Value       = configurationFileFormat.PostProcessingEffect;
+            Graphics.UpscaleType.Value                = configurationFileFormat.UpscaleType;
+            Graphics.UpscaleLevel.Value               = configurationFileFormat.UpscaleLevel;
             Logger.EnableDebug.Value                  = configurationFileFormat.LoggingEnableDebug;
             Logger.EnableStub.Value                   = configurationFileFormat.LoggingEnableStub;
             Logger.EnableInfo.Value                   = configurationFileFormat.LoggingEnableInfo;

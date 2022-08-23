@@ -95,10 +95,12 @@ namespace Ryujinx.Ui.Windows
         [GUI] ComboBoxText    _anisotropy;
         [GUI] ComboBoxText    _aspectRatio;
         [GUI] ComboBoxText    _postProcessingEffect;
+        [GUI] ComboBoxText    _upscaleType;
         [GUI] ComboBoxText    _graphicsBackend;
         [GUI] ComboBoxText    _preferredGpu;
         [GUI] ComboBoxText    _resScaleCombo;
         [GUI] Entry           _resScaleText;
+        [GUI] Entry           _upscaleLevel;
         [GUI] ToggleButton    _configureController1;
         [GUI] ToggleButton    _configureController2;
         [GUI] ToggleButton    _configureController3;
@@ -139,6 +141,7 @@ namespace Ryujinx.Ui.Windows
             _systemTimeZoneEntry.FocusOutEvent += TimeZoneEntry_FocusOut;
 
             _resScaleCombo.Changed += (sender, args) => _resScaleText.Visible = _resScaleCombo.ActiveId == "-1";
+            _upscaleType.Changed += (sender, args) => _upscaleLevel.Visible = _upscaleType.ActiveId != "0";
             _galThreading.Changed += (sender, args) =>
             {
                 if (_galThreading.ActiveId != ConfigurationState.Instance.Graphics.BackendThreading.Value.ToString())
@@ -334,6 +337,7 @@ namespace Ryujinx.Ui.Windows
             _aspectRatio.SetActiveId(((int)ConfigurationState.Instance.Graphics.AspectRatio.Value).ToString());
             _graphicsBackend.SetActiveId(((int)ConfigurationState.Instance.Graphics.GraphicsBackend.Value).ToString());
             _postProcessingEffect.SetActiveId(((int)ConfigurationState.Instance.Graphics.PostProcessingEffect.Value).ToString());
+            _upscaleType.SetActiveId(((int)ConfigurationState.Instance.Graphics.UpscaleType.Value).ToString());
 
             UpdatePreferredGpuComboBox();
 
@@ -341,7 +345,9 @@ namespace Ryujinx.Ui.Windows
 
             _custThemePath.Buffer.Text           = ConfigurationState.Instance.Ui.CustomThemePath;
             _resScaleText.Buffer.Text            = ConfigurationState.Instance.Graphics.ResScaleCustom.Value.ToString();
+            _upscaleLevel.Buffer.Text            = ConfigurationState.Instance.Graphics.UpscaleLevel.Value.ToString();
             _resScaleText.Visible                = _resScaleCombo.ActiveId == "-1";
+            _upscaleLevel.Visible                = _upscaleType.ActiveId != "0";
             _graphicsShadersDumpPath.Buffer.Text = ConfigurationState.Instance.Graphics.ShadersDumpPath;
             _fsLogSpinAdjustment.Value           = ConfigurationState.Instance.System.FsGlobalAccessLogMode;
             _systemTimeOffset                    = ConfigurationState.Instance.System.SystemTimeOffset;
@@ -527,6 +533,11 @@ namespace Ryujinx.Ui.Windows
                 resScaleCustom = 1.0f;
             }
 
+            if (!float.TryParse(_upscaleLevel.Buffer.Text, out float upscaleLevel) || upscaleLevel <= 0.0f)
+            {
+                upscaleLevel = 1.0f;
+            }
+
             if (_validTzRegions.Contains(_systemTimeZoneEntry.Text))
             {
                 ConfigurationState.Instance.System.TimeZone.Value = _systemTimeZoneEntry.Text;
@@ -592,6 +603,8 @@ namespace Ryujinx.Ui.Windows
             ConfigurationState.Instance.Graphics.ResScaleCustom.Value             = resScaleCustom;
             ConfigurationState.Instance.System.AudioVolume.Value                  = (float)_audioVolumeSlider.Value / 100.0f;
             ConfigurationState.Instance.Graphics.PostProcessingEffect.Value       = Enum.Parse<PostProcessingEffect>(_postProcessingEffect.ActiveId);
+            ConfigurationState.Instance.Graphics.UpscaleType.Value                = Enum.Parse<UpscaleType>(_upscaleType.ActiveId);
+            ConfigurationState.Instance.Graphics.UpscaleLevel.Value               = upscaleLevel;
 
             _previousVolumeLevel = ConfigurationState.Instance.System.AudioVolume.Value;
 

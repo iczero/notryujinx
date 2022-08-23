@@ -5,7 +5,7 @@ layout( location=0 ) uniform vec2 invResolution;
 
 void main() 
 {
-	vec2 coord = vec2((gl_GlobalInvocationID.x) / invResolution.x, (gl_GlobalInvocationID.y) / invResolution.y);
+	vec2 coord = vec2(gl_GlobalInvocationID.x / invResolution.x, gl_GlobalInvocationID.y / invResolution.y);
 	vec4 offset[3];
 	SMAAEdgeDetectionVS(coord, offset);
 	vec2 oColor = SMAAColorEdgeDetectionPS(coord, offset, input);

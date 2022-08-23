@@ -30,20 +30,21 @@ namespace Ryujinx.Graphics.Vulkan.Effects
         private TextureView _searchTexture;
         private Device _device;
         private bool _recreatePipelines;
-        private int quality;
+        private int _quality;
 
-        public SmaaPostProcessingEffect(VulkanRenderer renderer, Device device)
+        public SmaaPostProcessingEffect(VulkanRenderer renderer, Device device, int quality)
         {
             _device = device;
             _renderer = renderer;
+            _quality = quality;
             Initialize();
         }
 
         public int Quality
         {
-            get => quality; internal set
+            get => _quality; internal set
             {
-                quality = value;
+                _quality = value;
 
                 _recreatePipelines = true;
             }
@@ -137,12 +138,12 @@ namespace Ryujinx.Graphics.Vulkan.Effects
 
         public void DeletePipelines()
         {
-            _edgeProgram?.Dispose();
-            _blendProgram?.Dispose();
-            _neighbourProgram?.Dispose();
             _edgePipeline?.Dispose();
             _blendPipeline?.Dispose();
             _neighbourPipleline?.Dispose();
+            _edgeProgram?.Dispose();
+            _blendProgram?.Dispose();
+            _neighbourProgram?.Dispose();
         }
 
         public void Initialize()
@@ -278,52 +279,9 @@ namespace Ryujinx.Graphics.Vulkan.Effects
             _neighbourPipleline.DispatchCompute(view.Width / LocalGroupSize, view.Height / LocalGroupSize, 1);
             _neighbourPipleline.ComputeBarrier();
 
-            Transition(cbs.CommandBuffer,
-                       _outputTexture.GetImage().GetUnsafe().Value,
-                       AccessFlags.AccessNoneKhr,
-                       AccessFlags.AccessNoneKhr,
-                       ImageLayout.TransferDstOptimal,
-                       ImageLayout.General);
-
             _renderer.BufferManager.Delete(bufferHandle);
 
             return _outputTexture;
-        }
-
-        private unsafe void Transition(
-            CommandBuffer commandBuffer,
-            Image image,
-            AccessFlags srcAccess,
-            AccessFlags dstAccess,
-            ImageLayout srcLayout,
-            ImageLayout dstLayout)
-        {
-            var subresourceRange = new ImageSubresourceRange(ImageAspectFlags.ImageAspectColorBit, 0, 1, 0, 1);
-
-            var barrier = new ImageMemoryBarrier()
-            {
-                SType = StructureType.ImageMemoryBarrier,
-                SrcAccessMask = srcAccess,
-                DstAccessMask = dstAccess,
-                OldLayout = srcLayout,
-                NewLayout = dstLayout,
-                SrcQueueFamilyIndex = Vk.QueueFamilyIgnored,
-                DstQueueFamilyIndex = Vk.QueueFamilyIgnored,
-                Image = image,
-                SubresourceRange = subresourceRange
-            };
-
-            _renderer.Api.CmdPipelineBarrier(
-                commandBuffer,
-                PipelineStageFlags.PipelineStageTopOfPipeBit,
-                PipelineStageFlags.PipelineStageAllCommandsBit,
-                0,
-                0,
-                null,
-                0,
-                null,
-                1,
-                barrier);
         }
     }
 }

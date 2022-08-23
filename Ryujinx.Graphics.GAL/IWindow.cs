@@ -11,5 +11,7 @@ namespace Ryujinx.Graphics.GAL
         void ChangeVSyncMode(bool vsyncEnabled);
 
         void ApplyEffect(EffectType effect);
+        void ApplyScaler(PostProcessingScalerType scalerType);
+        void SetUpscalerScale(float scale);
     }
 }

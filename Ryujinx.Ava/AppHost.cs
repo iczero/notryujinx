@@ -153,10 +153,24 @@ namespace Ryujinx.Ava
             ConfigurationState.Instance.System.IgnoreMissingServices.Event += UpdateIgnoreMissingServicesState;
             ConfigurationState.Instance.Graphics.AspectRatio.Event += UpdateAspectRatioState;
             ConfigurationState.Instance.Graphics.PostProcessingEffect.Event += UpdatePostProcessingEffect;
+            ConfigurationState.Instance.Graphics.UpscaleType.Event += UpdateUpscaleType;
+            ConfigurationState.Instance.Graphics.UpscaleLevel.Event += UpdateUpscaleLevel;
             ConfigurationState.Instance.System.EnableDockedMode.Event += UpdateDockedModeState;
             ConfigurationState.Instance.System.AudioVolume.Event += UpdateAudioVolumeState;
 
             _gpuCancellationTokenSource = new CancellationTokenSource();
+        }
+
+        private void UpdateUpscaleLevel(object sender, ReactiveEventArgs<float> e)
+        {
+            _renderer?.Window?.ApplyScaler((PostProcessingScalerType)ConfigurationState.Instance.Graphics.UpscaleType.Value);
+            _renderer?.Window?.SetUpscalerScale(ConfigurationState.Instance.Graphics.UpscaleLevel.Value);
+        }
+
+        private void UpdateUpscaleType(object sender, ReactiveEventArgs<UpscaleType> e)
+        {
+            _renderer?.Window?.ApplyScaler((PostProcessingScalerType)ConfigurationState.Instance.Graphics.UpscaleType.Value);
+            _renderer?.Window?.SetUpscalerScale(ConfigurationState.Instance.Graphics.UpscaleLevel.Value);
         }
 
         private void Parent_PointerMoved(object sender, PointerEventArgs e)
@@ -380,6 +394,8 @@ namespace Ryujinx.Ava
             ConfigurationState.Instance.System.EnableDockedMode.Event -= UpdateDockedModeState;
             ConfigurationState.Instance.System.AudioVolume.Event -= UpdateAudioVolumeState;
             ConfigurationState.Instance.Graphics.PostProcessingEffect.Event -= UpdatePostProcessingEffect;
+            ConfigurationState.Instance.Graphics.UpscaleType.Event -= UpdateUpscaleType;
+            ConfigurationState.Instance.Graphics.UpscaleLevel.Event -= UpdateUpscaleLevel;
 
             _gpuCancellationTokenSource.Cancel();
             _gpuCancellationTokenSource.Dispose();
@@ -838,6 +854,8 @@ namespace Ryujinx.Ava
             Device.Gpu.Renderer.Initialize(_glLogLevel);
 
             _renderer?.Window?.ApplyEffect((EffectType)ConfigurationState.Instance.Graphics.PostProcessingEffect.Value);
+            _renderer?.Window?.ApplyScaler((PostProcessingScalerType)ConfigurationState.Instance.Graphics.UpscaleType.Value);
+            _renderer?.Window?.SetUpscalerScale(ConfigurationState.Instance.Graphics.UpscaleLevel.Value);
 
             Width = (int)Renderer.Bounds.Width;
             Height = (int)Renderer.Bounds.Height;

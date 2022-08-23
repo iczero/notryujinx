@@ -58,12 +58,6 @@ namespace Ryujinx.Graphics.Vulkan.Effects
                 _texture?.Dispose();
                 _texture = _renderer.CreateTexture(view.Info, view.ScaleFactor) as TextureView;
             }
-            Transition(cbs.CommandBuffer,
-                       _texture.GetImage().GetUnsafe().Value,
-                       AccessFlags.AccessNoneKhr,
-                       AccessFlags.AccessNoneKhr,
-                       ImageLayout.General,
-                       ImageLayout.TransferDstOptimal);
 
             _pipeline.SetCommandBuffer(cbs);
             _pipeline.SetProgram(_shaderProgram);
@@ -103,50 +97,7 @@ namespace Ryujinx.Graphics.Vulkan.Effects
             _renderer.BufferManager.Delete(bufferHandle);
             _pipeline.ComputeBarrier();
 
-            Transition(cbs.CommandBuffer,
-                       _texture.GetImage().GetUnsafe().Value,
-                       AccessFlags.AccessNoneKhr,
-                       AccessFlags.AccessNoneKhr,
-                       ImageLayout.TransferDstOptimal,
-                       ImageLayout.General);
-
             return _texture;
-        }
-
-        private unsafe void Transition(
-            CommandBuffer commandBuffer,
-            Image image,
-            AccessFlags srcAccess,
-            AccessFlags dstAccess,
-            ImageLayout srcLayout,
-            ImageLayout dstLayout)
-        {
-            var subresourceRange = new ImageSubresourceRange(ImageAspectFlags.ImageAspectColorBit, 0, 1, 0, 1);
-
-            var barrier = new ImageMemoryBarrier()
-            {
-                SType = StructureType.ImageMemoryBarrier,
-                SrcAccessMask = srcAccess,
-                DstAccessMask = dstAccess,
-                OldLayout = srcLayout,
-                NewLayout = dstLayout,
-                SrcQueueFamilyIndex = Vk.QueueFamilyIgnored,
-                DstQueueFamilyIndex = Vk.QueueFamilyIgnored,
-                Image = image,
-                SubresourceRange = subresourceRange
-            };
-
-            _renderer.Api.CmdPipelineBarrier(
-                commandBuffer,
-                PipelineStageFlags.PipelineStageTopOfPipeBit,
-                PipelineStageFlags.PipelineStageAllCommandsBit,
-                0,
-                0,
-                null,
-                0,
-                null,
-                1,
-                barrier);
         }
     }
 }

@@ -1,4 +1,5 @@
 using Ryujinx.Graphics.Vulkan;
+using Silk.NET.Vulkan;
 using System;
 
 namespace Ryujinx.Graphics.Vulkan.Effects

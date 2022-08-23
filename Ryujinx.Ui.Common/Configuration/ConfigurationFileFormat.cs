@@ -57,6 +57,16 @@ namespace Ryujinx.Ui.Common.Configuration
         public PostProcessingEffect PostProcessingEffect { get; set; }
 
         /// <summary>
+        /// Sets the framebuffer upscaling type.
+        /// </summary>
+        public UpscaleType UpscaleType { get; set; }
+
+        /// <summary>
+        /// Sets the framebuffer upscaling level.
+        /// </summary>
+        public float UpscaleLevel { get; set; }
+
+        /// <summary>
         /// Dumps shaders in this local directory
         /// </summary>
         public string GraphicsShadersDumpPath { get; set; }

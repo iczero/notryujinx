@@ -707,6 +707,40 @@
                                 </ComboBox>
                             </StackPanel>
                         </StackPanel>
+                        <StackPanel
+                            Margin="10,0,0,0"
+                            HorizontalAlignment="Stretch"
+                            Orientation="Vertical"
+                            Spacing="10">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock VerticalAlignment="Center"
+                                           ToolTip.Tip="{locale:Locale GraphicsUpscalingTooltip}"
+                                           Text="{locale:Locale GraphicsUpscalingLabel}"
+                                           Width="250" />
+                                <ComboBox Width="350"
+                                          HorizontalContentAlignment="Left"
+                                          ToolTip.Tip="{locale:Locale GraphicsUpscalingTooltip}"
+                                          SelectedIndex="{Binding UpscaleType}">
+                                    <ComboBoxItem>
+                                        <TextBlock Text="{locale:Locale SettingsTabLoggingOpenglLogLevelNone}" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <TextBlock Text="FSR" />
+                                    </ComboBoxItem>
+                                </ComboBox>
+                                <ui:NumberBox Value="{Binding UpscaleLevel}"
+                                              ToolTip.Tip="{locale:Locale GraphicsUpscalingLevelTooltip}"
+                                              MinWidth="150"
+                                              Margin="10,0,0,0"
+                                              IsVisible="{Binding IsUpscalingActive}"
+                                              SmallChange="1"
+                                              LargeChange="0.1"
+                                              SimpleNumberFormat="F2"
+                                              SpinButtonPlacementMode="Inline"
+                                              Minimum="1"
+                                              Maximum="10" />
+                            </StackPanel>
+                        </StackPanel>
                         <Separator Height="1" />
                         <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGraphicsDeveloperOptions}" />
                         <StackPanel

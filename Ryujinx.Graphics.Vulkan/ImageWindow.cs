@@ -33,8 +33,12 @@ namespace Ryujinx.Graphics.Vulkan
         private bool _recreateImages;
         private int _nextImage;
         private IPostProcessingEffect _effect;
+        private IScaler _scaler;
         private EffectType _currentEffect;
         private bool _changeEffect;
+        private float _upscalerScale;
+        private bool _changeScaler;
+        private PostProcessingScalerType _currentScaler;
 
         public unsafe ImageWindow(VulkanRenderer gd, PhysicalDevice physicalDevice, Device device)
         {
@@ -178,9 +182,23 @@ namespace Ryujinx.Graphics.Vulkan
 
             UpdateEffect();
 
-            if(_effect != null)
+            if(_scaler != null)
             {
-               view = _effect?.Run(view, cbs);
+                view = _scaler.Run(view, cbs);
+
+                crop = new ImageCrop(crop.Left,
+                                     (int)(crop.Right * _scaler.Scale),
+                                     crop.Top,
+                                     (int)(crop.Bottom * _scaler.Scale),
+                                     crop.FlipX,
+                                     crop.FlipY,
+                                     crop.IsStretched,
+                                     crop.AspectRatioX,
+                                     crop.AspectRatioY);
+            }
+            else if (_effect != null)
+            {
+                view = _effect?.Run(view, cbs);
             }
 
             int srcX0, srcX1, srcY0, srcY1;
@@ -316,79 +334,117 @@ namespace Ryujinx.Graphics.Vulkan
             _changeEffect = true;
         }
 
-        private void UpdateEffect()
+        public override void ApplyScaler(PostProcessingScalerType scalerType)
         {
-            if (!_changeEffect)
+
+            if (_currentScaler == scalerType && _effect != null)
             {
+                _currentScaler = scalerType;
                 return;
             }
 
-            _changeEffect = false;
+            _currentScaler = scalerType;
 
-            switch (_currentEffect)
+            _changeScaler = true;
+        }
+
+        private void UpdateEffect()
+        {
+            if (_changeEffect)
             {
-                case EffectType.Fxaa:
-                    _effect?.Dispose();
-                    _effect = null;
-                    _effect = new FxaaPostProcessingEffect(_gd, _device);
-                    break;
-                case EffectType.None:
-                    _effect?.Dispose();
-                    _effect = null;
-                    break;
-                case EffectType.SmaaLow:
-                    if (_effect is SmaaPostProcessingEffect smaa)
-                    {
-                        smaa.Quality = 0;
-                    }
-                    else
-                    {
+                _changeEffect = false;
+
+                switch (_currentEffect)
+                {
+                    case EffectType.Fxaa:
                         _effect?.Dispose();
-                        smaa = new SmaaPostProcessingEffect(_gd, _device);
-                        smaa.Quality = 0;
-                        _effect = smaa;
-                    }
-                    break;
-                case EffectType.SmaaMedium:
-                    if (_effect is SmaaPostProcessingEffect smaam)
-                    {
-                        smaam.Quality = 1;
-                    }
-                    else
-                    {
+                        _effect = null;
+                        _effect = new FxaaPostProcessingEffect(_gd, _device);
+                        break;
+                    case EffectType.None:
                         _effect?.Dispose();
-                        smaa = new SmaaPostProcessingEffect(_gd, _device);
-                        smaa.Quality = 1;
-                        _effect = smaa;
-                    }
-                    break;
-                case EffectType.SmaaHigh:
-                    if (_effect is SmaaPostProcessingEffect smaah)
-                    {
-                        smaah.Quality = 2;
-                    }
-                    else
-                    {
-                        _effect?.Dispose();
-                        smaa = new SmaaPostProcessingEffect(_gd, _device);
-                        smaa.Quality = 2;
-                        _effect = smaa;
-                    }
-                    break;
-                case EffectType.SmaaUltra:
-                    if (_effect is SmaaPostProcessingEffect smaau)
-                    {
-                        smaau.Quality = 3;
-                    }
-                    else
-                    {
-                        _effect?.Dispose();
-                        smaa = new SmaaPostProcessingEffect(_gd, _device);
-                        smaa.Quality = 3;
-                        _effect = smaa;
-                    }
-                    break;
+                        _effect = null;
+                        break;
+                    case EffectType.SmaaLow:
+                        if (_effect is SmaaPostProcessingEffect smaa)
+                        {
+                            smaa.Quality = 0;
+                        }
+                        else
+                        {
+                            _effect?.Dispose();
+                            _effect = new SmaaPostProcessingEffect(_gd, _device, 0);
+                        }
+                        break;
+                    case EffectType.SmaaMedium:
+                        if (_effect is SmaaPostProcessingEffect smaam)
+                        {
+                            smaam.Quality = 1;
+                        }
+                        else
+                        {
+                            _effect?.Dispose();
+                            _effect = new SmaaPostProcessingEffect(_gd, _device, 1);
+                        }
+                        break;
+                    case EffectType.SmaaHigh:
+                        if (_effect is SmaaPostProcessingEffect smaah)
+                        {
+                            smaah.Quality = 2;
+                        }
+                        else
+                        {
+                            _effect?.Dispose();
+                            _effect = new SmaaPostProcessingEffect(_gd, _device, 2);
+                        }
+                        break;
+                    case EffectType.SmaaUltra:
+                        if (_effect is SmaaPostProcessingEffect smaau)
+                        {
+                            smaau.Quality = 3;
+                        }
+                        else
+                        {
+                            _effect?.Dispose();
+                            _effect = new SmaaPostProcessingEffect(_gd, _device, 3);
+                        }
+                        break;
+                }
             }
+
+            if (_scaler != null)
+            {
+                _scaler.Effect = _effect;
+            }
+
+            if (_changeScaler)
+            {
+                _changeScaler = false;
+
+                switch (_currentScaler)
+                {
+                    case PostProcessingScalerType.None:
+                        _scaler?.Dispose();
+                        _scaler = null;
+                        break;
+                    case PostProcessingScalerType.Fsr:
+                        if (!(_scaler is FsrUpscaler))
+                        {
+                            _scaler?.Dispose();
+                            _scaler = new FsrUpscaler(_gd, _device, _effect);
+                        }
+
+                        _scaler.Scale = _upscalerScale;
+                        break;
+                }
+            }
+        }
+
+        public override void SetUpscalerScale(float scale)
+        {
+            _upscalerScale = scale;
+
+            _changeScaler = true;
         }
 
         private unsafe void Transition(
@@ -463,6 +519,7 @@ namespace Ryujinx.Graphics.Vulkan
                 }
 
                 _effect?.Dispose();
+                _scaler?.Dispose();
             }
         }
 
