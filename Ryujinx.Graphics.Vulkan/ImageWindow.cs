@@ -32,13 +32,14 @@ namespace Ryujinx.Graphics.Vulkan
         private int _height = SurfaceHeight;
         private bool _recreateImages;
         private int _nextImage;
-        private IPostProcessingEffect _effect;
+        private IPostProcessingEffect _antiAliasing;
         private IScaler _scaler;
-        private EffectType _currentEffect;
+        private bool _isLinear;
+        private AntiAliasing _currentEffect;
         private bool _changeEffect;
-        private float _upscalerScale;
+        private float _upscalerLevel;
         private bool _changeScaler;
-        private PostProcessingScalerType _currentScaler;
+        private UpscaleType _currentScaler;
 
         public unsafe ImageWindow(VulkanRenderer gd, PhysicalDevice physicalDevice, Device device)
         {
@@ -182,23 +183,24 @@ namespace Ryujinx.Graphics.Vulkan
 
             UpdateEffect();
 
+            if (_antiAliasing != null)
+            {
+                view = _antiAliasing?.Run(view, cbs, _width, _height);
+            }
+
             if(_scaler != null)
             {
-                view = _scaler.Run(view, cbs);
+                view = _scaler.Run(view, cbs, _width, _height);
 
                 crop = new ImageCrop(crop.Left,
-                                     (int)(crop.Right * _scaler.Scale),
+                                     (int)(crop.Right * _scaler.Level),
                                      crop.Top,
-                                     (int)(crop.Bottom * _scaler.Scale),
+                                     (int)(crop.Bottom * _scaler.Level),
                                      crop.FlipX,
                                      crop.FlipY,
                                      crop.IsStretched,
                                      crop.AspectRatioX,
                                      crop.AspectRatioY);
-            }
-            else if (_effect != null)
-            {
-                view = _effect?.Run(view, cbs);
             }
 
             int srcX0, srcX1, srcY0, srcY1;
@@ -236,7 +238,7 @@ namespace Ryujinx.Graphics.Vulkan
 
             if (ScreenCaptureRequested)
             {
-                if(_effect != null)
+                if(_antiAliasing != null)
                 {
                     _gd.CommandBufferPool.Return(
                         cbs,
@@ -278,7 +280,7 @@ namespace Ryujinx.Graphics.Vulkan
                 Format,
                 new Extents2D(srcX0, srcY0, srcX1, srcY1),
                 new Extents2D(dstX0, dstY1, dstX1, dstY0),
-                true,
+                _isLinear,
                 true);
 
             Transition(
@@ -321,9 +323,9 @@ namespace Ryujinx.Graphics.Vulkan
             _nextImage = (_nextImage + 1) % ImageCount;
         }
 
-        public override void ApplyEffect(EffectType effect)
+        public override void ApplyEffect(AntiAliasing effect)
         {
-            if (_currentEffect == effect && _effect != null)
+            if (_currentEffect == effect && _antiAliasing != null)
             {
                 _currentEffect = effect;
                 return;
@@ -334,10 +336,10 @@ namespace Ryujinx.Graphics.Vulkan
             _changeEffect = true;
         }
 
-        public override void ApplyScaler(PostProcessingScalerType scalerType)
+        public override void ApplyScaler(UpscaleType scalerType)
         {
 
-            if (_currentScaler == scalerType && _effect != null)
+            if (_currentScaler == scalerType && _antiAliasing != null)
             {
                 _currentScaler = scalerType;
                 return;
@@ -356,65 +358,60 @@ namespace Ryujinx.Graphics.Vulkan
 
                 switch (_currentEffect)
                 {
-                    case EffectType.Fxaa:
-                        _effect?.Dispose();
-                        _effect = null;
-                        _effect = new FxaaPostProcessingEffect(_gd, _device);
+                    case AntiAliasing.Fxaa:
+                        _antiAliasing?.Dispose();
+                        _antiAliasing = null;
+                        _antiAliasing = new FxaaPostProcessingEffect(_gd, _device);
                         break;
-                    case EffectType.None:
-                        _effect?.Dispose();
-                        _effect = null;
+                    case AntiAliasing.None:
+                        _antiAliasing?.Dispose();
+                        _antiAliasing = null;
                         break;
-                    case EffectType.SmaaLow:
-                        if (_effect is SmaaPostProcessingEffect smaa)
+                    case AntiAliasing.SmaaLow:
+                        if (_antiAliasing is SmaaPostProcessingEffect smaa)
                         {
                             smaa.Quality = 0;
                         }
                         else
                         {
-                            _effect?.Dispose();
-                            _effect = new SmaaPostProcessingEffect(_gd, _device, 0);
+                            _antiAliasing?.Dispose();
+                            _antiAliasing = new SmaaPostProcessingEffect(_gd, _device, 0);
                         }
                         break;
-                    case EffectType.SmaaMedium:
-                        if (_effect is SmaaPostProcessingEffect smaam)
+                    case AntiAliasing.SmaaMedium:
+                        if (_antiAliasing is SmaaPostProcessingEffect smaam)
                         {
                             smaam.Quality = 1;
                         }
                         else
                         {
-                            _effect?.Dispose();
-                            _effect = new SmaaPostProcessingEffect(_gd, _device, 1);
+                            _antiAliasing?.Dispose();
+                            _antiAliasing = new SmaaPostProcessingEffect(_gd, _device, 1);
                         }
                         break;
-                    case EffectType.SmaaHigh:
-                        if (_effect is SmaaPostProcessingEffect smaah)
+                    case AntiAliasing.SmaaHigh:
+                        if (_antiAliasing is SmaaPostProcessingEffect smaah)
                         {
                             smaah.Quality = 2;
                         }
                         else
                         {
-                            _effect?.Dispose();
-                            _effect = new SmaaPostProcessingEffect(_gd, _device, 2);
+                            _antiAliasing?.Dispose();
+                            _antiAliasing = new SmaaPostProcessingEffect(_gd, _device, 2);
                         }
                         break;
-                    case EffectType.SmaaUltra:
-                        if (_effect is SmaaPostProcessingEffect smaau)
+                    case AntiAliasing.SmaaUltra:
+                        if (_antiAliasing is SmaaPostProcessingEffect smaau)
                         {
                             smaau.Quality = 3;
                         }
                         else
                         {
-                            _effect?.Dispose();
-                            _effect = new SmaaPostProcessingEffect(_gd, _device, 3);
+                            _antiAliasing?.Dispose();
+                            _antiAliasing = new SmaaPostProcessingEffect(_gd, _device, 3);
                         }
                         break;
                 }
-            }
-
-            if (_scaler != null)
-            {
-                _scaler.Effect = _effect;
             }
 
             if (_changeScaler)
@@ -423,26 +420,28 @@ namespace Ryujinx.Graphics.Vulkan
 
                 switch (_currentScaler)
                 {
-                    case PostProcessingScalerType.None:
+                    case UpscaleType.Bilinear:
+                    case UpscaleType.Nearest:
                         _scaler?.Dispose();
                         _scaler = null;
+                        _isLinear = _currentScaler == UpscaleType.Bilinear;
                         break;
-                    case PostProcessingScalerType.Fsr:
+                    case UpscaleType.Fsr:
                         if (!(_scaler is FsrUpscaler))
                         {
                             _scaler?.Dispose();
-                            _scaler = new FsrUpscaler(_gd, _device, _effect);
+                            _scaler = new FsrUpscaler(_gd, _device);
                         }
 
-                        _scaler.Scale = _upscalerScale;
+                        _scaler.Level = _upscalerLevel;
                         break;
                 }
             }
         }
 
-        public override void SetUpscalerScale(float scale)
+        public override void SetUpscalerLevel(float level)
         {
-            _upscalerScale = scale;
+            _upscalerLevel = level;
 
             _changeScaler = true;
         }
@@ -518,7 +517,7 @@ namespace Ryujinx.Graphics.Vulkan
                     }
                 }
 
-                _effect?.Dispose();
+                _antiAliasing?.Dispose();
                 _scaler?.Dispose();
             }
         }

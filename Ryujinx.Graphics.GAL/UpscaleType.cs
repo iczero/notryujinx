@@ -1,9 +1,9 @@
-namespace Ryujinx.Common.Configuration
+namespace Ryujinx.Graphics.GAL
 {
     public enum UpscaleType
     {
         Bilinear,
         Nearest,
-        Fsr,
+        Fsr
     }
 }

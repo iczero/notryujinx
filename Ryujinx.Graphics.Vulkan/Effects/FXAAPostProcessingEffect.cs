@@ -51,7 +51,7 @@ namespace Ryujinx.Graphics.Vulkan.Effects
             });
         }
 
-        public TextureView Run(TextureView view, CommandBufferScoped cbs)
+        public TextureView Run(TextureView view, CommandBufferScoped cbs, int width, int height)
         {
             if (_texture == null || _texture.Width != view.Width || _texture.Height != view.Height)
             {

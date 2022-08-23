@@ -4,9 +4,8 @@ layout (local_size_x = 64) in;
 layout(rgba8, binding = 0, location=0) uniform image2D imgOutput;
 layout( location=1 ) uniform vec2 invResolution; 
 layout( location=2 ) uniform vec2 outvResolution; 
-layout( location=3 ) uniform sampler2D Source;
-
-#define FSR_SHARPENING  0.3
+layout( location=3 ) uniform sampler2D source;
+layout( location=4 ) uniform float sharpening;
 
 #define A_GPU 1
 #define A_GLSL 1
@@ -15,7 +14,7 @@ layout( location=3 ) uniform sampler2D Source;
 #define FSR_RCAS_F 1
 AU4 con0;
 
-AF4 FsrRcasLoadF(ASU2 p) { return AF4(texelFetch(Source, p, 0)); }
+AF4 FsrRcasLoadF(ASU2 p) { return AF4(texelFetch(source, p, 0)); }
 void FsrRcasInputF(inout AF1 r, inout AF1 g, inout AF1 b) {}
 
 #include "ffx_fsr1.h"
@@ -28,7 +27,7 @@ void CurrFilter(AU2 pos)
 }
 
 void main() {
-    FsrRcasCon(con0, FSR_SHARPENING);    
+    FsrRcasCon(con0, sharpening);    
     
 	AU2 gxy = ARmp8x8(gl_LocalInvocationID.x) + AU2(gl_WorkGroupID.x << 4u, gl_WorkGroupID.y << 4u);
     CurrFilter(gxy);

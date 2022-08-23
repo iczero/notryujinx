@@ -15,13 +15,14 @@ namespace Ryujinx.Graphics.OpenGL.Effects
         private int _outputResolutionUniform;
         private int _inputUniform;
         private int _outputUniform;
+        private int _sharpeningUniform;
         private int _scalingShaderProgram;
         private TextureStorage _textureStorage;
         private int _sharpeningShaderProgram;
         private int _frameCount = 0;
         private float _scale = 1;
 
-        public float Scale
+        public float Level
         {
             get => _scale; set
             {
@@ -29,13 +30,10 @@ namespace Ryujinx.Graphics.OpenGL.Effects
             }
         }
 
-        public IPostProcessingEffect Effect { get; set; }
-
         public FsrUpscaler(OpenGLRenderer renderer, IPostProcessingEffect filter)
         {
             Initialize();
             _renderer = renderer;
-            Effect = filter;
         }
 
         public void Dispose()
@@ -64,7 +62,6 @@ namespace Ryujinx.Graphics.OpenGL.Effects
             GL.ShaderSource(shader, scalingShader);
             GL.CompileShader(shader);
             GL.GetShader(shader, ShaderParameter.CompileStatus, out var status);
-            File.WriteAllText("/home/nhv3/personal/Ryujinx/Ryujinx.Ava/bin/Debug/shader.glsl", scalingShader);
             if (status == 0)
             {
                 var log = GL.GetShaderInfoLog(shader);
@@ -111,6 +108,7 @@ namespace Ryujinx.Graphics.OpenGL.Effects
             _outputResolutionUniform = GL.GetUniformLocation(_scalingShaderProgram, "outvResolution");
             _inputUniform = GL.GetUniformLocation(_scalingShaderProgram, "Source");
             _outputUniform = GL.GetUniformLocation(_scalingShaderProgram, "imgOutput");
+            _sharpeningUniform = GL.GetUniformLocation(_sharpeningShaderProgram, "sharpening");
         }
 
         public TextureView Run(TextureView view, int width, int height)
@@ -119,20 +117,12 @@ namespace Ryujinx.Graphics.OpenGL.Effects
 
             var input = view;
 
-            if (Effect != null)
-            {
-                input = Effect.Run(input, width, height);
-            }
-
-            var upscaledWidth = (int)(input.Width * Scale);
-            var upscaledHeight = (int)(input.Height * Scale);
-
-            if (_textureStorage == null || _textureStorage.Info.Width != upscaledWidth || _textureStorage.Info.Height != upscaledHeight)
+            if (_textureStorage == null || _textureStorage.Info.Width != width || _textureStorage.Info.Height != height)
             {
                 _textureStorage?.Dispose();
                 var originalInfo = input.Info;
-                var info = new TextureCreateInfo(upscaledWidth,
-                    upscaledHeight,
+                var info = new TextureCreateInfo(width,
+                    height,
                     originalInfo.Depth,
                     originalInfo.Levels,
                     originalInfo.Samples,
@@ -156,8 +146,8 @@ namespace Ryujinx.Graphics.OpenGL.Effects
             GL.BindImageTexture(0, textureView.Handle, 0, false, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba8);
 
 	        int threadGroupWorkRegionDim = 16;
-            int dispatchX = (upscaledWidth + (threadGroupWorkRegionDim - 1)) / threadGroupWorkRegionDim;
-            int dispatchY = (upscaledHeight + (threadGroupWorkRegionDim - 1)) / threadGroupWorkRegionDim;
+            int dispatchX = (width + (threadGroupWorkRegionDim - 1)) / threadGroupWorkRegionDim;
+            int dispatchY = (height + (threadGroupWorkRegionDim - 1)) / threadGroupWorkRegionDim;
 
             // Scaling pass
             GL.UseProgram(_scalingShaderProgram);
@@ -166,7 +156,7 @@ namespace Ryujinx.Graphics.OpenGL.Effects
             GL.Uniform1(_inputUniform, 0);
             GL.Uniform1(_outputUniform, 0);
             GL.Uniform2(_inputResolutionUniform, (float)input.Width, input.Height);
-            GL.Uniform2(_outputResolutionUniform, (float)upscaledWidth, upscaledHeight);
+            GL.Uniform2(_outputResolutionUniform, (float)width, height);
             GL.DispatchCompute(dispatchX, dispatchY, 1);
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
@@ -177,8 +167,9 @@ namespace Ryujinx.Graphics.OpenGL.Effects
             GL.BindTexture(TextureTarget.Texture2D, textureView.Handle);
             GL.Uniform1(_inputUniform, 0);
             GL.Uniform1(_outputUniform, 0);
-            GL.Uniform2(_inputResolutionUniform, (float)upscaledWidth, upscaledHeight);
-            GL.Uniform2(_outputResolutionUniform, (float)upscaledWidth, upscaledHeight);
+            GL.Uniform1(_sharpeningUniform, Level);
+            GL.Uniform2(_inputResolutionUniform, (float)width, height);
+            GL.Uniform2(_outputResolutionUniform, (float)width, height);
             GL.DispatchCompute(dispatchX, dispatchY, 1);
 
             GL.UseProgram(previousProgram);

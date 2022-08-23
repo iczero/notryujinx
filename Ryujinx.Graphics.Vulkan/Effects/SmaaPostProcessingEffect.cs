@@ -187,7 +187,7 @@ namespace Ryujinx.Graphics.Vulkan.Effects
             _searchTexture.SetData(SearchTexBytes);
         }
 
-        public TextureView Run(TextureView view, CommandBufferScoped cbs)
+        public TextureView Run(TextureView view, CommandBufferScoped cbs, int width, int height)
         {
             if (_recreatePipelines || _outputTexture == null || _outputTexture.Info.Width != view.Width || _outputTexture.Info.Height != view.Height)
             {

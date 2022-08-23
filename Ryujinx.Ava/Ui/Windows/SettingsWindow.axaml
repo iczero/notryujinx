@@ -25,7 +25,9 @@
     <Window.Resources>
         <controls:KeyValueConverter x:Key="Key" />
     </Window.Resources>
-    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinWidth="600">
+    <Grid HorizontalAlignment="Stretch"
+          VerticalAlignment="Stretch"
+          MinWidth="600">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition />
@@ -36,7 +38,9 @@
             Grid.Row="1"
             IsVisible="False"
             KeyboardNavigation.IsTabStop="False"/>
-        <Grid Name="Pages" IsVisible="False" Grid.Row="2">
+        <Grid Name="Pages"
+              IsVisible="False"
+              Grid.Row="2">
             <ScrollViewer Name="UiPage"
                           Margin="0,0,10,0"
                           HorizontalAlignment="Stretch"
@@ -49,8 +53,10 @@
                         HorizontalAlignment="Stretch"
                         Orientation="Vertical"
                         Spacing="10">
-                        <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGeneralGeneral}" />
-                        <StackPanel Margin="10,0,0,0" Orientation="Vertical">
+                        <TextBlock FontWeight="Bold"
+                                   Text="{locale:Locale SettingsTabGeneralGeneral}" />
+                        <StackPanel Margin="10,0,0,0"
+                                    Orientation="Vertical">
                             <CheckBox IsChecked="{Binding EnableDiscordIntegration}">
                                 <TextBlock VerticalAlignment="Center"
                                            ToolTip.Tip="{locale:Locale ToggleDiscordTooltip}"
@@ -67,7 +73,8 @@
                             </CheckBox>
                         </StackPanel>
                         <Separator Height="1" />
-                        <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGeneralGameDirectories}" />
+                        <TextBlock FontWeight="Bold"
+                                   Text="{locale:Locale SettingsTabGeneralGameDirectories}" />
                         <StackPanel
                             Margin="10,0,0,0"
                             HorizontalAlignment="Stretch"
@@ -111,7 +118,8 @@
                             </Grid>
                         </StackPanel>
                         <Separator Height="1" />
-                        <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGeneralTheme}" />
+                        <TextBlock FontWeight="Bold"
+                                   Text="{locale:Locale SettingsTabGeneralTheme}" />
                         <Grid Margin="10,0,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -170,7 +178,8 @@
                           HorizontalScrollBarVisibility="Disabled"
                           VerticalScrollBarVisibility="Auto">
                 <Border>
-                    <StackPanel Margin="4" Orientation="Vertical">
+                    <StackPanel Margin="4"
+                                Orientation="Vertical">
                         <StackPanel Orientation="Horizontal">
                             <CheckBox Margin="5,0"
                                       ToolTip.Tip="{locale:Locale DockModeToggleTooltip}"
@@ -189,7 +198,9 @@
                                 <TextBlock Text="{locale:Locale SettingsTabInputDirectMouseAccess}" />
                             </CheckBox>
                         </StackPanel>
-                        <window:ControllerSettingsWindow Name="ControllerSettings" Margin="0,0,0,0" MinHeight="600" />
+                        <window:ControllerSettingsWindow Name="ControllerSettings"
+                                                         Margin="0,0,0,0"
+                                                         MinHeight="600" />
                     </StackPanel>
                 </Border>
             </ScrollViewer>
@@ -199,59 +210,104 @@
                           HorizontalScrollBarVisibility="Disabled"
                           VerticalScrollBarVisibility="Auto">
                 <Border>
-                    <StackPanel Margin="10,5" Orientation="Vertical" Spacing="10">
-                        <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabHotkeysHotkeys}" />
-                        <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
-                            <TextBlock VerticalAlignment="Center" Text="{locale:Locale SettingsTabHotkeysToggleVsyncHotkey}" Width="230" />
-                            <ToggleButton Width="90" Height="27" Checked="Button_Checked" Unchecked="Button_Unchecked">
+                    <StackPanel Margin="10,5"
+                                Orientation="Vertical"
+                                Spacing="10">
+                        <TextBlock FontWeight="Bold"
+                                   Text="{locale:Locale SettingsTabHotkeysHotkeys}" />
+                        <StackPanel Margin="10,0,0,0"
+                                    Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="{locale:Locale SettingsTabHotkeysToggleVsyncHotkey}"
+                                       Width="230" />
+                            <ToggleButton Width="90"
+                                          Height="27"
+                                          Checked="Button_Checked"
+                                          Unchecked="Button_Unchecked">
                                 <TextBlock
                                     Text="{Binding KeyboardHotkeys.ToggleVsync, Mode=TwoWay, Converter={StaticResource Key}}"
                                     TextAlignment="Center" />
                             </ToggleButton>
                         </StackPanel>
-                        <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
-                            <TextBlock VerticalAlignment="Center" Text="{locale:Locale SettingsTabHotkeysScreenshotHotkey}" Width="230" />
-                            <ToggleButton Width="90" Height="27" Checked="Button_Checked" Unchecked="Button_Unchecked">
+                        <StackPanel Margin="10,0,0,0"
+                                    Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="{locale:Locale SettingsTabHotkeysScreenshotHotkey}"
+                                       Width="230" />
+                            <ToggleButton Width="90"
+                                          Height="27"
+                                          Checked="Button_Checked"
+                                          Unchecked="Button_Unchecked">
                                 <TextBlock
                                     Text="{Binding KeyboardHotkeys.Screenshot, Mode=TwoWay, Converter={StaticResource Key}}"
                                     TextAlignment="Center" />
                             </ToggleButton>
                         </StackPanel>
-                        <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
-                            <TextBlock VerticalAlignment="Center" Text="{locale:Locale SettingsTabHotkeysShowUiHotkey}" Width="230" />
-                            <ToggleButton Width="90" Height="27" Checked="Button_Checked" Unchecked="Button_Unchecked">
+                        <StackPanel Margin="10,0,0,0"
+                                    Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="{locale:Locale SettingsTabHotkeysShowUiHotkey}"
+                                       Width="230" />
+                            <ToggleButton Width="90"
+                                          Height="27"
+                                          Checked="Button_Checked"
+                                          Unchecked="Button_Unchecked">
                                 <TextBlock
                                     Text="{Binding KeyboardHotkeys.ShowUi, Mode=TwoWay, Converter={StaticResource Key}}"
                                     TextAlignment="Center" />
                             </ToggleButton>
                         </StackPanel>
-                        <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
-                            <TextBlock VerticalAlignment="Center" Text="{locale:Locale SettingsTabHotkeysPauseHotkey}" Width="230" />
-                            <ToggleButton Width="90" Height="27" Checked="Button_Checked" Unchecked="Button_Unchecked">
+                        <StackPanel Margin="10,0,0,0"
+                                    Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="{locale:Locale SettingsTabHotkeysPauseHotkey}"
+                                       Width="230" />
+                            <ToggleButton Width="90"
+                                          Height="27"
+                                          Checked="Button_Checked"
+                                          Unchecked="Button_Unchecked">
                                 <TextBlock
                                     Text="{Binding KeyboardHotkeys.Pause, Mode=TwoWay, Converter={StaticResource Key}}"
                                     TextAlignment="Center" />
                             </ToggleButton>
                         </StackPanel>
-                        <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
-                            <TextBlock VerticalAlignment="Center" Text="{locale:Locale SettingsTabHotkeysToggleMuteHotkey}" Width="230" />
-                            <ToggleButton Width="90" Height="27" Checked="Button_Checked" Unchecked="Button_Unchecked">
+                        <StackPanel Margin="10,0,0,0"
+                                    Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="{locale:Locale SettingsTabHotkeysToggleMuteHotkey}"
+                                       Width="230" />
+                            <ToggleButton Width="90"
+                                          Height="27"
+                                          Checked="Button_Checked"
+                                          Unchecked="Button_Unchecked">
                                 <TextBlock
                                     Text="{Binding KeyboardHotkeys.ToggleMute, Mode=TwoWay, Converter={StaticResource Key}}"
                                     TextAlignment="Center" />
                             </ToggleButton>
                         </StackPanel>
-                        <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
-                            <TextBlock VerticalAlignment="Center" Text="{locale:Locale SettingsTabHotkeysResScaleUpHotkey}" Width="230" />
-                            <ToggleButton Width="90" Height="27" Checked="Button_Checked" Unchecked="Button_Unchecked">
+                        <StackPanel Margin="10,0,0,0"
+                                    Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="{locale:Locale SettingsTabHotkeysResScaleUpHotkey}"
+                                       Width="230" />
+                            <ToggleButton Width="90"
+                                          Height="27"
+                                          Checked="Button_Checked"
+                                          Unchecked="Button_Unchecked">
                                 <TextBlock
                                     Text="{Binding KeyboardHotkeys.ResScaleUp, Mode=TwoWay, Converter={StaticResource Key}}"
                                     TextAlignment="Center" />
                             </ToggleButton>
                         </StackPanel>
-                        <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
-                            <TextBlock VerticalAlignment="Center" Text="{locale:Locale SettingsTabHotkeysResScaleDownHotkey}" Width="230" />
-                            <ToggleButton Width="90" Height="27" Checked="Button_Checked" Unchecked="Button_Unchecked">
+                        <StackPanel Margin="10,0,0,0"
+                                    Orientation="Horizontal">
+                            <TextBlock VerticalAlignment="Center"
+                                       Text="{locale:Locale SettingsTabHotkeysResScaleDownHotkey}"
+                                       Width="230" />
+                            <ToggleButton Width="90"
+                                          Height="27"
+                                          Checked="Button_Checked"
+                                          Unchecked="Button_Unchecked">
                                 <TextBlock
                                     Text="{Binding KeyboardHotkeys.ResScaleDown, Mode=TwoWay, Converter={StaticResource Key}}"
                                     TextAlignment="Center" />
@@ -271,9 +327,12 @@
                         HorizontalAlignment="Stretch"
                         Orientation="Vertical"
                         Spacing="10">
-                        <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabSystemCore}" />
-                        <StackPanel Margin="10,0,0,0" Orientation="Vertical">
-                            <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
+                        <TextBlock FontWeight="Bold"
+                                   Text="{locale:Locale SettingsTabSystemCore}" />
+                        <StackPanel Margin="10,0,0,0"
+                                    Orientation="Vertical">
+                            <StackPanel Margin="0,0,0,10"
+                                        Orientation="Horizontal">
                                 <TextBlock VerticalAlignment="Center"
                                            Text="{locale:Locale SettingsTabSystemSystemRegion}"
                                            Width="250" />
@@ -304,7 +363,8 @@
                                     </ComboBoxItem>
                                 </ComboBox>
                             </StackPanel>
-                            <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
+                            <StackPanel Margin="0,0,0,10"
+                                        Orientation="Horizontal">
                                 <TextBlock VerticalAlignment="Center"
                                            Text="{locale:Locale SettingsTabSystemSystemLanguage}"
                                            ToolTip.Tip="{locale:Locale LanguageTooltip}"
@@ -376,7 +436,8 @@
                                     </ComboBoxItem>
                                 </ComboBox>
                             </StackPanel>
-                            <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
+                            <StackPanel Margin="0,0,0,10"
+                                        Orientation="Horizontal">
                                 <TextBlock VerticalAlignment="Center"
                                            Text="{locale:Locale SettingsTabSystemSystemTimeZone}"
                                            ToolTip.Tip="{locale:Locale TimezoneTooltip}"
@@ -392,16 +453,19 @@
                                     ValueMemberBinding="{ReflectionBinding TzMultiBinding}"
                                     ToolTip.Tip="{locale:Locale TimezoneTooltip}" />
                             </StackPanel>
-                            <StackPanel Margin="0,0,0,10" Orientation="Horizontal">
+                            <StackPanel Margin="0,0,0,10"
+                                        Orientation="Horizontal">
                                 <TextBlock VerticalAlignment="Center"
                                            Text="{locale:Locale SettingsTabSystemSystemTime}"
                                            ToolTip.Tip="{locale:Locale TimeTooltip}"
                                            Width="250"/>
-                                <DatePicker VerticalAlignment="Center" SelectedDate="{Binding DateOffset}"
+                                <DatePicker VerticalAlignment="Center"
+                                            SelectedDate="{Binding DateOffset}"
                                             ToolTip.Tip="{locale:Locale TimeTooltip}"
                                             Width="350" />
                             </StackPanel>
-                            <StackPanel Margin="250,0,0,10" Orientation="Horizontal">
+                            <StackPanel Margin="250,0,0,10"
+                                        Orientation="Horizontal">
                                 <TimePicker
                                     VerticalAlignment="Center"
                                     ClockIdentifier="24HourClock"
@@ -420,7 +484,8 @@
                         </StackPanel>
                         <Separator Height="1" />
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabSystemHacks}" />
+                            <TextBlock FontWeight="Bold"
+                                       Text="{locale:Locale SettingsTabSystemHacks}" />
                             <TextBlock Text="{locale:Locale SettingsTabSystemHacksNote}" />
                         </StackPanel>
                         <StackPanel
@@ -451,7 +516,8 @@
                         HorizontalAlignment="Stretch"
                         Orientation="Vertical"
                         Spacing="10">
-                        <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabCpuCache}" />
+                        <TextBlock FontWeight="Bold"
+                                   Text="{locale:Locale SettingsTabCpuCache}" />
                         <StackPanel
                             Margin="10,0,0,0"
                             HorizontalAlignment="Stretch"
@@ -462,7 +528,8 @@
                             </CheckBox>
                         </StackPanel>
                         <Separator Height="1" />
-                        <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabCpuMemory}" />
+                        <TextBlock FontWeight="Bold"
+                                   Text="{locale:Locale SettingsTabCpuMemory}" />
                         <StackPanel
                             Margin="10,0,0,0"
                             HorizontalAlignment="Stretch"
@@ -508,45 +575,50 @@
                         HorizontalAlignment="Stretch"
                         Orientation="Vertical"
                         Spacing="10">
-                        <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGraphicsAPI}" />
-                        <StackPanel Margin="10,0,0,0" Orientation="Vertical" Spacing="10">
+                        <TextBlock FontWeight="Bold"
+                                   Text="{locale:Locale SettingsTabGraphicsAPI}" />
+                        <StackPanel Margin="10,0,0,0"
+                                    Orientation="Vertical"
+                                    Spacing="10">
                             <StackPanel Orientation="Horizontal">
-                                    <TextBlock VerticalAlignment="Center"
-                                            ToolTip.Tip="{locale:Locale SettingsTabGraphicsBackendTooltip}"
-                                            Text="{locale:Locale SettingsTabGraphicsBackend}"
-                                            Width="250" />
-                                    <ComboBox Width="350"
-                                            HorizontalContentAlignment="Left"
-                                            ToolTip.Tip="{locale:Locale SettingsTabGraphicsBackendTooltip}"
-                                            SelectedIndex="{Binding GraphicsBackendIndex}">
-                                        <ComboBoxItem IsVisible="{Binding IsVulkanAvailable}">
-                                            <TextBlock Text="Vulkan" />
-                                        </ComboBoxItem>
-                                        <ComboBoxItem>
-                                            <TextBlock Text="OpenGL" />
-                                        </ComboBoxItem>
-                                    </ComboBox>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal" IsVisible="{Binding IsVulkanSelected}">
-                                    <TextBlock VerticalAlignment="Center"
-                                            ToolTip.Tip="{locale:Locale SettingsTabGraphicsPreferredGpuTooltip}"
-                                            Text="{locale:Locale SettingsTabGraphicsPreferredGpu}"
-                                            Width="250" />
-                                    <ComboBox Width="350"
-                                            HorizontalContentAlignment="Left"
-                                            ToolTip.Tip="{locale:Locale SettingsTabGraphicsPreferredGpuTooltip}"
-                                            SelectedIndex="{Binding PreferredGpuIndex}"
-                                            Items="{Binding AvailableGpus}"/>
-                                </StackPanel>
-                                <Separator Height="1" />
-                            <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGraphicsFeatures}" />
+                                <TextBlock VerticalAlignment="Center"
+                                           ToolTip.Tip="{locale:Locale SettingsTabGraphicsBackendTooltip}"
+                                           Text="{locale:Locale SettingsTabGraphicsBackend}"
+                                           Width="250" />
+                                <ComboBox Width="350"
+                                          HorizontalContentAlignment="Left"
+                                          ToolTip.Tip="{locale:Locale SettingsTabGraphicsBackendTooltip}"
+                                          SelectedIndex="{Binding GraphicsBackendIndex}">
+                                    <ComboBoxItem IsVisible="{Binding IsVulkanAvailable}">
+                                        <TextBlock Text="Vulkan" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <TextBlock Text="OpenGL" />
+                                    </ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal"
+                                        IsVisible="{Binding IsVulkanSelected}">
+                                <TextBlock VerticalAlignment="Center"
+                                           ToolTip.Tip="{locale:Locale SettingsTabGraphicsPreferredGpuTooltip}"
+                                           Text="{locale:Locale SettingsTabGraphicsPreferredGpu}"
+                                           Width="250" />
+                                <ComboBox Width="350"
+                                          HorizontalContentAlignment="Left"
+                                          ToolTip.Tip="{locale:Locale SettingsTabGraphicsPreferredGpuTooltip}"
+                                          SelectedIndex="{Binding PreferredGpuIndex}"
+                                          Items="{Binding AvailableGpus}"/>
+                            </StackPanel>
+                            <Separator Height="1" />
+                            <TextBlock FontWeight="Bold"
+                                       Text="{locale:Locale SettingsTabGraphicsFeatures}" />
                             <StackPanel Orientation="Vertical">
                                 <CheckBox IsChecked="{Binding EnableShaderCache}"
-                                    ToolTip.Tip="{locale:Locale ShaderCacheToggleTooltip}">
+                                          ToolTip.Tip="{locale:Locale ShaderCacheToggleTooltip}">
                                     <TextBlock Text="{locale:Locale SettingsTabGraphicsEnableShaderCache}" />
                                 </CheckBox>
                                 <CheckBox IsChecked="{Binding EnableTextureRecompression}"
-                                    ToolTip.Tip="{locale:Locale SettingsEnableTextureRecompressionTooltip}">
+                                          ToolTip.Tip="{locale:Locale SettingsEnableTextureRecompressionTooltip}">
                                     <TextBlock Text="{locale:Locale SettingsEnableTextureRecompression}" />
                                 </CheckBox>
                             </StackPanel>
@@ -679,13 +751,13 @@
                             Spacing="10">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock VerticalAlignment="Center"
-                                           ToolTip.Tip="{locale:Locale GraphicsPostProcessingTooltip}"
-                                           Text="{locale:Locale GraphicsPostProcessingLabel}"
+                                           ToolTip.Tip="{locale:Locale GraphicsAATooltip}"
+                                           Text="{locale:Locale GraphicsAALabel}"
                                            Width="250" />
                                 <ComboBox Width="350"
                                           HorizontalContentAlignment="Left"
-                                          ToolTip.Tip="{locale:Locale GraphicsPostProcessingTooltip}"
-                                          SelectedIndex="{Binding PostProcessingEffect}">
+                                          ToolTip.Tip="{locale:Locale GraphicsAATooltip}"
+                                          SelectedIndex="{Binding AntiAliasingEffect}">
                                     <ComboBoxItem>
                                         <TextBlock Text="{locale:Locale SettingsTabLoggingOpenglLogLevelNone}" />
                                     </ComboBoxItem>
@@ -722,25 +794,35 @@
                                           ToolTip.Tip="{locale:Locale GraphicsUpscalingTooltip}"
                                           SelectedIndex="{Binding UpscaleType}">
                                     <ComboBoxItem>
-                                        <TextBlock Text="{locale:Locale SettingsTabLoggingOpenglLogLevelNone}" />
+                                        <TextBlock Text="Bilinear" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <TextBlock Text="Nearest" />
                                     </ComboBoxItem>
                                     <ComboBoxItem>
                                         <TextBlock Text="FSR" />
                                     </ComboBoxItem>
                                 </ComboBox>
-                                <ProgressBar Value="{Binding UpscaleLevel}"
-                                              ToolTip.Tip="{locale:Locale GraphicsUpscalingLevelTooltip}"
-                                              MinWidth="150"
-                                              Margin="10,0,0,0"
-                                              IsVisible="{Binding IsUpscalingActive}"
-                                              SmallChange="1"
-                                              LargeChange="0.1"
-                                              Minimum="0.01"
-                                              Maximum="1.5" />
+                                <Slider Value="{Binding UpscaleLevel}"
+                                        ToolTip.Tip="{locale:Locale GraphicsUpscalingLevelTooltip}"
+                                        MinWidth="150"
+                                        Margin="10,0,0,0"
+                                        IsVisible="{Binding IsUpscalingActive}"
+                                        TickFrequency="0.01"
+                                        IsSnapToTickEnabled="True"
+                                        LargeChange="0.1"
+                                        SmallChange="0.01"
+                                        Minimum="0.01"
+                                        Maximum="1.5" />
+                                <TextBlock Margin="5,0"
+                                           Width="40"
+                                           IsVisible="{Binding IsUpscalingActive}"
+                                           Text="{Binding UpscaleLevelText}"/>
                             </StackPanel>
                         </StackPanel>
                         <Separator Height="1" />
-                        <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabGraphicsDeveloperOptions}" />
+                        <TextBlock FontWeight="Bold"
+                                   Text="{locale:Locale SettingsTabGraphicsDeveloperOptions}" />
                         <StackPanel
                             Margin="10,0,0,0"
                             HorizontalAlignment="Stretch"
@@ -771,8 +853,10 @@
                         HorizontalAlignment="Stretch"
                         Orientation="Vertical"
                         Spacing="10">
-                        <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabAudio}" />
-                        <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
+                        <TextBlock FontWeight="Bold"
+                                   Text="{locale:Locale SettingsTabAudio}" />
+                        <StackPanel Margin="10,0,0,0"
+                                    Orientation="Horizontal">
                             <TextBlock VerticalAlignment="Center"
                                        Text="{locale:Locale SettingsTabSystemAudioBackend}"
                                        ToolTip.Tip="{locale:Locale AudioBackendTooltip}"
@@ -794,22 +878,24 @@
                                 </ComboBoxItem>
                             </ComboBox>
                         </StackPanel>
-                        <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
+                        <StackPanel Margin="10,0,0,0"
+                                    Orientation="Horizontal">
                             <TextBlock VerticalAlignment="Center"
                                        Text="{locale:Locale SettingsTabSystemAudioVolume}"
                                        ToolTip.Tip="{locale:Locale AudioVolumeTooltip}"
                                        Width="250" />
                             <ui:NumberBox Value="{Binding Volume}"
-                                    ToolTip.Tip="{locale:Locale AudioVolumeTooltip}"
-                                    Width="350"
-                                    SmallChange="1"
-                                    LargeChange="10"
-                                    SimpleNumberFormat="F0"
-                                    SpinButtonPlacementMode="Inline"
-                                    Minimum="0"
-                                    Maximum="100" />
+                                          ToolTip.Tip="{locale:Locale AudioVolumeTooltip}"
+                                          Width="350"
+                                          SmallChange="1"
+                                          LargeChange="10"
+                                          SimpleNumberFormat="F0"
+                                          SpinButtonPlacementMode="Inline"
+                                          Minimum="0"
+                                          Maximum="100" />
                         </StackPanel>
-                        <StackPanel Margin="10,0,0,0" Orientation="Horizontal">
+                        <StackPanel Margin="10,0,0,0"
+                                    Orientation="Horizontal">
                             <Slider Value="{Binding Volume}"
                                     Margin="250,0,0,0"
                                     ToolTip.Tip="{locale:Locale AudioVolumeTooltip}"
@@ -836,8 +922,10 @@
                         HorizontalAlignment="Stretch"
                         Orientation="Vertical"
                         Spacing="10">
-                        <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabNetworkConnection}" />
-                        <CheckBox Margin="10,0,0,0" IsChecked="{Binding EnableInternetAccess}">
+                        <TextBlock FontWeight="Bold"
+                                   Text="{locale:Locale SettingsTabNetworkConnection}" />
+                        <CheckBox Margin="10,0,0,0"
+                                  IsChecked="{Binding EnableInternetAccess}">
                             <TextBlock Text="{locale:Locale SettingsTabSystemEnableInternetAccess}"
                                        ToolTip.Tip="{locale:Locale EnableInternetAccessTooltip}" />
                         </CheckBox>
@@ -856,8 +944,10 @@
                         HorizontalAlignment="Stretch"
                         Orientation="Vertical"
                         Spacing="10">
-                        <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabLoggingLogging}" />
-                        <StackPanel Margin="10,0,0,0" Orientation="Vertical">
+                        <TextBlock FontWeight="Bold"
+                                   Text="{locale:Locale SettingsTabLoggingLogging}" />
+                        <StackPanel Margin="10,0,0,0"
+                                    Orientation="Vertical">
                             <CheckBox IsChecked="{Binding EnableFileLog}"
                                       ToolTip.Tip="{locale:Locale FileLogTooltip}">
                                 <TextBlock Text="{locale:Locale SettingsTabLoggingEnableLoggingToFile}" />
@@ -888,7 +978,8 @@
                             </CheckBox>
                         </StackPanel>
                         <Separator Height="1" />
-                        <TextBlock FontWeight="Bold" Text="{locale:Locale SettingsTabLoggingDeveloperOptions}" />
+                        <TextBlock FontWeight="Bold"
+                                   Text="{locale:Locale SettingsTabLoggingDeveloperOptions}" />
                         <StackPanel
                             Margin="10,0,0,0"
                             HorizontalAlignment="Stretch"
@@ -896,18 +987,20 @@
                             Spacing="10">
                             <StackPanel Orientation="Vertical">
                                 <CheckBox IsChecked="{Binding EnableDebug}"
-                                        ToolTip.Tip="{locale:Locale DebugLogTooltip}">
-                                <TextBlock Text="{locale:Locale SettingsTabLoggingEnableDebugLogs}" />
+                                          ToolTip.Tip="{locale:Locale DebugLogTooltip}">
+                                    <TextBlock Text="{locale:Locale SettingsTabLoggingEnableDebugLogs}" />
                                 </CheckBox>
                                 <CheckBox IsChecked="{Binding EnableFsAccessLog}"
-                                        ToolTip.Tip="{locale:Locale FileAccessLogTooltip}">
-                                <TextBlock Text="{locale:Locale SettingsTabLoggingEnableFsAccessLogs}" />
+                                          ToolTip.Tip="{locale:Locale FileAccessLogTooltip}">
+                                    <TextBlock Text="{locale:Locale SettingsTabLoggingEnableFsAccessLogs}" />
                                 </CheckBox>
-                                <StackPanel Margin="0,10,0,0" Orientation="Horizontal" VerticalAlignment="Stretch">
+                                <StackPanel Margin="0,10,0,0"
+                                            Orientation="Horizontal"
+                                            VerticalAlignment="Stretch">
                                     <TextBlock VerticalAlignment="Center"
-                                            ToolTip.Tip="{locale:Locale FSAccessLogModeTooltip}"
-                                            Text="{locale:Locale SettingsTabLoggingFsGlobalAccessLogMode}"
-                                            Width="285" />
+                                               ToolTip.Tip="{locale:Locale FSAccessLogModeTooltip}"
+                                               Text="{locale:Locale SettingsTabLoggingFsGlobalAccessLogMode}"
+                                               Width="285" />
                                     <ui:NumberBox
                                         Maximum="3"
                                         Minimum="0"
@@ -917,15 +1010,16 @@
                                         LargeChange="1"
                                         Value="{Binding FsGlobalAccessLogMode}" />
                                 </StackPanel>
-                                <StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+                                <StackPanel Margin="0,10,0,0"
+                                            Orientation="Horizontal">
                                     <TextBlock VerticalAlignment="Center"
-                                            Text="{locale:Locale SettingsTabLoggingOpenglLogLevel}"
-                                            ToolTip.Tip="{locale:Locale OpenGlLogLevel}"
-                                            Width="285" />
+                                               Text="{locale:Locale SettingsTabLoggingOpenglLogLevel}"
+                                               ToolTip.Tip="{locale:Locale OpenGlLogLevel}"
+                                               Width="285" />
                                     <ComboBox SelectedIndex="{Binding OpenglDebugLevel}"
-                                            Width="150"
-                                            HorizontalContentAlignment="Left"
-                                            ToolTip.Tip="{locale:Locale OpenGlLogLevel}">
+                                              Width="150"
+                                              HorizontalContentAlignment="Left"
+                                              ToolTip.Tip="{locale:Locale OpenGlLogLevel}">
                                         <ComboBoxItem>
                                             <TextBlock Text="{locale:Locale SettingsTabLoggingOpenglLogLevelNone}" />
                                         </ComboBoxItem>
@@ -947,10 +1041,14 @@
                 </Border>
             </ScrollViewer>
         </Grid>
-        <ui:NavigationView Grid.Row="1" IsSettingsVisible="False" Name="NavPanel" IsBackEnabled="False"
+        <ui:NavigationView Grid.Row="1"
+                           IsSettingsVisible="False"
+                           Name="NavPanel"
+                           IsBackEnabled="False"
                            PaneDisplayMode="LeftCompact"
                            Margin="2,10,10,0"
-                           VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                           VerticalAlignment="Stretch"
+                           HorizontalAlignment="Stretch">
             <ui:NavigationView.MenuItems>
                 <ui:NavigationViewItem IsSelected="True"
                                        Content="{locale:Locale SettingsTabGeneral}"
@@ -1000,8 +1098,10 @@
             Spacing="10"
             Orientation="Horizontal"
             HorizontalAlignment="Right">
-            <Button Content="{locale:Locale SettingsButtonSave}" Click="SaveButton_Clicked" />
-            <Button Content="{locale:Locale SettingsButtonClose}" Click="CloseButton_Clicked" />
+            <Button Content="{locale:Locale SettingsButtonSave}"
+                    Click="SaveButton_Clicked" />
+            <Button Content="{locale:Locale SettingsButtonClose}"
+                    Click="CloseButton_Clicked" />
             <Button Content="{locale:Locale SettingsButtonApply}"
                     Click="ApplyButton_Clicked" />
         </StackPanel>

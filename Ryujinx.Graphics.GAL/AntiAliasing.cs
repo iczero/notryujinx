@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ryujinx.Common.Configuration
+namespace Ryujinx.Graphics.GAL
 {
-    public enum PostProcessingEffect
+    public enum AntiAliasing
     {
         None,
         Fxaa,

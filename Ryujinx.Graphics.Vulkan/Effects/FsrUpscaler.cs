@@ -17,26 +17,23 @@ namespace Ryujinx.Graphics.Vulkan.Effects
         private ISampler _samplerLinear;
         private ShaderCollection _scalingProgram;
         private ShaderCollection _sharpeningProgram;
-        private float _scale = 1;
+        private float _sharpeningLevel = 1;
         private Device _device;
         private CommandBufferScoped _currentCommandBuffer;
 
-        public float Scale
+        public float Level
         {
-            get => _scale; set
+            get => _sharpeningLevel; set
             {
-                _scale = MathF.Max(0.01f, value);
+                _sharpeningLevel = MathF.Max(0.01f, value);
             }
         }
 
-        public IPostProcessingEffect Effect { get; set; }
-
-        public FsrUpscaler(VulkanRenderer renderer, Device device, IPostProcessingEffect filter)
+        public FsrUpscaler(VulkanRenderer renderer, Device device)
         {
             _device = device;
             _renderer = renderer;
             Initialize();
-            Effect = filter;
         }
 
         public void Dispose()
@@ -64,6 +61,13 @@ namespace Ryujinx.Graphics.Vulkan.Effects
                 new[] { 0 }
             );
 
+            var sharpeningBindings = new ShaderBindings(
+                new[] { 2, 3, 4 },
+                Array.Empty<int>(),
+                new[] { 1 },
+                new[] { 0 }
+            );
+
             _samplerLinear = _renderer.CreateSampler(GAL.SamplerCreateInfo.Create(MinFilter.Linear, MagFilter.Linear));
 
             _scalingProgram = _renderer.CreateProgramWithMinimalLayout(new[]{
@@ -71,28 +75,19 @@ namespace Ryujinx.Graphics.Vulkan.Effects
             });
 
             _sharpeningProgram = _renderer.CreateProgramWithMinimalLayout(new[]{
-                new ShaderSource(this.SharpeningShader, computeBindings, ShaderStage.Compute, TargetLanguage.Spirv)
+                new ShaderSource(this.SharpeningShader, sharpeningBindings, ShaderStage.Compute, TargetLanguage.Spirv)
             });
         }
 
-        public TextureView Run(TextureView view, CommandBufferScoped cbs)
+        public TextureView Run(TextureView view, CommandBufferScoped cbs, int width, int height)
         {
             _currentCommandBuffer = cbs;
-            var input = view;
 
-            if (Effect != null)
+            if (_outputTexture == null || _outputTexture.Info.Width != width || _outputTexture.Info.Height != height)
             {
-                input = Effect.Run(input, cbs);
-            }
-
-            var upscaledWidth = (int)(input.Width * Scale);
-            var upscaledHeight = (int)(input.Height * Scale);
-
-            if (_outputTexture == null || _outputTexture.Info.Width != upscaledWidth || _outputTexture.Info.Height != upscaledHeight)
-            {
-                var originalInfo = input.Info;
-                var info = new TextureCreateInfo(upscaledWidth,
-                    upscaledHeight,
+                var originalInfo = view.Info;
+                var info = new TextureCreateInfo(width,
+                    height,
                     originalInfo.Depth,
                     originalInfo.Levels,
                     originalInfo.Samples,
@@ -107,14 +102,14 @@ namespace Ryujinx.Graphics.Vulkan.Effects
                     originalInfo.SwizzleB,
                     originalInfo.SwizzleA);
                 _outputTexture?.Dispose();
-                _outputTexture = _renderer.CreateTexture(info, input.ScaleFactor) as TextureView;
+                _outputTexture = _renderer.CreateTexture(info, view.ScaleFactor) as TextureView;
             }
 
             Span<GAL.Viewport> viewports = stackalloc GAL.Viewport[1];
             Span<Rectangle<int>> scissors = stackalloc Rectangle<int>[1];
 
             viewports[0] = new GAL.Viewport(
-                new Rectangle<float>(0, 0, input.Width, input.Height),
+                new Rectangle<float>(0, 0, view.Width, view.Height),
                 ViewportSwizzle.PositiveX,
                 ViewportSwizzle.PositiveY,
                 ViewportSwizzle.PositiveZ,
@@ -122,13 +117,13 @@ namespace Ryujinx.Graphics.Vulkan.Effects
                 0f,
                 1f);
 
-            scissors[0] = new Rectangle<int>(0, 0, input.Width, input.Height);
+            scissors[0] = new Rectangle<int>(0, 0, view.Width, view.Height);
 
             _scalingPipeline.SetCommandBuffer(cbs);
             _scalingPipeline.SetProgram(_scalingProgram);
-            _scalingPipeline.SetTextureAndSampler(ShaderStage.Compute, 1, input, _samplerLinear);
+            _scalingPipeline.SetTextureAndSampler(ShaderStage.Compute, 1, view, _samplerLinear);
 
-            var inputResolutionBuffer = new ReadOnlySpan<float>(new float[] { input.Width, input.Height });
+            var inputResolutionBuffer = new ReadOnlySpan<float>(new float[] { view.Width, view.Height });
             int rangeSize = inputResolutionBuffer.Length * sizeof(float);
             var bufferHandle = _renderer.BufferManager.CreateWithHandle(_renderer, rangeSize, false);
             _renderer.BufferManager.SetData(bufferHandle, 0, inputResolutionBuffer);
@@ -137,9 +132,13 @@ namespace Ryujinx.Graphics.Vulkan.Effects
             var outputBufferHandle = _renderer.BufferManager.CreateWithHandle(_renderer, rangeSize, false);
             _renderer.BufferManager.SetData(outputBufferHandle, 0, outputResolutionBuffer);
 
+            var sharpeningBuffer = new ReadOnlySpan<float>(new float[] { Level });
+            var sharpeningBufferHandle = _renderer.BufferManager.CreateWithHandle(_renderer, sizeof(float), false);
+            _renderer.BufferManager.SetData(sharpeningBufferHandle, 0, sharpeningBuffer);
+
             int threadGroupWorkRegionDim = 16;
-            int dispatchX = (upscaledWidth + (threadGroupWorkRegionDim - 1)) / threadGroupWorkRegionDim;
-            int dispatchY = (upscaledHeight + (threadGroupWorkRegionDim - 1)) / threadGroupWorkRegionDim;
+            int dispatchX = (width + (threadGroupWorkRegionDim - 1)) / threadGroupWorkRegionDim;
+            int dispatchY = (height + (threadGroupWorkRegionDim - 1)) / threadGroupWorkRegionDim;
 
             Span<BufferRange> bufferRanges = stackalloc BufferRange[1];
             bufferRanges[0] = new BufferRange(bufferHandle, 0, rangeSize);
@@ -168,6 +167,8 @@ namespace Ryujinx.Graphics.Vulkan.Effects
             _sharpeningPipeline.SetProgram(_sharpeningProgram);
             _sharpeningPipeline.SetTextureAndSampler(ShaderStage.Compute, 1, _outputTexture, _samplerLinear);
             _sharpeningPipeline.SetUniformBuffers(2, bufferRanges);
+            bufferRanges[0] = new BufferRange(sharpeningBufferHandle, 0, sizeof(float));
+            _sharpeningPipeline.SetUniformBuffers(4, bufferRanges);
             _sharpeningPipeline.SetScissors(scissors);
             _sharpeningPipeline.SetViewports(viewports, false);
             _sharpeningPipeline.SetImage(0, _outputTexture, GAL.Format.R8G8B8A8Unorm);
@@ -176,6 +177,7 @@ namespace Ryujinx.Graphics.Vulkan.Effects
 
             _renderer.BufferManager.Delete(bufferHandle);
             _renderer.BufferManager.Delete(outputBufferHandle);
+            _renderer.BufferManager.Delete(sharpeningBufferHandle);
 
             return _outputTexture;
         }

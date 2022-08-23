@@ -422,9 +422,9 @@ namespace Ryujinx.Ui.Common.Configuration
             public ReactiveObject<GraphicsBackend> GraphicsBackend { get; private set; }
 
             /// <summary>
-            /// Applies a shader effect to the renderer.
+            /// Applies anti-aliasing to the renderer.
             /// </summary>
-            public ReactiveObject<PostProcessingEffect> PostProcessingEffect { get; private set; }
+            public ReactiveObject<AntiAliasing> AntiAliasing { get; private set; }
 
             /// <summary>
             /// Sets the framebuffer upscaling type.
@@ -464,8 +464,8 @@ namespace Ryujinx.Ui.Common.Configuration
                 GraphicsBackend.Event            += static (sender, e) => LogValueChange(sender, e, nameof(GraphicsBackend));
                 PreferredGpu                     = new ReactiveObject<string>();
                 PreferredGpu.Event               += static (sender, e) => LogValueChange(sender, e, nameof(PreferredGpu));
-                PostProcessingEffect             = new ReactiveObject<PostProcessingEffect>();
-                PostProcessingEffect.Event       += static (sender, e) => LogValueChange(sender, e, nameof(PostProcessingEffect));
+                AntiAliasing                     = new ReactiveObject<AntiAliasing>();
+                AntiAliasing.Event               += static (sender, e) => LogValueChange(sender, e, nameof(AntiAliasing));
                 UpscaleType                      = new ReactiveObject<UpscaleType>();
                 UpscaleType.Event                += static (sender, e) => LogValueChange(sender, e, nameof(UpscaleType));
                 UpscaleLevel                     = new ReactiveObject<float>();
@@ -547,7 +547,7 @@ namespace Ryujinx.Ui.Common.Configuration
                 ResScaleCustom             = Graphics.ResScaleCustom,
                 MaxAnisotropy              = Graphics.MaxAnisotropy,
                 AspectRatio                = Graphics.AspectRatio,
-                PostProcessingEffect       = Graphics.PostProcessingEffect,
+                AntiAliasing               = Graphics.AntiAliasing,
                 UpscaleType                = Graphics.UpscaleType,
                 UpscaleLevel               = Graphics.UpscaleLevel,
                 GraphicsShadersDumpPath    = Graphics.ShadersDumpPath,
@@ -658,9 +658,9 @@ namespace Ryujinx.Ui.Common.Configuration
             Graphics.EnableVsync.Value                = true;
             Graphics.EnableShaderCache.Value          = true;
             Graphics.EnableTextureRecompression.Value = false;
-            Graphics.PostProcessingEffect.Value       = PostProcessingEffect.None;
-            Graphics.UpscaleType.Value                = UpscaleType.None;
-            Graphics.UpscaleLevel.Value               = 1;
+            Graphics.AntiAliasing.Value               = AntiAliasing.None;
+            Graphics.UpscaleType.Value                = UpscaleType.Bilinear;
+            Graphics.UpscaleLevel.Value               = 0.3f;
             System.EnablePtc.Value                    = true;
             System.EnableInternetAccess.Value         = false;
             System.EnableFsIntegrityChecks.Value      = true;
@@ -1187,9 +1187,9 @@ namespace Ryujinx.Ui.Common.Configuration
             {
                 Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 41.");
 
-                configurationFileFormat.PostProcessingEffect = PostProcessingEffect.None;
-                configurationFileFormat.UpscaleType = UpscaleType.None;
-                configurationFileFormat.UpscaleLevel = 1;
+                configurationFileFormat.AntiAliasing = AntiAliasing.None;
+                configurationFileFormat.UpscaleType = UpscaleType.Bilinear;
+                configurationFileFormat.UpscaleLevel = 0.3f;
 
                 configurationFileUpdated = true;
             }
@@ -1203,7 +1203,7 @@ namespace Ryujinx.Ui.Common.Configuration
             Graphics.BackendThreading.Value           = configurationFileFormat.BackendThreading;
             Graphics.GraphicsBackend.Value            = configurationFileFormat.GraphicsBackend;
             Graphics.PreferredGpu.Value               = configurationFileFormat.PreferredGpu;
-            Graphics.PostProcessingEffect.Value       = configurationFileFormat.PostProcessingEffect;
+            Graphics.AntiAliasing.Value               = configurationFileFormat.AntiAliasing;
             Graphics.UpscaleType.Value                = configurationFileFormat.UpscaleType;
             Graphics.UpscaleLevel.Value               = configurationFileFormat.UpscaleLevel;
             Logger.EnableDebug.Value                  = configurationFileFormat.LoggingEnableDebug;

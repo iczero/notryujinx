@@ -54,6 +54,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         private KeyboardHotkeys _keyboardHotkeys;
         private int _graphicsBackendIndex;
         private int _upscaleType;
+        private float upscaleLevel;
 
         public int ResolutionScale
         {
@@ -154,7 +155,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         public bool IsSDL2Enabled { get; set; }
         public bool EnableCustomTheme { get; set; }
         public bool IsCustomResolutionScaleActive => _resolutionScale == 0;
-        public bool IsUpscalingActive => _upscaleType != 0;
+        public bool IsUpscalingActive => _upscaleType == 2;
         public bool IsVulkanSelected => GraphicsBackendIndex == 0;
 
         public string TimeZone { get; set; }
@@ -167,8 +168,17 @@ namespace Ryujinx.Ava.Ui.ViewModels
         public int AudioBackend { get; set; }
         public int MaxAnisotropy { get; set; }
         public int AspectRatio { get; set; }
-        public int PostProcessingEffect { get; set; }
-        public float UpscaleLevel { get; set; }
+        public int AntiAliasingEffect { get; set; }
+        public string UpscaleLevelText => UpscaleLevel.ToString("0.00");
+        public float UpscaleLevel
+        {
+            get => upscaleLevel; set
+            {
+                upscaleLevel = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(UpscaleLevelText));
+            }
+        }
         public int OpenglDebugLevel { get; set; }
         public int MemoryMode { get; set; }
         public int BaseStyleIndex { get; set; }
@@ -404,7 +414,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             MaxAnisotropy = anisotropy == -1 ? 0 : (int)(MathF.Log2(anisotropy));
             AspectRatio = (int)config.Graphics.AspectRatio.Value;
-            PostProcessingEffect = (int)config.Graphics.PostProcessingEffect.Value;
+            AntiAliasingEffect = (int)config.Graphics.AntiAliasing.Value;
             UpscaleType = (int)config.Graphics.UpscaleType.Value;
             UpscaleLevel = config.Graphics.UpscaleLevel.Value;
 
@@ -504,7 +514,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
 
             config.Graphics.MaxAnisotropy.Value = anisotropy;
             config.Graphics.AspectRatio.Value = (AspectRatio)AspectRatio;
-            config.Graphics.PostProcessingEffect.Value = (PostProcessingEffect)PostProcessingEffect;
+            config.Graphics.AntiAliasing.Value = (AntiAliasing)AntiAliasingEffect;
             config.Graphics.UpscaleType.Value = (UpscaleType)UpscaleType;
             config.Graphics.UpscaleLevel.Value = UpscaleLevel;
             config.Graphics.ResScale.Value = ResolutionScale == 0 ? -1 : ResolutionScale;

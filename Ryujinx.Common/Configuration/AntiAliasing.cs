@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Ryujinx.Graphics.GAL
+namespace Ryujinx.Common.Configuration
 {
-    public enum EffectType
+    public enum AntiAliasing
     {
         None,
         Fxaa,

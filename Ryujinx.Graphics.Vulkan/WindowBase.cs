@@ -12,10 +12,10 @@ namespace Ryujinx.Graphics.Vulkan
         public abstract void SetSize(int width, int height);
         public abstract void ChangeVSyncMode(bool vsyncEnabled);
 
-        public abstract void ApplyEffect(EffectType effect);
+        public abstract void ApplyEffect(AntiAliasing effect);
 
-        public abstract void ApplyScaler(PostProcessingScalerType scalerType);
+        public abstract void ApplyScaler(UpscaleType scalerType);
 
-        public abstract void SetUpscalerScale(float scale);
+        public abstract void SetUpscalerLevel(float scale);
     }
 }

@@ -7,6 +7,6 @@ namespace Ryujinx.Graphics.Vulkan.Effects
     internal interface IPostProcessingEffect :  IDisposable
     {
         protected void Initialize();
-        internal TextureView Run(TextureView view, CommandBufferScoped cbs);
+        internal TextureView Run(TextureView view, CommandBufferScoped cbs, int width, int height);
     }
 }

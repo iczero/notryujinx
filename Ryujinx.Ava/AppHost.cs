@@ -152,7 +152,7 @@ namespace Ryujinx.Ava
 
             ConfigurationState.Instance.System.IgnoreMissingServices.Event += UpdateIgnoreMissingServicesState;
             ConfigurationState.Instance.Graphics.AspectRatio.Event += UpdateAspectRatioState;
-            ConfigurationState.Instance.Graphics.PostProcessingEffect.Event += UpdatePostProcessingEffect;
+            ConfigurationState.Instance.Graphics.AntiAliasing.Event += UpdateAntiAliasing;
             ConfigurationState.Instance.Graphics.UpscaleType.Event += UpdateUpscaleType;
             ConfigurationState.Instance.Graphics.UpscaleLevel.Event += UpdateUpscaleLevel;
             ConfigurationState.Instance.System.EnableDockedMode.Event += UpdateDockedModeState;
@@ -163,14 +163,14 @@ namespace Ryujinx.Ava
 
         private void UpdateUpscaleLevel(object sender, ReactiveEventArgs<float> e)
         {
-            _renderer?.Window?.ApplyScaler((PostProcessingScalerType)ConfigurationState.Instance.Graphics.UpscaleType.Value);
-            _renderer?.Window?.SetUpscalerScale(ConfigurationState.Instance.Graphics.UpscaleLevel.Value);
+            _renderer?.Window?.ApplyScaler((Graphics.GAL.UpscaleType)ConfigurationState.Instance.Graphics.UpscaleType.Value);
+            _renderer?.Window?.SetUpscalerLevel(ConfigurationState.Instance.Graphics.UpscaleLevel.Value);
         }
 
-        private void UpdateUpscaleType(object sender, ReactiveEventArgs<UpscaleType> e)
+        private void UpdateUpscaleType(object sender, ReactiveEventArgs<Ryujinx.Common.Configuration.UpscaleType> e)
         {
-            _renderer?.Window?.ApplyScaler((PostProcessingScalerType)ConfigurationState.Instance.Graphics.UpscaleType.Value);
-            _renderer?.Window?.SetUpscalerScale(ConfigurationState.Instance.Graphics.UpscaleLevel.Value);
+            _renderer?.Window?.ApplyScaler((Graphics.GAL.UpscaleType)ConfigurationState.Instance.Graphics.UpscaleType.Value);
+            _renderer?.Window?.SetUpscalerLevel(ConfigurationState.Instance.Graphics.UpscaleLevel.Value);
         }
 
         private void Parent_PointerMoved(object sender, PointerEventArgs e)
@@ -321,9 +321,9 @@ namespace Ryujinx.Ava
             }
         }
 
-        private void UpdatePostProcessingEffect(object sender, ReactiveEventArgs<PostProcessingEffect> e)
+        private void UpdateAntiAliasing(object sender, ReactiveEventArgs<Ryujinx.Common.Configuration.AntiAliasing> e)
         {
-            _renderer?.Window?.ApplyEffect((EffectType)e.NewValue);
+            _renderer?.Window?.ApplyEffect((Graphics.GAL.AntiAliasing)e.NewValue);
         }
 
         private void UpdateDockedModeState(object sender, ReactiveEventArgs<bool> e)
@@ -393,7 +393,7 @@ namespace Ryujinx.Ava
             ConfigurationState.Instance.Graphics.AspectRatio.Event -= UpdateAspectRatioState;
             ConfigurationState.Instance.System.EnableDockedMode.Event -= UpdateDockedModeState;
             ConfigurationState.Instance.System.AudioVolume.Event -= UpdateAudioVolumeState;
-            ConfigurationState.Instance.Graphics.PostProcessingEffect.Event -= UpdatePostProcessingEffect;
+            ConfigurationState.Instance.Graphics.AntiAliasing.Event -= UpdateAntiAliasing;
             ConfigurationState.Instance.Graphics.UpscaleType.Event -= UpdateUpscaleType;
             ConfigurationState.Instance.Graphics.UpscaleLevel.Event -= UpdateUpscaleLevel;
 
@@ -853,9 +853,9 @@ namespace Ryujinx.Ava
 
             Device.Gpu.Renderer.Initialize(_glLogLevel);
 
-            _renderer?.Window?.ApplyEffect((EffectType)ConfigurationState.Instance.Graphics.PostProcessingEffect.Value);
-            _renderer?.Window?.ApplyScaler((PostProcessingScalerType)ConfigurationState.Instance.Graphics.UpscaleType.Value);
-            _renderer?.Window?.SetUpscalerScale(ConfigurationState.Instance.Graphics.UpscaleLevel.Value);
+            _renderer?.Window?.ApplyEffect((Graphics.GAL.AntiAliasing)ConfigurationState.Instance.Graphics.AntiAliasing.Value);
+            _renderer?.Window?.ApplyScaler((Graphics.GAL.UpscaleType)ConfigurationState.Instance.Graphics.UpscaleType.Value);
+            _renderer?.Window?.SetUpscalerLevel(ConfigurationState.Instance.Graphics.UpscaleLevel.Value);
 
             Width = (int)Renderer.Bounds.Width;
             Height = (int)Renderer.Bounds.Height;

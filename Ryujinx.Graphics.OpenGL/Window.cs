@@ -18,14 +18,14 @@ namespace Ryujinx.Graphics.OpenGL
         private int _copyFramebufferHandle;
         private int _stagingFrameBuffer;
         private int[] _stagingTextures;
-        private IPostProcessingEffect _effect;
+        private IPostProcessingEffect _antiAliasing;
         private IScaler _scaler;
-
+        private bool _isLinear;
         private int _currentTexture;
-        private EffectType _currentEffect;
+        private AntiAliasing _currentAntiAliasing;
         private bool _changeEffect;
-        private PostProcessingScalerType _currentScaler;
-        private float _upscalerScale;
+        private UpscaleType _currentScaler;
+        private float _upscalerLevel;
         private bool _changeScaler;
 
         internal BackgroundContextWorker BackgroundContext { get; private set; }
@@ -108,23 +108,24 @@ namespace Ryujinx.Graphics.OpenGL
 
             UpdateEffect();
 
+            if (_antiAliasing != null)
+            {
+                viewConverted = _antiAliasing.Run(viewConverted, _width, _height);
+            }
+
             if (_scaler != null)
             {
                 viewConverted = _scaler.Run(viewConverted, _width, _height);
 
                 crop = new ImageCrop(crop.Left,
-                                     (int)(crop.Right * _scaler.Scale),
+                                     (int)(crop.Right * _scaler.Level),
                                      crop.Top,
-                                     (int)(crop.Bottom * _scaler.Scale),
+                                     (int)(crop.Bottom * _scaler.Level),
                                      crop.FlipX,
                                      crop.FlipY,
                                      crop.IsStretched,
                                      crop.AspectRatioX,
                                      crop.AspectRatioY);
-            }
-            else if (_effect != null)
-            {
-                viewConverted = _effect.Run(viewConverted, _width, _height);
             }
 
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, drawFramebuffer);
@@ -208,7 +209,7 @@ namespace Ryujinx.Graphics.OpenGL
                 dstX1,
                 dstY1,
                 ClearBufferMask.ColorBufferBit,
-                BlitFramebufferFilter.Linear);
+                _isLinear ? BlitFramebufferFilter.Linear : BlitFramebufferFilter.Nearest);
 
             // Remove Alpha channel
             GL.ColorMask(false, false, false, true);
@@ -289,27 +290,27 @@ namespace Ryujinx.Graphics.OpenGL
                 _stagingTextures = null;
             }
 
-            _effect?.Dispose();
+            _antiAliasing?.Dispose();
             _scaler?.Dispose();
         }
 
-        public void ApplyEffect(EffectType effect)
+        public void ApplyEffect(AntiAliasing effect)
         {
-            if (_currentEffect == effect && _effect != null)
+            if (_currentAntiAliasing == effect && _antiAliasing != null)
             {
-                _currentEffect = effect;
+                _currentAntiAliasing = effect;
                 return;
             }
 
-            _currentEffect = effect;
+            _currentAntiAliasing = effect;
 
             _changeEffect = true;
         }
 
-        public void ApplyScaler(PostProcessingScalerType scalerType)
+        public void ApplyScaler(UpscaleType scalerType)
         {
 
-            if (_currentScaler == scalerType && _effect != null)
+            if (_currentScaler == scalerType && _antiAliasing != null)
             {
                 _currentScaler = scalerType;
                 return;
@@ -326,67 +327,62 @@ namespace Ryujinx.Graphics.OpenGL
             {
                 _changeEffect = false;
 
-                switch (_currentEffect)
+                switch (_currentAntiAliasing)
                 {
-                    case EffectType.Fxaa:
-                        _effect?.Dispose();
-                        _effect = null;
-                        _effect = new FxaaPostProcessingEffect(_renderer);
+                    case AntiAliasing.Fxaa:
+                        _antiAliasing?.Dispose();
+                        _antiAliasing = null;
+                        _antiAliasing = new FxaaPostProcessingEffect(_renderer);
                         break;
-                    case EffectType.None:
-                        _effect?.Dispose();
-                        _effect = null;
+                    case AntiAliasing.None:
+                        _antiAliasing?.Dispose();
+                        _antiAliasing = null;
                         break;
-                    case EffectType.SmaaLow:
-                        if (_effect is SmaaPostProcessingEffect smaa)
+                    case AntiAliasing.SmaaLow:
+                        if (_antiAliasing is SmaaPostProcessingEffect smaa)
                         {
                             smaa.Quality = 0;
                         }
                         else
                         {
-                            _effect?.Dispose();
-                            _effect = new SmaaPostProcessingEffect(_renderer, 0);
+                            _antiAliasing?.Dispose();
+                            _antiAliasing = new SmaaPostProcessingEffect(_renderer, 0);
                         }
                         break;
-                    case EffectType.SmaaMedium:
-                        if (_effect is SmaaPostProcessingEffect smaam)
+                    case AntiAliasing.SmaaMedium:
+                        if (_antiAliasing is SmaaPostProcessingEffect smaam)
                         {
                             smaam.Quality = 1;
                         }
                         else
                         {
-                            _effect?.Dispose();
-                            _effect = new SmaaPostProcessingEffect(_renderer, 1);
+                            _antiAliasing?.Dispose();
+                            _antiAliasing = new SmaaPostProcessingEffect(_renderer, 1);
                         }
                         break;
-                    case EffectType.SmaaHigh:
-                        if (_effect is SmaaPostProcessingEffect smaah)
+                    case AntiAliasing.SmaaHigh:
+                        if (_antiAliasing is SmaaPostProcessingEffect smaah)
                         {
                             smaah.Quality = 2;
                         }
                         else
                         {
-                            _effect?.Dispose();
-                            _effect = new SmaaPostProcessingEffect(_renderer, 2);
+                            _antiAliasing?.Dispose();
+                            _antiAliasing = new SmaaPostProcessingEffect(_renderer, 2);
                         }
                         break;
-                    case EffectType.SmaaUltra:
-                        if (_effect is SmaaPostProcessingEffect smaau)
+                    case AntiAliasing.SmaaUltra:
+                        if (_antiAliasing is SmaaPostProcessingEffect smaau)
                         {
                             smaau.Quality = 3;
                         }
                         else
                         {
-                            _effect?.Dispose();
-                            _effect = new SmaaPostProcessingEffect(_renderer, 3);
+                            _antiAliasing?.Dispose();
+                            _antiAliasing = new SmaaPostProcessingEffect(_renderer, 3);
                         }
                         break;
                 }
-            }
-
-            if (_scaler != null)
-            {
-                _scaler.Effect = _effect;
             }
 
             if (_changeScaler)
@@ -395,26 +391,28 @@ namespace Ryujinx.Graphics.OpenGL
 
                 switch (_currentScaler)
                 {
-                    case PostProcessingScalerType.None:
+                    case UpscaleType.Bilinear:
+                    case UpscaleType.Nearest:
                         _scaler?.Dispose();
                         _scaler = null;
+                        _isLinear = _currentScaler == UpscaleType.Bilinear;
                         break;
-                    case PostProcessingScalerType.Fsr:
+                    case UpscaleType.Fsr:
                         if (!(_scaler is FsrUpscaler))
                         {
                             _scaler?.Dispose();
-                            _scaler = new FsrUpscaler(_renderer, _effect);
+                            _scaler = new FsrUpscaler(_renderer, _antiAliasing);
                         }
 
-                        _scaler.Scale = _upscalerScale;
+                        _scaler.Level = _upscalerLevel;
                         break;
                 }
             }
         }
 
-        public void SetUpscalerScale(float scale)
+        public void SetUpscalerLevel(float level)
         {
-            _upscalerScale = scale;
+            _upscalerLevel = level;
 
             _changeScaler = true;
         }

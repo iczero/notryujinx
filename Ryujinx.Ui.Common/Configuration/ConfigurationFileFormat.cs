@@ -54,7 +54,7 @@ namespace Ryujinx.Ui.Common.Configuration
         /// <summary>
         /// Applies a shader effect to the renderer.
         /// </summary>
-        public PostProcessingEffect PostProcessingEffect { get; set; }
+        public AntiAliasing AntiAliasing { get; set; }
 
         /// <summary>
         /// Sets the framebuffer upscaling type.
