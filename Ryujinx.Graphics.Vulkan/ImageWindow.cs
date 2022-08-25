@@ -193,9 +193,9 @@ namespace Ryujinx.Graphics.Vulkan
                 view = _scaler.Run(view, cbs, _width, _height);
 
                 crop = new ImageCrop(crop.Left,
-                                     (int)(crop.Right * _scaler.Level),
+                                     (int)(crop.Left + view.Width),
                                      crop.Top,
-                                     (int)(crop.Bottom * _scaler.Level),
+                                     (int)(crop.Top + view.Height),
                                      crop.FlipX,
                                      crop.FlipY,
                                      crop.IsStretched,

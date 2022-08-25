@@ -118,9 +118,9 @@ namespace Ryujinx.Graphics.OpenGL
                 viewConverted = _scaler.Run(viewConverted, _width, _height);
 
                 crop = new ImageCrop(crop.Left,
-                                     (int)(crop.Right * _scaler.Level),
+                                     (int)(crop.Left + viewConverted.Width),
                                      crop.Top,
-                                     (int)(crop.Bottom * _scaler.Level),
+                                     (int)(crop.Top +viewConverted.Height),
                                      crop.FlipX,
                                      crop.FlipY,
                                      crop.IsStretched,
