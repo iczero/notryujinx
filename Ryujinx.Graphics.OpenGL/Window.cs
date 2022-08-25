@@ -112,22 +112,7 @@ namespace Ryujinx.Graphics.OpenGL
             {
                 viewConverted = _antiAliasing.Run(viewConverted, _width, _height);
             }
-
-            if (_scaler != null)
-            {
-                viewConverted = _scaler.Run(viewConverted, _width, _height);
-
-                crop = new ImageCrop(crop.Left,
-                                     (int)(crop.Left + viewConverted.Width),
-                                     crop.Top,
-                                     (int)(crop.Top +viewConverted.Height),
-                                     crop.FlipX,
-                                     crop.FlipY,
-                                     crop.IsStretched,
-                                     crop.AspectRatioX,
-                                     crop.AspectRatioY);
-            }
-
+            
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, drawFramebuffer);
             GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, readFramebuffer);
 
@@ -197,6 +182,25 @@ namespace Ryujinx.Graphics.OpenGL
                 CaptureFrame(srcX0, srcY0, srcX1, srcY1, view.Format.IsBgr(), crop.FlipX, crop.FlipY);
 
                 ScreenCaptureRequested = false;
+            }
+
+            if (_scaler != null)
+            {
+                viewConverted = _scaler.Run(viewConverted, dstWidth, dstHeight);
+
+                srcX0 = 0;
+                srcY0 = 0;
+                srcX1 = viewConverted.Width;
+                srcY1 = viewConverted.Height;
+
+                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, drawFramebuffer);
+                GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, readFramebuffer);
+
+                GL.FramebufferTexture(
+                    FramebufferTarget.ReadFramebuffer,
+                    FramebufferAttachment.ColorAttachment0,
+                    viewConverted.Handle,
+                    0);
             }
 
             GL.BlitFramebuffer(

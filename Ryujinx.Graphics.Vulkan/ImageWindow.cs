@@ -188,21 +188,6 @@ namespace Ryujinx.Graphics.Vulkan
                 view = _antiAliasing?.Run(view, cbs, _width, _height);
             }
 
-            if(_scaler != null)
-            {
-                view = _scaler.Run(view, cbs, _width, _height);
-
-                crop = new ImageCrop(crop.Left,
-                                     (int)(crop.Left + view.Width),
-                                     crop.Top,
-                                     (int)(crop.Top + view.Height),
-                                     crop.FlipX,
-                                     crop.FlipY,
-                                     crop.IsStretched,
-                                     crop.AspectRatioX,
-                                     crop.AspectRatioY);
-            }
-
             int srcX0, srcX1, srcY0, srcY1;
             float scale = view.ScaleFactor;
 
@@ -269,6 +254,16 @@ namespace Ryujinx.Graphics.Vulkan
 
             int dstY0 = crop.FlipY ? dstPaddingY : _height - dstPaddingY;
             int dstY1 = crop.FlipY ? _height - dstPaddingY : dstPaddingY;
+
+            if (_scaler != null)
+            {
+                view = _scaler.Run(view, cbs, dstWidth, dstHeight);
+
+                srcX0 = 0;
+                srcY0 = 0;
+                srcX1 = view.Width;
+                srcY1 = view.Height;
+            }
 
             _gd.HelperShader.Blit(
                 _gd,
