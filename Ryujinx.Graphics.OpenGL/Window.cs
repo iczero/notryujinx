@@ -81,8 +81,8 @@ namespace Ryujinx.Graphics.OpenGL
                 GL.BindTexture(TextureTarget.Texture2D, stagingTexture);
                 GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, _width, _height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
 
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
                 GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, stagingTexture, 0);
             }
 
@@ -186,34 +186,30 @@ namespace Ryujinx.Graphics.OpenGL
 
             if (_scaler != null)
             {
-                viewConverted = _scaler.Run(viewConverted, dstWidth, dstHeight);
-
-                srcX0 = 0;
-                srcY0 = 0;
-                srcX1 = viewConverted.Width;
-                srcY1 = viewConverted.Height;
-
-                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, drawFramebuffer);
-                GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, readFramebuffer);
-
-                GL.FramebufferTexture(
-                    FramebufferTarget.ReadFramebuffer,
-                    FramebufferAttachment.ColorAttachment0,
-                    viewConverted.Handle,
-                    0);
-            }
-
-            GL.BlitFramebuffer(
+                _scaler.Run(viewConverted, _stagingTextures[_currentTexture], _width, _height,
                 srcX0,
-                srcY0,
                 srcX1,
+                srcY0,
                 srcY1,
                 dstX0,
-                dstY0,
                 dstX1,
-                dstY1,
-                ClearBufferMask.ColorBufferBit,
-                _isLinear ? BlitFramebufferFilter.Linear : BlitFramebufferFilter.Nearest);
+                dstY0,
+                dstY1);
+            }
+            else
+            {
+                GL.BlitFramebuffer(
+                    srcX0,
+                    srcY0,
+                    srcX1,
+                    srcY1,
+                    dstX0,
+                    dstY0,
+                    dstX1,
+                    dstY1,
+                    ClearBufferMask.ColorBufferBit,
+                    _isLinear ? BlitFramebufferFilter.Linear : BlitFramebufferFilter.Nearest);
+            }
 
             // Remove Alpha channel
             GL.ColorMask(false, false, false, true);

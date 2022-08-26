@@ -1,26 +1,29 @@
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Mathematics;
 using Ryujinx.Common;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.OpenGL.Image;
 using System;
-using System.IO;
 
 namespace Ryujinx.Graphics.OpenGL.Effects
 {
     internal class FsrUpscaler : IScaler
     {
         private readonly OpenGLRenderer _renderer;
-        private int _inputResolutionUniform;
-        private int _outputResolutionUniform;
         private int _inputUniform;
         private int _outputUniform;
         private int _sharpeningUniform;
+        private int _srcX0Uniform;
+        private int _srcX1Uniform;
+        private int _srcY0Uniform;
         private int _scalingShaderProgram;
-        private TextureStorage _textureStorage;
         private int _sharpeningShaderProgram;
         private int _frameCount = 0;
         private float _scale = 1;
+        private int _srcY1Uniform;
+        private int _dstX0Uniform;
+        private int _dstX1Uniform;
+        private int _dstY0Uniform;
+        private int _dstY1Uniform;
 
         public float Level
         {
@@ -42,7 +45,6 @@ namespace Ryujinx.Graphics.OpenGL.Effects
             {
                 GL.DeleteProgram(_scalingShaderProgram);
                 GL.DeleteProgram(_sharpeningShaderProgram);
-                _textureStorage?.Dispose();
             }
         }
 
@@ -103,47 +105,26 @@ namespace Ryujinx.Graphics.OpenGL.Effects
             }
             GL.DetachShader(_sharpeningShaderProgram, shader);
             GL.DeleteShader(shader);
-
-            _inputResolutionUniform = GL.GetUniformLocation(_scalingShaderProgram, "invResolution");
-            _outputResolutionUniform = GL.GetUniformLocation(_scalingShaderProgram, "outvResolution");
             _inputUniform = GL.GetUniformLocation(_scalingShaderProgram, "Source");
             _outputUniform = GL.GetUniformLocation(_scalingShaderProgram, "imgOutput");
             _sharpeningUniform = GL.GetUniformLocation(_sharpeningShaderProgram, "sharpening");
+
+            _srcX0Uniform = GL.GetUniformLocation(_scalingShaderProgram, "srcX0");
+            _srcX1Uniform = GL.GetUniformLocation(_scalingShaderProgram, "srcX1");
+            _srcY0Uniform = GL.GetUniformLocation(_scalingShaderProgram, "srcY0");
+            _srcY1Uniform = GL.GetUniformLocation(_scalingShaderProgram, "srcY1");
+            _dstX0Uniform = GL.GetUniformLocation(_scalingShaderProgram, "dstX0");
+            _dstX1Uniform = GL.GetUniformLocation(_scalingShaderProgram, "dstX1");
+            _dstY0Uniform = GL.GetUniformLocation(_scalingShaderProgram, "dstY0");
+            _dstY1Uniform = GL.GetUniformLocation(_scalingShaderProgram, "dstY1");
         }
 
-        public TextureView Run(TextureView view, int width, int height)
+        public void Run(TextureView view, int destinationTexture, int width, int height, int srcX0, int srcX1, int srcY0, int srcY1, int dstX0, int dstX1, int dstY0, int dstY1)
         {
             _frameCount++;
 
-            var input = view;
-
-            if (_textureStorage == null || _textureStorage.Info.Width != width || _textureStorage.Info.Height != height)
-            {
-                _textureStorage?.Dispose();
-                var originalInfo = input.Info;
-                var info = new TextureCreateInfo(width,
-                    height,
-                    originalInfo.Depth,
-                    originalInfo.Levels,
-                    originalInfo.Samples,
-                    originalInfo.BlockWidth,
-                    originalInfo.BlockHeight,
-                    originalInfo.BytesPerPixel,
-                    originalInfo.Format,
-                    originalInfo.DepthStencilMode,
-                    originalInfo.Target,
-                    originalInfo.SwizzleR,
-                    originalInfo.SwizzleG,
-                    originalInfo.SwizzleB,
-                    originalInfo.SwizzleA);
-
-                _textureStorage = new TextureStorage(_renderer, info, input.ScaleFactor);
-                _textureStorage.CreateDefaultView();
-            }
-            var textureView = _textureStorage.CreateView(_textureStorage.Info, 0, 0) as TextureView;
-
             int previousProgram = GL.GetInteger(GetPName.CurrentProgram);
-            GL.BindImageTexture(0, textureView.Handle, 0, false, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba8);
+            GL.BindImageTexture(0, destinationTexture, 0, false, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba8);
 
 	        int threadGroupWorkRegionDim = 16;
             int dispatchX = (width + (threadGroupWorkRegionDim - 1)) / threadGroupWorkRegionDim;
@@ -152,11 +133,17 @@ namespace Ryujinx.Graphics.OpenGL.Effects
             // Scaling pass
             GL.UseProgram(_scalingShaderProgram);
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, input.Handle);
+            GL.BindTexture(TextureTarget.Texture2D, view.Handle);
             GL.Uniform1(_inputUniform, 0);
             GL.Uniform1(_outputUniform, 0);
-            GL.Uniform2(_inputResolutionUniform, (float)input.Width, input.Height);
-            GL.Uniform2(_outputResolutionUniform, (float)width, height);
+            GL.Uniform1(_srcX0Uniform, (float)srcX0);
+            GL.Uniform1(_srcX1Uniform, (float)srcX1);
+            GL.Uniform1(_srcY0Uniform, (float)srcY0);
+            GL.Uniform1(_srcY1Uniform, (float)srcY1);
+            GL.Uniform1(_dstX0Uniform, (float)dstX0);
+            GL.Uniform1(_dstX1Uniform, (float)dstX1);
+            GL.Uniform1(_dstY0Uniform, (float)dstY0);
+            GL.Uniform1(_dstY1Uniform, (float)dstY1);
             GL.DispatchCompute(dispatchX, dispatchY, 1);
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
@@ -164,20 +151,16 @@ namespace Ryujinx.Graphics.OpenGL.Effects
             // Sharpening Pass
             GL.UseProgram(_sharpeningShaderProgram);
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, textureView.Handle);
+            GL.BindTexture(TextureTarget.Texture2D, destinationTexture);
             GL.Uniform1(_inputUniform, 0);
             GL.Uniform1(_outputUniform, 0);
             GL.Uniform1(_sharpeningUniform, Level);
-            GL.Uniform2(_inputResolutionUniform, (float)width, height);
-            GL.Uniform2(_outputResolutionUniform, (float)width, height);
             GL.DispatchCompute(dispatchX, dispatchY, 1);
 
             GL.UseProgram(previousProgram);
             GL.BindImageTexture(0, 0, 0, false, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba8);
 
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
-
-            return textureView;
         }
     }
 }

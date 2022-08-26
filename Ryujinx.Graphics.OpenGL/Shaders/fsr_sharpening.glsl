@@ -2,10 +2,8 @@
 precision mediump float;
 layout (local_size_x = 64) in;
 layout(rgba8, binding = 0, location=0) uniform image2D imgOutput;
-layout( location=1 ) uniform vec2 invResolution; 
-layout( location=2 ) uniform vec2 outvResolution; 
-layout( location=3 ) uniform sampler2D source;
-layout( location=4 ) uniform float sharpening;
+layout( location=1 ) uniform sampler2D source;
+layout( location=2 ) uniform float sharpening;
 
 #define A_GPU 1
 #define A_GLSL 1
