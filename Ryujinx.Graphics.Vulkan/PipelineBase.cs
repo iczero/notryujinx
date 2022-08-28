@@ -499,6 +499,11 @@ namespace Ryujinx.Graphics.Vulkan
             _descriptorSetUpdater.SetImage(binding, image, imageFormat);
         }
 
+        public void SetImage(int binding, Auto<DisposableImageView> imageView, GAL.Format imageFormat)
+        {
+            _descriptorSetUpdater.SetImage(binding, imageView, imageFormat);
+        }
+
         public void SetIndexBuffer(BufferRange buffer, GAL.IndexType type)
         {
             _indexBuffer.Dispose();

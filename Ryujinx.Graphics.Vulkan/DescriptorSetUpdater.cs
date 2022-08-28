@@ -156,6 +156,17 @@ namespace Ryujinx.Graphics.Vulkan
             SignalDirty(DirtyFlags.Image);
         }
 
+        public void SetImage(int binding, Auto<DisposableImageView> imageView, GAL.Format imageFormat)
+        {
+            if (imageView == null)
+            {
+                return;
+            }
+            _imageRefs[binding] = imageView;
+
+            SignalDirty(DirtyFlags.Image);
+        }
+
         public void SetStorageBuffers(CommandBuffer commandBuffer, int first, ReadOnlySpan<BufferRange> buffers)
         {
             for (int i = 0; i < buffers.Length; i++)

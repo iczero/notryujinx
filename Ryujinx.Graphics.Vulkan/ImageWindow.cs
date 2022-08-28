@@ -257,26 +257,35 @@ namespace Ryujinx.Graphics.Vulkan
 
             if (_scaler != null)
             {
-                view = _scaler.Run(view, cbs, dstWidth, dstHeight);
-
-                srcX0 = 0;
-                srcY0 = 0;
-                srcX1 = view.Width;
-                srcY1 = view.Height;
+                _scaler.Run(view,
+                   cbs,
+                   _imageViews[_nextImage],
+                   _width,
+                   _height,
+                   srcX0,
+                   srcX1,
+                   srcY0,
+                   srcY1,
+                   dstX0,
+                   dstX1,
+                   dstY0,
+                   dstY1);
             }
-
-            _gd.HelperShader.Blit(
-                _gd,
-                cbs,
-                view,
-                _imageViews[_nextImage],
-                _width,
-                _height,
-                Format,
-                new Extents2D(srcX0, srcY0, srcX1, srcY1),
-                new Extents2D(dstX0, dstY1, dstX1, dstY0),
-                _isLinear,
-                true);
+            else
+            {
+                _gd.HelperShader.Blit(
+                    _gd,
+                    cbs,
+                    view,
+                    _imageViews[_nextImage],
+                    _width,
+                    _height,
+                    Format,
+                    new Extents2D(srcX0, srcY0, srcX1, srcY1),
+                    new Extents2D(dstX0, dstY1, dstX1, dstY0),
+                    _isLinear,
+                    true);
+            }
 
             Transition(
                 cbs.CommandBuffer,

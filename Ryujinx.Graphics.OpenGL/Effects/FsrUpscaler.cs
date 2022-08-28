@@ -119,12 +119,12 @@ namespace Ryujinx.Graphics.OpenGL.Effects
             _dstY1Uniform = GL.GetUniformLocation(_scalingShaderProgram, "dstY1");
         }
 
-        public void Run(TextureView view, int destinationTexture, int width, int height, int srcX0, int srcX1, int srcY0, int srcY1, int dstX0, int dstX1, int dstY0, int dstY1)
+        public void Run(TextureView view, TextureView destinationTexture, int width, int height, int srcX0, int srcX1, int srcY0, int srcY1, int dstX0, int dstX1, int dstY0, int dstY1)
         {
             _frameCount++;
 
             int previousProgram = GL.GetInteger(GetPName.CurrentProgram);
-            GL.BindImageTexture(0, destinationTexture, 0, false, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba8);
+            GL.BindImageTexture(0, destinationTexture.Handle, 0, false, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba8);
 
 	        int threadGroupWorkRegionDim = 16;
             int dispatchX = (width + (threadGroupWorkRegionDim - 1)) / threadGroupWorkRegionDim;
@@ -151,7 +151,7 @@ namespace Ryujinx.Graphics.OpenGL.Effects
             // Sharpening Pass
             GL.UseProgram(_sharpeningShaderProgram);
             GL.ActiveTexture(TextureUnit.Texture0);
-            GL.BindTexture(TextureTarget.Texture2D, destinationTexture);
+            GL.BindTexture(TextureTarget.Texture2D, destinationTexture.Handle);
             GL.Uniform1(_inputUniform, 0);
             GL.Uniform1(_outputUniform, 0);
             GL.Uniform1(_sharpeningUniform, Level);
