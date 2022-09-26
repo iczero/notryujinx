@@ -44,6 +44,7 @@ namespace Ryujinx.Graphics.Vulkan
             _physicalDevice = physicalDevice;
             _device = device;
             _surface = surface;
+            Osd = new Common.Osd();
 
             CreateSwapchain();
 

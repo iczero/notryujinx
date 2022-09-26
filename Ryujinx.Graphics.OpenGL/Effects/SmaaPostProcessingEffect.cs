@@ -24,6 +24,7 @@ namespace Ryujinx.Graphics.OpenGL.Effects.Smaa
         private int _samplerSearchUniform;
         private int _samplerBlendUniform;
         private int _resolutionUniform;
+        private byte[] _dataMap;
 
         public int Quality { get; set; } = 1;
 

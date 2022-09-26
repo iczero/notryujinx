@@ -129,6 +129,16 @@ namespace Ryujinx.Ui.Common.Configuration
             /// </summary>
             public ReactiveObject<bool> IsAscendingOrder { get; private set; }
 
+            /// <summary>
+            /// Enables or disables On Screen Display
+            /// </summary>
+            public ReactiveObject<bool> EnableOsd { get; private set; }
+
+            /// <summary>
+            /// Sets the screen position of the On Screen Display
+            /// </summary>
+            public ReactiveObject<OsdLocation> OsdLocation { get; private set; }
+
             public UiSection()
             {
                 GuiColumns        = new Columns();
@@ -146,6 +156,10 @@ namespace Ryujinx.Ui.Common.Configuration
                 LanguageCode      = new ReactiveObject<string>();
                 ShowConsole       = new ReactiveObject<bool>();
                 ShowConsole.Event += static (s, e) => { ConsoleHelper.SetConsoleWindowState(e.NewValue); };
+                EnableOsd         = new ReactiveObject<bool>();
+                EnableOsd.Event   += static (sender, e) => LogValueChange(sender, e, nameof(EnableOsd));
+                OsdLocation       = new ReactiveObject<OsdLocation>();
+                OsdLocation.Event += static (sender, e) => LogValueChange(sender, e, nameof(OsdLocation));
             }
         }
 
@@ -571,6 +585,8 @@ namespace Ryujinx.Ui.Common.Configuration
                 ShowConfirmExit            = ShowConfirmExit,
                 HideCursorOnIdle           = HideCursorOnIdle,
                 EnableVsync                = Graphics.EnableVsync,
+                EnableOsd                  = Ui.EnableOsd,
+                OsdLocation                = Ui.OsdLocation,
                 EnableShaderCache          = Graphics.EnableShaderCache,
                 EnableTextureRecompression = Graphics.EnableTextureRecompression,
                 EnablePtc                  = System.EnablePtc,
@@ -656,6 +672,8 @@ namespace Ryujinx.Ui.Common.Configuration
             ShowConfirmExit.Value                     = true;
             HideCursorOnIdle.Value                    = false;
             Graphics.EnableVsync.Value                = true;
+            Ui.EnableOsd.Value                        = false;
+            Ui.OsdLocation.Value                      = OsdLocation.TopLeft;
             Graphics.EnableShaderCache.Value          = true;
             Graphics.EnableTextureRecompression.Value = false;
             Graphics.AntiAliasing.Value               = AntiAliasing.None;
@@ -1214,6 +1232,16 @@ namespace Ryujinx.Ui.Common.Configuration
                 configurationFileUpdated = true;
             }
 
+            if (configurationFileFormat.Version < 43)
+            {
+                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 43.");
+
+                configurationFileFormat.EnableOsd = false;
+                configurationFileFormat.OsdLocation = OsdLocation.TopLeft;
+
+                configurationFileUpdated = true;
+            }
+
             Logger.EnableFileLog.Value                = configurationFileFormat.EnableFileLog;
             Graphics.ResScale.Value                   = configurationFileFormat.ResScale;
             Graphics.ResScaleCustom.Value             = configurationFileFormat.ResScaleCustom;
@@ -1246,6 +1274,8 @@ namespace Ryujinx.Ui.Common.Configuration
             ShowConfirmExit.Value                     = configurationFileFormat.ShowConfirmExit;
             HideCursorOnIdle.Value                    = configurationFileFormat.HideCursorOnIdle;
             Graphics.EnableVsync.Value                = configurationFileFormat.EnableVsync;
+            Ui.OsdLocation.Value                      = configurationFileFormat.OsdLocation;
+            Ui.EnableOsd.Value                        = configurationFileFormat.EnableOsd;
             Graphics.EnableShaderCache.Value          = configurationFileFormat.EnableShaderCache;
             Graphics.EnableTextureRecompression.Value = configurationFileFormat.EnableTextureRecompression;
             System.EnablePtc.Value                    = configurationFileFormat.EnablePtc;

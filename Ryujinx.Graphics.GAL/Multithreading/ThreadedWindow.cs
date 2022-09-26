@@ -10,6 +10,8 @@ namespace Ryujinx.Graphics.GAL.Multithreading
         private ThreadedRenderer _renderer;
         private IRenderer _impl;
 
+        public Common.Osd Osd { get; }
+
         public ThreadedWindow(ThreadedRenderer renderer, IRenderer impl)
         {
             _renderer = renderer;

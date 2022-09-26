@@ -1,3 +1,4 @@
+using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Logging;
@@ -14,7 +15,7 @@ namespace Ryujinx.Ui.Common.Configuration
         /// <summary>
         /// The current version of the file format
         /// </summary>
-        public const int CurrentVersion = 42;
+        public const int CurrentVersion = 43;
 
         /// <summary>
         /// Version of the configuration file format
@@ -170,6 +171,16 @@ namespace Ryujinx.Ui.Common.Configuration
         /// Enables or disables Vertical Sync
         /// </summary>
         public bool EnableVsync { get; set; }
+
+        /// <summary>
+        /// Enables or disables On Screen Display
+        /// </summary>
+        public bool EnableOsd { get; set; }
+
+        /// <summary>
+        /// Sets the screen position of the On Screen Display
+        /// </summary>
+        public OsdLocation OsdLocation { get; set; }
 
         /// <summary>
         /// Enables or disables Shader cache

@@ -10,6 +10,7 @@ using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.Input;
 using Ryujinx.Ava.Ui.Controls;
 using Ryujinx.Ava.Ui.Windows;
+using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.GraphicsDriver;
@@ -128,6 +129,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         public bool EnableKeyboard { get; set; }
         public bool EnableMouse { get; set; }
         public bool EnableVsync { get; set; }
+        public bool EnableOsd { get; set; }
         public bool EnablePptc { get; set; }
         public bool EnableInternetAccess { get; set; }
         public bool EnableFsIntegrityChecks { get; set; }
@@ -163,6 +165,7 @@ namespace Ryujinx.Ava.Ui.ViewModels
         public int MaxAnisotropy { get; set; }
         public int AspectRatio { get; set; }
         public int AntiAliasingEffect { get; set; }
+        public int OsdLocation { get; set; }
         public string UpscaleLevelText => UpscaleLevel.ToString("0.00");
         public float UpscaleLevel
         {
@@ -370,6 +373,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
             EnableFsAccessLog = config.Logger.EnableFsAccessLog;
             EnableCustomTheme = config.Ui.EnableCustomTheme;
             Volume = config.System.AudioVolume * 100;
+            EnableOsd = config.Ui.EnableOsd;
+            OsdLocation = (int)config.Ui.OsdLocation.Value;
 
             GraphicsBackendMultithreadingIndex = (int)config.Graphics.BackendThreading.Value;
 
@@ -458,6 +463,8 @@ namespace Ryujinx.Ava.Ui.ViewModels
             config.Ui.BaseStyle.Value = BaseStyleIndex == 0 ? "Light" : "Dark";
             config.System.Language.Value = (Language)Language;
             config.System.Region.Value = (Region)Region;
+            config.Ui.EnableOsd.Value = EnableOsd;
+            config.Ui.OsdLocation.Value = (OsdLocation)OsdLocation;
 
             config.Graphics.PreferredGpu.Value = _gpuIds.ElementAtOrDefault(PreferredGpuIndex);
 

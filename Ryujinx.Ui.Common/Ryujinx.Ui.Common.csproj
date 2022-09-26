@@ -5,6 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\atlas\font_atlas.zip" />
+    <None Remove="Resources\atlas\noto-bmfont.fnt" />
     <None Remove="Resources\Controller_JoyConLeft.svg" />
     <None Remove="Resources\Controller_JoyConPair.svg" />
     <None Remove="Resources\Controller_JoyConRight.svg" />
@@ -23,6 +25,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\atlas\font_atlas.zip" />
+    <EmbeddedResource Include="Resources\atlas\noto-bmfont.fnt" />
     <EmbeddedResource Include="Resources\Controller_JoyConLeft.svg" />
     <EmbeddedResource Include="Resources\Controller_JoyConPair.svg" />
     <EmbeddedResource Include="Resources\Controller_JoyConRight.svg" />

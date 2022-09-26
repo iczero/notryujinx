@@ -69,6 +69,32 @@
                             <CheckBox IsChecked="{Binding HideCursorOnIdle}">
                                 <TextBlock Text="{locale:Locale SettingsTabGeneralHideCursorOnIdle}" />
                             </CheckBox>
+                            <CheckBox IsChecked="{Binding EnableOsd}">
+                                <TextBlock Text="{locale:Locale SettingsTabGeneralShowOsd}" />
+                            </CheckBox>
+                            <StackPanel Margin="0,0,0,10"
+                                        Orientation="Horizontal">
+                                <TextBlock VerticalAlignment="Center"
+                                           Text="{locale:Locale SettingsTabGeneralOsdLocation}"
+                                           Width="250" />
+                                <ComboBox SelectedIndex="{Binding OsdLocation}"
+                                          ToolTip.Tip="{locale:Locale SettingsTabGeneralOsdLocationToolTip}"
+                                          HorizontalContentAlignment="Left"
+                                          Width="150">
+                                    <ComboBoxItem>
+                                        <TextBlock Text="{locale:Locale SettingsTabGeneralOsdLocationTopLeft}" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <TextBlock Text="{locale:Locale SettingsTabGeneralOsdLocationTopRight}" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <TextBlock Text="{locale:Locale SettingsTabGeneralOsdLocationBottomLeft}" />
+                                    </ComboBoxItem>
+                                    <ComboBoxItem>
+                                        <TextBlock Text="{locale:Locale SettingsTabGeneralOsdLocationBottomRight}" />
+                                    </ComboBoxItem>
+                                </ComboBox>
+                            </StackPanel>
                         </StackPanel>
                         <Separator Height="1" />
                         <TextBlock Classes="h1" Text="{locale:Locale SettingsTabGeneralGameDirectories}" />

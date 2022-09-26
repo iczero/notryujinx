@@ -1,3 +1,4 @@
+using Ryujinx.Common;
 using System;
 
 namespace Ryujinx.Graphics.GAL
@@ -5,6 +6,8 @@ namespace Ryujinx.Graphics.GAL
     public interface IWindow
     {
         void Present(ITexture texture, ImageCrop crop, Action swapBuffersCallback);
+
+        Osd Osd { get; }
 
         void SetSize(int width, int height);
 

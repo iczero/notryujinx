@@ -24,14 +24,19 @@ namespace Ryujinx.Graphics.OpenGL
         private float _upscalerLevel;
         private bool _updateUpscaler;
         private TextureView _upscaledTexture;
+        private Osd _osd;
 
         internal BackgroundContextWorker BackgroundContext { get; private set; }
 
         internal bool ScreenCaptureRequested { get; set; }
 
+        public Common.Osd Osd { get; }
+
         public Window(OpenGLRenderer renderer)
         {
             _renderer = renderer;
+
+            Osd = new Common.Osd();
         }
 
         public void Present(ITexture texture, ImageCrop crop, Action swapBuffersCallback)
@@ -70,9 +75,19 @@ namespace Ryujinx.Graphics.OpenGL
 
             UpdateEffect();
 
+            if (_osd == null)
+            {
+                _osd = new Osd(_renderer, Osd);
+            }
+
             if (_antiAliasing != null)
             {
                 viewConverted = _antiAliasing.Run(viewConverted, _width, _height);
+            }
+
+            if (Osd.IsEnabled)
+            {
+                viewConverted = _osd.Draw(viewConverted);
             }
             
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, drawFramebuffer);

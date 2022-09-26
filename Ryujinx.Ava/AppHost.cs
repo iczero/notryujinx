@@ -79,7 +79,7 @@ namespace Ryujinx.Ava
         private long _ticks = 0;
 
         private KeyboardHotkeyState _prevHotkeyState;
-
+        private Osd _osd;
         private IRenderer _renderer;
         private readonly Thread _renderingThread;
 
@@ -161,8 +161,26 @@ namespace Ryujinx.Ava
             ConfigurationState.Instance.Graphics.UpscaleLevel.Event += UpdateUpscaleLevel;
             ConfigurationState.Instance.System.EnableDockedMode.Event += UpdateDockedModeState;
             ConfigurationState.Instance.System.AudioVolume.Event += UpdateAudioVolumeState;
+            ConfigurationState.Instance.Ui.EnableOsd.Event += UpdateOsdState;
+            ConfigurationState.Instance.Ui.OsdLocation.Event += UpdateOsdLocationState;
 
             _gpuCancellationTokenSource = new CancellationTokenSource();
+        }
+
+        private void UpdateOsdLocationState(object sender, ReactiveEventArgs<OsdLocation> e)
+        {
+            if(_osd != null)
+            {
+                _osd.Location = e.NewValue;
+            }
+        }
+
+        private void UpdateOsdState(object sender, ReactiveEventArgs<bool> e)
+        {
+            if(_osd != null)
+            {
+                _osd.IsEnabled = e.NewValue;
+            }
         }
 
         private void UpdateUpscaleLevel(object sender, ReactiveEventArgs<float> e)
@@ -398,6 +416,7 @@ namespace Ryujinx.Ava
             ConfigurationState.Instance.Graphics.AntiAliasing.Event -= UpdateAntiAliasing;
             ConfigurationState.Instance.Graphics.UpscaleType.Event -= UpdateUpscaleType;
             ConfigurationState.Instance.Graphics.UpscaleLevel.Event -= UpdateUpscaleLevel;
+            ConfigurationState.Instance.Ui.EnableOsd.Event -= UpdateOsdState;
 
             _gpuCancellationTokenSource.Cancel();
             _gpuCancellationTokenSource.Dispose();
@@ -858,6 +877,10 @@ namespace Ryujinx.Ava
 
             Device.Gpu.Renderer.RunLoop(() =>
             {
+                _osd = renderer.Window.Osd;
+                _osd.IsEnabled = ConfigurationState.Instance.Ui.EnableOsd;
+                _osd.Location = ConfigurationState.Instance.Ui.OsdLocation;
+
                 Device.Gpu.SetGpuThread();
                 Device.Gpu.InitializeShaderCache(_gpuCancellationTokenSource.Token);
                 Translator.IsReadyForTranslation.Set();
@@ -907,15 +930,18 @@ namespace Ryujinx.Ava
                 dockedMode += $" ({scale}x)";
             }
 
-            StatusUpdatedEvent?.Invoke(this, new StatusUpdatedEventArgs(
-                Device.EnableDeviceVsync,
-                LocaleManager.Instance["VolumeShort"] + $": {(int)(Device.GetVolume() * 100)}%",
-                Renderer.IsVulkan ? "Vulkan" : "OpenGL",
-                dockedMode,
-                ConfigurationState.Instance.Graphics.AspectRatio.Value.ToText(),
-                LocaleManager.Instance["Game"] + $": {Device.Statistics.GetGameFrameRate():00.00} FPS ({Device.Statistics.GetGameFrameTime():00.00} ms)",
-                $"FIFO: {Device.Statistics.GetFifoPercent():00.00} %",
-                $"GPU: {_renderer.GetHardwareInfo().GpuVendor}"));
+            StatusUpdatedEventArgs status = new StatusUpdatedEventArgs(
+                            Device.EnableDeviceVsync,
+                            LocaleManager.Instance["VolumeShort"] + $": {(int)(Device.GetVolume() * 100)}%",
+                            Renderer.IsVulkan ? "Vulkan" : "OpenGL",
+                            dockedMode,
+                            ConfigurationState.Instance.Graphics.AspectRatio.Value.ToText(),
+                            LocaleManager.Instance["Game"] + $": {Device.Statistics.GetGameFrameRate():00.00} FPS ({Device.Statistics.GetGameFrameTime():00.00} ms)",
+                            $"FIFO: {Device.Statistics.GetFifoPercent():00.00} %",
+                            $"GPU: {_renderer.GetHardwareInfo().GpuVendor}");
+            StatusUpdatedEvent?.Invoke(this, status);
+
+            _osd?.UpdateContent($"{status.GameStatus}\n{status.FifoStatus}\n{status.GpuName}\n{status.GpuBackend}");
         }
 
         public async Task ShowExitPrompt()
