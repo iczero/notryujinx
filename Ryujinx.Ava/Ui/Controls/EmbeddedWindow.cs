@@ -96,7 +96,8 @@ namespace Ryujinx.Ava.Ui.Controls
         [SupportedOSPlatform("linux")]
         IPlatformHandle CreateLinux(IPlatformHandle parent)
         {
-            X11Window = PlatformHelper.CreateOpenGLWindow(FramebufferFormat.Default, 0, 0, 100, 100) as GLXWindow;
+            X11Window = (this is VulkanEmbeddedWindow) ? new GLXWindow(new SPB.Windowing.NativeHandle(X11.DefaultDisplay), new SPB.Windowing.NativeHandle(parent.Handle)) :
+                PlatformHelper.CreateOpenGLWindow(FramebufferFormat.Default, 0, 0, 100, 100) as GLXWindow;
 
             WindowHandle = X11Window.WindowHandle.RawHandle;
 
