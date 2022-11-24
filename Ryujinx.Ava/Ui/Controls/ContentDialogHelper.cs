@@ -74,7 +74,7 @@ namespace Ryujinx.Ava.Ui.Controls
 
                 bool opened = false;
 
-                overlay.AttachedToLogicalTree += OverlayOnActivated;
+                overlay.DialogOpened += OverlayOnActivated;
 
                 async void OverlayOnActivated(object sender, EventArgs e)
                 {
