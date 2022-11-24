@@ -74,8 +74,7 @@ namespace Ryujinx.Ava.Ui.Controls
 
                 bool opened = false;
 
-                overlay.Opened += OverlayOnActivated;
-                // overlay.Ready += OverlayOnActivated;
+                overlay.AttachedToLogicalTree += OverlayOnActivated;
 
                 async void OverlayOnActivated(object sender, EventArgs e)
                 {
@@ -91,16 +90,20 @@ namespace Ryujinx.Ava.Ui.Controls
                     await ShowDialog();
                 }
 
+                SetupDialog();
+
                 await overlay.ShowDialog(mainWindow);
             }
             else
             {
                 contentDialog = new ContentDialog();
 
+                SetupDialog();
+
                 await ShowDialog();
             }
 
-            async Task ShowDialog()
+            void SetupDialog()
             {
                 contentDialog.Title = title;
                 contentDialog.PrimaryButtonText = primaryButton;
@@ -127,11 +130,13 @@ namespace Ryujinx.Ava.Ui.Controls
                 {
                     contentDialog.PrimaryButtonClick += deferCloseAction;
                 }
+            }
 
-                if (!useOverlay)
-                    await contentDialog.ShowAsync(ContentDialogPlacement.Popup);
+            async Task ShowDialog()
+            {
+                await contentDialog.ShowAsync(ContentDialogPlacement.Popup);
 
-                // overlay?.Close();
+                overlay?.Close();
             }
 
             if (useOverlay)
