@@ -49,10 +49,7 @@ namespace Ryujinx.Ava.Ui.Controls
         {
             OnWindowCreated();
 
-            Task.Run(() =>
-            {
-                WindowCreated?.Invoke(this, WindowHandle);
-            });
+            WindowCreated?.Invoke(this, WindowHandle);
         }
 
         private void StateChanged(Rect rect)
@@ -189,6 +186,7 @@ namespace Ryujinx.Ava.Ui.Controls
             return DefWindowProc(hWnd, msg, (IntPtr)wParam, (IntPtr)lParam);
         }
 
+        [SupportedOSPlatform("linux")]
         void DestroyLinux()
         {
             X11Window?.Dispose();
