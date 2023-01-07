@@ -90,7 +90,7 @@ namespace Ryujinx.Ava
                 string themePath = ConfigurationState.Instance.Ui.CustomThemePath;
                 bool enableCustomTheme = ConfigurationState.Instance.Ui.EnableCustomTheme;
 
-                const string BaseStyleUrl = "avares://Ryujinx.Ava/Assets/Styles/Base{0}.xaml";
+                const string BaseStyleUrl = "avares://Ryujinx/Assets/Styles/Base{0}.xaml";
 
                 if (string.IsNullOrWhiteSpace(baseStyle))
                 {
