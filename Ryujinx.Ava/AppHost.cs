@@ -19,6 +19,7 @@ using Ryujinx.Ava.UI.ViewModels;
 using Ryujinx.Ava.UI.Windows;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
+using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.SystemInterop;
 using Ryujinx.Graphics.GAL;
@@ -29,6 +30,7 @@ using Ryujinx.Graphics.Vulkan;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.HOS;
 using Ryujinx.HLE.HOS.Services.Account.Acc;
+using Ryujinx.HLE.HOS.Services.Hid;
 using Ryujinx.HLE.HOS.SystemState;
 using Ryujinx.Input;
 using Ryujinx.Input.HLE;
@@ -98,6 +100,11 @@ namespace Ryujinx.Ava
 
         private bool          _dialogShown;
         private readonly bool _isFirmwareTitle;
+        private bool UseTitleConfiguration { get
+            {
+                return ConfigurationState.HasConfigurationForTitle(_viewModel.SelectedApplication?.TitleId);
+            } 
+        }
 
         private readonly object _lockObject = new();
 
@@ -132,7 +139,7 @@ namespace Ryujinx.Ava
             _userChannelPersistence = userChannelPersistence;
             _renderingThread        = new Thread(RenderLoop, 1 * 1024 * 1024) { Name = "GUI.RenderThread" };
             _lastCursorMoveTime     = Stopwatch.GetTimestamp();
-            _glLogLevel             = ConfigurationState.Instance.Logger.GraphicsDebugLevel;
+            _glLogLevel             = ConfigurationState.Instance(UseTitleConfiguration).Logger.GraphicsDebugLevel;
             _topLevel               = topLevel;
 
             _inputManager.SetMouseDriver(new AvaloniaMouseDriver(_topLevel, renderer));
@@ -157,7 +164,7 @@ namespace Ryujinx.Ava
                 _isFirmwareTitle = true;
             }
 
-            ConfigurationState.Instance.HideCursorOnIdle.Event += HideCursorState_Changed;
+            ConfigurationState.Shared.HideCursorOnIdle.Event += HideCursorState_Changed;
 
             _topLevel.PointerMoved += TopLevel_PointerMoved;
 
@@ -167,15 +174,15 @@ namespace Ryujinx.Ava
                 DefaultCursorWin   = CreateArrowCursor();
             }
 
-            ConfigurationState.Instance.System.IgnoreMissingServices.Event += UpdateIgnoreMissingServicesState;
-            ConfigurationState.Instance.Graphics.AspectRatio.Event         += UpdateAspectRatioState;
-            ConfigurationState.Instance.System.EnableDockedMode.Event      += UpdateDockedModeState;
-            ConfigurationState.Instance.System.AudioVolume.Event           += UpdateAudioVolumeState;
-            ConfigurationState.Instance.System.EnableDockedMode.Event      += UpdateDockedModeState;
-            ConfigurationState.Instance.System.AudioVolume.Event           += UpdateAudioVolumeState;
-            ConfigurationState.Instance.Graphics.AntiAliasing.Event        += UpdateAntiAliasing;
-            ConfigurationState.Instance.Graphics.ScalingFilter.Event       += UpdateScalingFilter;
-            ConfigurationState.Instance.Graphics.ScalingFilterLevel.Event  += UpdateScalingFilterLevel;
+            ConfigurationState.Instance(UseTitleConfiguration).System.IgnoreMissingServices.Event += UpdateIgnoreMissingServicesState;
+            ConfigurationState.Instance(UseTitleConfiguration).Graphics.AspectRatio.Event         += UpdateAspectRatioState;
+            ConfigurationState.Instance(UseTitleConfiguration).System.EnableDockedMode.Event      += UpdateDockedModeState;
+            ConfigurationState.Instance(UseTitleConfiguration).System.AudioVolume.Event           += UpdateAudioVolumeState;
+            ConfigurationState.Instance(UseTitleConfiguration).System.EnableDockedMode.Event      += UpdateDockedModeState;
+            ConfigurationState.Instance(UseTitleConfiguration).System.AudioVolume.Event           += UpdateAudioVolumeState;
+            ConfigurationState.Instance(UseTitleConfiguration).Graphics.AntiAliasing.Event        += UpdateAntiAliasing;
+            ConfigurationState.Instance(UseTitleConfiguration).Graphics.ScalingFilter.Event       += UpdateScalingFilter;
+            ConfigurationState.Instance(UseTitleConfiguration).Graphics.ScalingFilterLevel.Event  += UpdateScalingFilterLevel;
 
             _gpuCancellationTokenSource = new CancellationTokenSource();
         }
@@ -200,14 +207,14 @@ namespace Ryujinx.Ava
         }
         private void UpdateScalingFilterLevel(object sender, ReactiveEventArgs<int> e)
         {
-            _renderer.Window?.SetScalingFilter((Graphics.GAL.ScalingFilter)ConfigurationState.Instance.Graphics.ScalingFilter.Value);
-            _renderer.Window?.SetScalingFilterLevel(ConfigurationState.Instance.Graphics.ScalingFilterLevel.Value);
+            _renderer.Window?.SetScalingFilter((Graphics.GAL.ScalingFilter)ConfigurationState.Instance(UseTitleConfiguration).Graphics.ScalingFilter.Value);
+            _renderer.Window?.SetScalingFilterLevel(ConfigurationState.Instance(UseTitleConfiguration).Graphics.ScalingFilterLevel.Value);
         }
 
         private void UpdateScalingFilter(object sender, ReactiveEventArgs<Ryujinx.Common.Configuration.ScalingFilter> e)
         {
-            _renderer.Window?.SetScalingFilter((Graphics.GAL.ScalingFilter)ConfigurationState.Instance.Graphics.ScalingFilter.Value);
-            _renderer.Window?.SetScalingFilterLevel(ConfigurationState.Instance.Graphics.ScalingFilterLevel.Value);
+            _renderer.Window?.SetScalingFilter((Graphics.GAL.ScalingFilter)ConfigurationState.Instance(UseTitleConfiguration).Graphics.ScalingFilter.Value);
+            _renderer.Window?.SetScalingFilterLevel(ConfigurationState.Instance(UseTitleConfiguration).Graphics.ScalingFilterLevel.Value);
         }
 
         private void ShowCursor()
@@ -315,7 +322,7 @@ namespace Ryujinx.Ava
 
             DisplaySleep.Prevent();
 
-            NpadManager.Initialize(Device, ConfigurationState.Instance.Hid.InputConfig, ConfigurationState.Instance.Hid.EnableKeyboard, ConfigurationState.Instance.Hid.EnableMouse);
+            NpadManager.Initialize(Device, ConfigurationState.Instance(UseTitleConfiguration).Hid.InputConfig, ConfigurationState.Instance(UseTitleConfiguration).Hid.EnableKeyboard, ConfigurationState.Instance(UseTitleConfiguration).Hid.EnableMouse);
             TouchScreenManager.Initialize(Device);
 
             _viewModel.IsGameRunning = true;
@@ -342,7 +349,7 @@ namespace Ryujinx.Ava
 
             _renderingThread.Start();
 
-            _viewModel.Volume = ConfigurationState.Instance.System.AudioVolume.Value;
+            _viewModel.Volume = ConfigurationState.Instance(UseTitleConfiguration).System.AudioVolume.Value;
 
             MainLoop();
 
@@ -432,13 +439,13 @@ namespace Ryujinx.Ava
                 _viewModel.UpdateGameMetadata(Device.Processes.ActiveApplication.ProgramIdText);
             }
 
-            ConfigurationState.Instance.System.IgnoreMissingServices.Event -= UpdateIgnoreMissingServicesState;
-            ConfigurationState.Instance.Graphics.AspectRatio.Event         -= UpdateAspectRatioState;
-            ConfigurationState.Instance.System.EnableDockedMode.Event      -= UpdateDockedModeState;
-            ConfigurationState.Instance.System.AudioVolume.Event           -= UpdateAudioVolumeState;
-            ConfigurationState.Instance.Graphics.ScalingFilter.Event       -= UpdateScalingFilter;
-            ConfigurationState.Instance.Graphics.ScalingFilterLevel.Event  -= UpdateScalingFilterLevel;
-            ConfigurationState.Instance.Graphics.AntiAliasing.Event        -= UpdateAntiAliasing;
+            ConfigurationState.Instance(UseTitleConfiguration).System.IgnoreMissingServices.Event -= UpdateIgnoreMissingServicesState;
+            ConfigurationState.Instance(UseTitleConfiguration).Graphics.AspectRatio.Event         -= UpdateAspectRatioState;
+            ConfigurationState.Instance(UseTitleConfiguration).System.EnableDockedMode.Event      -= UpdateDockedModeState;
+            ConfigurationState.Instance(UseTitleConfiguration).System.AudioVolume.Event           -= UpdateAudioVolumeState;
+            ConfigurationState.Instance(UseTitleConfiguration).Graphics.ScalingFilter.Event       -= UpdateScalingFilter;
+            ConfigurationState.Instance(UseTitleConfiguration).Graphics.ScalingFilterLevel.Event  -= UpdateScalingFilterLevel;
+            ConfigurationState.Instance(UseTitleConfiguration).Graphics.AntiAliasing.Event        -= UpdateAntiAliasing;
 
             _topLevel.PointerMoved -= TopLevel_PointerMoved;
 
@@ -693,19 +700,20 @@ namespace Ryujinx.Ava
             // Initialize Renderer.
             IRenderer renderer;
 
-            if (ConfigurationState.Instance.Graphics.GraphicsBackend.Value == GraphicsBackend.Vulkan)
+            if (ConfigurationState.Instance(UseTitleConfiguration).Graphics.GraphicsBackend.Value == GraphicsBackend.Vulkan)
             {
+                string preferredGpu = ConfigurationState.Instance(UseTitleConfiguration).Graphics.PreferredGpu.Value;
                 renderer = new VulkanRenderer(
                     (_rendererHost.EmbeddedWindow as EmbeddedWindowVulkan).CreateSurface,
                     VulkanHelper.GetRequiredInstanceExtensions,
-                    ConfigurationState.Instance.Graphics.PreferredGpu.Value);
+                    ConfigurationState.Instance(UseTitleConfiguration).Graphics.PreferredGpu.Value);
             }
             else
             {
                 renderer = new OpenGLRenderer();
             }
 
-            BackendThreading threadingMode = ConfigurationState.Instance.Graphics.BackendThreading;
+            BackendThreading threadingMode = ConfigurationState.Instance(UseTitleConfiguration).Graphics.BackendThreading;
 
             var isGALthreaded = threadingMode == BackendThreading.On || (threadingMode == BackendThreading.Auto && renderer.PreferThreading);
             if (isGALthreaded)
@@ -716,7 +724,7 @@ namespace Ryujinx.Ava
             Logger.Info?.PrintMsg(LogClass.Gpu, $"Backend Threading ({threadingMode}): {isGALthreaded}");
 
             // Initialize Configuration.
-            var memoryConfiguration = ConfigurationState.Instance.System.ExpandRam.Value ? HLE.MemoryConfiguration.MemoryConfiguration6GiB : HLE.MemoryConfiguration.MemoryConfiguration4GiB;
+            var memoryConfiguration = ConfigurationState.Instance(UseTitleConfiguration).System.ExpandRam.Value ? HLE.MemoryConfiguration.MemoryConfiguration6GiB : HLE.MemoryConfiguration.MemoryConfiguration4GiB;
 
             HLE.HLEConfiguration configuration = new(VirtualFileSystem,
                                                      _viewModel.LibHacHorizonManager,
@@ -727,26 +735,26 @@ namespace Ryujinx.Ava
                                                      InitializeAudio(),
                                                      memoryConfiguration,
                                                      _viewModel.UiHandler,
-                                                     (SystemLanguage)ConfigurationState.Instance.System.Language.Value,
-                                                     (RegionCode)ConfigurationState.Instance.System.Region.Value,
-                                                     ConfigurationState.Instance.Graphics.EnableVsync,
-                                                     ConfigurationState.Instance.System.EnableDockedMode,
-                                                     ConfigurationState.Instance.System.EnablePtc,
-                                                     ConfigurationState.Instance.System.EnableInternetAccess,
-                                                     ConfigurationState.Instance.System.EnableFsIntegrityChecks ? IntegrityCheckLevel.ErrorOnInvalid : IntegrityCheckLevel.None,
-                                                     ConfigurationState.Instance.System.FsGlobalAccessLogMode,
-                                                     ConfigurationState.Instance.System.SystemTimeOffset,
-                                                     ConfigurationState.Instance.System.TimeZone,
-                                                     ConfigurationState.Instance.System.MemoryManagerMode,
-                                                     ConfigurationState.Instance.System.IgnoreMissingServices,
-                                                     ConfigurationState.Instance.Graphics.AspectRatio,
-                                                     ConfigurationState.Instance.System.AudioVolume,
-                                                     ConfigurationState.Instance.System.UseHypervisor);
+                                                     (SystemLanguage)ConfigurationState.Instance(UseTitleConfiguration).System.Language.Value,
+                                                     (RegionCode)ConfigurationState.Instance(UseTitleConfiguration).System.Region.Value,
+                                                     ConfigurationState.Instance(UseTitleConfiguration).Graphics.EnableVsync,
+                                                     ConfigurationState.Instance(UseTitleConfiguration).System.EnableDockedMode,
+                                                     ConfigurationState.Instance(UseTitleConfiguration).System.EnablePtc,
+                                                     ConfigurationState.Instance(UseTitleConfiguration).System.EnableInternetAccess,
+                                                     ConfigurationState.Instance(UseTitleConfiguration).System.EnableFsIntegrityChecks ? IntegrityCheckLevel.ErrorOnInvalid : IntegrityCheckLevel.None,
+                                                     ConfigurationState.Instance(UseTitleConfiguration).System.FsGlobalAccessLogMode,
+                                                     ConfigurationState.Instance(UseTitleConfiguration).System.SystemTimeOffset,
+                                                     ConfigurationState.Instance(UseTitleConfiguration).System.TimeZone,
+                                                     ConfigurationState.Instance(UseTitleConfiguration).System.MemoryManagerMode,
+                                                     ConfigurationState.Instance(UseTitleConfiguration).System.IgnoreMissingServices,
+                                                     ConfigurationState.Instance(UseTitleConfiguration).Graphics.AspectRatio,
+                                                     ConfigurationState.Instance(UseTitleConfiguration).System.AudioVolume,
+                                                     ConfigurationState.Instance(UseTitleConfiguration).System.UseHypervisor);
 
             Device = new Switch(configuration);
         }
 
-        private static IHardwareDeviceDriver InitializeAudio()
+        private IHardwareDeviceDriver InitializeAudio()
         {
             var availableBackends = new List<AudioBackend>()
             {
@@ -756,7 +764,7 @@ namespace Ryujinx.Ava
                 AudioBackend.Dummy
             };
 
-            AudioBackend preferredBackend = ConfigurationState.Instance.System.AudioBackend.Value;
+            AudioBackend preferredBackend = ConfigurationState.Instance(UseTitleConfiguration).System.AudioBackend.Value;
 
             for (int i = 0; i < availableBackends.Count; i++)
             {
@@ -768,7 +776,7 @@ namespace Ryujinx.Ava
                 }
             }
 
-            static IHardwareDeviceDriver InitializeAudioBackend<T>(AudioBackend backend, AudioBackend nextBackend) where T : IHardwareDeviceDriver, new()
+            IHardwareDeviceDriver InitializeAudioBackend<T>(AudioBackend backend, AudioBackend nextBackend) where T : IHardwareDeviceDriver, new()
             {
                 if (T.IsSupported)
                 {
@@ -799,7 +807,7 @@ namespace Ryujinx.Ava
 
                 if (deviceDriver != null)
                 {
-                    ConfigurationState.Instance.System.AudioBackend.Value = currentBackend;
+                    ConfigurationState.Instance(UseTitleConfiguration).System.AudioBackend.Value = currentBackend;
                     break;
                 }
             }
@@ -851,9 +859,9 @@ namespace Ryujinx.Ava
 
             Device.Gpu.Renderer.Initialize(_glLogLevel);
 
-            _renderer?.Window?.SetAntiAliasing((Graphics.GAL.AntiAliasing)ConfigurationState.Instance.Graphics.AntiAliasing.Value);
-            _renderer?.Window?.SetScalingFilter((Graphics.GAL.ScalingFilter)ConfigurationState.Instance.Graphics.ScalingFilter.Value);
-            _renderer?.Window?.SetScalingFilterLevel(ConfigurationState.Instance.Graphics.ScalingFilterLevel.Value);
+            _renderer?.Window?.SetAntiAliasing((Graphics.GAL.AntiAliasing)ConfigurationState.Instance(UseTitleConfiguration).Graphics.AntiAliasing.Value);
+            _renderer?.Window?.SetScalingFilter((Graphics.GAL.ScalingFilter)ConfigurationState.Instance(UseTitleConfiguration).Graphics.ScalingFilter.Value);
+            _renderer?.Window?.SetScalingFilterLevel(ConfigurationState.Instance(UseTitleConfiguration).Graphics.ScalingFilterLevel.Value);
 
             Width = (int)_rendererHost.Bounds.Width;
             Height = (int)_rendererHost.Bounds.Height;
@@ -907,7 +915,7 @@ namespace Ryujinx.Ava
         public void UpdateStatus()
         {
             // Run a status update only when a frame is to be drawn. This prevents from updating the ui and wasting a render when no frame is queued.
-            string dockedMode = ConfigurationState.Instance.System.EnableDockedMode ? LocaleManager.Instance[LocaleKeys.Docked] : LocaleManager.Instance[LocaleKeys.Handheld];
+            string dockedMode = ConfigurationState.Instance(UseTitleConfiguration).System.EnableDockedMode ? LocaleManager.Instance[LocaleKeys.Docked] : LocaleManager.Instance[LocaleKeys.Handheld];
 
             if (GraphicsConfig.ResScale != 1)
             {
@@ -917,9 +925,9 @@ namespace Ryujinx.Ava
             StatusUpdatedEvent?.Invoke(this, new StatusUpdatedEventArgs(
                 Device.EnableDeviceVsync,
                 LocaleManager.Instance[LocaleKeys.VolumeShort] + $": {(int)(Device.GetVolume() * 100)}%",
-                ConfigurationState.Instance.Graphics.GraphicsBackend.Value == GraphicsBackend.Vulkan ? "Vulkan" : "OpenGL",
+                ConfigurationState.Instance(UseTitleConfiguration).Graphics.GraphicsBackend.Value == GraphicsBackend.Vulkan ? "Vulkan" : "OpenGL",
                 dockedMode,
-                ConfigurationState.Instance.Graphics.AspectRatio.Value.ToText(),
+                ConfigurationState.Instance(UseTitleConfiguration).Graphics.AspectRatio.Value.ToText(),
                 LocaleManager.Instance[LocaleKeys.Game] + $": {Device.Statistics.GetGameFrameRate():00.00} FPS ({Device.Statistics.GetGameFrameTime():00.00} ms)",
                 $"FIFO: {Device.Statistics.GetFifoPercent():00.00} %",
                 $"GPU: {_renderer.GetHardwareInfo().GpuVendor}"));
@@ -927,7 +935,7 @@ namespace Ryujinx.Ava
 
         public async Task ShowExitPrompt()
         {
-            bool shouldExit = !ConfigurationState.Instance.ShowConfirmExit;
+            bool shouldExit = !ConfigurationState.Shared.ShowConfirmExit;
             if (!shouldExit)
             {
                 if (_dialogShown)
@@ -955,11 +963,11 @@ namespace Ryujinx.Ava
                 return false;
             }
 
-            NpadManager.Update(ConfigurationState.Instance.Graphics.AspectRatio.Value.ToFloat());
+            NpadManager.Update(ConfigurationState.Instance(UseTitleConfiguration).Graphics.AspectRatio.Value.ToFloat());
 
             if (_viewModel.IsActive)
             {
-                if (ConfigurationState.Instance.Hid.EnableMouse)
+                if (ConfigurationState.Shared.Hid.EnableMouse)
                 {
                     if (_isCursorInRenderer)
                     {
@@ -972,7 +980,7 @@ namespace Ryujinx.Ava
                 }
                 else
                 {
-                    if (ConfigurationState.Instance.HideCursorOnIdle)
+                    if (ConfigurationState.Shared.HideCursorOnIdle)
                     {
                         if (Stopwatch.GetTimestamp() - _lastCursorMoveTime >= CursorHideIdleTime * Stopwatch.Frequency)
                         {
@@ -1022,7 +1030,7 @@ namespace Ryujinx.Ava
                         case KeyboardHotkeyState.ToggleMute:
                             if (Device.IsAudioMuted())
                             {
-                                Device.SetVolume(ConfigurationState.Instance.System.AudioVolume);
+                                Device.SetVolume(ConfigurationState.Instance(UseTitleConfiguration).System.AudioVolume);
                             }
                             else
                             {
@@ -1068,9 +1076,9 @@ namespace Ryujinx.Ava
             // Touchscreen.
             bool hasTouch = false;
 
-            if (_viewModel.IsActive && !ConfigurationState.Instance.Hid.EnableMouse)
+            if (_viewModel.IsActive && !ConfigurationState.Instance(UseTitleConfiguration).Hid.EnableMouse)
             {
-                hasTouch = TouchScreenManager.Update(true, (_inputManager.MouseDriver as AvaloniaMouseDriver).IsButtonPressed(MouseButton.Button1), ConfigurationState.Instance.Graphics.AspectRatio.Value.ToFloat());
+                hasTouch = TouchScreenManager.Update(true, (_inputManager.MouseDriver as AvaloniaMouseDriver).IsButtonPressed(MouseButton.Button1), ConfigurationState.Instance(UseTitleConfiguration).Graphics.AspectRatio.Value.ToFloat());
             }
 
             if (!hasTouch)
@@ -1087,39 +1095,45 @@ namespace Ryujinx.Ava
         {
             KeyboardHotkeyState state = KeyboardHotkeyState.None;
 
-            if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.ToggleVsync))
+            KeyboardHotkeys hotkeys = ConfigurationState.Instance(UseTitleConfiguration).Hid.Hotkeys.Value;
+
+            if (hotkeys == null)
+            {
+                return state;
+            }
+            if (_keyboardInterface.IsPressed((Key)hotkeys.ToggleVsync))
             {
                 state = KeyboardHotkeyState.ToggleVSync;
             }
-            else if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.Screenshot))
+            else if (_keyboardInterface.IsPressed((Key)hotkeys.Screenshot))
             {
                 state = KeyboardHotkeyState.Screenshot;
             }
-            else if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.ShowUi))
+            else if (_keyboardInterface.IsPressed((Key)hotkeys.ShowUi))
             {
                 state = KeyboardHotkeyState.ShowUi;
             }
-            else if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.Pause))
+            else if (_keyboardInterface.IsPressed((Key)hotkeys.Pause))
             {
                 state = KeyboardHotkeyState.Pause;
             }
-            else if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.ToggleMute))
+            else if (_keyboardInterface.IsPressed((Key)hotkeys.ToggleMute))
             {
                 state = KeyboardHotkeyState.ToggleMute;
             }
-            else if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.ResScaleUp))
+            else if (_keyboardInterface.IsPressed((Key)hotkeys.ResScaleUp))
             {
                 state = KeyboardHotkeyState.ResScaleUp;
             }
-            else if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.ResScaleDown))
+            else if (_keyboardInterface.IsPressed((Key)hotkeys.ResScaleDown))
             {
                 state = KeyboardHotkeyState.ResScaleDown;
             }
-            else if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.VolumeUp))
+            else if (_keyboardInterface.IsPressed((Key)hotkeys.VolumeUp))
             {
                 state = KeyboardHotkeyState.VolumeUp;
             }
-            else if (_keyboardInterface.IsPressed((Key)ConfigurationState.Instance.Hid.Hotkeys.Value.VolumeDown))
+            else if (_keyboardInterface.IsPressed((Key)hotkeys.VolumeDown))
             {
                 state = KeyboardHotkeyState.VolumeDown;
             }
