@@ -5,8 +5,8 @@ namespace Ryujinx.Input.Assigner
     /// </summary>
     public class KeyboardKeyAssigner : IButtonAssigner
     {
-        private IKeyboard _keyboard;
-
+        private readonly IKeyboard _keyboard;
+        private Key _pressedKey;
         private KeyboardStateSnapshot _keyboardState;
 
         public KeyboardKeyAssigner(IKeyboard keyboard)
@@ -14,37 +14,48 @@ namespace Ryujinx.Input.Assigner
             _keyboard = keyboard;
         }
 
-        public void Initialize() { }
+        public void Initialize()
+        {
+            _pressedKey = Key.Unknown;
+        }
 
         public void ReadInput()
         {
-            _keyboardState = _keyboard.GetKeyboardStateSnapshot();
+            KeyboardStateSnapshot _newKeyboardState = _keyboard.GetKeyboardStateSnapshot();
+
+            if (_keyboardState != null)
+            {
+                DetectPressedKeys(_keyboardState, _newKeyboardState);
+            }
+
+            _keyboardState = _newKeyboardState;
         }
 
         public bool HasAnyButtonPressed()
         {
-            return GetPressedButton().Length != 0;
+            return _pressedKey != Key.Unknown;
         }
 
         public bool ShouldCancel()
         {
-            return _keyboardState.IsPressed(Key.Escape);
+            return _keyboardState?.IsPressed(Key.Escape) == true;
         }
 
         public string GetPressedButton()
         {
-            string keyPressed = "";
+            return !ShouldCancel() && HasAnyButtonPressed() ? _pressedKey.ToString() : "";
+        }
 
+        private void DetectPressedKeys(KeyboardStateSnapshot oldState, KeyboardStateSnapshot newState)
+        {
             for (Key key = Key.Unknown; key < Key.Count; key++)
             {
-                if (_keyboardState.IsPressed(key))
+                if (oldState.IsPressed(key) && !newState.IsPressed(key))
                 {
-                    keyPressed = key.ToString();
+                    _pressedKey = key;
                     break;
                 }
             }
-
-            return !ShouldCancel() ? keyPressed : "";
         }
     }
 }
