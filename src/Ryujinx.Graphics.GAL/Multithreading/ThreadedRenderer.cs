@@ -1,4 +1,5 @@
 ﻿using Ryujinx.Common;
+using Ryujinx.Common.Logging;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Graphics.GAL.Multithreading.Commands;
 using Ryujinx.Graphics.GAL.Multithreading.Commands.Buffer;
@@ -39,6 +40,7 @@ namespace Ryujinx.Graphics.GAL.Multithreading
 
         private ManualResetEventSlim _invokeRun;
         private AutoResetEvent _interruptRun;
+        private DateTime lastReset = DateTime.Now;
 
         private bool _lastSampleCounterClear = true;
 
@@ -47,6 +49,7 @@ namespace Ryujinx.Graphics.GAL.Multithreading
 
         private int _consumerPtr;
         private int _commandCount;
+        private int _programCount;
 
         private int _producerPtr;
         private int _lastProducedPtr;
@@ -298,6 +301,11 @@ namespace Ryujinx.Graphics.GAL.Multithreading
 
             Programs.Add(request);
 
+            Logger.Warning?.Print(LogClass.Gpu, $"Compiling program 0x.");
+
+            _programCount++;
+            lastReset = DateTime.Now;
+
             New<CreateProgramCommand>().Set(Ref((IProgramRequest)request));
             QueueCommand();
 
@@ -493,6 +501,17 @@ namespace Ryujinx.Graphics.GAL.Multithreading
             {
                 wait.SpinOnce();
             }
+        }
+        
+        public int GetProgramCount()
+        {
+            if (lastReset.AddSeconds(5) <= DateTime.Now)
+            {
+                lastReset = DateTime.Now;
+                _programCount = 0;
+            }
+
+            return _programCount;
         }
 
         public void Dispose()

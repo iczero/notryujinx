@@ -133,6 +133,7 @@ namespace Ryujinx.Ui
         [GUI] TreeSelection   _gameTableSelection;
         [GUI] ScrolledWindow  _gameTableWindow;
         [GUI] Label           _gpuName;
+        [GUI] Label           _shaderCount;
         [GUI] Label           _progressLabel;
         [GUI] Label           _firmwareVersionLabel;
         [GUI] Gtk.ProgressBar _progressBar;
@@ -1133,6 +1134,7 @@ namespace Ryujinx.Ui
                 _aspectRatio.Text  = args.AspectRatio;
                 _gpuBackend.Text   = args.GpuBackend;
                 _volumeStatus.Text = GetVolumeLabelText(args.Volume);
+                _shaderCount.Text  = args.ShaderCount.ToString();
 
                 if (args.VSyncEnabled)
                 {
