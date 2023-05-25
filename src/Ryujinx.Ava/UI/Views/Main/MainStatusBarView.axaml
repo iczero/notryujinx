@@ -222,6 +222,12 @@
             IsVisible="{Binding ShowFirmwareStatus}"
             Orientation="Horizontal">
             <TextBlock
+                Name="ShaderCount"
+                Margin="5,0,50,0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Text="{Binding ShaderCountText}" />
+            <TextBlock
                 Name="FirmwareStatus"
                 Margin="0"
                 HorizontalAlignment="Right"

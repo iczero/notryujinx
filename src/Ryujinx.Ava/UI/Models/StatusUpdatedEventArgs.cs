@@ -12,8 +12,10 @@ namespace Ryujinx.Ava.UI.Models
         public string FifoStatus { get; }
         public string GameStatus { get; }
         public string GpuName { get; }
-
-        public StatusUpdatedEventArgs(bool vSyncEnabled, string volumeStatus, string gpuBackend, string dockedMode, string aspectRatio, string gameStatus, string fifoStatus, string gpuName)
+        public int ShaderCount { get; }
+        public StatusUpdatedEventArgs(bool vSyncEnabled, string volumeStatus, string gpuBackend, 
+                                      string dockedMode, string aspectRatio,  string gameStatus, 
+                                      string fifoStatus, string gpuName,      int shaderCount)
         {
             VSyncEnabled = vSyncEnabled;
             VolumeStatus = volumeStatus;
@@ -23,6 +25,7 @@ namespace Ryujinx.Ava.UI.Models
             GameStatus = gameStatus;
             FifoStatus = fifoStatus;
             GpuName = gpuName;
+            ShaderCount = shaderCount;
         }
     }
 }

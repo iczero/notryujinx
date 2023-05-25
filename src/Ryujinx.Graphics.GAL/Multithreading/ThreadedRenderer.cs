@@ -1,5 +1,4 @@
 ﻿using Ryujinx.Common;
-using Ryujinx.Common.Logging;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Graphics.GAL.Multithreading.Commands;
 using Ryujinx.Graphics.GAL.Multithreading.Commands.Buffer;
@@ -300,8 +299,6 @@ namespace Ryujinx.Graphics.GAL.Multithreading
             SourceProgramRequest request = new SourceProgramRequest(program, shaders, info);
 
             Programs.Add(request);
-
-            Logger.Warning?.Print(LogClass.Gpu, $"Compiling program 0x.");
 
             _programCount++;
             lastReset = DateTime.Now;

@@ -55,6 +55,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         private string _gameStatusText;
         private string _volumeStatusText;
         private string _gpuStatusText;
+        private string _shaderCountText;
         private bool _isAmiiboRequested;
         private bool _isGameRunning;
         private bool _isFullScreen;
@@ -476,6 +477,17 @@ namespace Ryujinx.Ava.UI.ViewModels
             set
             {
                 _gpuStatusText = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public string ShaderCountText
+        {
+            get => _shaderCountText;
+            set
+            {
+                _shaderCountText = value;
 
                 OnPropertyChanged();
             }
@@ -1184,6 +1196,15 @@ namespace Ryujinx.Ava.UI.ViewModels
                         VsyncColor = new SolidColorBrush((Color)color);
                     }
 
+                    if (args.ShaderCount > 0)
+                    {
+                        ShaderCountText = LocaleManager.Instance[LocaleKeys.CompilingShaders] + $": {args.ShaderCount}";
+                    }
+                    else
+                    {
+                        ShaderCountText = "";
+                    }
+                
                     DockedStatusText = args.DockedMode;
                     AspectRatioStatusText = args.AspectRatio;
                     GameStatusText = args.GameStatus;
@@ -1193,7 +1214,7 @@ namespace Ryujinx.Ava.UI.ViewModels
                     BackendText = args.GpuBackend;
 
                     ShowStatusSeparator = true;
-                });
+                }); 
             }
         }
 

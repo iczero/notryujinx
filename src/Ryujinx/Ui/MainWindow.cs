@@ -1134,7 +1134,7 @@ namespace Ryujinx.Ui
                 _aspectRatio.Text  = args.AspectRatio;
                 _gpuBackend.Text   = args.GpuBackend;
                 _volumeStatus.Text = GetVolumeLabelText(args.Volume);
-                _shaderCount.Text  = args.ShaderCount.ToString();
+                _shaderCount.Text  = $"Compiling: {args.ShaderCount}";
 
                 if (args.VSyncEnabled)
                 {
@@ -1145,6 +1145,15 @@ namespace Ryujinx.Ui
                 {
                     _vSyncStatus.Attributes = new Pango.AttrList();
                     _vSyncStatus.Attributes.Insert(new Pango.AttrForeground(ushort.MaxValue, 17733, 21588));
+                }
+
+                if (args.ShaderCount == 0)
+                {
+                    _shaderCount.Hide();
+                }
+                else
+                {
+                    _shaderCount.Show();
                 }
             });
         }

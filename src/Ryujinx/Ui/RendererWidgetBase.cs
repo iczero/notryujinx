@@ -483,7 +483,6 @@ namespace Ryujinx.Ui
                     {
                         string dockedMode = ConfigurationState.Instance.System.EnableDockedMode ? "Docked" : "Handheld";
                         float scale = GraphicsConfig.ResScale;
-                        ThreadedRenderer renderer = (ThreadedRenderer)Device.Gpu.Renderer;
 
                         if (scale != 1)
                         {
@@ -499,7 +498,7 @@ namespace Ryujinx.Ui
                             $"Game: {Device.Statistics.GetGameFrameRate():00.00} FPS ({Device.Statistics.GetGameFrameTime():00.00} ms)",
                             $"FIFO: {Device.Statistics.GetFifoPercent():0.00} %",
                             $"GPU: {_gpuVendorName}",
-                            $"Compiling: {renderer.GetProgramCount()}"));
+                            ((ThreadedRenderer)Device.Gpu.Renderer).GetProgramCount()));
 
                         _ticks = Math.Min(_ticks - _ticksPerFrame, _ticksPerFrame);
                     }
