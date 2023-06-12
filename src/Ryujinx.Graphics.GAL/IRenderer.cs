@@ -10,6 +10,8 @@ namespace Ryujinx.Graphics.GAL
 
         bool PreferThreading { get; }
 
+        int ProgramCount { get; }
+
         IPipeline Pipeline { get; }
 
         IWindow Window { get; }

@@ -24,6 +24,8 @@ namespace Ryujinx.Graphics.Vulkan
 
         private bool _initialized;
 
+        private int _programCount = 0;
+
         internal FormatCapabilities FormatCapabilities { get; private set; }
         internal HardwareCapabilities Capabilities;
 
@@ -85,6 +87,8 @@ namespace Ryujinx.Graphics.Vulkan
         public string GpuVersion { get; private set; }
 
         public bool PreferThreading => true;
+
+        public int ProgramCount => GetProgramCount();
 
         public event EventHandler<ScreenCaptureImageInfo> ScreenCaptured;
 
@@ -409,6 +413,8 @@ namespace Ryujinx.Graphics.Vulkan
 
         public IProgram CreateProgram(ShaderSource[] sources, ShaderInfo info)
         {
+            _programCount++;
+
             bool isCompute = sources.Length == 1 && sources[0].Stage == ShaderStage.Compute;
 
             if (info.State.HasValue || isCompute)
@@ -871,6 +877,11 @@ namespace Ryujinx.Graphics.Vulkan
         {
             return Capabilities.SupportsHostImportedMemory &&
                 HostMemoryAllocator.TryImport(BufferManager.HostImportedBufferMemoryRequirements, BufferManager.DefaultBufferMemoryFlags, address, size);
+        }
+
+        public int GetProgramCount()
+        {
+            return _programCount;
         }
     }
 }

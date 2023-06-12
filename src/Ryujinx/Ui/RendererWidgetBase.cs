@@ -498,7 +498,7 @@ namespace Ryujinx.Ui
                             $"Game: {Device.Statistics.GetGameFrameRate():00.00} FPS ({Device.Statistics.GetGameFrameTime():00.00} ms)",
                             $"FIFO: {Device.Statistics.GetFifoPercent():0.00} %",
                             $"GPU: {_gpuVendorName}",
-                            ((ThreadedRenderer)Device.Gpu.Renderer).GetProgramCount()));
+                            Device.Gpu.Renderer.ProgramCount));
 
                         _ticks = Math.Min(_ticks - _ticksPerFrame, _ticksPerFrame);
                     }

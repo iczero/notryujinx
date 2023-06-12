@@ -29,6 +29,8 @@ namespace Ryujinx.Graphics.OpenGL
 
         private Sync _sync;
 
+        private int _programCount = 0;
+
         public event EventHandler<ScreenCaptureImageInfo> ScreenCaptured;
 
         internal PersistentBuffers PersistentBuffers { get; }
@@ -42,6 +44,8 @@ namespace Ryujinx.Graphics.OpenGL
         public string GpuVersion { get; private set; }
 
         public bool PreferThreading => true;
+        
+        public int ProgramCount => GetProgramCount();
 
         public OpenGLRenderer()
         {
@@ -87,6 +91,8 @@ namespace Ryujinx.Graphics.OpenGL
 
         public IProgram CreateProgram(ShaderSource[] shaders, ShaderInfo info)
         {
+            _programCount++;
+
             return new Program(shaders, info.FragmentOutputMap);
         }
 
@@ -304,6 +310,11 @@ namespace Ryujinx.Graphics.OpenGL
         public bool PrepareHostMapping(nint address, ulong size)
         {
             return false;
+        }
+
+        public int GetProgramCount()
+        {
+            return _programCount;
         }
     }
 }

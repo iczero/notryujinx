@@ -39,7 +39,6 @@ namespace Ryujinx.Graphics.GAL.Multithreading
 
         private ManualResetEventSlim _invokeRun;
         private AutoResetEvent _interruptRun;
-        private DateTime lastReset = DateTime.Now;
 
         private bool _lastSampleCounterClear = true;
 
@@ -48,7 +47,6 @@ namespace Ryujinx.Graphics.GAL.Multithreading
 
         private int _consumerPtr;
         private int _commandCount;
-        private int _programCount;
 
         private int _producerPtr;
         private int _lastProducedPtr;
@@ -56,6 +54,8 @@ namespace Ryujinx.Graphics.GAL.Multithreading
 
         private int _refProducerPtr;
         private int _refConsumerPtr;
+
+        private int _programCount = 0;
 
         private Action _interruptAction;
         private readonly object _interruptLock = new();
@@ -73,6 +73,8 @@ namespace Ryujinx.Graphics.GAL.Multithreading
         public IRenderer BaseRenderer => _baseRenderer;
 
         public bool PreferThreading => _baseRenderer.PreferThreading;
+
+        public int ProgramCount => GetProgramCount();
 
         public ThreadedRenderer(IRenderer renderer)
         {
@@ -301,7 +303,6 @@ namespace Ryujinx.Graphics.GAL.Multithreading
             Programs.Add(request);
 
             _programCount++;
-            lastReset = DateTime.Now;
 
             New<CreateProgramCommand>().Set(Ref((IProgramRequest)request));
             QueueCommand();
@@ -499,18 +500,12 @@ namespace Ryujinx.Graphics.GAL.Multithreading
                 wait.SpinOnce();
             }
         }
-        
+
         public int GetProgramCount()
         {
-            if (lastReset.AddSeconds(5) <= DateTime.Now)
-            {
-                lastReset = DateTime.Now;
-                _programCount = 0;
-            }
-
             return _programCount;
         }
-
+    
         public void Dispose()
         {
             // Dispose must happen from the render thread, after all commands have completed.
