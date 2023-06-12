@@ -216,17 +216,25 @@
                 TextAlignment="Left" />
         </StackPanel>
         <StackPanel
+            Grid.Column="2"
+            Margin="0,2"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            IsVisible="{Binding IsGameRunning}"
+            Orientation="Horizontal">
+            <TextBlock
+                Name="ShaderCount"
+                Margin="5,0,5,0"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Text="{Binding ShaderCountText}" />
+        </StackPanel>        
+        <StackPanel
             Grid.Column="3"
             Margin="0,0,5,0"
             VerticalAlignment="Center"
             IsVisible="{Binding ShowFirmwareStatus}"
             Orientation="Horizontal">
-            <TextBlock
-                Name="ShaderCount"
-                Margin="5,0,50,0"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Center"
-                Text="{Binding ShaderCountText}" />
             <TextBlock
                 Name="FirmwareStatus"
                 Margin="0"
