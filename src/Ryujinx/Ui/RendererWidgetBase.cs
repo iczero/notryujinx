@@ -60,6 +60,10 @@ namespace Ryujinx.Ui
         private long _ticks = 0;
         private float _newVolume;
 
+        private int _displayCount;
+        private int _previousCount;
+        private DateTime _lastShaderReset;
+
         private readonly Stopwatch _chrono;
 
         private KeyboardHotkeyState _prevHotkeyState;
@@ -483,6 +487,21 @@ namespace Ryujinx.Ui
                     {
                         string dockedMode = ConfigurationState.Instance.System.EnableDockedMode ? "Docked" : "Handheld";
                         float scale = GraphicsConfig.ResScale;
+                        int totalCount = Device.Gpu.Renderer.GetProgramCount();
+
+                        // If there is a mismatch between total program compile and previous count
+                        // this means new shaders have been compiled and should be displayed.
+                        if (totalCount != _previousCount)
+                        {
+                            _displayCount += totalCount - _previousCount;
+
+                            _lastShaderReset = DateTime.Now;
+                            _previousCount = totalCount;
+                        }
+                        else if (_lastShaderReset.AddSeconds(5) <= DateTime.Now)
+                        {
+                            _displayCount = 0;
+                        }
 
                         if (scale != 1)
                         {
@@ -498,7 +517,7 @@ namespace Ryujinx.Ui
                             $"Game: {Device.Statistics.GetGameFrameRate():00.00} FPS ({Device.Statistics.GetGameFrameTime():00.00} ms)",
                             $"FIFO: {Device.Statistics.GetFifoPercent():0.00} %",
                             $"GPU: {_gpuVendorName}",
-                            Device.Gpu.Renderer.ProgramCount));
+                            _displayCount));
 
                         _ticks = Math.Min(_ticks - _ticksPerFrame, _ticksPerFrame);
                     }

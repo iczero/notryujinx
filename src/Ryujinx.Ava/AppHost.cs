@@ -89,6 +89,10 @@ namespace Ryujinx.Ava
         private long _lastCursorMoveTime;
         private bool _isCursorInRenderer = true;
 
+        private DateTime _lastShaderReset;
+        private int _displayCount;
+        private int _previousCount = 0;
+
         private bool _isStopped;
         private bool _isActive;
         private bool _renderingStarted;
@@ -947,6 +951,21 @@ namespace Ryujinx.Ava
         {
             // Run a status update only when a frame is to be drawn. This prevents from updating the ui and wasting a render when no frame is queued.
             string dockedMode = ConfigurationState.Instance.System.EnableDockedMode ? LocaleManager.Instance[LocaleKeys.Docked] : LocaleManager.Instance[LocaleKeys.Handheld];
+            int totalCount = _renderer.GetProgramCount();
+
+            // If there is a mismatch between total program compile and previous count
+            // this means new shaders have been compiled and should be displayed.
+            if (totalCount != _previousCount)
+            {
+                _displayCount += totalCount - _previousCount;
+
+                _lastShaderReset = DateTime.Now;
+                _previousCount = totalCount;
+            }
+            else if (_lastShaderReset.AddSeconds(5) <= DateTime.Now)
+            {
+                _displayCount = 0;
+            }
 
             if (GraphicsConfig.ResScale != 1)
             {
@@ -962,7 +981,7 @@ namespace Ryujinx.Ava
                 LocaleManager.Instance[LocaleKeys.Game] + $": {Device.Statistics.GetGameFrameRate():00.00} FPS ({Device.Statistics.GetGameFrameTime():00.00} ms)",
                 $"FIFO: {Device.Statistics.GetFifoPercent():00.00} %",
                 $"GPU: {_renderer.GetHardwareInfo().GpuVendor}",
-                _renderer.ProgramCount));
+                _displayCount));
         }
 
         public async Task ShowExitPrompt()

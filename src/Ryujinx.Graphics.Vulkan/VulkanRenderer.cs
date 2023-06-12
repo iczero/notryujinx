@@ -88,8 +88,6 @@ namespace Ryujinx.Graphics.Vulkan
 
         public bool PreferThreading => true;
 
-        public int ProgramCount => GetProgramCount();
-
         public event EventHandler<ScreenCaptureImageInfo> ScreenCaptured;
 
         public VulkanRenderer(Vk api, Func<Instance, Vk, SurfaceKHR> surfaceFunc, Func<string[]> requiredExtensionsFunc, string preferredGpuId)

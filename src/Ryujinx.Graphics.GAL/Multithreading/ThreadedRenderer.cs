@@ -74,8 +74,6 @@ namespace Ryujinx.Graphics.GAL.Multithreading
 
         public bool PreferThreading => _baseRenderer.PreferThreading;
 
-        public int ProgramCount => GetProgramCount();
-
         public ThreadedRenderer(IRenderer renderer)
         {
             _baseRenderer = renderer;

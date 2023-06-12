@@ -44,8 +44,6 @@ namespace Ryujinx.Graphics.OpenGL
         public string GpuVersion { get; private set; }
 
         public bool PreferThreading => true;
-        
-        public int ProgramCount => GetProgramCount();
 
         public OpenGLRenderer()
         {
