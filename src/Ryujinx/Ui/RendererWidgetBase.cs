@@ -487,7 +487,7 @@ namespace Ryujinx.Ui
                     {
                         string dockedMode = ConfigurationState.Instance.System.EnableDockedMode ? "Docked" : "Handheld";
                         float scale = GraphicsConfig.ResScale;
-                        int totalCount = Device.Gpu.Renderer.GetProgramCount();
+                        int totalCount = Device.Gpu.Renderer.ProgramCount;
 
                         // If there is a mismatch between total program compile and previous count
                         // this means new shaders have been compiled and should be displayed.
@@ -498,6 +498,8 @@ namespace Ryujinx.Ui
                             _lastShaderReset = DateTime.Now;
                             _previousCount = totalCount;
                         }
+                        // Check if 5s has passed since any new shaders were compiled.
+                        // If yes, reset the counter.
                         else if (_lastShaderReset.AddSeconds(5) <= DateTime.Now)
                         {
                             _displayCount = 0;

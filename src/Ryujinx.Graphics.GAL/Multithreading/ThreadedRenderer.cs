@@ -55,7 +55,7 @@ namespace Ryujinx.Graphics.GAL.Multithreading
         private int _refProducerPtr;
         private int _refConsumerPtr;
 
-        private int _programCount = 0;
+        public int ProgramCount { get; set; } = 0;
 
         private Action _interruptAction;
         private readonly object _interruptLock = new();
@@ -300,7 +300,7 @@ namespace Ryujinx.Graphics.GAL.Multithreading
 
             Programs.Add(request);
 
-            _programCount++;
+            ProgramCount++;
 
             New<CreateProgramCommand>().Set(Ref((IProgramRequest)request));
             QueueCommand();
@@ -497,11 +497,6 @@ namespace Ryujinx.Graphics.GAL.Multithreading
             {
                 wait.SpinOnce();
             }
-        }
-
-        public int GetProgramCount()
-        {
-            return _programCount;
         }
     
         public void Dispose()

@@ -951,7 +951,7 @@ namespace Ryujinx.Ava
         {
             // Run a status update only when a frame is to be drawn. This prevents from updating the ui and wasting a render when no frame is queued.
             string dockedMode = ConfigurationState.Instance.System.EnableDockedMode ? LocaleManager.Instance[LocaleKeys.Docked] : LocaleManager.Instance[LocaleKeys.Handheld];
-            int totalCount = _renderer.GetProgramCount();
+            int totalCount = _renderer.ProgramCount;
 
             // If there is a mismatch between total program compile and previous count
             // this means new shaders have been compiled and should be displayed.
@@ -962,6 +962,8 @@ namespace Ryujinx.Ava
                 _lastShaderReset = DateTime.Now;
                 _previousCount = totalCount;
             }
+            // Check if 5s has passed since any new shaders were compiled.
+            // If yes, reset the counter.
             else if (_lastShaderReset.AddSeconds(5) <= DateTime.Now)
             {
                 _displayCount = 0;

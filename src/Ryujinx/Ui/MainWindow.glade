@@ -925,6 +925,7 @@
                     </child>
                     <child>
                       <object class="GtkLabel" id="_shaderCount">
+                        <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="halign">start</property>
                         <property name="margin-left">5</property>

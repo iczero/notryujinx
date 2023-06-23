@@ -1196,15 +1196,6 @@ namespace Ryujinx.Ava.UI.ViewModels
                         VsyncColor = new SolidColorBrush((Color)color);
                     }
 
-                    if (args.ShaderCount > 0)
-                    {
-                        ShaderCountText = LocaleManager.Instance[LocaleKeys.CompilingShaders] + $": {args.ShaderCount}";
-                    }
-                    else
-                    {
-                        ShaderCountText = "";
-                    }
-                
                     DockedStatusText = args.DockedMode;
                     AspectRatioStatusText = args.AspectRatio;
                     GameStatusText = args.GameStatus;
@@ -1212,9 +1203,10 @@ namespace Ryujinx.Ava.UI.ViewModels
                     FifoStatusText = args.FifoStatus;
                     GpuNameText = args.GpuName;
                     BackendText = args.GpuBackend;
+                    ShaderCountText = args.ShaderCount > 0 ? LocaleManager.Instance[LocaleKeys.CompilingShaders] + $": {args.ShaderCount}" : "";
 
                     ShowStatusSeparator = true;
-                }); 
+                });
             }
         }
 
