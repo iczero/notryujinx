@@ -498,7 +498,7 @@ namespace Ryujinx.Graphics.GAL.Multithreading
                 wait.SpinOnce();
             }
         }
-    
+
         public void Dispose()
         {
             // Dispose must happen from the render thread, after all commands have completed.
