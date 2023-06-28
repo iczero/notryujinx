@@ -1,8 +1,8 @@
 using OpenTK.Graphics.OpenGL;
 using Ryujinx.Common;
-using Ryujinx.Common.Memory;
 using Ryujinx.Graphics.GAL;
 using System;
+using System.Buffers;
 using System.Diagnostics;
 
 namespace Ryujinx.Graphics.OpenGL.Image
@@ -421,70 +421,83 @@ namespace Ryujinx.Graphics.OpenGL.Image
             }
         }
 
-        public void SetData(SpanOrArray<byte> data)
+        /// <inheritdoc/>
+        public void SetData(IMemoryOwner<byte> data)
         {
-            var dataSpan = data.AsSpan();
-
             if (Format == Format.S8UintD24Unorm)
             {
-                dataSpan = FormatConverter.ConvertS8D24ToD24S8(dataSpan);
+                var convertedData = FormatConverter.ConvertS8D24ToD24S8(data.Memory.Span);
+                data.Dispose();
+                data = convertedData;
             }
 
-            unsafe
+            using (data)
             {
-                fixed (byte* ptr = dataSpan)
+                unsafe
                 {
-                    ReadFrom((IntPtr)ptr, dataSpan.Length);
+                    var dataSpan = data.Memory.Span;
+                    fixed (byte* ptr = dataSpan)
+                    {
+                        ReadFrom((IntPtr)ptr, dataSpan.Length);
+                    }
                 }
             }
         }
 
-        public void SetData(SpanOrArray<byte> data, int layer, int level)
+        /// <inheritdoc/>
+        public void SetData(IMemoryOwner<byte> data, int layer, int level)
         {
-            var dataSpan = data.AsSpan();
-
             if (Format == Format.S8UintD24Unorm)
             {
-                dataSpan = FormatConverter.ConvertS8D24ToD24S8(dataSpan);
+                var convertedData = FormatConverter.ConvertS8D24ToD24S8(data.Memory.Span);
+                data.Dispose();
+                data = convertedData;
             }
 
-            unsafe
+            using (data)
             {
-                fixed (byte* ptr = dataSpan)
+                unsafe
                 {
-                    int width = Math.Max(Info.Width >> level, 1);
-                    int height = Math.Max(Info.Height >> level, 1);
+                    fixed (byte* ptr = data.Memory.Span)
+                    {
+                        int width = Math.Max(Info.Width >> level, 1);
+                        int height = Math.Max(Info.Height >> level, 1);
 
-                    ReadFrom2D((IntPtr)ptr, layer, level, 0, 0, width, height);
+                        ReadFrom2D((IntPtr)ptr, layer, level, 0, 0, width, height);
+                    }
                 }
             }
         }
 
-        public void SetData(SpanOrArray<byte> data, int layer, int level, Rectangle<int> region)
+        /// <inheritdoc/>
+        public void SetData(IMemoryOwner<byte> data, int layer, int level, Rectangle<int> region)
         {
-            var dataSpan = data.AsSpan();
-
             if (Format == Format.S8UintD24Unorm)
             {
-                dataSpan = FormatConverter.ConvertS8D24ToD24S8(dataSpan);
+                var convertedData = FormatConverter.ConvertS8D24ToD24S8(data.Memory.Span);
+                data.Dispose();
+                data = convertedData;
             }
 
             int wInBlocks = BitUtils.DivRoundUp(region.Width, Info.BlockWidth);
             int hInBlocks = BitUtils.DivRoundUp(region.Height, Info.BlockHeight);
 
-            unsafe
+            using (data)
             {
-                fixed (byte* ptr = dataSpan)
+                unsafe
                 {
-                    ReadFrom2D(
-                        (IntPtr)ptr,
-                        layer,
-                        level,
-                        region.X,
-                        region.Y,
-                        region.Width,
-                        region.Height,
-                        BitUtils.AlignUp(wInBlocks * Info.BytesPerPixel, 4) * hInBlocks);
+                    fixed (byte* ptr = data.Memory.Span)
+                    {
+                        ReadFrom2D(
+                            (IntPtr)ptr,
+                            layer,
+                            level,
+                            region.X,
+                            region.Y,
+                            region.Width,
+                            region.Height,
+                            BitUtils.AlignUp(wInBlocks * Info.BytesPerPixel, 4) * hInBlocks);
+                    }
                 }
             }
         }
