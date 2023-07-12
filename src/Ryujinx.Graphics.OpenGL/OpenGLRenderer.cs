@@ -21,13 +21,13 @@ namespace Ryujinx.Graphics.OpenGL
 
         public IWindow Window => _window;
 
-        private TextureCopy _textureCopy;
-        private TextureCopy _backgroundTextureCopy;
+        private readonly TextureCopy _textureCopy;
+        private readonly TextureCopy _backgroundTextureCopy;
         internal TextureCopy TextureCopy => BackgroundContextWorker.InBackground ? _backgroundTextureCopy : _textureCopy;
         internal TextureCopyIncompatible TextureCopyIncompatible { get; }
         internal TextureCopyMS TextureCopyMS { get; }
 
-        private Sync _sync;
+        private readonly Sync _sync;
 
         public int ProgramCount { get; set; } = 0;
 
@@ -99,7 +99,7 @@ namespace Ryujinx.Graphics.OpenGL
             return new Sampler(info);
         }
 
-        public ITexture CreateTexture(TextureCreateInfo info, float scaleFactor)
+        public ITexture CreateTexture(TextureCreateInfo info)
         {
             if (info.Target == Target.TextureBuffer)
             {
@@ -107,7 +107,7 @@ namespace Ryujinx.Graphics.OpenGL
             }
             else
             {
-                return ResourcePool.GetTextureOrNull(info, scaleFactor) ?? new TextureStorage(this, info, scaleFactor).CreateDefaultView();
+                return ResourcePool.GetTextureOrNull(info) ?? new TextureStorage(this, info).CreateDefaultView();
             }
         }
 
@@ -198,9 +198,9 @@ namespace Ryujinx.Graphics.OpenGL
             ResourcePool.Tick();
         }
 
-        public ICounterEvent ReportCounter(CounterType type, EventHandler<ulong> resultHandler, bool hostReserved)
+        public ICounterEvent ReportCounter(CounterType type, EventHandler<ulong> resultHandler, float divisor, bool hostReserved)
         {
-            return _counters.QueueReport(type, resultHandler, _pipeline.DrawCount, hostReserved);
+            return _counters.QueueReport(type, resultHandler, divisor, _pipeline.DrawCount, hostReserved);
         }
 
         public void Initialize(GraphicsDebugLevel glLogLevel)
@@ -214,7 +214,6 @@ namespace Ryujinx.Graphics.OpenGL
                 GL.Arb.MaxShaderCompilerThreads(Math.Min(Environment.ProcessorCount, 8));
             }
 
-            _pipeline.Initialize(this);
             _counters.Initialize(_pipeline);
 
             // This is required to disable [0, 1] clamping for SNorm outputs on compatibility profiles.
@@ -226,9 +225,9 @@ namespace Ryujinx.Graphics.OpenGL
 
         private void PrintGpuInformation()
         {
-            GpuVendor   = GL.GetString(StringName.Vendor);
+            GpuVendor = GL.GetString(StringName.Vendor);
             GpuRenderer = GL.GetString(StringName.Renderer);
-            GpuVersion  = GL.GetString(StringName.Version);
+            GpuVersion = GL.GetString(StringName.Version);
 
             Logger.Notice.Print(LogClass.Gpu, $"{GpuVendor} {GpuRenderer} ({GpuVersion})");
         }

@@ -33,7 +33,7 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed
 
         private readonly ShaderProgramInfo[] _currentProgramInfo;
         private ShaderSpecializationState _shaderSpecState;
-        private SpecializationStateUpdater _currentSpecState;
+        private readonly SpecializationStateUpdater _currentSpecState;
 
         private ProgramPipelineState _pipeline;
 
@@ -43,7 +43,7 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed
         private uint _vbEnableMask;
 
         private bool _prevDrawIndexed;
-        private bool _prevDrawIndirect;
+        private readonly bool _prevDrawIndirect;
         private IndexType _prevIndexType;
         private uint _prevFirstVertex;
         private bool _prevTfEnable;
@@ -448,7 +448,7 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed
             int samplesInY = msaaMode.SamplesInY();
 
             var scissor = _state.State.ScreenScissorState;
-            Size sizeHint = new Size((scissor.X + scissor.Width) * samplesInX, (scissor.Y + scissor.Height) * samplesInY, 1);
+            Size sizeHint = new((scissor.X + scissor.Width) * samplesInX, (scissor.Y + scissor.Height) * samplesInY, 1);
 
             int clipRegionWidth = int.MaxValue;
             int clipRegionHeight = int.MaxValue;
@@ -495,6 +495,11 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed
                     {
                         clipRegionHeight = color.Height / samplesInY;
                     }
+
+                    if (!_context.Capabilities.SupportsBgraFormat)
+                    {
+                        _context.SupportBufferUpdater.SetRenderTargetIsBgra(index, color.Format.IsBgr());
+                    }
                 }
             }
 
@@ -539,7 +544,7 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed
 
                 if (oldScale != _channel.TextureManager.RenderTargetScale)
                 {
-                    _context.Renderer.Pipeline.SetRenderTargetScale(_channel.TextureManager.RenderTargetScale);
+                    _context.SupportBufferUpdater.SetRenderTargetScale(_channel.TextureManager.RenderTargetScale);
 
                     UpdateViewportTransform();
                     UpdateScissorState();
@@ -669,7 +674,7 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed
         /// </summary>
         private void UpdateDepthTestState()
         {
-            DepthTestDescriptor descriptor = new DepthTestDescriptor(
+            DepthTestDescriptor descriptor = new(
                 _state.State.DepthTestEnable,
                 _state.State.DepthWriteEnable,
                 _state.State.DepthTestFunc);
@@ -739,7 +744,7 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed
                     height *= scale;
                 }
 
-                Rectangle<float> region = new Rectangle<float>(x, y, width, height);
+                Rectangle<float> region = new(x, y, width, height);
 
                 ViewportSwizzle swizzleX = transform.UnpackSwizzleX();
                 ViewportSwizzle swizzleY = transform.UnpackSwizzleY();
@@ -751,18 +756,22 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed
 
                 if (transform.ScaleZ < 0)
                 {
-                    float temp = depthNear;
-                    depthNear = depthFar;
-                    depthFar = temp;
+                    (depthFar, depthNear) = (depthNear, depthFar);
                 }
 
                 viewports[index] = new Viewport(region, swizzleX, swizzleY, swizzleZ, swizzleW, depthNear, depthFar);
             }
 
             _context.Renderer.Pipeline.SetDepthMode(GetDepthMode());
-            _context.Renderer.Pipeline.SetViewports(viewports, disableTransform);
+            _context.Renderer.Pipeline.SetViewports(viewports);
 
-            _currentSpecState.SetViewportTransformDisable(_state.State.ViewportTransformEnable == 0);
+            _context.SupportBufferUpdater.SetViewportTransformDisable(
+                viewports[0].Region.Width,
+                viewports[0].Region.Height,
+                _channel.TextureManager.RenderTargetScale,
+                disableTransform);
+
+            _currentSpecState.SetViewportTransformDisable(disableTransform);
             _currentSpecState.SetDepthMode(GetDepthMode() == DepthMode.MinusOneToOne);
         }
 
@@ -845,7 +854,7 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed
                 backMask = test.FrontMask;
             }
 
-            StencilTestDescriptor descriptor = new StencilTestDescriptor(
+            StencilTestDescriptor descriptor = new(
                 test.Enable,
                 test.FrontFunc,
                 test.FrontSFail,
@@ -939,7 +948,7 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed
                     {
                         VertexAttribType.Sint => Format.R32G32B32A32Sint,
                         VertexAttribType.Uint => Format.R32G32B32A32Uint,
-                        _ => Format.R32G32B32A32Float
+                        _ => Format.R32G32B32A32Float,
                     };
                 }
 
@@ -1017,8 +1026,12 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed
 
             switch (indexBuffer.Type)
             {
-                case IndexType.UShort: size *= 2; break;
-                case IndexType.UInt: size *= 4; break;
+                case IndexType.UShort:
+                    size *= 2;
+                    break;
+                case IndexType.UInt:
+                    size *= 4;
+                    break;
             }
 
             _channel.BufferManager.SetIndexBuffer(gpuVa, size, indexBuffer.Type);
@@ -1338,7 +1351,7 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed
 
             _vtgWritesRtLayer = false;
 
-            ShaderAddresses addresses = new ShaderAddresses();
+            ShaderAddresses addresses = new();
             Span<ulong> addressesSpan = addresses.AsSpan();
 
             ulong baseAddress = _state.State.ShaderBaseAddress.Pack();
@@ -1453,7 +1466,7 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed
                 //  ScaleZ = (Far - Near) / 2
                 // DepthNear/Far are sorted such as that Near is always less than Far.
                 depthMode = extents.DepthNear != transform.TranslateZ &&
-                            extents.DepthFar  != transform.TranslateZ
+                            extents.DepthFar != transform.TranslateZ
                     ? DepthMode.MinusOneToOne
                     : DepthMode.ZeroToOne;
             }

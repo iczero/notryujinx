@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-
 using static Ryujinx.Graphics.Shader.IntermediateRepresentation.OperandHelper;
 
 namespace Ryujinx.Graphics.Shader.Translation
@@ -84,7 +83,7 @@ namespace Ryujinx.Graphics.Shader.Translation
 
         public Operand Add(Instruction inst, Operand dest = null, params Operand[] sources)
         {
-            Operation operation = new Operation(inst, dest, sources);
+            Operation operation = new(inst, dest, sources);
 
             _operations.Add(operation);
 
@@ -93,7 +92,7 @@ namespace Ryujinx.Graphics.Shader.Translation
 
         public Operand Add(Instruction inst, StorageKind storageKind, Operand dest = null, params Operand[] sources)
         {
-            Operation operation = new Operation(inst, storageKind, dest, sources);
+            Operation operation = new(inst, storageKind, dest, sources);
 
             _operations.Add(operation);
 
@@ -104,7 +103,7 @@ namespace Ryujinx.Graphics.Shader.Translation
         {
             Operand[] dests = new[] { dest.Item1, dest.Item2 };
 
-            Operation operation = new Operation(inst, 0, dests, sources);
+            Operation operation = new(inst, 0, dests, sources);
 
             Add(operation);
 
@@ -114,36 +113,6 @@ namespace Ryujinx.Graphics.Shader.Translation
         public void Add(Operation operation)
         {
             _operations.Add(operation);
-        }
-
-        public TextureOperation CreateTextureOperation(
-            Instruction inst,
-            SamplerType type,
-            TextureFlags flags,
-            int handle,
-            int compIndex,
-            Operand[] dests,
-            params Operand[] sources)
-        {
-            return CreateTextureOperation(inst, type, TextureFormat.Unknown, flags, handle, compIndex, dests, sources);
-        }
-
-        public TextureOperation CreateTextureOperation(
-            Instruction inst,
-            SamplerType type,
-            TextureFormat format,
-            TextureFlags flags,
-            int handle,
-            int compIndex,
-            Operand[] dests,
-            params Operand[] sources)
-        {
-            if (!flags.HasFlag(TextureFlags.Bindless))
-            {
-                Config.SetUsedTexture(inst, type, format, flags, TextureOperation.DefaultCbufSlot, handle);
-            }
-
-            return new TextureOperation(inst, type, format, flags, handle, compIndex, dests, sources);
         }
 
         public void FlagAttributeRead(int attribute)
@@ -430,7 +399,7 @@ namespace Ryujinx.Graphics.Shader.Translation
                             AlphaTestOp.Less => Instruction.CompareLess,
                             AlphaTestOp.LessOrEqual => Instruction.CompareLessOrEqual,
                             AlphaTestOp.NotEqual => Instruction.CompareNotEqual,
-                            _ => 0
+                            _ => 0,
                         };
 
                         Debug.Assert(comparator != 0, $"Invalid alpha test operation \"{alphaTestOp}\".");

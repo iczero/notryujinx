@@ -19,7 +19,6 @@ namespace Ryujinx.Graphics.GAL
         void BackgroundContextAction(Action action, bool alwaysBackground = false);
 
         BufferHandle CreateBuffer(int size, BufferHandle storageHint);
-
         BufferHandle CreateBuffer(int size)
         {
             return CreateBuffer(size, BufferHandle.Null);
@@ -30,7 +29,7 @@ namespace Ryujinx.Graphics.GAL
         IProgram CreateProgram(ShaderSource[] shaders, ShaderInfo info);
 
         ISampler CreateSampler(SamplerCreateInfo info);
-        ITexture CreateTexture(TextureCreateInfo info, float scale);
+        ITexture CreateTexture(TextureCreateInfo info);
         bool PrepareHostMapping(nint address, ulong size);
 
         void CreateSync(ulong id, bool strict);
@@ -51,7 +50,7 @@ namespace Ryujinx.Graphics.GAL
 
         void PreFrame();
 
-        ICounterEvent ReportCounter(CounterType type, EventHandler<ulong> resultHandler, bool hostReserved);
+        ICounterEvent ReportCounter(CounterType type, EventHandler<ulong> resultHandler, float divisor, bool hostReserved);
 
         void ResetCounter(CounterType type);
 
