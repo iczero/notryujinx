@@ -139,6 +139,7 @@ namespace Ryujinx.Ui
         [GUI] Label _volumeStatus;
         [GUI] Box _listStatusBox;
         [GUI] Label _loadingStatusLabel;
+        [GUI] Label _shaderCount;
         [GUI] Gtk.ProgressBar _loadingStatusBar;
 
 #pragma warning restore CS0649, IDE0044, CS0169, IDE0051
