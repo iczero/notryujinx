@@ -1,4 +1,4 @@
-﻿using Ryujinx.Audio.Renderer.Server.MemoryPool;
+using Ryujinx.Audio.Renderer.Server.MemoryPool;
 using System;
 using System.Runtime.CompilerServices;
 using Xunit;

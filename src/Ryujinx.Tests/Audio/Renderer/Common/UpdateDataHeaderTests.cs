@@ -1,4 +1,4 @@
-﻿using Ryujinx.Audio.Renderer.Common;
+using Ryujinx.Audio.Renderer.Common;
 using System.Runtime.CompilerServices;
 using Xunit;
 
