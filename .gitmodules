@@ -1,0 +1,3 @@
+[submodule "tmp/Xunit.Combinatorial"]
+	path = tmp/Xunit.Combinatorial
+	url = https://github.com/TSRBerry/Xunit.Combinatorial

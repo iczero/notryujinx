@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\tmp\Xunit.Combinatorial\src\Xunit.Combinatorial\Xunit.Combinatorial.csproj" />
     <ProjectReference Include="..\Ryujinx.Memory\Ryujinx.Memory.csproj" />
   </ItemGroup>
 
