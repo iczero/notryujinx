@@ -1,5 +1,4 @@
 ﻿using Ryujinx.Common.Collections;
-using System;
 using System.Collections.Generic;
 using Xunit;
 using Xunit.Abstractions;
@@ -36,15 +35,15 @@ namespace Ryujinx.Tests.Collections
 
             /*
              *  Tree Should Look as Follows After Rotations
-             *
+             *  
              *        2
              *    1        4
              *           3    10
              *              5    11
-             *
+             *  
              */
 
-            Assert.Equal(list.Count, dictionary.Count);
+            Assert.Equal(dictionary.Count, list.Count);
             Assert.Equal(2, list[0].Key);
             Assert.Equal(1, list[1].Key);
             Assert.Equal(4, list[2].Key);
@@ -80,19 +79,19 @@ namespace Ryujinx.Tests.Collections
 
             /*
              *  Tree Should Look as Follows After Rotations
-             *
+             *  
              *              4
              *      2               10
              *  1      3       7         13
              *              5      9  11    24
-             *                6  8
+             *                6  8 
              */
 
             foreach (KeyValuePair<int, int> node in list)
             {
                 _testOutputHelper.WriteLine($"{node.Key} -> {node.Value}");
             }
-            Assert.Equal(list.Count, dictionary.Count);
+            Assert.Equal(dictionary.Count, list.Count);
             Assert.Equal(4, list[0].Key);
             Assert.Equal(2, list[1].Key);
             Assert.Equal(10, list[2].Key);
@@ -113,12 +112,12 @@ namespace Ryujinx.Tests.Collections
 
             /*
              *  Tree Should Look as Follows After Removal
-             *
+             *  
              *              4
              *      2               10
              *  1      3       6         13
              *              5      9  11    24
-             *                  8
+             *                  8 
              */
 
             list = dictionary.AsLevelOrderList();
@@ -146,12 +145,12 @@ namespace Ryujinx.Tests.Collections
             list = dictionary.AsLevelOrderList();
             /*
              *  Tree Should Look as Follows After Removal
-             *
+             *  
              *              4
              *      2               9
              *  1      3       6         13
              *              5      8  11    24
-             *
+             *                   
              */
             foreach (KeyValuePair<int, int> node in list)
             {
@@ -196,17 +195,17 @@ namespace Ryujinx.Tests.Collections
 
             foreach (KeyValuePair<int, int> node in list)
             {
-                Console.WriteLine($"{node.Key} -> {node.Value}");
+                _testOutputHelper.WriteLine($"{node.Key} -> {node.Value}");
             }
 
             /*
              *  Tree Should Look as Follows After Rotations
-             *
+             *  
              *              4
              *      2               10
              *  1      3       7         13
              *              5      9  11    24
-             *                6  8
+             *                6  8 
              */
 
             Assert.Equal(list.Count, dictionary.Count);
