@@ -1,7 +1,8 @@
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Shader;
+using SharpMetal.Foundation;
+using SharpMetal.Metal;
 using System;
-using SharpMetal;
 using System.Runtime.Versioning;
 
 namespace Ryujinx.Graphics.Metal
@@ -15,10 +16,16 @@ namespace Ryujinx.Graphics.Metal
         public Pipeline(MTLDevice device, MTLCommandBuffer commandBuffer)
         {
             var renderPipelineDescriptor = new MTLRenderPipelineDescriptor();
-            var renderPipelineState = device.CreateRenderPipelineState(renderPipelineDescriptor, out NSError _);
+            var error = new NSError(IntPtr.Zero);
+            var renderPipelineState = device.NewRenderPipelineState(renderPipelineDescriptor, ref error);
+            if (error != IntPtr.Zero)
+            {
+                // throw new Exception($"Failed to create render pipeline state! {StringHelp}");
+                throw new Exception($"Failed to create render pipeline state!");
+            }
 
             _commandBuffer = commandBuffer;
-            _renderCommandEncoder = _commandBuffer.CreateRenderCommandEncoder(new MTLRenderPassDescriptor());
+            _renderCommandEncoder = _commandBuffer.RenderCommandEncoder(new MTLRenderPassDescriptor());
             _renderCommandEncoder.SetRenderPipelineState(renderPipelineState);
         }
 
@@ -249,6 +256,11 @@ namespace Ryujinx.Graphics.Metal
         }
 
         public void SetVertexBuffers(ReadOnlySpan<VertexBufferDescriptor> vertexBuffers)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetViewports(ReadOnlySpan<Viewport> viewports)
         {
             throw new NotImplementedException();
         }

@@ -1,4 +1,4 @@
-using SharpMetal;
+using SharpMetal.Metal;
 
 namespace Ryujinx.Graphics.Metal
 {

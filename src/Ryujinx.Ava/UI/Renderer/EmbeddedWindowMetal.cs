@@ -1,5 +1,5 @@
-using SPB.Windowing;
 using SPB.Platform.Metal;
+using SPB.Windowing;
 using System;
 
 namespace Ryujinx.Ava.UI.Renderer
