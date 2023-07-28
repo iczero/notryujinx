@@ -29,9 +29,9 @@ namespace Ryujinx.Graphics.Metal
         public void Initialize(GraphicsDebugLevel logLevel)
         {
             _device = MTLDevice.CreateSystemDefaultDevice();
-            Queue = _device.NewCommandQueue(Constants.MaxCommandBuffersPerQueue);
+            Queue = _device.NewCommandQueue();
 
-            var commandBuffer = Queue.CommandBuffer(new MTLCommandBufferDescriptor { RetainedReferences = true });
+            var commandBuffer = Queue.CommandBuffer();
 
             _pipeline = new Pipeline(_device, commandBuffer);
         }
@@ -90,7 +90,7 @@ namespace Ryujinx.Graphics.Metal
                 RAddressMode = info.AddressP.Convert()
             });
 
-            throw new NotImplementedException();
+            return new Sampler(sampler);
         }
 
         public ITexture CreateTexture(TextureCreateInfo info)
@@ -108,7 +108,7 @@ namespace Ryujinx.Graphics.Metal
             return CreateTextureView(info);
         }
 
-        internal TextureView CreateTextureView(TextureCreateInfo info)
+        internal Texture CreateTextureView(TextureCreateInfo info)
         {
             throw new NotImplementedException();
         }
