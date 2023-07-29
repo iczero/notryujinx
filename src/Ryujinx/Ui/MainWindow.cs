@@ -892,7 +892,7 @@ namespace Ryujinx.Ui
 
                 if (path.StartsWith("@SystemContent"))
                 {
-                    path = _virtualFileSystem.SwitchPathToSystemPath(path);
+                    path = VirtualFileSystem.SwitchPathToSystemPath(path);
 
                     isFirmwareTitle = true;
                 }

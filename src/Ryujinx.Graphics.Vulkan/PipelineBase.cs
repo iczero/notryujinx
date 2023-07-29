@@ -245,9 +245,24 @@ namespace Ryujinx.Graphics.Vulkan
 
         public unsafe void ClearRenderTargetDepthStencil(int layer, int layerCount, float depthValue, bool depthMask, int stencilValue, int stencilMask)
         {
-            // TODO: Use stencilMask (fully)
+            // TODO: Use stencilMask (fully).
 
             if (FramebufferParams == null || !FramebufferParams.HasDepthStencil)
+            {
+                return;
+            }
+
+            var clearValue = new ClearValue(null, new ClearDepthStencilValue(depthValue, (uint)stencilValue));
+            var flags = depthMask ? ImageAspectFlags.DepthBit : 0;
+
+            if (stencilMask != 0)
+            {
+                flags |= ImageAspectFlags.StencilBit;
+            }
+
+            flags &= FramebufferParams.GetDepthStencilAspectFlags();
+
+            if (flags == ImageAspectFlags.None)
             {
                 return;
             }
@@ -258,14 +273,6 @@ namespace Ryujinx.Graphics.Vulkan
             }
 
             BeginRenderPass();
-
-            var clearValue = new ClearValue(null, new ClearDepthStencilValue(depthValue, (uint)stencilValue));
-            var flags = depthMask ? ImageAspectFlags.DepthBit : 0;
-
-            if (stencilMask != 0)
-            {
-                flags |= ImageAspectFlags.StencilBit;
-            }
 
             var attachment = new ClearAttachment(flags, 0, clearValue);
             var clearRect = FramebufferParams.GetClearRect(ClearScissor, layer, layerCount);
@@ -702,12 +709,14 @@ namespace Ryujinx.Graphics.Vulkan
             return CommandBuffer.Handle == cb.Handle;
         }
 
+#pragma warning disable CA1822 // Mark member as static
         public void SetAlphaTest(bool enable, float reference, CompareOp op)
         {
             // This is currently handled using shader specialization, as Vulkan does not support alpha test.
             // In the future, we may want to use this to write the reference value into the support buffer,
             // to avoid creating one version of the shader per reference value used.
         }
+#pragma warning restore CA1822
 
         public void SetBlendState(AdvancedBlendDescriptor blend)
         {
@@ -935,7 +944,7 @@ namespace Ryujinx.Graphics.Vulkan
 
             SignalStateChange();
 
-            if (_program.IsCompute)
+            if (internalProgram.IsCompute)
             {
                 EndRenderPass();
             }
