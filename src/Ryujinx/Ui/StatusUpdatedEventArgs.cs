@@ -15,7 +15,7 @@ namespace Ryujinx.Ui
         public int ShaderCount;
 
         public StatusUpdatedEventArgs(
-            bool vSyncEnabled, 
+            bool vSyncEnabled,
             float volume,
             string gpuBackend,
             string dockedMode,

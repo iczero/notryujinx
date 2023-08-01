@@ -1191,7 +1191,7 @@ namespace Ryujinx.Ui
                 _aspectRatio.Text = args.AspectRatio;
                 _gpuBackend.Text = args.GpuBackend;
                 _volumeStatus.Text = GetVolumeLabelText(args.Volume);
-                _shaderCount.Text  = args.ShaderCount > 0 ? $"Compiling Shaders: {args.ShaderCount}" : "";
+                _shaderCount.Text = args.ShaderCount > 0 ? $"Compiling Shaders: {args.ShaderCount}" : "";
 
                 if (args.VSyncEnabled)
                 {
