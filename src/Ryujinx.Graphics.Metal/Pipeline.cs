@@ -4,7 +4,6 @@ using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Shader;
 using SharpMetal.Foundation;
 using SharpMetal.Metal;
-using SharpMetal.ObjectiveCCore;
 using SharpMetal.QuartzCore;
 using System;
 using System.Runtime.CompilerServices;
@@ -30,6 +29,8 @@ namespace Ryujinx.Graphics.Metal
         private MTLBuffer _indexBuffer;
         private MTLIndexType _indexType;
         private ulong _indexBufferOffset;
+        private MTLClearColor _clearColor = new() { alpha = 1.0f };
+        private int frameCount = 0;
 
         public Pipeline(MTLDevice device, MTLCommandQueue commandQueue, CAMetalLayer metalLayer)
         {
@@ -51,15 +52,17 @@ namespace Ryujinx.Graphics.Metal
             // TODO: Recreate descriptor and encoder state as needed
             var renderPipelineDescriptor = new MTLRenderPipelineDescriptor();
             renderPipelineDescriptor.VertexFunction = vertexFunction;
-            renderPipelineDescriptor.FragmentFunction = fragmentFunction;
+            // renderPipelineDescriptor.FragmentFunction = fragmentFunction;
             // TODO: This should not be hardcoded, but a bug in SharpMetal prevents me from doing this correctly
             renderPipelineDescriptor.ColorAttachments.Object(0).PixelFormat = MTLPixelFormat.BGRA8Unorm;
 
-            _renderEncoderState = new(_device.NewRenderPipelineState(renderPipelineDescriptor, ref error), _device);
+            var renderPipelineState = _device.NewRenderPipelineState(renderPipelineDescriptor, ref error);
             if (error != IntPtr.Zero)
             {
                 Logger.Error?.PrintMsg(LogClass.Gpu, $"Failed to create Render Pipeline State: {StringHelper.String(error.LocalizedDescription)}");
             }
+
+            _renderEncoderState = new RenderEncoderState(renderPipelineState, _device);
             //
 
             _commandBuffer = _mtlCommandQueue.CommandBuffer();
@@ -72,6 +75,7 @@ namespace Ryujinx.Graphics.Metal
                 _currentEncoder.EndEncoding();
                 _currentEncoder = null;
             }
+            Logger.Warning?.Print(LogClass.Gpu, "Current pass ended");
         }
 
         public MTLRenderCommandEncoder BeginRenderPass()
@@ -81,6 +85,7 @@ namespace Ryujinx.Graphics.Metal
             var descriptor = new MTLRenderPassDescriptor();
             var renderCommandEncoder = _commandBuffer.RenderCommandEncoder(descriptor);
             _renderEncoderState.SetEncoderState(renderCommandEncoder);
+            Logger.Warning?.Print(LogClass.Gpu, "Began render pass");
 
             _currentEncoder = renderCommandEncoder;
             return renderCommandEncoder;
@@ -92,6 +97,7 @@ namespace Ryujinx.Graphics.Metal
 
             var descriptor = new MTLBlitPassDescriptor();
             var blitCommandEncoder = _commandBuffer.BlitCommandEncoder(descriptor);
+            Logger.Warning?.Print(LogClass.Gpu, "Began blit pass");
 
             _currentEncoder = blitCommandEncoder;
             return blitCommandEncoder;
@@ -103,6 +109,7 @@ namespace Ryujinx.Graphics.Metal
 
             var descriptor = new MTLComputePassDescriptor();
             var computeCommandEncoder = _commandBuffer.ComputeCommandEncoder(descriptor);
+            Logger.Warning?.Print(LogClass.Gpu, "Began compute pass");
 
             _currentEncoder = computeCommandEncoder;
             return computeCommandEncoder;
@@ -112,11 +119,33 @@ namespace Ryujinx.Graphics.Metal
         {
             EndCurrentPass();
 
-            Console.WriteLine("Ready to present");
+            var descriptor = new MTLRenderPassDescriptor();
+            descriptor.ColorAttachments.Object(0).Texture = drawable.Texture;
+            descriptor.ColorAttachments.Object(0).LoadAction = MTLLoadAction.Clear;
+            descriptor.ColorAttachments.Object(0).ClearColor = _clearColor;
+
+            var renderCommandEncoder = _commandBuffer.RenderCommandEncoder(descriptor);
+            Logger.Warning?.Print(LogClass.Gpu, "Began present");
+            _renderEncoderState.SetEncoderState(renderCommandEncoder);
+
+            // Barry goes here
+            // renderCommandEncoder.SetFragmentTexture(_renderTarget, 0);
+
+            renderCommandEncoder.DrawPrimitives(MTLPrimitiveType.Triangle, 0, 6);
+            renderCommandEncoder.EndEncoding();
+
             _commandBuffer.PresentDrawable(drawable);
-            Console.WriteLine("Presented");
             _commandBuffer.Commit();
-            Console.WriteLine("Committed");
+
+            Logger.Warning?.Print(LogClass.Gpu, "Presented");
+
+            frameCount++;
+
+            if (frameCount >= 5)
+            {
+                MTLCaptureManager.SharedCaptureManager().StopCapture();
+                Logger.Warning?.Print(LogClass.Gpu, "Trace ended!");
+            }
 
             _commandBuffer = _mtlCommandQueue.CommandBuffer();
         }
@@ -153,7 +182,7 @@ namespace Ryujinx.Graphics.Metal
 
         public void ClearRenderTargetColor(int index, int layer, int layerCount, uint componentMask, ColorF color)
         {
-            Logger.Warning?.Print(LogClass.Gpu, "Not Implemented!");
+            _clearColor = new MTLClearColor { red = color.Red, green = color.Green, blue = color.Blue, alpha = color.Alpha};
         }
 
         public void ClearRenderTargetDepthStencil(int layer, int layerCount, float depthValue, bool depthMask, int stencilValue,

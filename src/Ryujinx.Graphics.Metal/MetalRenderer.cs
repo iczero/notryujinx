@@ -38,6 +38,18 @@ namespace Ryujinx.Graphics.Metal
             var layer = _getMetalLayer();
             layer.Device = _device;
 
+            var captureDescriptor = new MTLCaptureDescriptor();
+            captureDescriptor.CaptureObject = _queue;
+            captureDescriptor.Destination = MTLCaptureDestination.GPUTraceDocument;
+            captureDescriptor.OutputURL = NSURL.FileURLWithPath(StringHelper.NSString("/Users/isaacmarovitz/Desktop/Trace.gputrace"));
+            var captureError = new NSError(IntPtr.Zero);
+            MTLCaptureManager.SharedCaptureManager().StartCapture(captureDescriptor, ref captureError);
+            if (captureError != IntPtr.Zero)
+            {
+                Console.Write($"Failed to start capture! {StringHelper.String(captureError.LocalizedDescription)}");
+
+            }
+
             _window = new Window(this, layer);
             _pipeline = new Pipeline(_device, _queue, layer);
         }
@@ -103,7 +115,10 @@ namespace Ryujinx.Graphics.Metal
 
         public ITexture CreateTexture(TextureCreateInfo info)
         {
-            return new Texture(_device, _pipeline, info);
+            var texture = new Texture(_device, _pipeline, info);
+            Logger.Warning?.Print(LogClass.Gpu, "Texture created!");
+
+            return texture;
         }
 
         public bool PrepareHostMapping(IntPtr address, ulong size)
