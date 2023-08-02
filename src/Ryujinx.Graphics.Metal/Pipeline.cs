@@ -4,6 +4,7 @@ using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Shader;
 using SharpMetal.Foundation;
 using SharpMetal.Metal;
+using SharpMetal.ObjectiveCCore;
 using SharpMetal.QuartzCore;
 using System;
 using System.Runtime.CompilerServices;
@@ -30,7 +31,7 @@ namespace Ryujinx.Graphics.Metal
         private MTLIndexType _indexType;
         private ulong _indexBufferOffset;
 
-        public Pipeline(MTLDevice device, MTLCommandQueue commandQueue)
+        public Pipeline(MTLDevice device, MTLCommandQueue commandQueue, CAMetalLayer metalLayer)
         {
             _device = device;
             _mtlCommandQueue = commandQueue;
@@ -51,6 +52,8 @@ namespace Ryujinx.Graphics.Metal
             var renderPipelineDescriptor = new MTLRenderPipelineDescriptor();
             renderPipelineDescriptor.VertexFunction = vertexFunction;
             renderPipelineDescriptor.FragmentFunction = fragmentFunction;
+            // TODO: This should not be hardcoded, but a bug in SharpMetal prevents me from doing this correctly
+            renderPipelineDescriptor.ColorAttachments.Object(0).PixelFormat = MTLPixelFormat.BGRA8Unorm;
 
             _renderEncoderState = new(_device.NewRenderPipelineState(renderPipelineDescriptor, ref error), _device);
             if (error != IntPtr.Zero)

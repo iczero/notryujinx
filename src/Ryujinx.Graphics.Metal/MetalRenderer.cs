@@ -15,10 +15,10 @@ namespace Ryujinx.Graphics.Metal
     public sealed class MetalRenderer : IRenderer
     {
         private readonly MTLDevice _device;
-        private readonly Pipeline _pipeline;
         private readonly MTLCommandQueue _queue;
         private readonly Func<CAMetalLayer> _getMetalLayer;
 
+        private Pipeline _pipeline;
         private Window _window;
 
         public event EventHandler<ScreenCaptureImageInfo> ScreenCaptured;
@@ -30,7 +30,6 @@ namespace Ryujinx.Graphics.Metal
         {
             _device = MTLDevice.CreateSystemDefaultDevice();
             _queue = _device.NewCommandQueue();
-            _pipeline = new Pipeline(_device, _queue);
             _getMetalLayer = metalLayer;
         }
 
@@ -40,6 +39,7 @@ namespace Ryujinx.Graphics.Metal
             layer.Device = _device;
 
             _window = new Window(this, layer);
+            _pipeline = new Pipeline(_device, _queue, layer);
         }
 
         public void BackgroundContextAction(Action action, bool alwaysBackground = false)
