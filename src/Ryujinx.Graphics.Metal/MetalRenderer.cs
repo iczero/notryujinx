@@ -4,6 +4,7 @@ using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Shader.Translation;
 using SharpMetal.Foundation;
 using SharpMetal.Metal;
+using SharpMetal.QuartzCore;
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
@@ -14,25 +15,31 @@ namespace Ryujinx.Graphics.Metal
     public sealed class MetalRenderer : IRenderer
     {
         private readonly MTLDevice _device;
-        private readonly Window _window;
         private readonly Pipeline _pipeline;
         private readonly MTLCommandQueue _queue;
+        private readonly Func<CAMetalLayer> _getMetalLayer;
+
+        private Window _window;
 
         public event EventHandler<ScreenCaptureImageInfo> ScreenCaptured;
         public bool PreferThreading => true;
         public IPipeline Pipeline => _pipeline;
         public IWindow Window => _window;
 
-        public MetalRenderer()
+        public MetalRenderer(Func<CAMetalLayer> metalLayer)
         {
             _device = MTLDevice.CreateSystemDefaultDevice();
             _queue = _device.NewCommandQueue();
             _pipeline = new Pipeline(_device, _queue);
-            _window = new Window(this);
+            _getMetalLayer = metalLayer;
         }
 
         public void Initialize(GraphicsDebugLevel logLevel)
         {
+            var layer = _getMetalLayer();
+            layer.Device = _device;
+
+            _window = new Window(this, layer);
         }
 
         public void BackgroundContextAction(Action action, bool alwaysBackground = false)

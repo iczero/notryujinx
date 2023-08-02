@@ -4,6 +4,7 @@ using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Shader;
 using SharpMetal.Foundation;
 using SharpMetal.Metal;
+using SharpMetal.QuartzCore;
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
@@ -104,13 +105,15 @@ namespace Ryujinx.Graphics.Metal
             return computeCommandEncoder;
         }
 
-        public void Present()
+        public void Present(CAMetalDrawable drawable)
         {
             EndCurrentPass();
 
-            // TODO: Give command buffer a valid MTLDrawable
-            // _commandBuffer.PresentDrawable();
-            // _commandBuffer.Commit();
+            Console.WriteLine("Ready to present");
+            _commandBuffer.PresentDrawable(drawable);
+            Console.WriteLine("Presented");
+            _commandBuffer.Commit();
+            Console.WriteLine("Committed");
 
             _commandBuffer = _mtlCommandQueue.CommandBuffer();
         }

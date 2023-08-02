@@ -751,7 +751,8 @@ namespace Ryujinx.Ava
             }
             else if (ConfigurationState.Instance.Graphics.GraphicsBackend.Value == GraphicsBackend.Metal)
             {
-                renderer = new MetalRenderer();
+                renderer = new MetalRenderer(
+                    (RendererHost.EmbeddedWindow as EmbeddedWindowMetal).GetMetalLayer);
             }
             else
             {
