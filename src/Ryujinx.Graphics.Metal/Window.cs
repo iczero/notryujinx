@@ -22,10 +22,10 @@ namespace Ryujinx.Graphics.Metal
 
         public void Present(ITexture texture, ImageCrop crop, Action swapBuffersCallback)
         {
-            if (_renderer.Pipeline is Pipeline pipeline)
+            if (_renderer.Pipeline is Pipeline pipeline && texture is Texture tex)
             {
                 var drawable = new CAMetalDrawable(ObjectiveC.IntPtr_objc_msgSend(_metalLayer, "nextDrawable"));
-                pipeline.Present(drawable);
+                pipeline.Present(drawable, tex);
             }
         }
 
