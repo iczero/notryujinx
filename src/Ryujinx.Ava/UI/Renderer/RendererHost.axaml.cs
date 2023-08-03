@@ -25,7 +25,7 @@ namespace Ryujinx.Ava.UI.Renderer
             {
                 EmbeddedWindow = new EmbeddedWindowVulkan();
             }
-            else
+            else if (ConfigurationState.Instance.Graphics.GraphicsBackend.Value == GraphicsBackend.Metal && OperatingSystem.IsMacOS())
             {
                 EmbeddedWindow = new EmbeddedWindowMetal();
             }
