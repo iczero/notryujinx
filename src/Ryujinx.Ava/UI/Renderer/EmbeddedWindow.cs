@@ -15,6 +15,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Threading.Tasks;
 using static Ryujinx.Ava.UI.Helpers.Win32NativeInterop;
+using CursorStates = Ryujinx.Ava.Input.AvaloniaMouse.CursorStates;
 
 namespace Ryujinx.Ava.UI.Renderer
 {
@@ -35,6 +36,18 @@ namespace Ryujinx.Ava.UI.Renderer
 
         public event EventHandler<IntPtr> WindowCreated;
         public event EventHandler<Size> SizeChanged;
+
+        [SupportedOSPlatform("windows")]
+        private readonly IntPtr InvisibleCursorWin = CreateEmptyCursor();
+        [SupportedOSPlatform("windows")]
+        private readonly IntPtr DefaultCursorWin = CreateArrowCursor();
+        [SupportedOSPlatform("windows")]
+        private CursorStates _cursorState = !ConfigurationState.Instance.Hid.EnableMouse.Value ?
+                                             CursorStates.CursorIsVisible : CursorStates.CursorIsHidden;
+        [SupportedOSPlatform("windows")]
+        private bool _trackingCursor = false;
+        [SupportedOSPlatform("windows")]
+        private TRACKMOUSEEVENT track = TRACKMOUSEEVENT.Empty;
 
         public EmbeddedWindow()
         {
@@ -147,10 +160,15 @@ namespace Ryujinx.Ava.UI.Renderer
                         msg == WindowsMessages.Rbuttondown ||
                         msg == WindowsMessages.Lbuttonup ||
                         msg == WindowsMessages.Rbuttonup ||
-                        msg == WindowsMessages.Mousemove)
+                        msg == WindowsMessages.Mousemove ||
+                        msg == WindowsMessages.Mouseleave ||
+                        msg == WindowsMessages.Setcursor)
                     {
-                        Point rootVisualPosition = this.TranslatePoint(new Point((long)lParam & 0xFFFF, (long)lParam >> 16 & 0xFFFF), VisualRoot).Value;
+                        var _x = ((long)lParam & 0xFFFF) / Program.WindowScaleFactor;
+                        var _y = ((long)lParam >> 16 & 0xFFFF) / Program.WindowScaleFactor;
+                        Point rootVisualPosition = this.TranslatePoint(new Point(_x, _y), VisualRoot).Value;
                         Pointer pointer = new(0, PointerType.Mouse, true);
+                        IntPtr activeWindow = GetActiveWindow();
 
                         switch (msg)
                         {
@@ -197,6 +215,17 @@ namespace Ryujinx.Ava.UI.Renderer
                                 }
                             case WindowsMessages.Mousemove:
                                 {
+                                    if (!_trackingCursor)
+                                    {
+                                        _trackingCursor = true;
+                                        _cursorState = CursorStates.ForceChangeCursor;
+
+                                        track.hwndTrack = hWnd;
+                                        track.cbSize = (uint)Marshal.SizeOf(track);
+                                        track.dwFlags = WindowsMessages.Cursorleave;
+                                        TrackMouseEvent(ref track);
+                                    }
+
                                     var evnt = new PointerEventArgs(
                                         PointerMovedEvent,
                                         this,
@@ -210,6 +239,61 @@ namespace Ryujinx.Ava.UI.Renderer
                                     RaiseEvent(evnt);
 
                                     break;
+                                }
+                            case WindowsMessages.Mouseleave:
+                                {
+                                    if (_trackingCursor)
+                                        _trackingCursor = false;
+
+                                    break;
+                                }
+                            case WindowsMessages.Setcursor:
+                                {
+                                    if (activeWindow != 0)
+                                    {
+                                        if (ConfigurationState.Instance.Hid.EnableMouse.Value)
+                                        {
+                                            if (ConfigurationState.Instance.HideCursor.Value == HideCursorMode.Never)
+                                            {
+                                                if (_cursorState != CursorStates.CursorIsVisible)
+                                                {
+                                                    SetCursor(DefaultCursorWin);
+                                                    _cursorState = CursorStates.CursorIsVisible;
+                                                }
+                                            }
+                                            else if (_cursorState != CursorStates.CursorIsHidden)
+                                            {
+                                                SetCursor(InvisibleCursorWin);
+                                                _cursorState = CursorStates.CursorIsHidden;
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (ConfigurationState.Instance.HideCursor.Value == HideCursorMode.Always)
+                                            {
+                                                if (_cursorState != CursorStates.CursorIsHidden)
+                                                {
+                                                    SetCursor(InvisibleCursorWin);
+                                                    _cursorState = CursorStates.CursorIsHidden;
+                                                }
+                                            }
+                                            else if (_cursorState != CursorStates.CursorIsVisible)
+                                            {
+                                                SetCursor(DefaultCursorWin);
+                                                _cursorState = CursorStates.CursorIsVisible;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (_cursorState != CursorStates.CursorIsVisible)
+                                        {
+                                            SetCursor(DefaultCursorWin);
+                                            _cursorState = CursorStates.CursorIsVisible;
+                                        }
+                                    }
+
+                                    return 1;
                                 }
                         }
                     }
@@ -225,7 +309,7 @@ namespace Ryujinx.Ava.UI.Renderer
                 lpfnWndProc = Marshal.GetFunctionPointerForDelegate(_wndProcDelegate),
                 style = ClassStyles.CsOwndc,
                 lpszClassName = Marshal.StringToHGlobalUni(_className),
-                hCursor = CreateArrowCursor(),
+                hCursor = DefaultCursorWin
             };
 
             RegisterClassEx(ref wndClassEx);

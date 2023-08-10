@@ -54,6 +54,7 @@ using static Ryujinx.Ava.UI.Helpers.Win32NativeInterop;
 using AntiAliasing = Ryujinx.Common.Configuration.AntiAliasing;
 using Image = SixLabors.ImageSharp.Image;
 using InputManager = Ryujinx.Input.HLE.InputManager;
+using CursorStates = Ryujinx.Ava.Input.AvaloniaMouse.CursorStates;
 using Key = Ryujinx.Input.Key;
 using MouseButton = Ryujinx.Input.MouseButton;
 using ScalingFilter = Ryujinx.Common.Configuration.ScalingFilter;
@@ -90,8 +91,11 @@ namespace Ryujinx.Ava
         private float _newVolume;
         private KeyboardHotkeyState _prevHotkeyState;
 
-        private long _lastCursorMoveTime;
+        private long _latestCursorMoveTime;
         private bool _isCursorInRenderer = true;
+
+        private CursorStates _cursorState = !ConfigurationState.Instance.Hid.EnableMouse.Value ? 
+                                             CursorStates.CursorIsVisible : CursorStates.CursorIsHidden;
 
         private bool _isStopped;
         private bool _isActive;
@@ -139,7 +143,7 @@ namespace Ryujinx.Ava
             _accountManager = accountManager;
             _userChannelPersistence = userChannelPersistence;
             _renderingThread = new Thread(RenderLoop) { Name = "GUI.RenderThread" };
-            _lastCursorMoveTime = Stopwatch.GetTimestamp();
+            _latestCursorMoveTime = Stopwatch.GetTimestamp();
             _glLogLevel = ConfigurationState.Instance.Logger.GraphicsDebugLevel;
             _topLevel = topLevel;
 
@@ -196,26 +200,42 @@ namespace Ryujinx.Ava
 
         private void TopLevel_PointerEnterOrMoved(object sender, PointerEventArgs e)
         {
-            if (sender is MainWindow window)
+            if (sender is not MainWindow window)
             {
-                _lastCursorMoveTime = Stopwatch.GetTimestamp();
-
-                if (RendererHost.EmbeddedWindow.TransformedBounds != null)
-                {
-                    var point = e.GetCurrentPoint(window).Position;
-                    var bounds = RendererHost.EmbeddedWindow.TransformedBounds.Value.Clip;
-
-                    _isCursorInRenderer = point.X >= bounds.X &&
-                                          point.X <= bounds.Width + bounds.X &&
-                                          point.Y >= bounds.Y &&
-                                          point.Y <= bounds.Height + bounds.Y;
-                }
+                return;
             }
+
+            _latestCursorMoveTime = Stopwatch.GetTimestamp();
+
+            if (RendererHost.EmbeddedWindow.TransformedBounds is null)
+            {
+                return;
+            }
+
+            var point = e.GetPosition(_topLevel);
+            var bounds = RendererHost.EmbeddedWindow.TransformedBounds.Value.Clip;
+            var windowYLimit = (int)window.Bounds.Height - window.StatusBarHeight;
+
+            if (!_viewModel.ShowMenuAndStatusBar)
+            {
+                windowYLimit += window.StatusBarHeight;
+            }
+
+            _isCursorInRenderer = point.X >= bounds.X && point.X <= window.Bounds.Width
+                && point.Y >= bounds.Y && point.Y <= windowYLimit;
         }
 
         private void TopLevel_PointerLeave(object sender, PointerEventArgs e)
         {
-            _isCursorInRenderer = false;
+            if (RendererHost.EmbeddedWindow.TransformedBounds is not null)
+            {
+                _isCursorInRenderer = true;
+            }
+            else
+            {
+                _isCursorInRenderer = false;
+            }
+            _cursorState = CursorStates.ForceChangeCursor;
         }
 
         private void UpdateScalingFilterLevel(object sender, ReactiveEventArgs<int> e)
@@ -246,6 +266,8 @@ namespace Ryujinx.Ava
                     SetCursor(_defaultCursorWin);
                 }
             });
+
+            _cursorState = CursorStates.CursorIsVisible;
         }
 
         private void HideCursor()
@@ -259,6 +281,8 @@ namespace Ryujinx.Ava
                     SetCursor(_invisibleCursorWin);
                 }
             });
+
+            _cursorState = CursorStates.CursorIsHidden;
         }
 
         private void SetRendererWindowSize(Size size)
@@ -505,10 +529,8 @@ namespace Ryujinx.Ava
 
         private void HideCursorState_Changed(object sender, ReactiveEventArgs<HideCursorMode> state)
         {
-            if (state.NewValue == HideCursorMode.OnIdle)
-            {
-                _lastCursorMoveTime = Stopwatch.GetTimestamp();
-            }
+            _latestCursorMoveTime = Stopwatch.GetTimestamp();
+            _cursorState = CursorStates.ForceChangeCursor;
         }
 
         public async Task<bool> LoadGuestApplication()
@@ -1008,127 +1030,14 @@ namespace Ryujinx.Ava
 
             if (_viewModel.IsActive)
             {
-                if (_isCursorInRenderer)
-                {
-                    if (ConfigurationState.Instance.Hid.EnableMouse)
-                    {
-                        HideCursor();
-                    }
-                    else
-                    {
-                        switch (ConfigurationState.Instance.HideCursor.Value)
-                        {
-                            case HideCursorMode.Never:
-                                ShowCursor();
-                                break;
-                            case HideCursorMode.OnIdle:
-                                if (Stopwatch.GetTimestamp() - _lastCursorMoveTime >= CursorHideIdleTime * Stopwatch.Frequency)
-                                {
-                                    HideCursor();
-                                }
-                                else
-                                {
-                                    ShowCursor();
-                                }
-                                break;
-                            case HideCursorMode.Always:
-                                HideCursor();
-                                break;
-                        }
-                    }
-                }
-                else
-                {
-                    ShowCursor();
-                }
-
-                Dispatcher.UIThread.Post(() =>
-                {
-                    if (_keyboardInterface.GetKeyboardStateSnapshot().IsPressed(Key.Delete) && _viewModel.WindowState != WindowState.FullScreen)
-                    {
-                        Device.Processes.ActiveApplication.DiskCacheLoadState?.Cancel();
-                    }
-                });
-
-                KeyboardHotkeyState currentHotkeyState = GetHotkeyState();
-
-                if (currentHotkeyState != _prevHotkeyState)
-                {
-                    switch (currentHotkeyState)
-                    {
-                        case KeyboardHotkeyState.ToggleVSync:
-                            Device.EnableDeviceVsync = !Device.EnableDeviceVsync;
-
-                            break;
-                        case KeyboardHotkeyState.Screenshot:
-                            ScreenshotRequested = true;
-                            break;
-                        case KeyboardHotkeyState.ShowUi:
-                            _viewModel.ShowMenuAndStatusBar = !_viewModel.ShowMenuAndStatusBar;
-                            break;
-                        case KeyboardHotkeyState.Pause:
-                            if (_viewModel.IsPaused)
-                            {
-                                Resume();
-                            }
-                            else
-                            {
-                                Pause();
-                            }
-                            break;
-                        case KeyboardHotkeyState.ToggleMute:
-                            if (Device.IsAudioMuted())
-                            {
-                                Device.SetVolume(ConfigurationState.Instance.System.AudioVolume);
-                            }
-                            else
-                            {
-                                Device.SetVolume(0);
-                            }
-
-                            _viewModel.Volume = Device.GetVolume();
-                            break;
-                        case KeyboardHotkeyState.ResScaleUp:
-                            GraphicsConfig.ResScale = GraphicsConfig.ResScale % MaxResolutionScale + 1;
-                            break;
-                        case KeyboardHotkeyState.ResScaleDown:
-                            GraphicsConfig.ResScale =
-                            (MaxResolutionScale + GraphicsConfig.ResScale - 2) % MaxResolutionScale + 1;
-                            break;
-                        case KeyboardHotkeyState.VolumeUp:
-                            _newVolume = MathF.Round((Device.GetVolume() + VolumeDelta), 2);
-                            Device.SetVolume(_newVolume);
-
-                            _viewModel.Volume = Device.GetVolume();
-                            break;
-                        case KeyboardHotkeyState.VolumeDown:
-                            _newVolume = MathF.Round((Device.GetVolume() - VolumeDelta), 2);
-                            Device.SetVolume(_newVolume);
-
-                            _viewModel.Volume = Device.GetVolume();
-                            break;
-                        case KeyboardHotkeyState.None:
-                            (_keyboardInterface as AvaloniaKeyboard).Clear();
-                            break;
-                    }
-                }
-
-                _prevHotkeyState = currentHotkeyState;
-
-                if (ScreenshotRequested)
-                {
-                    ScreenshotRequested = false;
-                    _renderer.Screenshot();
-                }
+                UpdateActiveFrame();
             }
 
-            // Touchscreen.
-            bool hasTouch = false;
-
-            if (_viewModel.IsActive && !ConfigurationState.Instance.Hid.EnableMouse)
-            {
-                hasTouch = TouchScreenManager.Update(true, (_inputManager.MouseDriver as AvaloniaMouseDriver).IsButtonPressed(MouseButton.Button1), ConfigurationState.Instance.Graphics.AspectRatio.Value.ToFloat());
-            }
+            bool hasTouch = _viewModel.IsActive 
+                && !ConfigurationState.Instance.Hid.EnableMouse.Value
+                && TouchScreenManager.Update(true, 
+                    (_inputManager.MouseDriver as AvaloniaMouseDriver).IsButtonPressed(MouseButton.Button1), 
+                    ConfigurationState.Instance.Graphics.AspectRatio.Value.ToFloat());
 
             if (!hasTouch)
             {
@@ -1138,6 +1047,141 @@ namespace Ryujinx.Ava
             Device.Hid.DebugPad.Update();
 
             return true;
+        }
+
+        private void UpdateActiveFrame()
+        {
+            UpdateCursorState();
+
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (_keyboardInterface.GetKeyboardStateSnapshot().IsPressed(Key.Delete) && _viewModel.WindowState != WindowState.FullScreen)
+                {
+                    Device.Processes.ActiveApplication.DiskCacheLoadState?.Cancel();
+                }
+            });
+
+            UpdateHotkeyState();
+
+            if (ScreenshotRequested)
+            {
+                ScreenshotRequested = false;
+                _renderer.Screenshot();
+            }
+        }
+
+        private void UpdateCursorState()
+        {
+            if (_isCursorInRenderer && !_viewModel.ShowLoadProgress)
+            {
+                if (ConfigurationState.Instance.Hid.EnableMouse.Value)
+                {
+                    switch (ConfigurationState.Instance.HideCursor.Value)
+                    {
+                        case HideCursorMode.Never:
+                            if (_cursorState != CursorStates.CursorIsVisible)
+                                ShowCursor();
+                            break;
+                        case HideCursorMode.OnIdle:
+                        case HideCursorMode.Always:
+                            if (_cursorState != CursorStates.CursorIsHidden)
+                                HideCursor();
+                            break;
+                    }
+                }
+                else
+                {
+                    switch (ConfigurationState.Instance.HideCursor.Value)
+                    {
+                        case HideCursorMode.Never:
+                                if (_cursorState != CursorStates.CursorIsVisible)
+                                    ShowCursor();
+                                break;
+                        case HideCursorMode.OnIdle:
+                            if (Stopwatch.GetTimestamp() - _latestCursorMoveTime >= CursorHideIdleTime * Stopwatch.Frequency)
+                            {
+                                if (_cursorState != CursorStates.CursorIsHidden)
+                                    HideCursor();
+                            }
+                            else
+                            {
+                                if (_cursorState != CursorStates.CursorIsVisible)
+                                    ShowCursor();
+                            }
+                            break;
+                        case HideCursorMode.Always:
+                            if (_cursorState != CursorStates.CursorIsHidden)
+                                HideCursor();
+                            break;
+                    }
+                }
+            }
+            else
+            {
+                if (_cursorState != CursorStates.CursorIsVisible)
+                    ShowCursor();
+            }
+        }
+
+        private void UpdateHotkeyState()
+        {
+            KeyboardHotkeyState currentHotkeyState = GetHotkeyState();
+
+            if (currentHotkeyState == _prevHotkeyState)
+            {
+                return;
+            }
+
+            switch (currentHotkeyState)
+            {
+                case KeyboardHotkeyState.ToggleVSync:
+                    Device.EnableDeviceVsync = !Device.EnableDeviceVsync;
+                    break;
+                case KeyboardHotkeyState.Screenshot:
+                    ScreenshotRequested = true;
+                    break;
+                case KeyboardHotkeyState.ShowUi:
+                    _viewModel.ShowMenuAndStatusBar = !_viewModel.ShowMenuAndStatusBar;
+                    break;
+                case KeyboardHotkeyState.Pause:
+                    Action toggleAction = _viewModel.IsPaused
+                        ? Resume
+                        : Pause;
+
+                    toggleAction();
+                    break;
+                case KeyboardHotkeyState.ToggleMute:
+                    float toggleValue = Device.IsAudioMuted()
+                        ? ConfigurationState.Instance.System.AudioVolume
+                        : 0;
+
+                    Device.SetVolume(toggleValue);
+                    _viewModel.Volume = Device.GetVolume();
+                    break;
+                case KeyboardHotkeyState.ResScaleUp:
+                    GraphicsConfig.ResScale = GraphicsConfig.ResScale % MaxResolutionScale + 1;
+                    break;
+                case KeyboardHotkeyState.ResScaleDown:
+                    GraphicsConfig.ResScale = (MaxResolutionScale + GraphicsConfig.ResScale - 2) % MaxResolutionScale + 1;
+                    break;
+                case KeyboardHotkeyState.VolumeUp:
+                    _newVolume = MathF.Round((Device.GetVolume() + VolumeDelta), 2);
+                    Device.SetVolume(_newVolume);
+
+                    _viewModel.Volume = Device.GetVolume();
+                    break;
+                case KeyboardHotkeyState.VolumeDown:
+                    _newVolume = MathF.Round((Device.GetVolume() - VolumeDelta), 2);
+                    Device.SetVolume(_newVolume);
+
+                    _viewModel.Volume = Device.GetVolume();
+                    break;
+                case KeyboardHotkeyState.None:
+                    (_keyboardInterface as AvaloniaKeyboard).Clear();
+                    break;
+            }
+
+            _prevHotkeyState = currentHotkeyState;
         }
 
         private KeyboardHotkeyState GetHotkeyState()
