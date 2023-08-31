@@ -121,7 +121,7 @@ namespace Ryujinx.Graphics.Gpu.Image
 
         private TextureInfoOverride? _importOverride;
         private bool _forceReimport;
-        private bool _forRender;
+        private readonly bool _forRender;
 
         private bool _hasData;
         private bool _dirty = true;
