@@ -121,6 +121,7 @@ namespace Ryujinx.Graphics.Gpu.Image
 
         private TextureInfoOverride? _importOverride;
         private bool _forceReimport;
+        private bool _forRender;
 
         private bool _hasData;
         private bool _dirty = true;
@@ -200,6 +201,7 @@ namespace Ryujinx.Graphics.Gpu.Image
         /// <param name="firstLevel">The first mipmap level of the texture, or 0 if the texture has no parent</param>
         /// <param name="scaleFactor">The floating point scale factor to initialize with</param>
         /// <param name="scaleMode">The scale mode to initialize with</param>
+        /// <param name="forRender">Indicates that the texture will be modified by a draw or blit operation</param>
         private Texture(
             GpuContext context,
             PhysicalMemory physicalMemory,
@@ -209,7 +211,8 @@ namespace Ryujinx.Graphics.Gpu.Image
             int firstLayer,
             int firstLevel,
             float scaleFactor,
-            TextureScaleMode scaleMode)
+            TextureScaleMode scaleMode,
+            bool forRender)
         {
             InitializeTexture(context, physicalMemory, info, sizeInfo, range);
 
@@ -218,6 +221,8 @@ namespace Ryujinx.Graphics.Gpu.Image
 
             ScaleFactor = scaleFactor;
             ScaleMode = scaleMode;
+
+            _forRender = forRender;
 
             InitializeData(true);
         }
@@ -231,16 +236,20 @@ namespace Ryujinx.Graphics.Gpu.Image
         /// <param name="sizeInfo">Size information of the texture</param>
         /// <param name="range">Physical memory ranges where the texture data is located</param>
         /// <param name="scaleMode">The scale mode to initialize with. If scaled, the texture's data is loaded immediately and scaled up</param>
+        /// <param name="forRender">Indicates that the texture will be modified by a draw or blit operation</param>
         public Texture(
             GpuContext context,
             PhysicalMemory physicalMemory,
             TextureInfo info,
             SizeInfo sizeInfo,
             MultiRange range,
-            TextureScaleMode scaleMode)
+            TextureScaleMode scaleMode,
+            bool forRender)
         {
             ScaleFactor = 1f; // Texture is first loaded at scale 1x.
             ScaleMode = scaleMode;
+
+            _forRender = forRender;
 
             InitializeTexture(context, physicalMemory, info, sizeInfo, range);
         }
@@ -355,7 +364,8 @@ namespace Ryujinx.Graphics.Gpu.Image
                 FirstLayer + firstLayer,
                 FirstLevel + firstLevel,
                 ScaleFactor,
-                ScaleMode);
+                ScaleMode,
+                _forRender);
 
             TextureCreateInfo createInfo = TextureCache.GetCreateInfo(info, _context.Capabilities, ScaleFactor, null);
             texture.HostTexture = HostTexture.CreateView(createInfo, firstLayer, firstLevel);
@@ -824,7 +834,7 @@ namespace Ryujinx.Graphics.Gpu.Image
 
             FormatInfo formatInfo = Info.FormatInfo;
 
-            if (_context.DiskTextureStorage.IsActive)
+            if (_context.DiskTextureStorage.IsActive && !_forRender)
             {
                 TextureInfoOverride? importOverride = _context.DiskTextureStorage.ImportTexture(out var importedTexture, this, result.ToArray());
 

@@ -1,4 +1,3 @@
-using ARMeilleure.State;
 using Ryujinx.Common;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Gpu.Engine.Threed;
@@ -794,7 +793,7 @@ namespace Ryujinx.Graphics.Gpu.Image
                     {
                         // Only copy compatible. If there's another choice for a FULLY compatible texture, choose that instead.
 
-                        texture = new Texture(_context, _physicalMemory, info, sizeInfo, range.Value, scaleMode);
+                        texture = new Texture(_context, _physicalMemory, info, sizeInfo, range.Value, scaleMode, flags.HasFlag(TextureSearchFlags.WithUpscale));
 
                         texture.InitializeGroup(true, true, new List<TextureIncompatibleOverlap>());
                         texture.InitializeData(false, false);
@@ -839,7 +838,7 @@ namespace Ryujinx.Graphics.Gpu.Image
             // No match, create a new texture.
             if (texture == null)
             {
-                texture = new Texture(_context, _physicalMemory, info, sizeInfo, range.Value, scaleMode);
+                texture = new Texture(_context, _physicalMemory, info, sizeInfo, range.Value, scaleMode, flags.HasFlag(TextureSearchFlags.WithUpscale));
 
                 // Step 1: Find textures that are view compatible with the new texture.
                 // Any textures that are incompatible will contain garbage data, so they should be removed where possible.
