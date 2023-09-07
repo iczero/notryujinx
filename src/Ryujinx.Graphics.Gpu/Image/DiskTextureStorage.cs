@@ -299,12 +299,9 @@ namespace Ryujinx.Graphics.Gpu.Image
                 return null;
             }
 
-            if (parameters.Format == ImageFormat.B8G8R8A8Unorn)
+            if (parameters.Format == ImageFormat.B8G8R8A8Srgb || parameters.Format == ImageFormat.B8G8R8A8Unorm)
             {
-                for (int i = 0; i < buffer.Length; i += 4)
-                {
-                    (buffer[i + 2], buffer[i]) = (buffer[i], buffer[i + 2]);
-                }
+                ConvertBgraToRgbaInPlace(buffer);
             }
 
             cachedData = new SpanOrArray<byte>(buffer);
@@ -314,7 +311,7 @@ namespace Ryujinx.Graphics.Gpu.Image
                 parameters.Height,
                 parameters.DepthOrLayers,
                 parameters.Levels,
-                ConvertToFormat(parameters.Format, IsSupportedSrgbFormat(request.Format)));
+                ConvertToFormat(parameters.Format));
         }
 
         private TextureInfoOverride? ImportPngTexture(out SpanOrArray<byte> cachedData, Texture texture, byte[] data)
@@ -444,12 +441,27 @@ namespace Ryujinx.Graphics.Gpu.Image
                 cachedData = new SpanOrArray<byte>(buffer.AsSpan()[..writtenSize]);
             }
 
+            Format format;
+
+            if (IsSupportedSnormFormat(request.Format))
+            {
+                format = Format.R8G8B8A8Snorm;
+            }
+            else if (IsSupportedSrgbFormat(request.Format))
+            {
+                format = Format.R8G8B8A8Srgb;
+            }
+            else
+            {
+                format = Format.R8G8B8A8Unorm;
+            }
+
             return new TextureInfoOverride(
                 importedWidth,
                 importedHeight,
                 slices,
                 levels,
-                new FormatInfo(IsSupportedSrgbFormat(request.Format) ? Format.R8G8B8A8Srgb : Format.R8G8B8A8Unorm, 1, 1, 4, 4));
+                new FormatInfo(format, 1, 1, 4, 4));
         }
 
         private static int CalculateSize(int width, int height, int depth, int layers, int levels)
@@ -506,10 +518,12 @@ namespace Ryujinx.Graphics.Gpu.Image
 
             byte[] data = request.Data;
 
-            if (!TryGetFormat(request.Format, out ImageFormat imageFormat))
+            ImageFormat imageFormat = GetFormat(request.Format);
+
+            if (imageFormat == ImageFormat.Unknown)
             {
                 data = ConvertFormatToRgba8(request);
-                imageFormat = ImageFormat.R8G8B8A8Unorm;
+                imageFormat = IsSupportedSrgbFormat(request.Format) ? ImageFormat.R8G8B8A8Srgb : ImageFormat.R8G8B8A8Unorm;
             }
 
             if (data == null)
@@ -661,39 +675,31 @@ namespace Ryujinx.Graphics.Gpu.Image
             return $"{hash.High:x16}{hash.Low:x16}";
         }
 
-        private static bool TryGetFormat(Format format, out ImageFormat imageFormat)
+        private static ImageFormat GetFormat(Format format)
         {
-            switch (format)
+            return format switch
             {
-                case Format.Bc1RgbaSrgb:
-                case Format.Bc1RgbaUnorm:
-                    imageFormat = ImageFormat.Bc1RgbaUnorm;
-                    return true;
-                case Format.Bc2Srgb:
-                case Format.Bc2Unorm:
-                    imageFormat = ImageFormat.Bc2Unorm;
-                    return true;
-                case Format.Bc3Srgb:
-                case Format.Bc3Unorm:
-                    imageFormat = ImageFormat.Bc3Unorm;
-                    return true;
-                case Format.R8G8B8A8Srgb:
-                case Format.R8G8B8A8Unorm:
-                    imageFormat = ImageFormat.R8G8B8A8Unorm;
-                    return true;
-                case Format.R5G6B5Unorm:
-                    imageFormat = ImageFormat.R5G6B5Unorm;
-                    return true;
-                case Format.R5G5B5A1Unorm:
-                    imageFormat = ImageFormat.R5G5B5A1Unorm;
-                    return true;
-                case Format.R4G4B4A4Unorm:
-                    imageFormat = ImageFormat.R4G4B4A4Unorm;
-                    return true;
-            }
-
-            imageFormat = default;
-            return false;
+                Format.Bc1RgbaSrgb => ImageFormat.Bc1RgbaSrgb,
+                Format.Bc1RgbaUnorm => ImageFormat.Bc1RgbaUnorm,
+                Format.Bc2Srgb => ImageFormat.Bc2Srgb,
+                Format.Bc2Unorm => ImageFormat.Bc2Unorm,
+                Format.Bc3Srgb => ImageFormat.Bc3Srgb,
+                Format.Bc3Unorm => ImageFormat.Bc3Unorm,
+                Format.Bc4Snorm => ImageFormat.Bc4Snorm,
+                Format.Bc4Unorm => ImageFormat.Bc4Unorm,
+                Format.Bc5Snorm => ImageFormat.Bc5Snorm,
+                Format.Bc5Unorm => ImageFormat.Bc5Unorm,
+                Format.Bc7Srgb => ImageFormat.Bc7Srgb,
+                Format.Bc7Unorm => ImageFormat.Bc7Unorm,
+                Format.R8Unorm => ImageFormat.R8Unorm,
+                Format.R8G8Unorm => ImageFormat.R8G8Unorm,
+                Format.R8G8B8A8Srgb => ImageFormat.R8G8B8A8Srgb,
+                Format.R8G8B8A8Unorm => ImageFormat.R8G8B8A8Unorm,
+                Format.R5G6B5Unorm => ImageFormat.R5G6B5Unorm,
+                Format.R5G5B5A1Unorm => ImageFormat.R5G5B5A1Unorm,
+                Format.R4G4B4A4Unorm => ImageFormat.R4G4B4A4Unorm,
+                _ => ImageFormat.Unknown,
+            };
         }
 
         private static bool TryGetDimensions(Target target, out ImageDimensions imageDimensions)
@@ -783,15 +789,12 @@ namespace Ryujinx.Graphics.Gpu.Image
                 case Format.Bc3Srgb:
                 case Format.Bc3Unorm:
                     return BCnDecoder.DecodeBC3(data, width, height, depth, levels, layers);
-                /*case Format.Bc4Snorm:
+                case Format.Bc4Snorm:
                 case Format.Bc4Unorm:
-                    return BCnDecoder.DecodeBC4(data, width, height, depth, levels, layers, request.Format == Format.Bc4Snorm);
+                    return ConvertRToRgba(BCnDecoder.DecodeBC4(data, width, height, depth, levels, layers, request.Format == Format.Bc4Snorm));
                 case Format.Bc5Snorm:
                 case Format.Bc5Unorm:
-                    return BCnDecoder.DecodeBC5(data, width, height, depth, levels, layers, request.Format == Format.Bc5Snorm);
-                case Format.Bc6HSfloat:
-                case Format.Bc6HUfloat:
-                    return BCnDecoder.DecodeBC6(data, width, height, depth, levels, layers, request.Format == Format.Bc6HSfloat);*/
+                    return ConvertRgToRgba(BCnDecoder.DecodeBC5(data, width, height, depth, levels, layers, request.Format == Format.Bc5Snorm));
                 case Format.Bc7Srgb:
                 case Format.Bc7Unorm:
                     return BCnDecoder.DecodeBC7(data, width, height, depth, levels, layers);
@@ -804,6 +807,10 @@ namespace Ryujinx.Graphics.Gpu.Image
                 case Format.Etc2RgbPtaSrgb:
                 case Format.Etc2RgbPtaUnorm:
                     return ETC2Decoder.DecodePta(data, width, height, depth, levels, layers);
+                case Format.R8Unorm:
+                    return ConvertRToRgba(request.Data);
+                case Format.R8G8Unorm:
+                    return ConvertRgToRgba(request.Data);
                 case Format.R8G8B8A8Unorm:
                 case Format.R8G8B8A8Srgb:
                     return request.Data;
@@ -840,6 +847,41 @@ namespace Ryujinx.Graphics.Gpu.Image
             }
 
             return decoded;
+        }
+
+        private static void ConvertBgraToRgbaInPlace(Span<byte> buffer)
+        {
+            for (int i = 0; i < buffer.Length; i += 4)
+            {
+                (buffer[i + 2], buffer[i]) = (buffer[i], buffer[i + 2]);
+            }
+        }
+
+        private static byte[] ConvertRToRgba(ReadOnlySpan<byte> input)
+        {
+            byte[] output = new byte[input.Length * 4];
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                output[i * 4] = input[i];
+                output[i * 4 + 3] = 0xff;
+            }
+
+            return output;
+        }
+
+        private static byte[] ConvertRgToRgba(ReadOnlySpan<byte> input)
+        {
+            byte[] output = new byte[input.Length * 2];
+
+            for (int i = 0; i < input.Length; i += 2)
+            {
+                output[i * 2] = input[i];
+                output[i * 2 + 1] = input[i + 1];
+                output[i * 2 + 3] = 0xff;
+            }
+
+            return output;
         }
 
         private static bool IsSupportedFormat(Format format)
@@ -880,6 +922,9 @@ namespace Ryujinx.Graphics.Gpu.Image
                 case Format.Bc2Unorm:
                 case Format.Bc3Srgb:
                 case Format.Bc3Unorm:
+                case Format.Bc4Unorm:
+                case Format.Bc5Snorm:
+                case Format.Bc5Unorm:
                 case Format.Bc7Srgb:
                 case Format.Bc7Unorm:
                 case Format.Etc2RgbaSrgb:
@@ -888,6 +933,8 @@ namespace Ryujinx.Graphics.Gpu.Image
                 case Format.Etc2RgbUnorm:
                 case Format.Etc2RgbPtaSrgb:
                 case Format.Etc2RgbPtaUnorm:
+                case Format.R8Unorm:
+                case Format.R8G8Unorm:
                 case Format.R8G8B8A8Unorm:
                 case Format.R8G8B8A8Srgb:
                 case Format.B5G6R5Unorm:
@@ -935,14 +982,31 @@ namespace Ryujinx.Graphics.Gpu.Image
             return false;
         }
 
-        private static FormatInfo ConvertToFormat(ImageFormat format, bool isSrgb)
+        private static bool IsSupportedSnormFormat(Format format)
+        {
+            return format == Format.Bc5Snorm;
+        }
+
+        private static FormatInfo ConvertToFormat(ImageFormat format)
         {
             return format switch
             {
-                ImageFormat.Bc1RgbaUnorm => new FormatInfo(isSrgb ? Format.Bc1RgbaSrgb : Format.Bc1RgbaUnorm, 4, 4, 8, 4),
-                ImageFormat.Bc2Unorm => new FormatInfo(isSrgb ? Format.Bc2Srgb : Format.Bc2Unorm, 4, 4, 16, 4),
-                ImageFormat.Bc3Unorm => new FormatInfo(isSrgb ? Format.Bc3Srgb : Format.Bc3Unorm, 4, 4, 16, 4),
-                ImageFormat.R8G8B8A8Unorm or ImageFormat.B8G8R8A8Unorn => new FormatInfo(isSrgb ? Format.R8G8B8A8Srgb : Format.R8G8B8A8Unorm, 1, 1, 4, 4),
+                ImageFormat.Bc1RgbaSrgb => new FormatInfo(Format.Bc1RgbaSrgb, 4, 4, 8, 4),
+                ImageFormat.Bc1RgbaUnorm => new FormatInfo(Format.Bc1RgbaUnorm, 4, 4, 8, 4),
+                ImageFormat.Bc2Srgb => new FormatInfo(Format.Bc2Srgb, 4, 4, 16, 4),
+                ImageFormat.Bc2Unorm => new FormatInfo(Format.Bc2Unorm, 4, 4, 16, 4),
+                ImageFormat.Bc3Srgb => new FormatInfo(Format.Bc3Srgb, 4, 4, 16, 4),
+                ImageFormat.Bc3Unorm => new FormatInfo(Format.Bc3Unorm, 4, 4, 16, 4),
+                ImageFormat.Bc4Snorm => new FormatInfo(Format.Bc4Snorm, 4, 4, 8, 1),
+                ImageFormat.Bc4Unorm => new FormatInfo(Format.Bc4Unorm, 4, 4, 8, 1),
+                ImageFormat.Bc5Snorm => new FormatInfo(Format.Bc5Snorm, 4, 4, 16, 2),
+                ImageFormat.Bc5Unorm => new FormatInfo(Format.Bc5Unorm, 4, 4, 16, 2),
+                ImageFormat.Bc7Srgb => new FormatInfo(Format.Bc7Srgb, 4, 4, 16, 4),
+                ImageFormat.Bc7Unorm => new FormatInfo(Format.Bc7Unorm, 4, 4, 16, 4),
+                ImageFormat.R8Unorm => new FormatInfo(Format.R8Unorm, 1, 1, 1, 1),
+                ImageFormat.R8G8Unorm => new FormatInfo(Format.R8G8Unorm, 1, 1, 2, 2),
+                ImageFormat.R8G8B8A8Srgb or ImageFormat.B8G8R8A8Srgb => new FormatInfo(Format.R8G8B8A8Srgb, 1, 1, 4, 4),
+                ImageFormat.R8G8B8A8Unorm or ImageFormat.B8G8R8A8Unorm => new FormatInfo(Format.R8G8B8A8Unorm, 1, 1, 4, 4),
                 ImageFormat.R5G6B5Unorm => new FormatInfo(Format.R5G6B5Unorm, 1, 1, 2, 3),
                 ImageFormat.R5G5B5A1Unorm => new FormatInfo(Format.R5G5B5A1Unorm, 1, 1, 2, 4),
                 ImageFormat.R4G4B4A4Unorm => new FormatInfo(Format.R4G4B4A4Unorm, 1, 1, 2, 4),

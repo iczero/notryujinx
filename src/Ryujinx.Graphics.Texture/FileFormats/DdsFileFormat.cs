@@ -108,6 +108,11 @@ namespace Ryujinx.Graphics.Texture.FileFormats
         private const uint Dxt3FourCC = 'D' | ('X' << 8) | ('T' << 16) | ('3' << 24);
         private const uint Dxt5FourCC = 'D' | ('X' << 8) | ('T' << 16) | ('5' << 24);
         private const uint Dx10FourCC = 'D' | ('X' << 8) | ('1' << 16) | ('0' << 24);
+        private const uint Bc4UFourCC = 'B' | ('C' << 8) | ('4' << 16) | ('U' << 24);
+        private const uint Bc4SFourCC = 'B' | ('C' << 8) | ('4' << 16) | ('S' << 24);
+        private const uint Bc5SFourCC = 'B' | ('C' << 8) | ('5' << 16) | ('S' << 24);
+        private const uint Ati1FourCC = 'A' | ('T' << 8) | ('I' << 16) | ('1' << 24);
+        private const uint Ati2FourCC = 'A' | ('T' << 8) | ('I' << 16) | ('2' << 24);
 
         public static ImageLoadResult TryLoadHeader(ReadOnlySpan<byte> ddsData, out ImageParameters parameters)
         {
@@ -311,7 +316,7 @@ namespace Ryujinx.Graphics.Texture.FileFormats
 
             bool isArray = parameters.Dimensions == ImageDimensions.Dim2DArray ||
                            parameters.Dimensions == ImageDimensions.DimCubeArray;
-            bool needsDxt10Header = isArray;
+            bool needsDxt10Header = isArray || !IsLegacyCompatibleFormat(parameters.Format);
 
             DdsPixelFormat pixelFormat = needsDxt10Header ? CreateDx10PixelFormat() : CreatePixelFormat(parameters.Format);
 
@@ -483,6 +488,22 @@ namespace Ryujinx.Graphics.Texture.FileFormats
                     pf.Flags = DdsPfFlags.FourCC;
                     pf.FourCC = Dxt5FourCC;
                     break;
+                case ImageFormat.Bc4Snorm:
+                    pf.Flags = DdsPfFlags.FourCC;
+                    pf.FourCC = Bc4SFourCC;
+                    break;
+                case ImageFormat.Bc4Unorm:
+                    pf.Flags = DdsPfFlags.FourCC;
+                    pf.FourCC = Bc4UFourCC;
+                    break;
+                case ImageFormat.Bc5Snorm:
+                    pf.Flags = DdsPfFlags.FourCC;
+                    pf.FourCC = Bc5SFourCC;
+                    break;
+                case ImageFormat.Bc5Unorm:
+                    pf.Flags = DdsPfFlags.FourCC;
+                    pf.FourCC = Ati2FourCC;
+                    break;
                 case ImageFormat.R8G8B8A8Unorm:
                     pf.Flags |= DdsPfFlags.Rgba;
                     pf.RGBBitCount = 32;
@@ -491,7 +512,7 @@ namespace Ryujinx.Graphics.Texture.FileFormats
                     pf.BBitMask = 0xffu << 16;
                     pf.ABitMask = 0xffu << 24;
                     break;
-                case ImageFormat.B8G8R8A8Unorn:
+                case ImageFormat.B8G8R8A8Unorm:
                     pf.Flags |= DdsPfFlags.Rgba;
                     pf.RGBBitCount = 32;
                     pf.RBitMask = 0xffu << 16;
@@ -522,6 +543,8 @@ namespace Ryujinx.Graphics.Texture.FileFormats
                     pf.BBitMask = 0xfu;
                     pf.ABitMask = 0xfu << 12;
                     break;
+                default:
+                    throw new ArgumentException($"Can't encode format \"{format}\" on legacy pixel format structure.");
             }
 
             return pf;
@@ -535,30 +558,38 @@ namespace Ryujinx.Graphics.Texture.FileFormats
 
             switch (format)
             {
+                case ImageFormat.Bc1RgbaSrgb:
                 case ImageFormat.Bc1RgbaUnorm:
+                case ImageFormat.Bc4Snorm:
+                case ImageFormat.Bc4Unorm:
                     bw = bh = 4;
                     bpp = 8;
                     break;
+                case ImageFormat.Bc2Srgb:
                 case ImageFormat.Bc2Unorm:
-                    bw = bh = 4;
-                    bpp = 16;
-                    break;
+                case ImageFormat.Bc3Srgb:
                 case ImageFormat.Bc3Unorm:
+                case ImageFormat.Bc5Snorm:
+                case ImageFormat.Bc5Unorm:
+                case ImageFormat.Bc7Srgb:
+                case ImageFormat.Bc7Unorm:
                     bw = bh = 4;
                     bpp = 16;
                     break;
-                case ImageFormat.R8G8B8A8Unorm:
-                case ImageFormat.B8G8R8A8Unorn:
-                    bpp = 4;
+                case ImageFormat.R8Unorm:
+                    bpp = 1;
                     break;
+                case ImageFormat.R8G8Unorm:
                 case ImageFormat.R5G6B5Unorm:
-                    bpp = 2;
-                    break;
                 case ImageFormat.R5G5B5A1Unorm:
-                    bpp = 2;
-                    break;
                 case ImageFormat.R4G4B4A4Unorm:
                     bpp = 2;
+                    break;
+                case ImageFormat.R8G8B8A8Srgb:
+                case ImageFormat.R8G8B8A8Unorm:
+                case ImageFormat.B8G8R8A8Srgb:
+                case ImageFormat.B8G8R8A8Unorm:
+                    bpp = 4;
                     break;
             }
 
@@ -570,15 +601,50 @@ namespace Ryujinx.Graphics.Texture.FileFormats
             return (bw, bh, bpp);
         }
 
+        private static bool IsLegacyCompatibleFormat(ImageFormat format)
+        {
+            switch (format)
+            {
+                case ImageFormat.Bc1RgbaUnorm:
+                case ImageFormat.Bc2Unorm:
+                case ImageFormat.Bc3Unorm:
+                case ImageFormat.Bc4Snorm:
+                case ImageFormat.Bc4Unorm:
+                case ImageFormat.Bc5Snorm:
+                case ImageFormat.Bc5Unorm:
+                case ImageFormat.R8G8B8A8Unorm:
+                case ImageFormat.B8G8R8A8Unorm:
+                case ImageFormat.R5G6B5Unorm:
+                case ImageFormat.R5G5B5A1Unorm:
+                case ImageFormat.R4G4B4A4Unorm:
+                    return true;
+            }
+
+            return false;
+        }
+
         private static DxgiFormat ConvertToDxgiFormat(ImageFormat format)
         {
             return format switch
             {
+                ImageFormat.Bc1RgbaSrgb => DxgiFormat.FormatBC1UnormSrgb,
                 ImageFormat.Bc1RgbaUnorm => DxgiFormat.FormatBC1Unorm,
+                ImageFormat.Bc2Srgb => DxgiFormat.FormatBC2UnormSrgb,
                 ImageFormat.Bc2Unorm => DxgiFormat.FormatBC2Unorm,
+                ImageFormat.Bc3Srgb => DxgiFormat.FormatBC3UnormSrgb,
                 ImageFormat.Bc3Unorm => DxgiFormat.FormatBC3Unorm,
+                ImageFormat.Bc4Snorm => DxgiFormat.FormatBC4Snorm,
+                ImageFormat.Bc4Unorm => DxgiFormat.FormatBC4Unorm,
+                ImageFormat.Bc5Snorm => DxgiFormat.FormatBC5Snorm,
+                ImageFormat.Bc5Unorm => DxgiFormat.FormatBC5Unorm,
+                ImageFormat.Bc7Srgb => DxgiFormat.FormatBC7UnormSrgb,
+                ImageFormat.Bc7Unorm => DxgiFormat.FormatBC7Unorm,
+                ImageFormat.R8Unorm => DxgiFormat.FormatR8Unorm,
+                ImageFormat.R8G8Unorm => DxgiFormat.FormatR8G8Unorm,
+                ImageFormat.R8G8B8A8Srgb => DxgiFormat.FormatR8G8B8A8UnormSrgb,
                 ImageFormat.R8G8B8A8Unorm => DxgiFormat.FormatR8G8B8A8Unorm,
-                ImageFormat.B8G8R8A8Unorn => DxgiFormat.FormatB8G8R8A8Unorm,
+                ImageFormat.B8G8R8A8Srgb => DxgiFormat.FormatB8G8R8A8UnormSrgb,
+                ImageFormat.B8G8R8A8Unorm => DxgiFormat.FormatB8G8R8A8Unorm,
                 ImageFormat.R5G6B5Unorm => DxgiFormat.FormatB5G6R5Unorm,
                 ImageFormat.R5G5B5A1Unorm => DxgiFormat.FormatB5G5R5A1Unorm,
                 ImageFormat.R4G4B4A4Unorm => DxgiFormat.FormatB4G4R4A4Unorm,
@@ -595,6 +661,10 @@ namespace Ryujinx.Graphics.Texture.FileFormats
                     Dxt1FourCC => ImageFormat.Bc1RgbaUnorm,
                     Dxt3FourCC => ImageFormat.Bc2Unorm,
                     Dxt5FourCC => ImageFormat.Bc3Unorm,
+                    Bc4SFourCC => ImageFormat.Bc4Snorm,
+                    Bc4UFourCC or Ati1FourCC => ImageFormat.Bc4Unorm,
+                    Bc5SFourCC => ImageFormat.Bc5Snorm,
+                    Ati2FourCC => ImageFormat.Bc5Unorm,
                     _ => ImageFormat.Unknown,
                 };
             }
@@ -616,7 +686,7 @@ namespace Ryujinx.Graphics.Texture.FileFormats
                     pixelFormat.BBitMask == 0xffu &&
                     pixelFormat.ABitMask == 0xffu << 24)
                 {
-                    return ImageFormat.B8G8R8A8Unorn;
+                    return ImageFormat.B8G8R8A8Unorm;
                 }
                 else if ((pixelFormat.Flags & DdsPfFlags.Rgba) == DdsPfFlags.Rgb &&
                     pixelFormat.RGBBitCount == 16 &&
@@ -653,10 +723,24 @@ namespace Ryujinx.Graphics.Texture.FileFormats
         {
             return format switch
             {
+                DxgiFormat.FormatBC1UnormSrgb => ImageFormat.Bc1RgbaSrgb,
                 DxgiFormat.FormatBC1Unorm => ImageFormat.Bc1RgbaUnorm,
+                DxgiFormat.FormatBC2UnormSrgb => ImageFormat.Bc2Srgb,
                 DxgiFormat.FormatBC2Unorm => ImageFormat.Bc2Unorm,
+                DxgiFormat.FormatBC3UnormSrgb => ImageFormat.Bc3Srgb,
                 DxgiFormat.FormatBC3Unorm => ImageFormat.Bc3Unorm,
+                DxgiFormat.FormatBC4Snorm => ImageFormat.Bc4Snorm,
+                DxgiFormat.FormatBC4Unorm => ImageFormat.Bc4Unorm,
+                DxgiFormat.FormatBC5Snorm => ImageFormat.Bc5Snorm,
+                DxgiFormat.FormatBC5Unorm => ImageFormat.Bc5Unorm,
+                DxgiFormat.FormatBC7UnormSrgb => ImageFormat.Bc7Srgb,
+                DxgiFormat.FormatBC7Unorm => ImageFormat.Bc7Unorm,
+                DxgiFormat.FormatR8Unorm => ImageFormat.R8Unorm,
+                DxgiFormat.FormatR8G8Unorm => ImageFormat.R8G8Unorm,
+                DxgiFormat.FormatR8G8B8A8UnormSrgb => ImageFormat.R8G8B8A8Srgb,
                 DxgiFormat.FormatR8G8B8A8Unorm => ImageFormat.R8G8B8A8Unorm,
+                DxgiFormat.FormatB8G8R8A8UnormSrgb => ImageFormat.B8G8R8A8Srgb,
+                DxgiFormat.FormatB8G8R8A8Unorm => ImageFormat.B8G8R8A8Unorm,
                 DxgiFormat.FormatB5G6R5Unorm => ImageFormat.R5G6B5Unorm,
                 DxgiFormat.FormatB5G5R5A1Unorm => ImageFormat.R5G5B5A1Unorm,
                 DxgiFormat.FormatB4G4R4A4Unorm => ImageFormat.R4G4B4A4Unorm,
