@@ -108,7 +108,14 @@ namespace Ryujinx.Graphics.Gpu.Image
                 _fileSystemWatcher.Changed += OnChanged;
             }
 
-            SetOutputDirectory(GraphicsConfig.TextureDumpPath);
+            string textureDumpPath = GraphicsConfig.TextureDumpPath;
+
+            if (!string.IsNullOrEmpty(textureDumpPath))
+            {
+                textureDumpPath = Path.Combine(textureDumpPath, GraphicsConfig.TitleId);
+            }
+
+            SetOutputDirectory(textureDumpPath);
             _outputFormat = GraphicsConfig.TextureDumpFormatPng ? FileFormat.Png : FileFormat.Dds;
 
             if (_enableTextureDump)
@@ -168,7 +175,22 @@ namespace Ryujinx.Graphics.Gpu.Image
                 _importList.Remove(previousOutputDirectoryPath);
             }
 
-            if (Directory.Exists(directoryPath))
+            bool hasOutputDir = !string.IsNullOrEmpty(directoryPath);
+
+            if (hasOutputDir)
+            {
+                try
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+                catch (Exception ex)
+                {
+                    LogDirCreationException(ex, directoryPath);
+                    hasOutputDir = false;
+                }
+            }
+
+            if (hasOutputDir)
             {
                 _outputDirectoryPath = directoryPath;
                 AddInputDirectory(directoryPath);
@@ -968,6 +990,12 @@ namespace Ryujinx.Graphics.Gpu.Image
             string fileName = Path.GetFileName(fullPath);
 
             Logger.Error?.Print(LogClass.Gpu, $"Failed to save \"{fileName}\", see logged exception for details.");
+        }
+
+        private static void LogDirCreationException(Exception exception, string fullPath)
+        {
+            Logger.Error?.Print(LogClass.Gpu, exception.ToString());
+            Logger.Error?.Print(LogClass.Gpu, $"Failed to create a directory on path \"{fullPath}\", see logged exception for details.");
         }
     }
 }

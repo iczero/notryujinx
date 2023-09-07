@@ -49,7 +49,7 @@ namespace Ryujinx.Graphics.Gpu
 
         /// <summary>
         /// Title id of the current running game.
-        /// Used by the shader cache.
+        /// Used by the shader cache and texture dumping.
         /// </summary>
         public static string TitleId;
 
