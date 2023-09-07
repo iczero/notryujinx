@@ -166,8 +166,8 @@ namespace Ryujinx.Graphics.Texture.FileFormats
                 return ImageLoadResult.CorruptedHeader;
             }
 
-            // We currently don't support high bit depth or Adam7 interlaced images.
-            if (header.BitDepth > 8 || header.InterlaceMethod != 0)
+            // We currently don't support Adam7 interlaced images.
+            if (header.InterlaceMethod != 0)
             {
                 return ImageLoadResult.UnsupportedFormat;
             }
@@ -197,7 +197,7 @@ namespace Ryujinx.Graphics.Texture.FileFormats
             using ZLibStream zLibStream = new(compressedStream, CompressionMode.Decompress);
 
             int stride = ReverseEndianness(header.Width) * bpp;
-            Span<byte> tempOutput = header.ColorType == 6 ? output : new byte[stride * ReverseEndianness(header.Height)];
+            Span<byte> tempOutput = header.ColorType == 6 && header.BitDepth <= 8 ? output : new byte[stride * ReverseEndianness(header.Height)];
             byte[] scanline = new byte[stride];
             int scanlineOffset = 0;
             int filterType = -1;
@@ -260,6 +260,12 @@ namespace Ryujinx.Graphics.Texture.FileFormats
                 pngData = pngData[(chunk.Data.Length + ChunkOverheadSize)..];
             }
 
+            if (header.BitDepth == 16)
+            {
+                Convert16BitTo8Bit(tempOutput[..(tempOutput.Length / 2)], tempOutput);
+                tempOutput = tempOutput[..(tempOutput.Length / 2)];
+            }
+
             switch (header.ColorType)
             {
                 case 0:
@@ -273,6 +279,12 @@ namespace Ryujinx.Graphics.Texture.FileFormats
                     break;
                 case 4:
                     CopyLaToRgba(output, tempOutput);
+                    break;
+                case 6:
+                    if (header.BitDepth == 16)
+                    {
+                        tempOutput.CopyTo(output);
+                    }
                     break;
             }
 
@@ -627,6 +639,14 @@ namespace Ryujinx.Graphics.Texture.FileFormats
             else
             {
                 return c;
+            }
+        }
+
+        private static void Convert16BitTo8Bit(Span<byte> output, ReadOnlySpan<byte> input)
+        {
+            for (int i = 0; i < input.Length; i += 2)
+            {
+                output[i / 2] = input[i];
             }
         }
 
