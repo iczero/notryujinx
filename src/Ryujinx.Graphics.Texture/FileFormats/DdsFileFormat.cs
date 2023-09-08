@@ -8,6 +8,8 @@ namespace Ryujinx.Graphics.Texture.FileFormats
 {
     public static class DdsFileFormat
     {
+        private const int StrideAlignment = 4;
+
         [Flags]
         private enum DdsFlags : uint
         {
@@ -190,6 +192,11 @@ namespace Ryujinx.Graphics.Texture.FileFormats
 
         public static int CalculateSize(in ImageParameters parameters)
         {
+            return CalculateSizeInternal(parameters, StrideAlignment);
+        }
+
+        public static int CalculateSizeInternal(in ImageParameters parameters, int strideAlignment)
+        {
             if (parameters.Format == ImageFormat.Unknown)
             {
                 return 0;
@@ -207,10 +214,26 @@ namespace Ryujinx.Graphics.Texture.FileFormats
                 w = (w + bw - 1) / bw;
                 h = (h + bh - 1) / bh;
 
-                size += w * bpp * h * d;
+                int stride = (w * bpp + strideAlignment - 1) & -strideAlignment;
+                size += stride * h * d;
             }
 
             return size;
+        }
+
+        public static int CalculateStride(in ImageParameters parameters, int level)
+        {
+            if (parameters.Format == ImageFormat.Unknown)
+            {
+                return 0;
+            }
+
+            (int bw, _, int bpp) = GetBlockSizeAndBpp(parameters.Format);
+
+            int w = Math.Max(1, parameters.Width >> level);
+            w = (w + bw - 1) / bw;
+
+            return w * bpp;
         }
 
         public static ImageLoadResult TryLoadData(ReadOnlySpan<byte> ddsData, Span<byte> output)
@@ -228,14 +251,15 @@ namespace Ryujinx.Graphics.Texture.FileFormats
             }
 
             int size = CalculateSize(parameters);
+            int inSize = CalculateSizeInternal(parameters, 1);
 
             // Some basic validation for completely bogus sizes.
-            if (size <= 0 || dataOffset + size <= 0)
+            if (inSize <= 0 || dataOffset + inSize <= 0)
             {
                 return ImageLoadResult.CorruptedHeader;
             }
 
-            if (dataOffset + size > ddsData.Length)
+            if (dataOffset + inSize > ddsData.Length)
             {
                 return ImageLoadResult.DataTooShort;
             }
@@ -254,17 +278,39 @@ namespace Ryujinx.Graphics.Texture.FileFormats
                     for (int l = 0; l < parameters.Levels; l++)
                     {
                         (int sliceOffset, int sliceSize) = GetSlice(parameters, z, l);
-                        ddsData.Slice(inOffset, sliceSize).CopyTo(output.Slice(sliceOffset, sliceSize));
-                        inOffset += sliceSize;
+                        inOffset += CopyData(output, ddsData, sliceOffset, inOffset, sliceSize, CalculateStride(parameters, l));
                     }
                 }
             }
             else
             {
-                ddsData.Slice(dataOffset, size).CopyTo(output);
+                CopyData(output, ddsData, 0, dataOffset, size, CalculateStride(parameters, 0));
             }
 
             return ImageLoadResult.Success;
+        }
+
+        private static int CopyData(Span<byte> destination, ReadOnlySpan<byte> source, int dstOffset, int srcOffset, int size, int stride)
+        {
+            int strideAligned = (stride + StrideAlignment - 1) & -StrideAlignment;
+
+            if (stride != strideAligned)
+            {
+                int rows = size / strideAligned;
+
+                for (int y = 0; y < rows; y++)
+                {
+                    source.Slice(srcOffset + y * stride, stride).CopyTo(destination.Slice(dstOffset + y * strideAligned, stride));
+                }
+
+                return rows * stride;
+            }
+            else
+            {
+                source.Slice(srcOffset, size).CopyTo(destination.Slice(dstOffset, size));
+
+                return size;
+            }
         }
 
         public static void Save(Stream output, ImageParameters parameters, ReadOnlySpan<byte> data)
@@ -322,12 +368,13 @@ namespace Ryujinx.Graphics.Texture.FileFormats
 
             (int bw, int bh, int bpp) = GetBlockSizeAndBpp(parameters.Format);
 
-            int pitchOrLinearSize = ((parameters.Width + bw - 1) / bw) * bpp;
+            int pitch = (parameters.Width + bw - 1) / bw * bpp;
+            int pitchOrLinearSize = pitch;
 
             if (bw > 1 || bh > 1)
             {
                 flags |= DdsFlags.LinearSize;
-                pitchOrLinearSize *= ((parameters.Height + bh - 1) / bh) * parameters.DepthOrLayers;
+                pitchOrLinearSize *= (parameters.Height + bh - 1) / bh * parameters.DepthOrLayers;
             }
             else
             {
@@ -372,8 +419,26 @@ namespace Ryujinx.Graphics.Texture.FileFormats
                     for (int l = 0; l < parameters.Levels; l++)
                     {
                         (int sliceOffset, int sliceSize) = GetSlice(parameters, z, l);
-                        output.Write(data.Slice(sliceOffset, sliceSize));
+                        pitch = (Math.Max(1, parameters.Width >> l) + bw - 1) / bw * bpp;
+                        WriteData(output, data.Slice(sliceOffset, sliceSize), pitch);
                     }
+                }
+            }
+            else
+            {
+                WriteData(output, data, pitch);
+            }
+        }
+
+        private static void WriteData(Stream output, ReadOnlySpan<byte> data, int stride)
+        {
+            int strideAligned = (stride + StrideAlignment - 1) & -StrideAlignment;
+
+            if (stride != strideAligned)
+            {
+                for (int i = 0; i < data.Length; i += strideAligned)
+                {
+                    output.Write(data.Slice(i, stride));
                 }
             }
             else
@@ -412,7 +477,8 @@ namespace Ryujinx.Graphics.Texture.FileFormats
 
                 for (int z = 0; z < (l < level ? layers : layer + 1); z++)
                 {
-                    sliceSize = w * bpp * h * d;
+                    int stride = (w * bpp + StrideAlignment - 1) & -StrideAlignment;
+                    sliceSize = stride * h * d;
                     size += sliceSize;
                 }
             }
