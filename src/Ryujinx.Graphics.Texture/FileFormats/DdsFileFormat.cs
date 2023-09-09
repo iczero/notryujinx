@@ -195,7 +195,7 @@ namespace Ryujinx.Graphics.Texture.FileFormats
             return CalculateSizeInternal(parameters, StrideAlignment);
         }
 
-        public static int CalculateSizeInternal(in ImageParameters parameters, int strideAlignment)
+        private static int CalculateSizeInternal(in ImageParameters parameters, int strideAlignment)
         {
             if (parameters.Format == ImageFormat.Unknown)
             {
@@ -221,7 +221,7 @@ namespace Ryujinx.Graphics.Texture.FileFormats
             return size;
         }
 
-        public static int CalculateStride(in ImageParameters parameters, int level)
+        private static int CalculateStride(in ImageParameters parameters, int level)
         {
             if (parameters.Format == ImageFormat.Unknown)
             {
@@ -269,7 +269,7 @@ namespace Ryujinx.Graphics.Texture.FileFormats
                 return ImageLoadResult.OutputTooShort;
             }
 
-            if (parameters.DepthOrLayers > 1 && parameters.Dimensions != ImageDimensions.Dim3D)
+            if ((parameters.DepthOrLayers > 1 && parameters.Dimensions != ImageDimensions.Dim3D) || size != inSize)
             {
                 int inOffset = dataOffset;
 
@@ -407,7 +407,7 @@ namespace Ryujinx.Graphics.Texture.FileFormats
                 output.Write(CreateDxt10Header(parameters.Format, parameters.Dimensions, parameters.DepthOrLayers));
             }
 
-            if (parameters.DepthOrLayers > 1 && parameters.Dimensions != ImageDimensions.Dim3D)
+            if ((parameters.DepthOrLayers > 1 && parameters.Dimensions != ImageDimensions.Dim3D) || bpp < StrideAlignment)
             {
                 // On DDS, the order is:
                 // [Layer 0 Level 0] [Layer 0 Level 1] [Layer 1 Level 0] [Layer 1 Level 1]

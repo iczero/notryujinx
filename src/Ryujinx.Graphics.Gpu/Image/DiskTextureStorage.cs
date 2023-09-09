@@ -17,6 +17,8 @@ namespace Ryujinx.Graphics.Gpu.Image
     {
         private const long MinTimeDeltaForRealTimeLoad = 5; // Seconds.
 
+        private const int StrideAlignment = 4;
+
         private enum FileFormat
         {
             Dds,
@@ -791,10 +793,10 @@ namespace Ryujinx.Graphics.Gpu.Image
                     return BCnDecoder.DecodeBC3(data, width, height, depth, levels, layers);
                 case Format.Bc4Snorm:
                 case Format.Bc4Unorm:
-                    return ConvertRToRgba(BCnDecoder.DecodeBC4(data, width, height, depth, levels, layers, request.Format == Format.Bc4Snorm));
+                    return ConvertRToRgba(BCnDecoder.DecodeBC4(data, width, height, depth, levels, layers, request.Format == Format.Bc4Snorm), request);
                 case Format.Bc5Snorm:
                 case Format.Bc5Unorm:
-                    return ConvertRgToRgba(BCnDecoder.DecodeBC5(data, width, height, depth, levels, layers, request.Format == Format.Bc5Snorm));
+                    return ConvertRgToRgba(BCnDecoder.DecodeBC5(data, width, height, depth, levels, layers, request.Format == Format.Bc5Snorm), request);
                 case Format.Bc7Srgb:
                 case Format.Bc7Unorm:
                     return BCnDecoder.DecodeBC7(data, width, height, depth, levels, layers);
@@ -808,9 +810,9 @@ namespace Ryujinx.Graphics.Gpu.Image
                 case Format.Etc2RgbPtaUnorm:
                     return ETC2Decoder.DecodePta(data, width, height, depth, levels, layers);
                 case Format.R8Unorm:
-                    return ConvertRToRgba(request.Data);
+                    return ConvertRToRgba(request.Data, request);
                 case Format.R8G8Unorm:
-                    return ConvertRgToRgba(request.Data);
+                    return ConvertRgToRgba(request.Data, request);
                 case Format.R8G8B8A8Unorm:
                 case Format.R8G8B8A8Srgb:
                     return request.Data;
@@ -857,31 +859,93 @@ namespace Ryujinx.Graphics.Gpu.Image
             }
         }
 
-        private static byte[] ConvertRToRgba(ReadOnlySpan<byte> input)
+        private static byte[] ConvertRToRgba(ReadOnlySpan<byte> input, in TextureRequest request)
         {
-            byte[] output = new byte[input.Length * 4];
+            byte[] output = new byte[CalculateSize(request, 4)];
 
-            for (int i = 0; i < input.Length; i++)
+            int srcBaseOffset = 0;
+            int dstBaseOffset = 0;
+
+            for (int l = 0; l < request.Levels; l++)
             {
-                output[i * 4] = input[i];
-                output[i * 4 + 3] = 0xff;
+                int w = Math.Max(1, request.Width >> l);
+                int h = Math.Max(1, request.Height >> l);
+                int d = Math.Max(1, request.Depth >> l) * request.Layers;
+
+                int stride = w;
+                int strideAligned = (stride + StrideAlignment - 1) & -StrideAlignment;
+                int rows = h * d;
+
+                for (int i = 0; i < rows; i++)
+                {
+                    int dstOffset = dstBaseOffset + i * stride * 4;
+                    int srcOffset = srcBaseOffset + i * strideAligned;
+
+                    for (int j = 0; j < stride; j++)
+                    {
+                        output[dstOffset + j * 4] = input[srcOffset + j];
+                        output[dstOffset + j * 4 + 3] = 0xff;
+                    }
+                }
+
+                dstBaseOffset += rows * stride * 4;
+                srcBaseOffset += rows * strideAligned;
             }
 
             return output;
         }
 
-        private static byte[] ConvertRgToRgba(ReadOnlySpan<byte> input)
+        private static byte[] ConvertRgToRgba(ReadOnlySpan<byte> input, in TextureRequest request)
         {
-            byte[] output = new byte[input.Length * 2];
+            byte[] output = new byte[CalculateSize(request, 4)];
 
-            for (int i = 0; i < input.Length; i += 2)
+            int srcBaseOffset = 0;
+            int dstBaseOffset = 0;
+
+            for (int l = 0; l < request.Levels; l++)
             {
-                output[i * 2] = input[i];
-                output[i * 2 + 1] = input[i + 1];
-                output[i * 2 + 3] = 0xff;
+                int w = Math.Max(1, request.Width >> l);
+                int h = Math.Max(1, request.Height >> l);
+                int d = Math.Max(1, request.Depth >> l) * request.Layers;
+
+                int stride = w * 2;
+                int strideAligned = (stride + StrideAlignment - 1) & -StrideAlignment;
+                int rows = h * d;
+
+                for (int i = 0; i < rows; i++)
+                {
+                    int dstOffset = dstBaseOffset + i * stride * 2;
+                    int srcOffset = srcBaseOffset + i * strideAligned;
+
+                    for (int j = 0; j < stride; j += 2)
+                    {
+                        output[dstOffset + j * 2] = input[srcOffset + j];
+                        output[dstOffset + j * 2 + 1] = input[srcOffset + j + 1];
+                        output[dstOffset + j * 2 + 3] = 0xff;
+                    }
+                }
+
+                dstBaseOffset += rows * stride * 2;
+                srcBaseOffset += rows * strideAligned;
             }
 
             return output;
+        }
+
+        private static int CalculateSize(in TextureRequest request, int bpp)
+        {
+            int size = 0;
+
+            for (int l = 0; l < request.Levels; l++)
+            {
+                int w = Math.Max(1, request.Width >> l);
+                int h = Math.Max(1, request.Height >> l);
+                int d = Math.Max(1, request.Depth >> l) * request.Layers;
+
+                size += w * h * d;
+            }
+
+            return size * bpp;
         }
 
         private static bool IsSupportedFormat(Format format)
