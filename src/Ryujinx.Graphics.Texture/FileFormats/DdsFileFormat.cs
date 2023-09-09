@@ -273,7 +273,10 @@ namespace Ryujinx.Graphics.Texture.FileFormats
             {
                 int inOffset = dataOffset;
 
-                for (int z = 0; z < parameters.DepthOrLayers; z++)
+                bool isArray = IsArray(parameters.Dimensions) || parameters.Dimensions == ImageDimensions.DimCube;
+                int layers = isArray ? parameters.DepthOrLayers : 1;
+
+                for (int z = 0; z < layers; z++)
                 {
                     for (int l = 0; l < parameters.Levels; l++)
                     {
@@ -360,8 +363,7 @@ namespace Ryujinx.Graphics.Texture.FileFormats
                 caps2 |= DdsCaps2.Volume;
             }
 
-            bool isArray = parameters.Dimensions == ImageDimensions.Dim2DArray ||
-                           parameters.Dimensions == ImageDimensions.DimCubeArray;
+            bool isArray = IsArray(parameters.Dimensions);
             bool needsDxt10Header = isArray || !IsLegacyCompatibleFormat(parameters.Format);
 
             DdsPixelFormat pixelFormat = needsDxt10Header ? CreateDx10PixelFormat() : CreatePixelFormat(parameters.Format);
@@ -414,7 +416,9 @@ namespace Ryujinx.Graphics.Texture.FileFormats
                 // While on the input data, the order is:
                 // [Layer 0 Level 0] [Layer 1 Level 0] [Layer 0 Level 1] [Layer 1 Level 1]
 
-                for (int z = 0; z < parameters.DepthOrLayers; z++)
+                int layers = isArray || parameters.Dimensions == ImageDimensions.DimCube ? parameters.DepthOrLayers : 1;
+
+                for (int z = 0; z < layers; z++)
                 {
                     for (int l = 0; l < parameters.Levels; l++)
                     {
@@ -494,6 +498,11 @@ namespace Ryujinx.Graphics.Texture.FileFormats
         private static T Read<T>(this ReadOnlySpan<byte> span) where T : unmanaged
         {
             return MemoryMarshal.Cast<byte, T>(span)[0];
+        }
+
+        private static bool IsArray(ImageDimensions dimensions)
+        {
+            return dimensions == ImageDimensions.Dim2DArray || dimensions == ImageDimensions.DimCubeArray;
         }
 
         private static DdsHeaderDxt10 CreateDxt10Header(ImageFormat format, ImageDimensions dimensions, int depthOrLayers)
