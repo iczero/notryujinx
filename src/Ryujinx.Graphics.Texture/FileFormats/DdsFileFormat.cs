@@ -55,6 +55,7 @@ namespace Ryujinx.Graphics.Texture.FileFormats
             Rgba = AlphaPixels | Rgb,
             Yuv = 0x200,
             Luminance = 0x20000,
+            BumpDuDv = 0x80000,
         }
 
         private struct DdsPixelFormat
@@ -579,8 +580,24 @@ namespace Ryujinx.Graphics.Texture.FileFormats
                     pf.Flags = DdsPfFlags.FourCC;
                     pf.FourCC = Ati2FourCC;
                     break;
+                case ImageFormat.R8Unorm:
+                    pf.Flags = DdsPfFlags.Luminance;
+                    pf.RGBBitCount = 8;
+                    pf.RBitMask = 0xffu;
+                    pf.GBitMask = 0;
+                    pf.BBitMask = 0;
+                    pf.ABitMask = 0;
+                    break;
+                case ImageFormat.R8G8Unorm:
+                    pf.Flags = DdsPfFlags.BumpDuDv;
+                    pf.RGBBitCount = 16;
+                    pf.RBitMask = 0xffu;
+                    pf.GBitMask = 0xffu << 8;
+                    pf.BBitMask = 0;
+                    pf.ABitMask = 0;
+                    break;
                 case ImageFormat.R8G8B8A8Unorm:
-                    pf.Flags |= DdsPfFlags.Rgba;
+                    pf.Flags = DdsPfFlags.Rgba;
                     pf.RGBBitCount = 32;
                     pf.RBitMask = 0xffu;
                     pf.GBitMask = 0xffu << 8;
@@ -588,7 +605,7 @@ namespace Ryujinx.Graphics.Texture.FileFormats
                     pf.ABitMask = 0xffu << 24;
                     break;
                 case ImageFormat.B8G8R8A8Unorm:
-                    pf.Flags |= DdsPfFlags.Rgba;
+                    pf.Flags = DdsPfFlags.Rgba;
                     pf.RGBBitCount = 32;
                     pf.RBitMask = 0xffu << 16;
                     pf.GBitMask = 0xffu << 8;
@@ -596,14 +613,14 @@ namespace Ryujinx.Graphics.Texture.FileFormats
                     pf.ABitMask = 0xffu << 24;
                     break;
                 case ImageFormat.R5G6B5Unorm:
-                    pf.Flags |= DdsPfFlags.Rgb;
+                    pf.Flags = DdsPfFlags.Rgb;
                     pf.RGBBitCount = 16;
                     pf.RBitMask = 0x1fu << 11;
                     pf.GBitMask = 0x3fu << 5;
                     pf.BBitMask = 0x1fu;
                     break;
                 case ImageFormat.R5G5B5A1Unorm:
-                    pf.Flags |= DdsPfFlags.Rgba;
+                    pf.Flags = DdsPfFlags.Rgba;
                     pf.RGBBitCount = 16;
                     pf.RBitMask = 0x1fu << 10;
                     pf.GBitMask = 0x1fu << 5;
@@ -611,7 +628,7 @@ namespace Ryujinx.Graphics.Texture.FileFormats
                     pf.ABitMask = 1u << 15;
                     break;
                 case ImageFormat.R4G4B4A4Unorm:
-                    pf.Flags |= DdsPfFlags.Rgba;
+                    pf.Flags = DdsPfFlags.Rgba;
                     pf.RGBBitCount = 16;
                     pf.RBitMask = 0xfu << 8;
                     pf.GBitMask = 0xfu << 4;
@@ -745,7 +762,23 @@ namespace Ryujinx.Graphics.Texture.FileFormats
             }
             else
             {
-                if ((pixelFormat.Flags & DdsPfFlags.Rgba) == DdsPfFlags.Rgba &&
+                if (pixelFormat.Flags == DdsPfFlags.Luminance &&
+                    pixelFormat.RGBBitCount == 8 &&
+                    pixelFormat.RBitMask == 0xffu &&
+                    pixelFormat.GBitMask == 0 &&
+                    pixelFormat.BBitMask == 0)
+                {
+                    return ImageFormat.R8Unorm;
+                }
+                else if (pixelFormat.Flags == DdsPfFlags.BumpDuDv &&
+                    pixelFormat.RGBBitCount == 16 &&
+                    pixelFormat.RBitMask == 0xffu &&
+                    pixelFormat.GBitMask == 0xffu << 8 &&
+                    pixelFormat.BBitMask == 0)
+                {
+                    return ImageFormat.R8G8Unorm;
+                }
+                else if ((pixelFormat.Flags & DdsPfFlags.Rgba) == DdsPfFlags.Rgba &&
                     pixelFormat.RGBBitCount == 32 &&
                     pixelFormat.RBitMask == 0xffu &&
                     pixelFormat.GBitMask == 0xffu << 8 &&
