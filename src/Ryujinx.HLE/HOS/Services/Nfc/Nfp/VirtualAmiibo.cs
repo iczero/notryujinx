@@ -204,7 +204,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
                     FirstWriteDate = DateTime.Now,
                     LastWriteDate = DateTime.Now,
                     WriteCounter = 0,
-                    ApplicationAreas = new List<VirtualAmiiboApplicationArea>()
+                    ApplicationAreas = new List<VirtualAmiiboApplicationArea>(),
                 };
 
                 SaveAmiiboFile(virtualAmiiboFile);

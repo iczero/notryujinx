@@ -1,8 +1,11 @@
+using System;
+
 namespace Ryujinx.HLE.HOS.Applets
 {
-    enum CabinetFlags : byte
+    [Flags]
+    enum AmiiboSettingsReturnFlag : byte
     {
-        Canceled = 0,
+        Cancel = 0,
 
         HasTagInfo = 1 << 1,
         HasRegisterInfo = 1 << 2,

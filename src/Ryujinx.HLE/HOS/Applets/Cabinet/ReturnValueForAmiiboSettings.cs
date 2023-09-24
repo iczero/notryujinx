@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 namespace Ryujinx.HLE.HOS.Applets
 {
     [StructLayout(LayoutKind.Sequential, Size = 0x188, Pack = 1)]
-    struct CabinetReturnValue
+    struct ReturnValueForAmiiboSettings
     {
-        public CabinetFlags Flags;
+        public AmiiboSettingsReturnFlag Flags;
         public Array3<byte> Padding;
         public ulong DeviceHandle;
         public TagInfo TagInfo;

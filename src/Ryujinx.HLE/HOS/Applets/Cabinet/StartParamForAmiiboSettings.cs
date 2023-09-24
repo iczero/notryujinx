@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 namespace Ryujinx.HLE.HOS.Applets
 {
     [StructLayout(LayoutKind.Sequential, Size = 0x1a8)]
-    struct CabinetStartArguments
+    struct StartParamForAmiiboSettings
     {
         public byte Unused1;
-        public CabinetStartType Type;
-        public CabinetFlags Flags;
+        public StartParamForAmiiboSettingsType Type;
+        public AmiiboSettingsReturnFlag Flags;
         public Array9<byte> StartParamData1;
         public TagInfo TagInfo;
         public RegisterInfo RegisterInfo;

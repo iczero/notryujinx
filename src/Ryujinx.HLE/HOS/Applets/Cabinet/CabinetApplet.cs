@@ -13,7 +13,7 @@ namespace Ryujinx.HLE.HOS.Applets
         private readonly Horizon _system;
 
         private AppletSession _normalSession;
-        private CabinetStartArguments _startArguments;
+        private StartParamForAmiiboSettings _startArguments;
 
         public event EventHandler AppletStateChanged;
 
@@ -29,10 +29,10 @@ namespace Ryujinx.HLE.HOS.Applets
             CommonArguments commonArguments = IApplet.ReadStruct<CommonArguments>(normalSession.Pop());
             Logger.Info?.PrintMsg(LogClass.ServiceAm, $"CabinetApplet version: 0x{commonArguments.AppletVersion:x8}");
 
-            _startArguments = IApplet.ReadStruct<CabinetStartArguments>(normalSession.Pop());
+            _startArguments = IApplet.ReadStruct<StartParamForAmiiboSettings>(normalSession.Pop());
             switch (_startArguments.Type)
             {
-                case CabinetStartType.NicknameAndOwnerSettings:
+                case StartParamForAmiiboSettingsType.NicknameAndOwnerSettings:
                     {
                         // TODO: allow changing the owning Mii
                         ChangeNickname();
@@ -55,7 +55,7 @@ namespace Ryujinx.HLE.HOS.Applets
         private void ChangeNickname()
         {
             string nickname = null;
-            if (_startArguments.Flags.HasFlag(CabinetFlags.HasRegisterInfo))
+            if (_startArguments.Flags.HasFlag(AmiiboSettingsReturnFlag.HasRegisterInfo))
             {
                 nickname = Encoding.UTF8.GetString(_startArguments.RegisterInfo.Nickname.AsSpan()).TrimEnd('\0');
             }
@@ -77,9 +77,9 @@ namespace Ryujinx.HLE.HOS.Applets
 
             VirtualAmiibo.SetNickname(_startArguments.TagInfo.Uuid.AsSpan()[..9].ToArray(), newNickname);
 
-            CabinetReturnValue returnValue = new()
+            ReturnValueForAmiiboSettings returnValue = new()
             {
-                Flags = CabinetFlags.HasCompleteInfo,
+                Flags = AmiiboSettingsReturnFlag.HasCompleteInfo,
                 DeviceHandle = (ulong)_system.NfpDevices[0].Handle,
                 TagInfo = _startArguments.TagInfo,
                 RegisterInfo = _startArguments.RegisterInfo
@@ -102,19 +102,20 @@ namespace Ryujinx.HLE.HOS.Applets
             _system.ReturnFocus();
         }
 
-        private static byte[] BuildResponse(CabinetReturnValue result)
+        private static byte[] BuildResponse(ReturnValueForAmiiboSettings result)
         {
-            byte[] data = new byte[Unsafe.SizeOf<CabinetReturnValue>()];
+            byte[] data = new byte[Unsafe.SizeOf<ReturnValueForAmiiboSettings>()];
 
             GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
-            Marshal.StructureToPtr<CabinetReturnValue>(result, handle.AddrOfPinnedObject(), true);
+            Marshal.StructureToPtr(result, handle.AddrOfPinnedObject(), true);
+            handle.Free();
 
             return data;
         }
 
         private static byte[] BuildResponse()
         {
-            return BuildResponse(new CabinetReturnValue { Flags = CabinetFlags.Canceled });
+            return BuildResponse(new ReturnValueForAmiiboSettings { Flags = AmiiboSettingsReturnFlag.Cancel });
         }
     }
 }
