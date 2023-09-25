@@ -557,7 +557,7 @@ namespace Ryujinx.HLE.HOS
             IsPaused = pause;
         }
 
-        public IDebuggableProcess DebugGetApplicationProcess()
+        internal IDebuggableProcess DebugGetApplicationProcess()
         {
             lock (KernelContext.Processes)
             {

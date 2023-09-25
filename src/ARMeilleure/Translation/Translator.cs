@@ -157,21 +157,14 @@ namespace ARMeilleure.Translation
                 {
                     context.DebugPc = ExecuteSingle(context, context.DebugPc);
 
-                    while (context._debugState != (int)DebugState.Running)
+                    while (context.DebugStopped == 1)
                     {
-                        Interlocked.CompareExchange(ref context._debugState, (int)DebugState.Stopped, (int)DebugState.Stopping);
-                        context._debugHalt.WaitOne();
-                        if (Interlocked.CompareExchange(ref context._shouldStep, 0, 1) == 1)
+                        if (Interlocked.CompareExchange(ref context.ShouldStep, 0, 1) == 1)
                         {
                             context.DebugPc = Step(context, context.DebugPc);
-
-                            context._stepBarrier.SignalAndWait();
-                            context._stepBarrier.SignalAndWait();
+                            context.RequestInterrupt();
                         }
-                        else
-                        {
-                            Interlocked.CompareExchange(ref context._debugState, (int)DebugState.Running, (int)DebugState.Stopped);
-                        }
+                        context.CheckInterrupt();
                     }
                 }
                 while (context.Running && context.DebugPc != 0);
@@ -232,7 +225,7 @@ namespace ARMeilleure.Translation
             return nextAddr;
         }
 
-        public ulong Step(State.ExecutionContext context, ulong address)
+        private ulong Step(State.ExecutionContext context, ulong address)
         {
             TranslatedFunction func = Translate(address, context.ExecutionMode, highCq: false, singleStep: true);
 
