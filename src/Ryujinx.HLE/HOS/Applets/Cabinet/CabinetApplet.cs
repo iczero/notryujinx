@@ -1,9 +1,10 @@
+using Ryujinx.Common;
 using Ryujinx.Common.Logging;
+using Ryujinx.Common.Memory;
 using Ryujinx.HLE.HOS.Services.Am.AppletAE;
 using Ryujinx.HLE.HOS.Services.Nfc.Nfp;
 using System;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+using System.IO;
 using System.Text;
 
 namespace Ryujinx.HLE.HOS.Applets
@@ -27,6 +28,7 @@ namespace Ryujinx.HLE.HOS.Applets
             _normalSession = normalSession;
 
             CommonArguments commonArguments = IApplet.ReadStruct<CommonArguments>(normalSession.Pop());
+
             Logger.Info?.PrintMsg(LogClass.ServiceAm, $"CabinetApplet version: 0x{commonArguments.AppletVersion:x8}");
 
             _startArguments = IApplet.ReadStruct<StartParamForAmiiboSettings>(normalSession.Pop());
@@ -65,13 +67,14 @@ namespace Ryujinx.HLE.HOS.Applets
                 HeaderText = "Enter a new nickname for this amiibo.",
                 GuideText = nickname,
                 StringLengthMin = 1,
-                StringLengthMax = 10
+                StringLengthMax = 10,
             };
 
             bool inputResult = _system.Device.UiHandler.DisplayInputDialog(inputParameters, out string newNickname);
             if (!inputResult)
             {
                 ReturnCancel();
+
                 return;
             }
 
@@ -82,7 +85,7 @@ namespace Ryujinx.HLE.HOS.Applets
                 Flags = AmiiboSettingsReturnFlag.HasCompleteInfo,
                 DeviceHandle = (ulong)_system.NfpDevices[0].Handle,
                 TagInfo = _startArguments.TagInfo,
-                RegisterInfo = _startArguments.RegisterInfo
+                RegisterInfo = _startArguments.RegisterInfo,
             };
 
             Span<byte> nicknameData = returnValue.RegisterInfo.Nickname.AsSpan();
@@ -104,13 +107,12 @@ namespace Ryujinx.HLE.HOS.Applets
 
         private static byte[] BuildResponse(ReturnValueForAmiiboSettings result)
         {
-            byte[] data = new byte[Unsafe.SizeOf<ReturnValueForAmiiboSettings>()];
+            using MemoryStream stream = MemoryStreamManager.Shared.GetStream();
+            using BinaryWriter writer = new(stream);
 
-            GCHandle handle = GCHandle.Alloc(data, GCHandleType.Pinned);
-            Marshal.StructureToPtr(result, handle.AddrOfPinnedObject(), true);
-            handle.Free();
+            writer.WriteStruct(result);
 
-            return data;
+            return stream.ToArray();
         }
 
         private static byte[] BuildResponse()

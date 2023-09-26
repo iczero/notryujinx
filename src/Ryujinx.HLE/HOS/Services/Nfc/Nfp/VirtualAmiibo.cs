@@ -190,6 +190,7 @@ namespace Ryujinx.HLE.HOS.Services.Nfc.Nfp
                 if (virtualAmiiboFile.Nickname == null)
                 {
                     virtualAmiiboFile.Nickname = "Ryujinx";
+
                     SaveAmiiboFile(virtualAmiiboFile);
                 }
             }
