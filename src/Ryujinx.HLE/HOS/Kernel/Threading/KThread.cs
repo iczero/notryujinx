@@ -1444,15 +1444,16 @@ namespace Ryujinx.HLE.HOS.Kernel.Threading
             lock (_activityOperationLock)
             {
                 if (_debugState != (int)DebugState.Stopped
-                    || (_forcePauseFlags & ThreadSchedState.ThreadPauseFlag) == 0
-                    || !Context.DebugStep())
+                    || (_forcePauseFlags & ThreadSchedState.ThreadPauseFlag) == 0)
                 {
                     return false;
                 }
 
-                DebugHalt.Reset();
+                Context.RequestDebugStep();
                 Resume(ThreadSchedState.ThreadPauseFlag);
-                DebugHalt.WaitOne();
+                Context.StepBarrier.SignalAndWait();
+                Suspend(ThreadSchedState.ThreadPauseFlag);
+                Context.StepBarrier.SignalAndWait();
 
                 return true;
             }
@@ -1468,12 +1469,8 @@ namespace Ryujinx.HLE.HOS.Kernel.Threading
                     return;
                 }
 
-                if ((_forcePauseFlags & ThreadSchedState.ThreadPauseFlag) == 0)
-                {
-                    Suspend(ThreadSchedState.ThreadPauseFlag);
-                }
-
-                Context.DebugStop();
+                Suspend(ThreadSchedState.ThreadPauseFlag);
+                Context.RequestInterrupt();
                 DebugHalt.WaitOne();
 
                 _debugState = (int)DebugState.Stopped;
@@ -1489,8 +1486,6 @@ namespace Ryujinx.HLE.HOS.Kernel.Threading
                 {
                     return;
                 }
-
-                Context.DebugContinue();
 
                 if ((_forcePauseFlags & ThreadSchedState.ThreadPauseFlag) != 0)
                 {
