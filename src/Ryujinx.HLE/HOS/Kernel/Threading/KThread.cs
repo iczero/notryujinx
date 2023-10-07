@@ -1444,7 +1444,8 @@ namespace Ryujinx.HLE.HOS.Kernel.Threading
             lock (_activityOperationLock)
             {
                 if (_debugState != (int)DebugState.Stopped
-                    || (_forcePauseFlags & ThreadSchedState.ThreadPauseFlag) == 0)
+                    || (_forcePauseFlags & ThreadSchedState.ThreadPauseFlag) == 0
+                    || MutexOwner != null)
                 {
                     return false;
                 }
