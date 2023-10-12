@@ -12,7 +12,7 @@ namespace Ryujinx.Ava.UI.Models
         public string FifoStatus { get; }
         public string GameStatus { get; }
         public string GpuName { get; }
-        public int ShaderCount { get; }
+        public uint ShaderCount { get; }
 
         public StatusUpdatedEventArgs(
             bool vSyncEnabled,
@@ -23,7 +23,7 @@ namespace Ryujinx.Ava.UI.Models
             string gameStatus,
             string fifoStatus,
             string gpuName,
-            int shaderCount)
+            uint shaderCount)
         {
             VSyncEnabled = vSyncEnabled;
             VolumeStatus = volumeStatus;

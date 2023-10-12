@@ -12,7 +12,7 @@ namespace Ryujinx.Ui
         public string FifoStatus;
         public string GpuName;
         public string GpuBackend;
-        public int ShaderCount;
+        public uint ShaderCount;
 
         public StatusUpdatedEventArgs(
             bool vSyncEnabled,
@@ -23,7 +23,7 @@ namespace Ryujinx.Ui
             string gameStatus,
             string fifoStatus,
             string gpuName,
-            int shaderCount)
+            uint shaderCount)
         {
             VSyncEnabled = vSyncEnabled;
             Volume = volume;

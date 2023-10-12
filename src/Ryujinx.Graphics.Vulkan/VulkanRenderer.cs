@@ -27,7 +27,7 @@ namespace Ryujinx.Graphics.Vulkan
 
         private bool _initialized;
 
-        public int ProgramCount { get; set; } = 0;
+        public uint ProgramCount { get; set; } = 0;
 
         internal FormatCapabilities FormatCapabilities { get; private set; }
         internal HardwareCapabilities Capabilities;
