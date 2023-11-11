@@ -194,6 +194,7 @@ namespace Ryujinx.Ava
             ConfigurationState.Instance.Graphics.ScalingFilterLevel.Event += UpdateScalingFilterLevel;
             ConfigurationState.Instance.Graphics.EnableColorSpacePassthrough.Event += UpdateColorSpacePassthrough;
 
+            ConfigurationState.Instance.System.EnableInternetAccess.Event += UpdateEnableInternetAccessState;
             ConfigurationState.Instance.Multiplayer.LanInterfaceId.Event += UpdateLanInterfaceIdState;
             ConfigurationState.Instance.Multiplayer.Mode.Event += UpdateMultiplayerModeState;
 
@@ -410,6 +411,11 @@ namespace Ryujinx.Ava
             {
                 _viewModel.Volume = e.NewValue;
             });
+        }
+
+        private void UpdateEnableInternetAccessState(object sender, ReactiveEventArgs<bool> e)
+        {
+            Device.Configuration.EnableInternetAccess = e.NewValue;
         }
 
         private void UpdateLanInterfaceIdState(object sender, ReactiveEventArgs<string> e)
@@ -714,7 +720,7 @@ namespace Ryujinx.Ava
 
             ApplicationLibrary.LoadAndSaveMetaData(Device.Processes.ActiveApplication.ProgramIdText, appMetadata =>
             {
-                appMetadata.LastPlayed = DateTime.UtcNow;
+                appMetadata.UpdatePreGame();
             });
 
             return true;
