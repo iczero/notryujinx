@@ -207,9 +207,9 @@ namespace Ryujinx.Ui.Widgets
                     Nca mainNca = null;
                     Nca patchNca = null;
 
-                    if ((System.IO.Path.GetExtension(_titleFilePath).ToLower() == ".nsp") ||
-                        (System.IO.Path.GetExtension(_titleFilePath).ToLower() == ".pfs0") ||
-                        (System.IO.Path.GetExtension(_titleFilePath).ToLower() == ".xci"))
+                    if ((System.IO.Path.GetExtension(_titleFilePath).Equals(".nsp", StringComparison.CurrentCultureIgnoreCase)) ||
+                        (System.IO.Path.GetExtension(_titleFilePath).Equals(".pfs0", StringComparison.CurrentCultureIgnoreCase)) ||
+                        (System.IO.Path.GetExtension(_titleFilePath).Equals(".xci", StringComparison.CurrentCultureIgnoreCase)))
                     {
                         IFileSystem pfs;
 
@@ -249,7 +249,7 @@ namespace Ryujinx.Ui.Widgets
                             }
                         }
                     }
-                    else if (System.IO.Path.GetExtension(_titleFilePath).ToLower() == ".nca")
+                    else if (System.IO.Path.GetExtension(_titleFilePath).Equals(".nca", StringComparison.CurrentCultureIgnoreCase))
                     {
                         mainNca = new Nca(_virtualFileSystem.KeySet, file.AsStorage());
                     }
@@ -561,7 +561,7 @@ namespace Ryujinx.Ui.Widgets
 
             MessageDialog warningDialog = GtkDialog.CreateConfirmationDialog("Warning", $"You are about to queue a PPTC rebuild on the next boot of:\n\n<b>{_titleName}</b>\n\nAre you sure you want to proceed?");
 
-            List<FileInfo> cacheFiles = new();
+            List<FileInfo> cacheFiles = [];
 
             if (mainDir.Exists)
             {
@@ -597,8 +597,8 @@ namespace Ryujinx.Ui.Widgets
 
             using MessageDialog warningDialog = GtkDialog.CreateConfirmationDialog("Warning", $"You are about to delete the shader cache for :\n\n<b>{_titleName}</b>\n\nAre you sure you want to proceed?");
 
-            List<DirectoryInfo> oldCacheDirectories = new();
-            List<FileInfo> newCacheFiles = new();
+            List<DirectoryInfo> oldCacheDirectories = [];
+            List<FileInfo> newCacheFiles = [];
 
             if (shaderCacheDir.Exists)
             {

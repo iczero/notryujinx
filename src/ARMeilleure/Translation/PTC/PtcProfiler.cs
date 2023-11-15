@@ -1,4 +1,5 @@
 using ARMeilleure.State;
+using Microsoft.IO;
 using Ryujinx.Common;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.Memory;
@@ -25,9 +26,9 @@ namespace ARMeilleure.Translation.PTC
 
         private const uint InternalVersion = 5518; //! Not to be incremented manually for each change to the ARMeilleure project.
 
-        private static readonly uint[] _migrateInternalVersions = {
+        private static readonly uint[] _migrateInternalVersions = [
             1866,
-        };
+        ];
 
         private const int SaveInterval = 30; // Seconds.
 
@@ -69,7 +70,7 @@ namespace ARMeilleure.Translation.PTC
 
             _disposed = false;
 
-            ProfiledFuncs = new Dictionary<ulong, FuncProfile>();
+            ProfiledFuncs = [];
 
             Enabled = false;
         }
@@ -189,7 +190,7 @@ namespace ARMeilleure.Translation.PTC
                     return false;
                 }
 
-                using MemoryStream stream = MemoryStreamManager.Shared.GetStream();
+                using RecyclableMemoryStream stream = MemoryStreamManager.Shared.GetStream();
                 Debug.Assert(stream.Seek(0L, SeekOrigin.Begin) == 0L && stream.Length == 0L);
 
                 try

@@ -92,7 +92,7 @@ namespace Ryujinx.Ui.App.Common
             _cancellationToken = new CancellationTokenSource();
 
             // Builds the applications list with paths to found applications
-            List<string> applications = new();
+            List<string> applications = [];
 
             try
             {
@@ -195,7 +195,7 @@ namespace Ryujinx.Ui.App.Common
 
                                     foreach (DirectoryEntryEx fileEntry in pfs.EnumerateEntries("/", "*"))
                                     {
-                                        if (Path.GetExtension(fileEntry.FullPath).ToLower() == ".nca")
+                                        if (Path.GetExtension(fileEntry.FullPath).Equals(".nca", StringComparison.CurrentCultureIgnoreCase))
                                         {
                                             using UniqueRef<IFile> ncaFile = new();
 

@@ -22,25 +22,25 @@ namespace ARMeilleure.Translation
 {
     public class Translator
     {
+#pragma warning disable IDE0055 // Disable formatting
         private static readonly AddressTable<ulong>.Level[] _levels64Bit =
-            new AddressTable<ulong>.Level[]
-            {
+            [
                 new(31, 17),
                 new(23,  8),
                 new(15,  8),
                 new( 7,  8),
                 new( 2,  5),
-            };
+            ];
 
         private static readonly AddressTable<ulong>.Level[] _levels32Bit =
-            new AddressTable<ulong>.Level[]
-            {
+            [
                 new(31, 17),
                 new(23,  8),
                 new(15,  8),
                 new( 7,  8),
                 new( 1,  6),
-            };
+            ];
+#pragma warning restore IDE0055
 
         private readonly IJitMemoryAllocator _allocator;
         private readonly ConcurrentQueue<KeyValuePair<ulong, TranslatedFunction>> _oldFuncs;
@@ -508,7 +508,7 @@ namespace ARMeilleure.Translation
 
         public void InvalidateJitCacheRegion(ulong address, ulong size)
         {
-            ulong[] overlapAddresses = Array.Empty<ulong>();
+            ulong[] overlapAddresses = [];
 
             int overlapsCount = Functions.GetOverlaps(address, size, ref overlapAddresses);
 

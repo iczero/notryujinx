@@ -387,7 +387,7 @@ namespace Ryujinx.Headless.SDL2
                 return;
             }
 
-            _inputConfiguration = new List<InputConfig>();
+            _inputConfiguration = [];
             _enableKeyboard = option.EnableKeyboard;
             _enableMouse = option.EnableMouse;
 
@@ -503,7 +503,7 @@ namespace Ryujinx.Headless.SDL2
 
                     foreach (var device in devices)
                     {
-                        if (device.Vendor.ToLowerInvariant() == preferredGpuVendor)
+                        if (device.Vendor.Equals(preferredGpuVendor, StringComparison.InvariantCultureIgnoreCase))
                         {
                             preferredGpuId = device.Id;
                             break;

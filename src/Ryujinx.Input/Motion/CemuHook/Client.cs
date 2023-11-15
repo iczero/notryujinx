@@ -1,4 +1,5 @@
-﻿using Ryujinx.Common;
+﻿using Microsoft.IO;
+using Ryujinx.Common;
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Configuration.Hid.Controller;
 using Ryujinx.Common.Configuration.Hid.Controller.Motion;
@@ -35,9 +36,9 @@ namespace Ryujinx.Input.Motion.CemuHook
         public Client(NpadManager npadManager)
         {
             _npadManager = npadManager;
-            _hosts = new Dictionary<int, IPEndPoint>();
-            _motionData = new Dictionary<int, Dictionary<int, MotionInput>>();
-            _clients = new Dictionary<int, UdpClient>();
+            _hosts = [];
+            _motionData = [];
+            _clients = [];
 
             CloseClients();
         }
@@ -380,7 +381,7 @@ namespace Ryujinx.Input.Motion.CemuHook
 
             Header header = GenerateHeader(clientId);
 
-            using MemoryStream stream = MemoryStreamManager.Shared.GetStream();
+            using RecyclableMemoryStream stream = MemoryStreamManager.Shared.GetStream();
             using BinaryWriter writer = new(stream);
 
             writer.WriteStruct(header);
@@ -419,7 +420,7 @@ namespace Ryujinx.Input.Motion.CemuHook
 
             Header header = GenerateHeader(clientId);
 
-            using MemoryStream stream = MemoryStreamManager.Shared.GetStream();
+            using RecyclableMemoryStream stream = MemoryStreamManager.Shared.GetStream();
             using BinaryWriter writer = new(stream);
 
             writer.WriteStruct(header);
