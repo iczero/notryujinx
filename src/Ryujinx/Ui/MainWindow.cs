@@ -63,7 +63,6 @@ namespace Ryujinx.Ui
 
         private readonly ApplicationLibrary _applicationLibrary;
         private readonly GtkHostUiHandler _uiHandler;
-        private readonly AutoResetEvent _deviceExitStatus;
         private readonly ListStore _tableStore;
 
         private bool _updatingGameTable;
@@ -184,7 +183,6 @@ namespace Ryujinx.Ui
             // Instantiate GUI objects.
             _applicationLibrary = new ApplicationLibrary(_virtualFileSystem);
             _uiHandler = new GtkHostUiHandler(this);
-            _deviceExitStatus = new AutoResetEvent(false);
 
             WindowStateEvent += WindowStateEvent_Changed;
             DeleteEvent += Window_Close;
@@ -949,8 +947,6 @@ namespace Ryujinx.Ui
 
                 _currentEmulatedGamePath = path;
 
-                _deviceExitStatus.Reset();
-
                 Translator.IsReadyForTranslation.Reset();
 
                 Thread windowThread = new(CreateGameWindow)
@@ -1070,9 +1066,11 @@ namespace Ryujinx.Ui
             RendererWidget.WaitEvent.WaitOne();
 
             RendererWidget.Start();
+            _pauseEmulation.Sensitive = false;
+            _resumeEmulation.Sensitive = false;
+            UpdateMenuItem.Sensitive = true;
 
             _emulationContext.Dispose();
-            _deviceExitStatus.Set();
 
             // NOTE: Everything that is here will not be executed when you close the UI.
             Application.Invoke(delegate
@@ -1173,7 +1171,7 @@ namespace Ryujinx.Ui
                     RendererWidget.Exit();
 
                     // Wait for the other thread to dispose the HLE context before exiting.
-                    _deviceExitStatus.WaitOne();
+                    _emulationContext.ExitStatus.WaitOne();
                     RendererWidget.Dispose();
                 }
             }
@@ -1468,9 +1466,6 @@ namespace Ryujinx.Ui
                 UpdateGameMetadata(_emulationContext.Processes.ActiveApplication.ProgramIdText);
             }
 
-            _pauseEmulation.Sensitive = false;
-            _resumeEmulation.Sensitive = false;
-            UpdateMenuItem.Sensitive = true;
             RendererWidget?.Exit();
         }
 
