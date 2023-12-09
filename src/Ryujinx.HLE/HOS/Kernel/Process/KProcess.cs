@@ -1254,10 +1254,10 @@ namespace Ryujinx.HLE.HOS.Kernel.Process
                     return false;
                 }
                 _parent.KernelContext.CriticalSection.Enter();
-                bool wasPaused = (target.SchedFlags & ThreadSchedState.LowMask) == ThreadSchedState.Paused;
+                bool waiting = target.MutexOwner != null || target.WaitingSync || target.WaitingInArbitration;
                 target.Context.RequestDebugStep();
                 target.Resume(ThreadSchedState.ThreadPauseFlag);
-                if (wasPaused)
+                if (waiting)
                 {
                     lock (_parent._threadingLock)
                     {
@@ -1274,7 +1274,7 @@ namespace Ryujinx.HLE.HOS.Kernel.Process
 
                 _parent.KernelContext.CriticalSection.Enter();
                 target.Suspend(ThreadSchedState.ThreadPauseFlag);
-                if (wasPaused)
+                if (waiting)
                 {
                     lock (_parent._threadingLock)
                     {
