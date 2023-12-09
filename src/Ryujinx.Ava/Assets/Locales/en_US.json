@@ -657,5 +657,10 @@
   "AboutChangelogButtonTooltipMessage": "Click to open the changelog for this version in your default browser.",
   "SettingsTabNetworkMultiplayer": "Multiplayer",
   "MultiplayerMode": "Mode:",
-  "MultiplayerModeTooltip": "Change multiplayer mode"
+  "MultiplayerModeTooltip": "Change multiplayer mode",
+  "SettingsTabDebug": "Debug",
+  "SettingsTabDebugTitle": "Debug (WARNING: For developer use only)",
+  "SettingsTabDebugEnableGDBStub": "Enable GDB Stub",
+  "GDBStubToggleTooltip": "Enables the GDB stub which makes it possible to debug the running application. For development use only!",
+  "GDBStubPort": "GDB stub port:"
 }
