@@ -29,7 +29,7 @@ namespace Ryujinx.HLE
         public Debugger.Debugger Debugger { get; }
         public IHostUiHandler UiHandler { get; }
         public ManualResetEvent ExitStatus { get; }
-        
+
         public bool EnableDeviceVsync { get; set; } = true;
 
         public bool IsFrameAvailable => Gpu.Window.IsFrameAvailable;
