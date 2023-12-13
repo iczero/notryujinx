@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using ExceptionCallback = Ryujinx.Cpu.ExceptionCallback;
+using ExceptionCallbackNoArgs = Ryujinx.Cpu.ExceptionCallbackNoArgs;
 
 namespace Ryujinx.HLE.HOS.Kernel.Process
 {
@@ -745,15 +746,18 @@ namespace Ryujinx.HLE.HOS.Kernel.Process
         public IExecutionContext CreateExecutionContext()
         {
             ExceptionCallback breakCallback = null;
+            ExceptionCallbackNoArgs stepCallback = null;
 
             if (KernelContext.Device.Configuration.EnableGdbStub)
             {
-                breakCallback = KernelContext.Device.Debugger.ThreadBreak;
+                breakCallback = KernelContext.Device.Debugger.BreakHandler;
+                stepCallback = KernelContext.Device.Debugger.StepHandler;
             }
 
             return Context?.CreateExecutionContext(new ExceptionCallbacks(
                 InterruptHandler,
                 breakCallback,
+                stepCallback,
                 KernelContext.SyscallHandler.SvcCall,
                 UndefinedInstructionHandler));
         }
@@ -1196,14 +1200,17 @@ namespace Ryujinx.HLE.HOS.Kernel.Process
 
         private class DebuggerInterface : IDebuggableProcess
         {
+            private Barrier StepBarrier;
             private readonly KProcess _parent;
-            private readonly KernelContext KernelContext;
+            private readonly KernelContext _kernelContext;
+            private KThread steppingThread;
             private int _debugState = (int)DebugState.Running;
 
             public DebuggerInterface(KProcess p)
             {
                 _parent = p;
-                KernelContext = p.KernelContext;
+                _kernelContext = p.KernelContext;
+                StepBarrier = new(2);
             }
 
             public void DebugStop()
@@ -1214,7 +1221,7 @@ namespace Ryujinx.HLE.HOS.Kernel.Process
                     return;
                 }
 
-                KernelContext.CriticalSection.Enter();
+                _kernelContext.CriticalSection.Enter();
                 lock (_parent._threadingLock)
                 {
                     foreach (KThread thread in _parent._threads)
@@ -1226,7 +1233,7 @@ namespace Ryujinx.HLE.HOS.Kernel.Process
                 }
 
                 _debugState = (int)DebugState.Stopped; 
-                KernelContext.CriticalSection.Leave();
+                _kernelContext.CriticalSection.Leave();
             }
 
             public void DebugContinue()
@@ -1237,7 +1244,7 @@ namespace Ryujinx.HLE.HOS.Kernel.Process
                     return;
                 }
 
-                KernelContext.CriticalSection.Enter();
+                _kernelContext.CriticalSection.Enter();
                 lock (_parent._threadingLock)
                 {
                     foreach (KThread thread in _parent._threads)
@@ -1245,7 +1252,7 @@ namespace Ryujinx.HLE.HOS.Kernel.Process
                         thread.Resume(ThreadSchedState.ThreadPauseFlag);
                     }
                 }
-                KernelContext.CriticalSection.Leave();
+                _kernelContext.CriticalSection.Leave();
             }
 
             public bool DebugStep(KThread target)
@@ -1254,7 +1261,8 @@ namespace Ryujinx.HLE.HOS.Kernel.Process
                 {
                     return false;
                 }
-                KernelContext.CriticalSection.Enter();
+                _kernelContext.CriticalSection.Enter();
+                steppingThread = target;
                 bool waiting = target.MutexOwner != null || target.WaitingSync || target.WaitingInArbitration;
                 target.Context.RequestDebugStep();
                 if (waiting)
@@ -1271,12 +1279,12 @@ namespace Ryujinx.HLE.HOS.Kernel.Process
                 {
                     target.Resume(ThreadSchedState.ThreadPauseFlag);
                 }
-                KernelContext.CriticalSection.Leave();
+                _kernelContext.CriticalSection.Leave();
 
-                target.Context.StepBarrier.SignalAndWait();
-                target.Context.StepBarrier.SignalAndWait();
+                StepBarrier.SignalAndWait();
 
-                KernelContext.CriticalSection.Enter();
+                _kernelContext.CriticalSection.Enter();
+                steppingThread = null;
                 if (waiting)
                 {
                     lock (_parent._threadingLock)
@@ -1291,7 +1299,8 @@ namespace Ryujinx.HLE.HOS.Kernel.Process
                 {
                     target.Suspend(ThreadSchedState.ThreadPauseFlag);
                 }
-                KernelContext.CriticalSection.Leave();
+                _kernelContext.CriticalSection.Leave();
+                StepBarrier.SignalAndWait();
                 return true;
             }
 
@@ -1314,6 +1323,19 @@ namespace Ryujinx.HLE.HOS.Kernel.Process
                 {
                     return _parent._threads.FirstOrDefault(x => x.ThreadUid == threadUid);
                 }
+            }
+
+            public void DebugInterruptHandler(IExecutionContext ctx)
+            {
+                _kernelContext.CriticalSection.Enter();
+                bool stepping = steppingThread != null;
+                _kernelContext.CriticalSection.Leave();
+                if (stepping)
+                {
+                    StepBarrier.SignalAndWait();
+                    StepBarrier.SignalAndWait();
+                }
+                _parent.InterruptHandler(ctx);
             }
 
             public IVirtualMemoryManager CpuMemory { get { return _parent.CpuMemory; } }

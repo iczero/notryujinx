@@ -158,8 +158,7 @@ namespace ARMeilleure.Translation
                     if (Interlocked.CompareExchange(ref context.ShouldStep, 0, 1) == 1)
                     {
                         context.DebugPc = Step(context, context.DebugPc);
-                        context.StepBarrier.SignalAndWait();
-                        context.StepBarrier.SignalAndWait();
+                        context.StepHandler();
                     }
                     else
                     {
