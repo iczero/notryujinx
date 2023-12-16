@@ -1313,7 +1313,8 @@ namespace Ryujinx.HLE.HOS.Kernel.Process
             {
                 lock (_parent._threadingLock)
                 {
-                    return _parent._threads.Select(x => x.ThreadUid).ToArray();
+                    var threads = _parent._threads.Where(x => !x.TerminationRequested).ToArray();
+                    return threads.Select(x => x.ThreadUid).ToArray();
                 }
             }
 
@@ -1321,7 +1322,8 @@ namespace Ryujinx.HLE.HOS.Kernel.Process
             {
                 lock (_parent._threadingLock)
                 {
-                    return _parent._threads.FirstOrDefault(x => x.ThreadUid == threadUid);
+                    var threads = _parent._threads.Where(x => !x.TerminationRequested).ToArray();
+                    return threads.FirstOrDefault(x => x.ThreadUid == threadUid);
                 }
             }
 
