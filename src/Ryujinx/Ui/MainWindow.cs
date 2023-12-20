@@ -670,7 +670,8 @@ namespace Ryujinx.Ui
                 ConfigurationState.Instance.Multiplayer.LanInterfaceId.Value,
                 ConfigurationState.Instance.Multiplayer.Mode,
                 ConfigurationState.Instance.Debug.EnableGdbStub,
-                ConfigurationState.Instance.Debug.GdbStubPort);
+                ConfigurationState.Instance.Debug.GdbStubPort,
+                ConfigurationState.Instance.Debug.DebuggerSuspendOnStart);
 
             _emulationContext = new HLE.Switch(configuration);
         }
