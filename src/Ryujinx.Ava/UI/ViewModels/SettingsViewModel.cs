@@ -535,6 +535,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             // Debug
             EnableGdbStub = config.Debug.EnableGdbStub.Value;
             GDBStubPort = config.Debug.GdbStubPort.Value;
+            DebuggerSuspendOnStart = config.Debug.DebuggerSuspendOnStart.Value;
         }
 
         public void SaveSettings()
@@ -642,6 +643,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             // Debug
             config.Debug.EnableGdbStub.Value = EnableGdbStub;
             config.Debug.GdbStubPort.Value = GDBStubPort;
+            config.Debug.DebuggerSuspendOnStart.Value = DebuggerSuspendOnStart;
 
             config.ToFileFormat().SaveConfig(Program.ConfigurationPath);
 

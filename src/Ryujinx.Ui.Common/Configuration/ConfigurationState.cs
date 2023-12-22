@@ -789,6 +789,7 @@ namespace Ryujinx.Ui.Common.Configuration
                 MultiplayerMode = Multiplayer.Mode,
                 EnableGdbStub = Debug.EnableGdbStub,
                 GdbStubPort = Debug.GdbStubPort,
+                DebuggerSuspendOnStart = Debug.DebuggerSuspendOnStart,
             };
 
             return configurationFile;
@@ -946,6 +947,7 @@ namespace Ryujinx.Ui.Common.Configuration
             };
             Debug.EnableGdbStub.Value = false;
             Debug.GdbStubPort.Value = 55555;
+            Debug.DebuggerSuspendOnStart.Value = false;
         }
 
         public ConfigurationLoadResult Load(ConfigurationFileFormat configurationFileFormat, string configurationFilePath)
@@ -1472,6 +1474,7 @@ namespace Ryujinx.Ui.Common.Configuration
 
                 configurationFileFormat.EnableGdbStub = false;
                 configurationFileFormat.GdbStubPort = 55555;
+                configurationFileFormat.DebuggerSuspendOnStart = false;
 
                 configurationFileUpdated = true;
             }
@@ -1572,6 +1575,7 @@ namespace Ryujinx.Ui.Common.Configuration
             Hid.InputConfig.Value = configurationFileFormat.InputConfig;
             Debug.EnableGdbStub.Value = configurationFileFormat.EnableGdbStub;
             Debug.GdbStubPort.Value = configurationFileFormat.GdbStubPort;
+            Debug.DebuggerSuspendOnStart.Value = configurationFileFormat.DebuggerSuspendOnStart;
 
             if (Hid.InputConfig.Value == null)
             {
