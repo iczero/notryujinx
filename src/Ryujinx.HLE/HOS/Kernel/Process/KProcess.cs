@@ -1238,7 +1238,7 @@ namespace Ryujinx.HLE.HOS.Kernel.Process
                     }
                 }
 
-                _parent.debugState = (int)DebugState.Stopped; 
+                _parent.debugState = (int)DebugState.Stopped;
                 _kernelContext.CriticalSection.Leave();
             }
 
