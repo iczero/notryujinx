@@ -1,4 +1,4 @@
-﻿using ARMeilleure.Translation;
+using ARMeilleure.Translation;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -350,16 +350,9 @@ namespace Ryujinx.Ava
 
             _viewModel.IsGameRunning = true;
 
-            var activeProcess = Device.Processes.ActiveApplication;
-
-            string titleNameSection = string.IsNullOrWhiteSpace(activeProcess.Name) ? string.Empty : $" {activeProcess.Name}";
-            string titleVersionSection = string.IsNullOrWhiteSpace(activeProcess.DisplayVersion) ? string.Empty : $" v{activeProcess.DisplayVersion}";
-            string titleIdSection = $" ({activeProcess.ProgramIdText.ToUpper()})";
-            string titleArchSection = activeProcess.Is64Bit ? " (64-bit)" : " (32-bit)";
-
             Dispatcher.UIThread.InvokeAsync(() =>
             {
-                _viewModel.Title = $"Ryujinx {Program.Version} -{titleNameSection}{titleVersionSection}{titleIdSection}{titleArchSection}";
+                _viewModel.Title = TitleHelper.ActiveApplicationTitle(Device.Processes.ActiveApplication, Program.Version);
             });
 
             _viewModel.SetUiProgressHandlers(Device);
@@ -731,6 +724,8 @@ namespace Ryujinx.Ava
             Device?.System.TogglePauseEmulation(false);
 
             _viewModel.IsPaused = false;
+            _viewModel.Title = TitleHelper.ActiveApplicationTitle(Device?.Processes.ActiveApplication, Program.Version);
+            Logger.Info?.Print(LogClass.Emulation, "Emulation was resumed");
         }
 
         internal void Pause()
@@ -738,6 +733,8 @@ namespace Ryujinx.Ava
             Device?.System.TogglePauseEmulation(true);
 
             _viewModel.IsPaused = true;
+            _viewModel.Title = TitleHelper.ActiveApplicationTitle(Device?.Processes.ActiveApplication, Program.Version, LocaleManager.Instance[LocaleKeys.Paused]);
+            Logger.Info?.Print(LogClass.Emulation, "Emulation was paused");
         }
 
         private void InitializeSwitchInstance()
@@ -1113,10 +1110,11 @@ namespace Ryujinx.Ava
                         case KeyboardHotkeyState.ToggleMute:
                             if (Device.IsAudioMuted())
                             {
-                                Device.SetVolume(ConfigurationState.Instance.System.AudioVolume);
+                                Device.SetVolume(_viewModel.VolumeBeforeMute);
                             }
                             else
                             {
+                                _viewModel.VolumeBeforeMute = Device.GetVolume();
                                 Device.SetVolume(0);
                             }
 

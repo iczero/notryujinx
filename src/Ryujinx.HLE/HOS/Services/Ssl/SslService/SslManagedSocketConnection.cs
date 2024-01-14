@@ -1,4 +1,4 @@
-﻿using Ryujinx.HLE.HOS.Services.Sockets.Bsd;
+using Ryujinx.HLE.HOS.Services.Sockets.Bsd;
 using Ryujinx.HLE.HOS.Services.Sockets.Bsd.Impl;
 using Ryujinx.HLE.HOS.Services.Ssl.Types;
 using System;
@@ -161,7 +161,7 @@ namespace Ryujinx.HLE.HOS.Services.Ssl.SslService
                 }
                 else
                 {
-                    throw exception;
+                    throw;
                 }
             }
             finally
@@ -206,7 +206,7 @@ namespace Ryujinx.HLE.HOS.Services.Ssl.SslService
                 }
                 else
                 {
-                    throw exception;
+                    throw;
                 }
             }
             finally

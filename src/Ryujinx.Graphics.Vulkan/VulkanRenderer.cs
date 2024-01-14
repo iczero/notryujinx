@@ -1,4 +1,4 @@
-﻿using Ryujinx.Common.Configuration;
+using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Shader;
@@ -394,6 +394,8 @@ namespace Ryujinx.Graphics.Vulkan
 
             LoadFeatures(maxQueueCount, queueFamilyIndex);
 
+            QueueFamilyIndex = queueFamilyIndex;
+
             _window = new Window(this, _surface, _physicalDevice.PhysicalDevice, _device);
 
             _initialized = true;
@@ -401,17 +403,22 @@ namespace Ryujinx.Graphics.Vulkan
 
         public BufferHandle CreateBuffer(int size, BufferAccess access)
         {
-            return BufferManager.CreateWithHandle(this, size, access.Convert(), default, access == BufferAccess.Stream);
+            return BufferManager.CreateWithHandle(this, size, access.HasFlag(BufferAccess.SparseCompatible), access.Convert(), default, access == BufferAccess.Stream);
         }
 
-        public BufferHandle CreateBuffer(int size, BufferHandle storageHint)
+        public BufferHandle CreateBuffer(int size, BufferAccess access, BufferHandle storageHint)
         {
-            return BufferManager.CreateWithHandle(this, size, BufferAllocationType.Auto, storageHint);
+            return BufferManager.CreateWithHandle(this, size, access.HasFlag(BufferAccess.SparseCompatible), access.Convert(), storageHint);
         }
 
         public BufferHandle CreateBuffer(nint pointer, int size)
         {
             return BufferManager.CreateHostImported(this, pointer, size);
+        }
+
+        public BufferHandle CreateBufferSparse(ReadOnlySpan<BufferRange> storageBuffers)
+        {
+            return BufferManager.CreateSparse(this, storageBuffers);
         }
 
         public IProgram CreateProgram(ShaderSource[] sources, ShaderInfo info)
@@ -575,6 +582,7 @@ namespace Ryujinx.Graphics.Vulkan
             Api.GetPhysicalDeviceFeatures2(_physicalDevice.PhysicalDevice, &features2);
 
             var limits = _physicalDevice.PhysicalDeviceProperties.Limits;
+            var mainQueueProperties = _physicalDevice.QueueFamilyProperties[QueueFamilyIndex];
 
             return new Capabilities(
                 api: TargetApi.Vulkan,
@@ -594,6 +602,7 @@ namespace Ryujinx.Graphics.Vulkan
                 supportsR4G4B4A4Format: supportsR4G4B4A4Format,
                 supportsSnormBufferTextureFormat: true,
                 supports5BitComponentFormat: supports5BitComponentFormat,
+                supportsSparseBuffer: features2.Features.SparseBinding && mainQueueProperties.QueueFlags.HasFlag(QueueFlags.SparseBindingBit),
                 supportsBlendEquationAdvanced: Capabilities.SupportsBlendEquationAdvanced,
                 supportsFragmentShaderInterlock: Capabilities.SupportsFragmentShaderInterlock,
                 supportsFragmentShaderOrderingIntel: false,

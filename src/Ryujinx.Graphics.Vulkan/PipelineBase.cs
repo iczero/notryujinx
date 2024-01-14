@@ -1,4 +1,4 @@
-﻿using Ryujinx.Graphics.GAL;
+using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Shader;
 using Silk.NET.Vulkan;
 using System;
@@ -189,7 +189,7 @@ namespace Ryujinx.Graphics.Vulkan
                 PipelineStageFlags.AllCommandsBit,
                 0,
                 1,
-                new ReadOnlySpan<MemoryBarrier>(memoryBarrier),
+                new ReadOnlySpan<MemoryBarrier>(in memoryBarrier),
                 0,
                 ReadOnlySpan<BufferMemoryBarrier>.Empty,
                 0,
