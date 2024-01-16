@@ -10,6 +10,7 @@ using Ryujinx.HLE.Loaders.Processes;
 using Ryujinx.HLE.Ui;
 using Ryujinx.Memory;
 using System;
+using System.Threading;
 
 namespace Ryujinx.HLE
 {
@@ -25,11 +26,15 @@ namespace Ryujinx.HLE
         public PerformanceStatistics Statistics { get; }
         public Hid Hid { get; }
         public TamperMachine TamperMachine { get; }
+        public Debugger.Debugger Debugger { get; }
         public IHostUiHandler UiHandler { get; }
+        public ManualResetEvent ExitStatus { get; }
 
         public bool EnableDeviceVsync { get; set; } = true;
 
         public bool IsFrameAvailable => Gpu.Window.IsFrameAvailable;
+
+        public bool IsActive { get; set; } = true;
 
         public Switch(HLEConfiguration configuration)
         {
@@ -49,11 +54,13 @@ namespace Ryujinx.HLE
             AudioDeviceDriver = new CompatLayerHardwareDeviceDriver(Configuration.AudioDeviceDriver);
             Memory            = new MemoryBlock(Configuration.MemoryConfiguration.ToDramSize(), memoryAllocationFlags);
             Gpu               = new GpuContext(Configuration.GpuRenderer);
+            Debugger          = Configuration.EnableGdbStub ? new Debugger.Debugger(this, Configuration.GdbStubPort) : null;
             System            = new HOS.Horizon(this);
             Statistics        = new PerformanceStatistics();
             Hid               = new Hid(this, System.HidStorage);
             Processes         = new ProcessLoader(this);
             TamperMachine     = new TamperMachine();
+            ExitStatus        = new ManualResetEvent(false);
 
             System.State.SetLanguage(Configuration.SystemLanguage);
             System.State.SetRegion(Configuration.Region);
@@ -153,6 +160,8 @@ namespace Ryujinx.HLE
                 AudioDeviceDriver.Dispose();
                 FileSystem.Dispose();
                 Memory.Dispose();
+                ExitStatus.Set();
+                Debugger.Dispose();
             }
         }
     }

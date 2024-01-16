@@ -11,6 +11,7 @@ using Ryujinx.Audio.Output;
 using Ryujinx.Audio.Renderer.Device;
 using Ryujinx.Audio.Renderer.Server;
 using Ryujinx.Cpu;
+using Ryujinx.HLE.Debugger;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.HOS.Kernel;
 using Ryujinx.HLE.HOS.Kernel.Memory;
@@ -554,6 +555,14 @@ namespace Ryujinx.HLE.HOS
                 }
             }
             IsPaused = pause;
+        }
+
+        internal IDebuggableProcess DebugGetApplicationProcess()
+        {
+            lock (KernelContext.Processes)
+            {
+                return KernelContext.Processes.Values.FirstOrDefault(x => x.IsApplication)?.DebugInterface;
+            }
         }
     }
 }

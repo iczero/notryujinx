@@ -577,6 +577,37 @@ namespace Ryujinx.Ui.Common.Configuration
         }
 
         /// <summary>
+        /// Debug configuration section
+        /// </summary>
+        public class DebugSection
+        {
+            /// <summary>
+            /// Enables or disables the GDB stub
+            /// </summary>
+            public ReactiveObject<bool> EnableGdbStub { get; private set; }
+
+            /// <summary>
+            /// Which TCP port should the GDB stub listen on
+            /// </summary>
+            public ReactiveObject<ushort> GdbStubPort { get; private set; }
+
+            /// <summary>
+            /// Suspend execution when starting an application
+            /// </summary>
+            public ReactiveObject<bool> DebuggerSuspendOnStart { get; private set; }
+
+            public DebugSection()
+            {
+                EnableGdbStub = new ReactiveObject<bool>();
+                EnableGdbStub.Event += static (sender, e) => LogValueChange(e, nameof(EnableGdbStub));
+                GdbStubPort = new ReactiveObject<ushort>();
+                GdbStubPort.Event += static (sender, e) => LogValueChange(e, nameof(GdbStubPort));
+                DebuggerSuspendOnStart = new ReactiveObject<bool>();
+                DebuggerSuspendOnStart.Event += static (sender, e) => LogValueChange(e, nameof(DebuggerSuspendOnStart));
+            }
+        }
+
+        /// <summary>
         /// The default configuration instance
         /// </summary>
         public static ConfigurationState Instance { get; private set; }
@@ -605,6 +636,11 @@ namespace Ryujinx.Ui.Common.Configuration
         /// The Hid section
         /// </summary>
         public HidSection Hid { get; private set; }
+
+        /// <summary>
+        /// The Debug
+        /// </summary>
+        public DebugSection Debug { get; private set; }
 
         /// <summary>
         /// The Multiplayer section
@@ -638,6 +674,7 @@ namespace Ryujinx.Ui.Common.Configuration
             System = new SystemSection();
             Graphics = new GraphicsSection();
             Hid = new HidSection();
+            Debug = new DebugSection();
             Multiplayer = new MultiplayerSection();
             EnableDiscordIntegration = new ReactiveObject<bool>();
             CheckUpdatesOnStart = new ReactiveObject<bool>();
@@ -751,6 +788,9 @@ namespace Ryujinx.Ui.Common.Configuration
                 PreferredGpu = Graphics.PreferredGpu,
                 MultiplayerLanInterfaceId = Multiplayer.LanInterfaceId,
                 MultiplayerMode = Multiplayer.Mode,
+                EnableGdbStub = Debug.EnableGdbStub,
+                GdbStubPort = Debug.GdbStubPort,
+                DebuggerSuspendOnStart = Debug.DebuggerSuspendOnStart,
             };
 
             return configurationFile;
@@ -906,6 +946,9 @@ namespace Ryujinx.Ui.Common.Configuration
                     },
                 },
             };
+            Debug.EnableGdbStub.Value = false;
+            Debug.GdbStubPort.Value = 55555;
+            Debug.DebuggerSuspendOnStart.Value = false;
         }
 
         public void Load(ConfigurationFileFormat configurationFileFormat, string configurationFilePath)
@@ -1420,6 +1463,16 @@ namespace Ryujinx.Ui.Common.Configuration
 
                 configurationFileUpdated = true;
             }
+            if (configurationFileFormat.Version < 48)
+            {
+                Ryujinx.Common.Logging.Logger.Warning?.Print(LogClass.Application, $"Outdated configuration version {configurationFileFormat.Version}, migrating to version 38.");
+
+                configurationFileFormat.EnableGdbStub = false;
+                configurationFileFormat.GdbStubPort = 55555;
+                configurationFileFormat.DebuggerSuspendOnStart = false;
+
+                configurationFileUpdated = true;
+            }
 
             if (configurationFileFormat.Version < 48)
             {
@@ -1515,6 +1568,9 @@ namespace Ryujinx.Ui.Common.Configuration
             Hid.EnableMouse.Value = configurationFileFormat.EnableMouse;
             Hid.Hotkeys.Value = configurationFileFormat.Hotkeys;
             Hid.InputConfig.Value = configurationFileFormat.InputConfig;
+            Debug.EnableGdbStub.Value = configurationFileFormat.EnableGdbStub;
+            Debug.GdbStubPort.Value = configurationFileFormat.GdbStubPort;
+            Debug.DebuggerSuspendOnStart.Value = configurationFileFormat.DebuggerSuspendOnStart;
 
             if (Hid.InputConfig.Value == null)
             {

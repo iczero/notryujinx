@@ -96,7 +96,6 @@ namespace Ryujinx.Ava
         private bool _isCursorInRenderer = true;
 
         private bool _isStopped;
-        private bool _isActive;
         private bool _renderingStarted;
 
         private readonly ManualResetEvent _gpuDoneEvent;
@@ -355,8 +354,6 @@ namespace Ryujinx.Ava
 
             RendererHost.BoundsChanged += Window_BoundsChanged;
 
-            _isActive = true;
-
             _renderingThread.Start();
 
             _viewModel.Volume = ConfigurationState.Instance.System.AudioVolume.Value;
@@ -419,7 +416,7 @@ namespace Ryujinx.Ava
 
         public void Stop()
         {
-            _isActive = false;
+            Device.IsActive = false;
         }
 
         private void Exit()
@@ -432,14 +429,14 @@ namespace Ryujinx.Ava
             }
 
             _isStopped = true;
-            _isActive = false;
+            Device.IsActive = false;
         }
 
         public void DisposeContext()
         {
             Dispose();
 
-            _isActive = false;
+            Device.IsActive = false;
 
             // NOTE: The render loop is allowed to stay alive until the renderer itself is disposed, as it may handle resource dispose.
             // We only need to wait for all commands submitted during the main gpu loop to be processed.
@@ -792,7 +789,10 @@ namespace Ryujinx.Ava
                                                      ConfigurationState.Instance.System.AudioVolume,
                                                      ConfigurationState.Instance.System.UseHypervisor,
                                                      ConfigurationState.Instance.Multiplayer.LanInterfaceId.Value,
-                                                     ConfigurationState.Instance.Multiplayer.Mode);
+                                                     ConfigurationState.Instance.Multiplayer.Mode,
+                                                     ConfigurationState.Instance.Debug.EnableGdbStub.Value,
+                                                     ConfigurationState.Instance.Debug.GdbStubPort.Value,
+                                                     ConfigurationState.Instance.Debug.DebuggerSuspendOnStart.Value);
 
             Device = new Switch(configuration);
         }
@@ -868,7 +868,7 @@ namespace Ryujinx.Ava
 
         private void MainLoop()
         {
-            while (_isActive)
+            while (Device.IsActive)
             {
                 UpdateFrame();
 
@@ -920,7 +920,7 @@ namespace Ryujinx.Ava
 
                 _renderer.Window.ChangeVSyncMode(Device.EnableDeviceVsync);
 
-                while (_isActive)
+                while (Device.IsActive)
                 {
                     _ticks += _chrono.ElapsedTicks;
 
@@ -1008,7 +1008,7 @@ namespace Ryujinx.Ava
 
         private bool UpdateFrame()
         {
-            if (!_isActive)
+            if (!Device.IsActive)
             {
                 return false;
             }
