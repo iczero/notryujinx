@@ -1,4 +1,5 @@
 using Ryujinx.Horizon.Am;
+using Ryujinx.Horizon.Arp;
 using Ryujinx.Horizon.Bcat;
 using Ryujinx.Horizon.Friends;
 using Ryujinx.Horizon.Hshl;
