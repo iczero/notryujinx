@@ -86,7 +86,22 @@ namespace Ryujinx.HLE.HOS.Services.Ssl.SslService
         public ResultCode Handshake(string hostName)
         {
             StartSslOperation();
-            _stream = new SslStream(new NetworkStream(((ManagedSocket)Socket).Socket, false), false, null, null);
+
+            NetworkStream networkStream;
+            if (Socket is ManagedProxySocket proxySocket)
+            {
+                networkStream = new NetworkStream(proxySocket.Socket, false);
+            }
+            else if (Socket is ManagedSocket managedSocket)
+            {
+                networkStream = new NetworkStream(managedSocket.Socket, false);
+            }
+            else
+            {
+                throw new NotSupportedException($"Socket of type {Socket.GetType()} does not support SSL.");
+            }
+
+            _stream = new SslStream(networkStream, false, null, null);
             _stream.AuthenticateAsClient(hostName, null, TranslateSslVersion(_sslVersion), false);
             EndSslOperation();
 
