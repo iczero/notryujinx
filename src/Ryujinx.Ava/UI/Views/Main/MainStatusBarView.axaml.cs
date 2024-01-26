@@ -6,7 +6,6 @@ using Ryujinx.Ava.UI.Windows;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
 using Ryujinx.Ui.Common.Configuration;
-using Silk.NET.Vulkan;
 using System;
 
 namespace Ryujinx.Ava.UI.Views.Main

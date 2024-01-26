@@ -32,7 +32,6 @@ using Ryujinx.Ui.App.Common;
 using Ryujinx.Ui.Common;
 using Ryujinx.Ui.Common.Configuration;
 using Ryujinx.Ui.Common.Helper;
-using Silk.NET.Vulkan;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
 using System.Collections.Generic;
@@ -105,8 +104,6 @@ namespace Ryujinx.Ava.UI.ViewModels
         private double _windowHeight;
         private int _customVSyncInterval;
         private int _customVSyncIntervalPercentageProxy;
-
-
 
         private bool _isActive;
 
