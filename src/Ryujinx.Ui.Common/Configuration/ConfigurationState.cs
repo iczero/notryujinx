@@ -1478,7 +1478,7 @@ namespace Ryujinx.Ui.Common.Configuration
                     CustomVSyncIntervalIncrement = Key.Unbound,
                     CustomVSyncIntervalDecrement = Key.Unbound,
                 };
-                configurationFileFormat.CustomVSyncInterval = 90;
+                configurationFileFormat.CustomVSyncInterval = 120;
 
                 configurationFileUpdated = true;
             }
