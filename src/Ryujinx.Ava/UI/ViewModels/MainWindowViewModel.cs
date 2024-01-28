@@ -1458,7 +1458,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             }
         }
 
-        public void UpdateVSyncMode()
+        public void ToggleVSyncMode()
         {
             AppHost.VSyncModeToggle();
             OnPropertyChanged(nameof(ShowCustomVSyncIntervalPicker));
