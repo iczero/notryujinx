@@ -3,6 +3,7 @@ using Ryujinx.Memory;
 using Ryujinx.Memory.Range;
 using Ryujinx.Memory.Tracking;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -336,7 +337,22 @@ namespace Ryujinx.Cpu.Jit
         }
 
         /// <inheritdoc/>
-        public ReadOnlySpan<byte> GetSpan(ulong va, int size, bool tracked = false)
+        public ReadOnlySequence<byte> GetReadOnlySequence(ulong va, int size, bool tracked = false)
+        {
+            if (tracked)
+            {
+                SignalMemoryTracking(va, (ulong)size, write: false);
+            }
+            else
+            {
+                AssertMapped(va, (ulong)size);
+            }
+
+            return new ReadOnlySequence<byte>(_addressSpace.Mirror.GetMemory(va, size));
+        }
+        
+        /// <inheritdoc/>
+        public ReadOnlySpan<byte> GetSpan(ulong va, int size, bool tracked = false) 
         {
             if (tracked)
             {
