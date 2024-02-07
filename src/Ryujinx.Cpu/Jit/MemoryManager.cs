@@ -239,26 +239,17 @@ namespace Ryujinx.Cpu.Jit
                 }
                 else
                 {
-                    int offset = 0, size;
+                    int offset = 0;
 
-                    if ((va & PageMask) != 0)
+                    var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, data.Length, PageSize, GetPhysicalAddressInternal);
+
+                    foreach (MemoryRange memoryRange in memoryRanges)
                     {
-                        ulong pa = GetPhysicalAddressInternal(va);
+                        var target = _backingMemory.GetSpan(memoryRange.Address, (int)memoryRange.Size);
 
-                        size = Math.Min(data.Length, PageSize - (int)(va & PageMask));
+                        data.Slice(offset, target.Length).CopyTo(target);
 
-                        data[..size].CopyTo(_backingMemory.GetSpan(pa, size));
-
-                        offset += size;
-                    }
-
-                    for (; offset < data.Length; offset += size)
-                    {
-                        ulong pa = GetPhysicalAddressInternal(va + (ulong)offset);
-
-                        size = Math.Min(data.Length - offset, PageSize);
-
-                        data.Slice(offset, size).CopyTo(_backingMemory.GetSpan(pa, size));
+                        offset += target.Length;
                     }
                 }
             }
@@ -296,30 +287,13 @@ namespace Ryujinx.Cpu.Jit
                 {
                     AssertValidAddressAndSize(va, (ulong)size);
 
-                    int offset = 0, segmentSize;
+                    var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, size, PageSize, GetPhysicalAddressInternal);
 
-                    if ((va & PageMask) != 0)
+                    foreach (MemoryRange memoryRange in memoryRanges)
                     {
-                        ulong pa = GetPhysicalAddressInternal(va);
+                        Memory<byte> memory = _backingMemory.GetMemory(memoryRange.Address, (int)memoryRange.Size);
 
-                        segmentSize = Math.Min(size, PageSize - (int)(va & PageMask));
-
-                        var memory = _backingMemory.GetMemory(pa, segmentSize);
-
-                        first = last = new BytesReadOnlySequenceSegment(memory);
-
-                        offset += segmentSize;
-                    }
-
-                    for (; offset < size; offset += segmentSize)
-                    {
-                        ulong pa = GetPhysicalAddressInternal(va + (ulong)offset);
-
-                        segmentSize = Math.Min(size - offset, PageSize);
-
-                        var memory = _backingMemory.GetMemory(pa, segmentSize);
-
-                        if (first == null)
+                        if (first is null)
                         {
                             first = last = new BytesReadOnlySequenceSegment(memory);
                         }
@@ -340,7 +314,7 @@ namespace Ryujinx.Cpu.Jit
                 return new ReadOnlySequence<byte>(first, 0, last, (int)(size - last.RunningIndex));
             }
         }
-        
+
         /// <inheritdoc/>
         public ReadOnlySpan<byte> GetSpan(ulong va, int size, bool tracked = false)
         {
@@ -545,26 +519,17 @@ namespace Ryujinx.Cpu.Jit
             {
                 AssertValidAddressAndSize(va, (ulong)data.Length);
 
-                int offset = 0, size;
+                int offset = 0;
 
-                if ((va & PageMask) != 0)
+                var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, data.Length, PageSize, GetPhysicalAddressInternal);
+
+                foreach (MemoryRange memoryRange in memoryRanges)
                 {
-                    ulong pa = GetPhysicalAddressInternal(va);
+                    int size = (int)memoryRange.Size;
 
-                    size = Math.Min(data.Length, PageSize - (int)(va & PageMask));
-
-                    _backingMemory.GetSpan(pa, size).CopyTo(data[..size]);
+                    _backingMemory.GetSpan(memoryRange.Address, size).CopyTo(data.Slice(offset, size));
 
                     offset += size;
-                }
-
-                for (; offset < data.Length; offset += size)
-                {
-                    ulong pa = GetPhysicalAddressInternal(va + (ulong)offset);
-
-                    size = Math.Min(data.Length - offset, PageSize);
-
-                    _backingMemory.GetSpan(pa, size).CopyTo(data.Slice(offset, size));
                 }
             }
             catch (InvalidMemoryRegionException)

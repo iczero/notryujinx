@@ -350,9 +350,9 @@ namespace Ryujinx.Cpu.Jit
 
             return new ReadOnlySequence<byte>(_addressSpace.Mirror.GetMemory(va, size));
         }
-        
+
         /// <inheritdoc/>
-        public ReadOnlySpan<byte> GetSpan(ulong va, int size, bool tracked = false) 
+        public ReadOnlySpan<byte> GetSpan(ulong va, int size, bool tracked = false)
         {
             if (tracked)
             {
