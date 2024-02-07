@@ -21,7 +21,7 @@ namespace Ryujinx.Memory
             _tracked = tracked;
             Memory = memory;
         }
-        
+
         public WritableRegion(IWritableBlock block, ulong va, IMemoryOwner<byte> memoryOwner, bool tracked = false)
             : this(block, va, memoryOwner.Memory, tracked)
         {
@@ -41,7 +41,7 @@ namespace Ryujinx.Memory
                     _block.WriteUntracked(_va, Memory.Span);
                 }
             }
-            
+
             _memoryOwner?.Dispose();
         }
     }
