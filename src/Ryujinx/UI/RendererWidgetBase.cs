@@ -378,8 +378,11 @@ namespace Ryujinx.UI
                 {
                     lock (this)
                     {
-                        var currentTime = DateTime.Now;
-                        string filename = $"ryujinx_capture_{currentTime.Year}-{currentTime.Month:D2}-{currentTime.Day:D2}_{currentTime.Hour:D2}-{currentTime.Minute:D2}-{currentTime.Second:D2}.png";
+                        string applicationName = Device.Processes.ActiveApplication.Name;
+                        DateTime currentTime = DateTime.Now;
+
+                        string filename = $"{applicationName}_{currentTime.Year}-{currentTime.Month:D2}-{currentTime.Day:D2}_{currentTime.Hour:D2}-{currentTime.Minute:D2}-{currentTime.Second:D2}.png";
+
                         string directory = AppDataManager.Mode switch
                         {
                             AppDataManager.LaunchMode.Portable or AppDataManager.LaunchMode.Custom => System.IO.Path.Combine(AppDataManager.BaseDirPath, "screenshots"),
