@@ -39,20 +39,17 @@ using Ryujinx.Ui.Common;
 using Ryujinx.Ui.Common.Configuration;
 using Ryujinx.Ui.Common.Helper;
 using Silk.NET.Vulkan;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
+using SkiaSharp;
 using SPB.Graphics.Vulkan;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static Ryujinx.Ava.UI.Helpers.Win32NativeInterop;
 using AntiAliasing = Ryujinx.Common.Configuration.AntiAliasing;
-using Image = SixLabors.ImageSharp.Image;
 using InputManager = Ryujinx.Input.HLE.InputManager;
 using IRenderer = Ryujinx.Graphics.GAL.IRenderer;
 using Key = Ryujinx.Input.Key;
@@ -301,25 +298,37 @@ namespace Ryujinx.Ava
                             return;
                         }
 
-                        Image image = e.IsBgra ? Image.LoadPixelData<Bgra32>(e.Data, e.Width, e.Height)
-                                               : Image.LoadPixelData<Rgba32>(e.Data, e.Width, e.Height);
+                        using var bitmap = e.IsBgra
+                            ? new SKBitmap(new SKImageInfo(e.Width, e.Height, SKColorType.Bgra8888, SKAlphaType.Premul))
+                            : new SKBitmap(new SKImageInfo(e.Width, e.Height, SKColorType.Rgba8888, SKAlphaType.Premul));
 
-                        if (e.FlipX)
+                        Marshal.Copy(e.Data, 0, bitmap.GetPixels(), e.Data.Length);
+
+                        if (e.FlipX || e.FlipY)
                         {
-                            image.Mutate(x => x.Flip(FlipMode.Horizontal));
+                            using var flippedBitmap = new SKBitmap(bitmap.Width, bitmap.Height);
+                            using (var canvas = new SKCanvas(flippedBitmap))
+                            {
+                                canvas.Clear(SKColors.Transparent);
+                                var matrix = SKMatrix.CreateIdentity();
+                                if (e.FlipX)
+                                {
+                                    matrix = SKMatrix.CreateScale(-1, 1, bitmap.Width / 2f, bitmap.Height / 2f);
+                                }
+                                if (e.FlipY)
+                                {
+                                    matrix = SKMatrix.CreateScale(1, -1, bitmap.Width / 2f, bitmap.Height / 2f);
+                                }
+                                canvas.SetMatrix(matrix);
+                                canvas.DrawBitmap(bitmap, 0, 0);
+                            }
+                            bitmap.Dispose();
+                            SaveBitmapAsPng(flippedBitmap, path);
                         }
-
-                        if (e.FlipY)
+                        else
                         {
-                            image.Mutate(x => x.Flip(FlipMode.Vertical));
+                            SaveBitmapAsPng(bitmap, path);
                         }
-
-                        image.SaveAsPng(path, new PngEncoder
-                        {
-                            ColorType = PngColorType.Rgb,
-                        });
-
-                        image.Dispose();
 
                         Logger.Notice.Print(LogClass.Application, $"Screenshot saved to {path}", "Screenshot");
                     }
@@ -329,6 +338,14 @@ namespace Ryujinx.Ava
             {
                 Logger.Error?.Print(LogClass.Application, $"Screenshot is empty. Size : {e.Data.Length} bytes. Resolution : {e.Width}x{e.Height}", "Screenshot");
             }
+        }
+
+        private void SaveBitmapAsPng(SKBitmap bitmap, string path)
+        {
+            using var image = SKImage.FromBitmap(bitmap);
+            using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+            using var stream = File.OpenWrite(path);
+            data.SaveTo(stream);
         }
 
         public void Start()
