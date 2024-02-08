@@ -48,6 +48,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static Ryujinx.Ava.UI.Helpers.Win32NativeInterop;
@@ -271,6 +272,24 @@ namespace Ryujinx.Ava
             }
         }
 
+        private string SanitizeApplicationName(string applicationName)
+        {
+            StringBuilder sbAppName = new StringBuilder(applicationName);
+
+            HashSet<char> reservedChars = new HashSet<char>() { '<', '>', ':', '"', '/', '\\', '|', '?', '*' };
+            for (char ch = (char)0; ch <= 31; ch++)
+            {
+                reservedChars.Add(ch);
+            }
+
+            foreach (char reservedChar in reservedChars)
+            {
+                sbAppName = sbAppName.Replace(reservedChar, '_');
+            }
+
+            return sbAppName.ToString();
+        }
+
         private void Renderer_ScreenCaptured(object sender, ScreenCaptureImageInfo e)
         {
             if (e.Data.Length > 0 && e.Height > 0 && e.Width > 0)
@@ -280,9 +299,11 @@ namespace Ryujinx.Ava
                     lock (_lockObject)
                     {
                         string applicationName = Device.Processes.ActiveApplication.Name;
+                        string sanitizedApplicationName = SanitizeApplicationName(applicationName);
+
                         DateTime currentTime = DateTime.Now;
 
-                        string filename = $"{applicationName}_{currentTime.Year}-{currentTime.Month:D2}-{currentTime.Day:D2}_{currentTime.Hour:D2}-{currentTime.Minute:D2}-{currentTime.Second:D2}.png";
+                        string filename = $"{sanitizedApplicationName}_{currentTime.Year}-{currentTime.Month:D2}-{currentTime.Day:D2}_{currentTime.Hour:D2}-{currentTime.Minute:D2}-{currentTime.Second:D2}.png";
 
                         string directory = AppDataManager.Mode switch
                         {
