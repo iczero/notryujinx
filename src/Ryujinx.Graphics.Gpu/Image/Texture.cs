@@ -149,6 +149,7 @@ namespace Ryujinx.Graphics.Gpu.Image
         /// </summary>
         public bool HadPoolOwner { get; private set; }
 
+        /// <summary>
         /// Physical memory ranges where the texture data is located.
         /// </summary>
         public MultiRange Range { get; private set; }
@@ -568,6 +569,18 @@ namespace Ryujinx.Graphics.Gpu.Image
         public bool CheckModified(bool consume)
         {
             return Group.CheckDirty(this, consume);
+        }
+
+        /// <summary>
+        /// Discards all data for this texture.
+        /// This clears all dirty flags, modified flags, and pending copies from other textures.
+        /// It should be used if the texture data will be fully overwritten by the next use.
+        /// </summary>
+        public void DiscardData()
+        {
+            Group.DiscardData(this);
+
+            _dirty = false;
         }
 
         /// <summary>
@@ -1688,7 +1701,6 @@ namespace Ryujinx.Graphics.Gpu.Image
             if (Group.Storage == this)
             {
                 Group.Unmapped();
-
                 Group.ClearModified(unmapRange);
             }
         }

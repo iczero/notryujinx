@@ -675,7 +675,7 @@ namespace Ryujinx.HLE.HOS.Kernel.Memory
                     KMemoryPermission.None,
                     MemoryAttribute.Mask,
                     MemoryAttribute.None,
-                    MemoryAttribute.IpcAndDeviceMapped,
+                    MemoryAttribute.IpcAndDeviceMapped | MemoryAttribute.PermissionLocked,
                     out MemoryState state,
                     out _,
                     out _);
@@ -687,7 +687,7 @@ namespace Ryujinx.HLE.HOS.Kernel.Memory
                     state,
                     KMemoryPermission.None,
                     KMemoryPermission.None,
-                    MemoryAttribute.Mask,
+                    MemoryAttribute.Mask & ~MemoryAttribute.PermissionLocked,
                     MemoryAttribute.None);
 
                 if (success)
@@ -913,19 +913,27 @@ namespace Ryujinx.HLE.HOS.Kernel.Memory
             return Result.Success;
         }
 
-        public Result SetMemoryAttribute(
-            ulong address,
-            ulong size,
-            MemoryAttribute attributeMask,
-            MemoryAttribute attributeValue)
+        public Result SetMemoryAttribute(ulong address, ulong size, MemoryAttribute attributeMask, MemoryAttribute attributeValue)
         {
             lock (_blockManager)
             {
+                MemoryState stateCheckMask = 0;
+
+                if (attributeMask.HasFlag(MemoryAttribute.Uncached))
+                {
+                    stateCheckMask = MemoryState.AttributeChangeAllowed;
+                }
+
+                if (attributeMask.HasFlag(MemoryAttribute.PermissionLocked))
+                {
+                    stateCheckMask |= MemoryState.PermissionLockAllowed;
+                }
+
                 if (CheckRange(
                     address,
                     size,
-                    MemoryState.AttributeChangeAllowed,
-                    MemoryState.AttributeChangeAllowed,
+                    stateCheckMask,
+                    stateCheckMask,
                     KMemoryPermission.None,
                     KMemoryPermission.None,
                     MemoryAttribute.BorrowedAndIpcMapped,
@@ -1255,7 +1263,7 @@ namespace Ryujinx.HLE.HOS.Kernel.Memory
 
                         if ((oldPermission & KMemoryPermission.Execute) != 0)
                         {
-                            result = ReprotectWithAttributes(address, pagesCount, permission);
+                            result = ReprotectAndFlush(address, pagesCount, permission);
                         }
                         else
                         {
@@ -3036,13 +3044,13 @@ namespace Ryujinx.HLE.HOS.Kernel.Memory
         protected abstract Result Reprotect(ulong address, ulong pagesCount, KMemoryPermission permission);
 
         /// <summary>
-        /// Changes the permissions of a given virtual memory region.
+        /// Changes the permissions of a given virtual memory region, while also flushing the cache.
         /// </summary>
         /// <param name="address">Virtual address of the region to have the permission changes</param>
         /// <param name="pagesCount">Number of pages to have their permissions changed</param>
         /// <param name="permission">New permission</param>
         /// <returns>Result of the permission change operation</returns>
-        protected abstract Result ReprotectWithAttributes(ulong address, ulong pagesCount, KMemoryPermission permission);
+        protected abstract Result ReprotectAndFlush(ulong address, ulong pagesCount, KMemoryPermission permission);
 
         /// <summary>
         /// Alerts the memory tracking that a given region has been read from or written to.

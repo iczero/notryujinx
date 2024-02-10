@@ -23,6 +23,7 @@ namespace Ryujinx.Graphics.GAL
         public readonly bool SupportsR4G4B4A4Format;
         public readonly bool SupportsScaledVertexFormats;
         public readonly bool SupportsSnormBufferTextureFormat;
+        public readonly bool SupportsSparseBuffer;
         public readonly bool Supports5BitComponentFormat;
         public readonly bool SupportsBlendEquationAdvanced;
         public readonly bool SupportsFragmentShaderInterlock;
@@ -38,6 +39,7 @@ namespace Ryujinx.Graphics.GAL
         public readonly bool SupportsShaderBallot;
         public readonly bool SupportsShaderBarrierDivergence;
         public readonly bool SupportsShaderFloat64;
+        public readonly bool SupportsTextureGatherOffsets;
         public readonly bool SupportsTextureShadowLod;
         public readonly bool SupportsVertexStoreAndAtomics;
         public readonly bool SupportsViewportIndexVertexTessellation;
@@ -78,6 +80,7 @@ namespace Ryujinx.Graphics.GAL
             bool supportsScaledVertexFormats,
             bool supportsSnormBufferTextureFormat,
             bool supports5BitComponentFormat,
+            bool supportsSparseBuffer,
             bool supportsBlendEquationAdvanced,
             bool supportsFragmentShaderInterlock,
             bool supportsFragmentShaderOrderingIntel,
@@ -92,6 +95,7 @@ namespace Ryujinx.Graphics.GAL
             bool supportsShaderBallot,
             bool supportsShaderBarrierDivergence,
             bool supportsShaderFloat64,
+            bool supportsTextureGatherOffsets,
             bool supportsTextureShadowLod,
             bool supportsVertexStoreAndAtomics,
             bool supportsViewportIndexVertexTessellation,
@@ -128,6 +132,7 @@ namespace Ryujinx.Graphics.GAL
             SupportsScaledVertexFormats = supportsScaledVertexFormats;
             SupportsSnormBufferTextureFormat = supportsSnormBufferTextureFormat;
             Supports5BitComponentFormat = supports5BitComponentFormat;
+            SupportsSparseBuffer = supportsSparseBuffer;
             SupportsBlendEquationAdvanced = supportsBlendEquationAdvanced;
             SupportsFragmentShaderInterlock = supportsFragmentShaderInterlock;
             SupportsFragmentShaderOrderingIntel = supportsFragmentShaderOrderingIntel;
@@ -142,6 +147,7 @@ namespace Ryujinx.Graphics.GAL
             SupportsShaderBallot = supportsShaderBallot;
             SupportsShaderBarrierDivergence = supportsShaderBarrierDivergence;
             SupportsShaderFloat64 = supportsShaderFloat64;
+            SupportsTextureGatherOffsets = supportsTextureGatherOffsets;
             SupportsTextureShadowLod = supportsTextureShadowLod;
             SupportsVertexStoreAndAtomics = supportsVertexStoreAndAtomics;
             SupportsViewportIndexVertexTessellation = supportsViewportIndexVertexTessellation;

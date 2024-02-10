@@ -34,7 +34,7 @@ namespace Ryujinx.Ava.UI.Views.Settings
                 {
                     var result = await window.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
                     {
-                        AllowMultiple = false
+                        AllowMultiple = false,
                     });
 
                     if (result.Count > 0)
@@ -59,30 +59,6 @@ namespace Ryujinx.Ava.UI.Views.Settings
             if (GameList.ItemCount > 0)
             {
                 GameList.SelectedIndex = oldIndex < GameList.ItemCount ? oldIndex : 0;
-            }
-        }
-
-        public async void BrowseTheme(object sender, RoutedEventArgs e)
-        {
-            var window = this.GetVisualRoot() as Window;
-            var result = await window.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-            {
-                Title = LocaleManager.Instance[LocaleKeys.SettingsSelectThemeFileDialogTitle],
-                AllowMultiple = false,
-                FileTypeFilter = new List<FilePickerFileType>
-                {
-                    new("xml")
-                    {
-                        Patterns = new[] { "*.xaml" },
-                        AppleUniformTypeIdentifiers = new[] { "com.ryujinx.xaml" },
-                        MimeTypes = new[] { "application/xaml+xml" }
-                    }
-                }
-            });
-
-            if (result.Count > 0)
-            {
-                ViewModel.CustomThemePath = result[0].Path.LocalPath;
             }
         }
     }

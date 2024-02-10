@@ -12,7 +12,6 @@ using Ryujinx.Ui.Common.Configuration;
 using Ryujinx.Ui.Common.Helper;
 using System;
 using System.Diagnostics;
-using System.IO;
 
 namespace Ryujinx.Ava
 {
@@ -90,8 +89,6 @@ namespace Ryujinx.Ava
             try
             {
                 string baseStyle = ConfigurationState.Instance.Ui.BaseStyle;
-                string themePath = ConfigurationState.Instance.Ui.CustomThemePath;
-                bool enableCustomTheme = ConfigurationState.Instance.Ui.EnableCustomTheme;
 
                 if (string.IsNullOrWhiteSpace(baseStyle))
                 {
@@ -104,26 +101,8 @@ namespace Ryujinx.Ava
                 {
                     "Light" => ThemeVariant.Light,
                     "Dark" => ThemeVariant.Dark,
-                    _ => ThemeVariant.Default
+                    _ => ThemeVariant.Default,
                 };
-
-                if (enableCustomTheme)
-                {
-                    if (!string.IsNullOrWhiteSpace(themePath))
-                    {
-                        try
-                        {
-                            var themeContent = File.ReadAllText(themePath);
-                            var customStyle = AvaloniaRuntimeXamlLoader.Parse<IStyle>(themeContent);
-
-                            Styles.Add(customStyle);
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Error?.Print(LogClass.Application, $"Failed to Apply Custom Theme. Error: {ex.Message}");
-                        }
-                    }
-                }
             }
             catch (Exception)
             {

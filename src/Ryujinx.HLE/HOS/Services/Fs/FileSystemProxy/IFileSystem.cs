@@ -1,6 +1,8 @@
 using LibHac;
 using LibHac.Common;
 using LibHac.Fs;
+using LibHac.Fs.Fsa;
+using Ryujinx.Common.Logging;
 using Path = LibHac.FsSrv.Sf.Path;
 
 namespace Ryujinx.HLE.HOS.Services.Fs.FileSystemProxy
@@ -148,7 +150,13 @@ namespace Ryujinx.HLE.HOS.Services.Fs.FileSystemProxy
         // Commit()
         public ResultCode Commit(ServiceCtx context)
         {
-            return (ResultCode)_fileSystem.Get.Commit().Value;
+            ResultCode resultCode = (ResultCode)_fileSystem.Get.Commit().Value;
+            if (resultCode == ResultCode.PathAlreadyInUse)
+            {
+                Logger.Warning?.Print(LogClass.ServiceFs, "The file system is already in use by another process.");
+            }
+
+            return resultCode;
         }
 
         [CommandCmif(11)]
@@ -198,6 +206,16 @@ namespace Ryujinx.HLE.HOS.Services.Fs.FileSystemProxy
             context.ResponseData.Write(timestamp.Modified);
             context.ResponseData.Write(timestamp.Accessed);
             context.ResponseData.Write(1L); // Is valid?
+
+            return (ResultCode)result.Value;
+        }
+
+        [CommandCmif(16)]
+        public ResultCode GetFileSystemAttribute(ServiceCtx context)
+        {
+            Result result = _fileSystem.Get.GetFileSystemAttribute(out FileSystemAttribute attribute);
+
+            context.ResponseData.Write(SpanHelpers.AsReadOnlyByteSpan(in attribute));
 
             return (ResultCode)result.Value;
         }

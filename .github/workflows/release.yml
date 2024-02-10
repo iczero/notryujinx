@@ -10,7 +10,7 @@ on:
       - '*.yml'
       - '*.json'
       - '*.config'
-      - 'README.md'
+      - '*.md'
 
 concurrency: release
 
@@ -25,7 +25,7 @@ env:
 jobs:
   tag:
     name: Create tag
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Get version info
         id: version_info
@@ -59,12 +59,12 @@ jobs:
 
           - os: windows-latest
             OS_NAME: Windows x64
-            DOTNET_RUNTIME_IDENTIFIER: win10-x64
+            DOTNET_RUNTIME_IDENTIFIER: win-x64
             RELEASE_ZIP_OS_NAME: win_x64
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-dotnet@v3
+      - uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
           
@@ -85,6 +85,7 @@ jobs:
           sed -r --in-place 's/\%\%RYUJINX_TARGET_RELEASE_CHANNEL_NAME\%\%/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_NAME }}/g;' src/Ryujinx.Common/ReleaseInformation.cs
           sed -r --in-place 's/\%\%RYUJINX_TARGET_RELEASE_CHANNEL_OWNER\%\%/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}/g;' src/Ryujinx.Common/ReleaseInformation.cs
           sed -r --in-place 's/\%\%RYUJINX_TARGET_RELEASE_CHANNEL_REPO\%\%/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}/g;' src/Ryujinx.Common/ReleaseInformation.cs
+          sed -r --in-place 's/\%\%RYUJINX_CONFIG_FILE_NAME\%\%/Config\.json/g;' src/Ryujinx.Common/ReleaseInformation.cs
         shell: bash
 
       - name: Create output dir
@@ -152,15 +153,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-dotnet@v3
+      - uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
 
-      - name: Setup LLVM 14
+      - name: Setup LLVM 15
         run: |
           wget https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
-          sudo ./llvm.sh 14
+          sudo ./llvm.sh 15
 
       - name: Install rcodesign
         run: |
@@ -186,6 +187,7 @@ jobs:
           sed -r --in-place 's/\%\%RYUJINX_TARGET_RELEASE_CHANNEL_NAME\%\%/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_NAME }}/g;' src/Ryujinx.Common/ReleaseInformation.cs
           sed -r --in-place 's/\%\%RYUJINX_TARGET_RELEASE_CHANNEL_OWNER\%\%/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_OWNER }}/g;' src/Ryujinx.Common/ReleaseInformation.cs
           sed -r --in-place 's/\%\%RYUJINX_TARGET_RELEASE_CHANNEL_REPO\%\%/${{ env.RYUJINX_TARGET_RELEASE_CHANNEL_REPO }}/g;' src/Ryujinx.Common/ReleaseInformation.cs
+          sed -r --in-place 's/\%\%RYUJINX_CONFIG_FILE_NAME\%\%/Config\.json/g;' src/Ryujinx.Common/ReleaseInformation.cs
         shell: bash
 
       - name: Publish macOS Ryujinx.Ava

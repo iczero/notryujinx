@@ -1,4 +1,4 @@
-﻿using Ryujinx.Common.Logging;
+using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.GAL;
 using Silk.NET.Vulkan;
 using System;
@@ -26,6 +26,7 @@ namespace Ryujinx.Graphics.Vulkan
 
         public ResourceBindingSegment[][] ClearSegments { get; }
         public ResourceBindingSegment[][] BindingSegments { get; }
+        public DescriptorSetTemplate[] Templates { get; }
 
         public ProgramLinkStatus LinkStatus { get; private set; }
 
@@ -118,6 +119,7 @@ namespace Ryujinx.Graphics.Vulkan
 
             ClearSegments = BuildClearSegments(resourceLayout.Sets);
             BindingSegments = BuildBindingSegments(resourceLayout.SetUsages);
+            Templates = BuildTemplates();
 
             _compileTask = Task.CompletedTask;
             _firstBackgroundUse = false;
@@ -241,6 +243,23 @@ namespace Ryujinx.Graphics.Vulkan
             return segments;
         }
 
+        private DescriptorSetTemplate[] BuildTemplates()
+        {
+            var templates = new DescriptorSetTemplate[BindingSegments.Length];
+
+            for (int setIndex = 0; setIndex < BindingSegments.Length; setIndex++)
+            {
+                ResourceBindingSegment[] segments = BindingSegments[setIndex];
+
+                if (segments != null && segments.Length > 0)
+                {
+                    templates[setIndex] = new DescriptorSetTemplate(_gd, _device, segments, _plce, IsCompute ? PipelineBindPoint.Compute : PipelineBindPoint.Graphics, setIndex);
+                }
+            }
+
+            return templates;
+        }
+
         private async Task BackgroundCompilation()
         {
             await Task.WhenAll(_shaders.Select(shader => shader.CompileTask));
@@ -355,7 +374,7 @@ namespace Ryujinx.Graphics.Vulkan
             pipeline.StagesCount = (uint)_shaders.Length;
             pipeline.PipelineLayout = PipelineLayout;
 
-            pipeline.CreateGraphicsPipeline(_gd, _device, this, (_gd.Pipeline as PipelineBase).PipelineCache, renderPass.Value);
+            pipeline.CreateGraphicsPipeline(_gd, _device, this, (_gd.Pipeline as PipelineBase).PipelineCache, renderPass.Value, throwOnError: true);
             pipeline.Dispose();
         }
 
@@ -464,13 +483,14 @@ namespace Ryujinx.Graphics.Vulkan
             return true;
         }
 
-        public Auto<DescriptorSetCollection> GetNewDescriptorSetCollection(
-            VulkanRenderer gd,
-            int commandBufferIndex,
-            int setIndex,
-            out bool isNew)
+        public void UpdateDescriptorCacheCommandBufferIndex(int commandBufferIndex)
         {
-            return _plce.GetNewDescriptorSetCollection(gd, commandBufferIndex, setIndex, out isNew);
+            _plce.UpdateCommandBufferIndex(commandBufferIndex);
+        }
+
+        public Auto<DescriptorSetCollection> GetNewDescriptorSetCollection(int setIndex, out bool isNew)
+        {
+            return _plce.GetNewDescriptorSetCollection(setIndex, out isNew);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -491,7 +511,7 @@ namespace Ryujinx.Graphics.Vulkan
                 {
                     foreach (Auto<DisposablePipeline> pipeline in _graphicsPipelineCache.Values)
                     {
-                        pipeline.Dispose();
+                        pipeline?.Dispose();
                     }
                 }
 
@@ -501,6 +521,11 @@ namespace Ryujinx.Graphics.Vulkan
                     {
                         pipeline.Dispose();
                     }
+                }
+
+                for (int i = 0; i < Templates.Length; i++)
+                {
+                    Templates[i]?.Dispose();
                 }
 
                 if (_dummyRenderPass.Value.Handle != 0)

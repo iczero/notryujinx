@@ -10,6 +10,7 @@ using Ryujinx.Ava.UI.Helpers;
 using Ryujinx.Ava.UI.Windows;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
+using Ryujinx.Common.Configuration.Multiplayer;
 using Ryujinx.Common.GraphicsDriver;
 using Ryujinx.Common.Logging;
 using Ryujinx.Graphics.Vulkan;
@@ -47,13 +48,13 @@ namespace Ryujinx.Ava.UI.ViewModels
         private readonly List<string> _gpuIds = new();
         private KeyboardHotkeys _keyboardHotkeys;
         private int _graphicsBackendIndex;
-        private string _customThemePath;
         private int _scalingFilter;
         private int _scalingFilterLevel;
 
         public event Action CloseWindow;
         public event Action SaveSettingsEvent;
         private int _networkInterfaceIndex;
+        private int _multiplayerModeIndex;
 
         public int ResolutionScale
         {
@@ -76,14 +77,13 @@ namespace Ryujinx.Ava.UI.ViewModels
 
                 if (_graphicsBackendMultithreadingIndex != (int)ConfigurationState.Instance.Graphics.BackendThreading.Value)
                 {
-                    Dispatcher.UIThread.Post(async () =>
-                    {
-                        await ContentDialogHelper.CreateInfoDialog(LocaleManager.Instance[LocaleKeys.DialogSettingsBackendThreadingWarningMessage],
+                    Dispatcher.UIThread.InvokeAsync(() =>
+                         ContentDialogHelper.CreateInfoDialog(LocaleManager.Instance[LocaleKeys.DialogSettingsBackendThreadingWarningMessage],
                             "",
                             "",
                             LocaleManager.Instance[LocaleKeys.InputDialogOk],
-                            LocaleManager.Instance[LocaleKeys.DialogSettingsBackendThreadingWarningTitle]);
-                    });
+                            LocaleManager.Instance[LocaleKeys.DialogSettingsBackendThreadingWarningTitle])
+                    );
                 }
 
                 OnPropertyChanged();
@@ -146,6 +146,7 @@ namespace Ryujinx.Ava.UI.ViewModels
         public bool EnableTextureRecompression { get; set; }
         public bool EnableMacroHLE { get; set; }
         public bool EnableColorSpacePassthrough { get; set; }
+        public bool ColorSpacePassthroughAvailable => IsMacOS;
         public bool EnableFileLog { get; set; }
         public bool EnableStub { get; set; }
         public bool EnableInfo { get; set; }
@@ -158,7 +159,6 @@ namespace Ryujinx.Ava.UI.ViewModels
         public bool IsOpenAlEnabled { get; set; }
         public bool IsSoundIoEnabled { get; set; }
         public bool IsSDL2Enabled { get; set; }
-        public bool EnableCustomTheme { get; set; }
         public bool IsCustomResolutionScaleActive => _resolutionScale == 4;
         public bool IsScalingFilterActive => _scalingFilter == (int)Ryujinx.Common.Configuration.ScalingFilter.Fsr;
 
@@ -167,20 +167,6 @@ namespace Ryujinx.Ava.UI.ViewModels
 
         public string TimeZone { get; set; }
         public string ShaderDumpPath { get; set; }
-
-        public string CustomThemePath
-        {
-            get
-            {
-                return _customThemePath;
-            }
-            set
-            {
-                _customThemePath = value;
-
-                OnPropertyChanged();
-            }
-        }
 
         public int Language { get; set; }
         public int Region { get; set; }
@@ -251,6 +237,11 @@ namespace Ryujinx.Ava.UI.ViewModels
             get => new(_networkInterfaces.Keys);
         }
 
+        public AvaloniaList<string> MultiplayerModes
+        {
+            get => new(Enum.GetNames<MultiplayerMode>());
+        }
+
         public KeyboardHotkeys KeyboardHotkeys
         {
             get => _keyboardHotkeys;
@@ -269,6 +260,16 @@ namespace Ryujinx.Ava.UI.ViewModels
             {
                 _networkInterfaceIndex = value != -1 ? value : 0;
                 ConfigurationState.Instance.Multiplayer.LanInterfaceId.Value = _networkInterfaces[NetworkInterfaceList[_networkInterfaceIndex]];
+            }
+        }
+
+        public int MultiplayerModeIndex
+        {
+            get => _multiplayerModeIndex;
+            set
+            {
+                _multiplayerModeIndex = value;
+                ConfigurationState.Instance.Multiplayer.Mode.Value = (MultiplayerMode)_multiplayerModeIndex;
             }
         }
 
@@ -409,8 +410,6 @@ namespace Ryujinx.Ava.UI.ViewModels
             GameDirectories.Clear();
             GameDirectories.AddRange(config.Ui.GameDirs.Value);
 
-            EnableCustomTheme = config.Ui.EnableCustomTheme;
-            CustomThemePath = config.Ui.CustomThemePath;
             BaseStyleIndex = config.Ui.BaseStyle == "Light" ? 0 : 1;
 
             // Input
@@ -478,6 +477,8 @@ namespace Ryujinx.Ava.UI.ViewModels
             EnableFsAccessLog = config.Logger.EnableFsAccessLog;
             FsGlobalAccessLogMode = config.System.FsGlobalAccessLogMode;
             OpenglDebugLevel = (int)config.Logger.GraphicsDebugLevel.Value;
+
+            MultiplayerModeIndex = (int)config.Multiplayer.Mode.Value;
         }
 
         public void SaveSettings()
@@ -496,8 +497,6 @@ namespace Ryujinx.Ava.UI.ViewModels
                 config.Ui.GameDirs.Value = gameDirs;
             }
 
-            config.Ui.EnableCustomTheme.Value = EnableCustomTheme;
-            config.Ui.CustomThemePath.Value = CustomThemePath;
             config.Ui.BaseStyle.Value = BaseStyleIndex == 0 ? "Light" : "Dark";
 
             // Input
@@ -579,6 +578,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             config.Logger.GraphicsDebugLevel.Value = (GraphicsDebugLevel)OpenglDebugLevel;
 
             config.Multiplayer.LanInterfaceId.Value = _networkInterfaces[NetworkInterfaceList[NetworkInterfaceIndex]];
+            config.Multiplayer.Mode.Value = (MultiplayerMode)MultiplayerModeIndex;
 
             config.ToFileFormat().SaveConfig(Program.ConfigurationPath);
 

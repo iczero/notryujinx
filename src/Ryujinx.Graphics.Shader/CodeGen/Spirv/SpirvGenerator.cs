@@ -1,4 +1,4 @@
-﻿using Ryujinx.Common;
+using Ryujinx.Common;
 using Ryujinx.Graphics.Shader.IntermediateRepresentation;
 using Ryujinx.Graphics.Shader.StructuredIr;
 using Ryujinx.Graphics.Shader.Translation;
@@ -161,7 +161,6 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Spirv
             context.EnterBlock(function.MainBlock);
 
             Declarations.DeclareLocals(context, function);
-            Declarations.DeclareLocalForArgs(context, info.Functions);
 
             Generate(context, function.MainBlock);
 

@@ -1,4 +1,3 @@
-﻿using ARMeilleure.Translation;
 using CommandLine;
 using LibHac.Tools.FsSystem;
 using Ryujinx.Audio.Backends.SDL2;
@@ -62,7 +61,7 @@ namespace Ryujinx.Headless.SDL2
 
         static void Main(string[] args)
         {
-            Version = ReleaseInformation.GetVersion();
+            Version = ReleaseInformation.Version;
 
             // Make process DPI aware for proper window sizing on high-res screens.
             ForceDpiAware.Windows();
@@ -428,11 +427,26 @@ namespace Ryujinx.Headless.SDL2
 
             if (!option.DisableFileLog)
             {
-                Logger.AddTarget(new AsyncLogTargetWrapper(
-                    new FileLogTarget(ReleaseInformation.GetBaseApplicationDirectory(), "file"),
-                    1000,
-                    AsyncLogTargetOverflowAction.Block
-                ));
+                FileStream logFile = FileLogTarget.PrepareLogFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs"));
+
+                if (logFile == null)
+                {
+                    logFile = FileLogTarget.PrepareLogFile(Path.Combine(AppDataManager.BaseDirPath, "Logs"));
+
+                    if (logFile == null)
+                    {
+                        Logger.Error?.Print(LogClass.Application, "No writable log directory available. Make sure either the application directory or the Ryujinx directory is writable.");
+                    }
+                }
+
+                if (logFile != null)
+                {
+                    Logger.AddTarget(new AsyncLogTargetWrapper(
+                        new FileLogTarget("file", logFile),
+                        1000,
+                        AsyncLogTargetOverflowAction.Block
+                    ));
+                }
             }
 
             // Setup graphics configuration
@@ -556,7 +570,8 @@ namespace Ryujinx.Headless.SDL2
                 options.AspectRatio,
                 options.AudioVolume,
                 options.UseHypervisor ?? true,
-                options.MultiplayerLanInterfaceId);
+                options.MultiplayerLanInterfaceId,
+                Common.Configuration.Multiplayer.MultiplayerMode.Disabled);
 
             return new Switch(configuration);
         }
@@ -596,6 +611,13 @@ namespace Ryujinx.Headless.SDL2
             _window = window;
 
             _window.IsFullscreen = options.IsFullscreen;
+            _window.DisplayId = options.DisplayId;
+            _window.IsExclusiveFullscreen = options.IsExclusiveFullscreen;
+            _window.ExclusiveFullscreenWidth = options.ExclusiveFullscreenWidth;
+            _window.ExclusiveFullscreenHeight = options.ExclusiveFullscreenHeight;
+            _window.AntiAliasing = options.AntiAliasing;
+            _window.ScalingFilter = options.ScalingFilter;
+            _window.ScalingFilterLevel = options.ScalingFilterLevel;
 
             _emulationContext = InitializeEmulationContext(window, renderer, options);
 
@@ -702,9 +724,6 @@ namespace Ryujinx.Headless.SDL2
             }
 
             SetupProgressHandler();
-
-            Translator.IsReadyForTranslation.Reset();
-
             ExecutionEntrypoint();
 
             return true;

@@ -1,4 +1,5 @@
 ﻿using Gtk;
+using System;
 
 namespace Ryujinx.Ui.Widgets
 {
@@ -23,6 +24,7 @@ namespace Ryujinx.Ui.Widgets
         private MenuItem _purgeShaderCacheMenuItem;
         private MenuItem _openPtcDirMenuItem;
         private MenuItem _openShaderCacheDirMenuItem;
+        private MenuItem _createShortcutMenuItem;
 
         private void InitializeComponent()
         {
@@ -187,6 +189,15 @@ namespace Ryujinx.Ui.Widgets
             };
             _openShaderCacheDirMenuItem.Activated += OpenShaderCacheDir_Clicked;
 
+            //
+            // _createShortcutMenuItem
+            //
+            _createShortcutMenuItem = new MenuItem("Create Application Shortcut")
+            {
+                TooltipText = OperatingSystem.IsMacOS() ? "Create a shortcut in macOS's Applications folder that launches the selected Application" : "Create a Desktop Shortcut that launches the selected Application."
+            };
+            _createShortcutMenuItem.Activated += CreateShortcut_Clicked;
+
             ShowComponent();
         }
 
@@ -201,6 +212,8 @@ namespace Ryujinx.Ui.Widgets
             _manageSubMenu.Append(_openPtcDirMenuItem);
             _manageSubMenu.Append(_openShaderCacheDirMenuItem);
 
+            Add(_createShortcutMenuItem);
+            Add(new SeparatorMenuItem());
             Add(_openSaveUserDirMenuItem);
             Add(_openSaveDeviceDirMenuItem);
             Add(_openSaveBcatDirMenuItem);

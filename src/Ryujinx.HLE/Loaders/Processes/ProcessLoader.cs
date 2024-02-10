@@ -1,4 +1,4 @@
-﻿using LibHac.Common;
+using LibHac.Common;
 using LibHac.Fs;
 using LibHac.Fs.Fsa;
 using LibHac.FsSystem;
@@ -69,14 +69,15 @@ namespace Ryujinx.HLE.Loaders.Processes
         public bool LoadNsp(string path)
         {
             FileStream file = new(path, FileMode.Open, FileAccess.Read);
-            PartitionFileSystem partitionFileSystem = new(file.AsStorage());
+            PartitionFileSystem partitionFileSystem = new();
+            partitionFileSystem.Initialize(file.AsStorage()).ThrowIfFailure();
 
             (bool success, ProcessResult processResult) = partitionFileSystem.TryLoad(_device, path, out string errorMessage);
 
             if (processResult.ProcessId == 0)
             {
                 // This is not a normal NSP, it's actually a ExeFS as a NSP
-                processResult = partitionFileSystem.Load(_device, new BlitStruct<ApplicationControlProperty>(1), partitionFileSystem.GetNpdm(), true);
+                processResult = partitionFileSystem.Load(_device, new BlitStruct<ApplicationControlProperty>(1), partitionFileSystem.GetNpdm(), 0, true);
             }
 
             if (processResult.ProcessId != 0 && _processesByPid.TryAdd(processResult.ProcessId, processResult))
@@ -197,7 +198,7 @@ namespace Ryujinx.HLE.Loaders.Processes
             }
             else
             {
-                programName = System.IO.Path.GetFileNameWithoutExtension(path);
+                programName = Path.GetFileNameWithoutExtension(path);
 
                 executable = new NsoExecutable(new LocalStorage(path, FileAccess.Read), programName);
             }
@@ -214,6 +215,7 @@ namespace Ryujinx.HLE.Loaders.Processes
                                                                        allowCodeMemoryForJit: true,
                                                                        programName,
                                                                        programId,
+                                                                       0,
                                                                        null,
                                                                        executable);
 

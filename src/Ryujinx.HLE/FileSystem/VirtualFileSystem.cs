@@ -7,6 +7,7 @@ using LibHac.Fs.Shim;
 using LibHac.FsSrv;
 using LibHac.FsSystem;
 using LibHac.Ncm;
+using LibHac.Sdmmc;
 using LibHac.Spl;
 using LibHac.Tools.Es;
 using LibHac.Tools.Fs;
@@ -32,7 +33,7 @@ namespace Ryujinx.HLE.FileSystem
 
         public KeySet KeySet { get; private set; }
         public EmulatedGameCard GameCard { get; private set; }
-        public EmulatedSdCard SdCard { get; private set; }
+        public SdmmcApi SdCard { get; private set; }
         public ModLoader ModLoader { get; private set; }
 
         private readonly ConcurrentDictionary<ulong, Stream> _romFsByPid;
@@ -185,7 +186,12 @@ namespace Ryujinx.HLE.FileSystem
 
         public void InitializeFsServer(LibHac.Horizon horizon, out HorizonClient fsServerClient)
         {
-            LocalFileSystem serverBaseFs = new(AppDataManager.BaseDirPath);
+            LocalFileSystem serverBaseFs = new(useUnixTimeStamps: true);
+            Result result = serverBaseFs.Initialize(AppDataManager.BaseDirPath, LocalFileSystem.PathMode.DefaultCaseSensitivity, ensurePathExists: true);
+            if (result.IsFailure())
+            {
+                throw new HorizonResultException(result, "Error creating LocalFileSystem.");
+            }
 
             fsServerClient = horizon.CreatePrivilegedHorizonClient();
             var fsServer = new FileSystemServer(fsServerClient);
@@ -198,15 +204,15 @@ namespace Ryujinx.HLE.FileSystem
             fsServerObjects.FsCreators.EncryptedFileSystemCreator = new EncryptedFileSystemCreator();
 
             GameCard = fsServerObjects.GameCard;
-            SdCard = fsServerObjects.SdCard;
+            SdCard = fsServerObjects.Sdmmc;
 
-            SdCard.SetSdCardInsertionStatus(true);
+            SdCard.SetSdCardInserted(true);
 
             var fsServerConfig = new FileSystemServerConfig
             {
-                DeviceOperator = fsServerObjects.DeviceOperator,
                 ExternalKeySet = KeySet.ExternalKeySet,
                 FsCreators = fsServerObjects.FsCreators,
+                StorageDeviceManagerFactory = fsServerObjects.StorageDeviceManagerFactory,
                 RandomGenerator = randomGenerator,
             };
 
@@ -263,7 +269,16 @@ namespace Ryujinx.HLE.FileSystem
 
                 if (result.IsSuccess())
                 {
-                    Ticket ticket = new(ticketFile.Get.AsStream());
+                    // When reading a file from a Sha256PartitionFileSystem, you can't start a read in the middle
+                    // of the hashed portion (usually the first 0x200 bytes) of the file and end the read after
+                    // the end of the hashed portion, so we read the ticket file using a single read.
+                    byte[] ticketData = new byte[0x2C0];
+                    result = ticketFile.Get.Read(out long bytesRead, 0, ticketData);
+
+                    if (result.IsFailure() || bytesRead != ticketData.Length)
+                        continue;
+
+                    Ticket ticket = new(new MemoryStream(ticketData));
                     var titleKey = ticket.GetTitleKey(KeySet);
 
                     if (titleKey != null)

@@ -8,7 +8,7 @@ namespace ARMeilleure.Translation
     /// </summary>
     /// <typeparam name="TK">Key</typeparam>
     /// <typeparam name="TV">Value</typeparam>
-    class IntervalTree<TK, TV> where TK : IComparable<TK>
+    public class IntervalTree<TK, TV> where TK : IComparable<TK>
     {
         private const int ArrayGrowthSize = 32;
 
@@ -189,7 +189,7 @@ namespace ARMeilleure.Translation
             {
                 if (start.CompareTo(node.End) < 0)
                 {
-                    if (overlaps.Length >= overlapCount)
+                    if (overlaps.Length <= overlapCount)
                     {
                         Array.Resize(ref overlaps, overlapCount + ArrayGrowthSize);
                     }

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Threading;
 
 namespace Ryujinx.Cpu.AppleHv
@@ -14,6 +15,7 @@ namespace Ryujinx.Cpu.AppleHv
     /// <summary>
     /// Represents a CPU memory manager which maps guest virtual memory directly onto the Hypervisor page table.
     /// </summary>
+    [SupportedOSPlatform("macos")]
     public class HvMemoryManager : MemoryManagerBase, IMemoryManager, IVirtualMemoryManagerTracked, IWritableBlock
     {
         public const int PageBits = 12;
@@ -125,21 +127,6 @@ namespace Ryujinx.Cpu.AppleHv
                 throw new InvalidMemoryRegionException($"va=0x{va:X16}, size=0x{size:X16}");
             }
         }
-
-#pragma warning disable IDE0051 // Remove unused private member
-        /// <summary>
-        /// Ensures the combination of virtual address and size is part of the addressable space and fully mapped.
-        /// </summary>
-        /// <param name="va">Virtual address of the range</param>
-        /// <param name="size">Size of the range in bytes</param>
-        private void AssertMapped(ulong va, ulong size)
-        {
-            if (!ValidateAddressAndSize(va, size) || !IsRangeMappedImpl(va, size))
-            {
-                throw new InvalidMemoryRegionException($"Not mapped: va=0x{va:X16}, size=0x{size:X16}");
-            }
-        }
-#pragma warning restore IDE0051
 
         /// <inheritdoc/>
         public void Map(ulong va, ulong pa, ulong size, MemoryMapFlags flags)
@@ -732,6 +719,12 @@ namespace Ryujinx.Cpu.AppleHv
             ulong vaSpan = (va - startVa + size + PageMask) & ~(ulong)PageMask;
 
             return (int)(vaSpan / PageSize);
+        }
+
+        /// <inheritdoc/>
+        public void Reprotect(ulong va, ulong size, MemoryPermission protection)
+        {
+            // TODO
         }
 
         /// <inheritdoc/>

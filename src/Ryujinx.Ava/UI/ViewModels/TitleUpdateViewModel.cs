@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Path = System.IO.Path;
 using SpanHelpers = LibHac.Common.SpanHelpers;
 
@@ -169,7 +170,9 @@ namespace Ryujinx.Ava.UI.ViewModels
 
                 try
                 {
-                    (Nca patchNca, Nca controlNca) = ApplicationLibrary.GetGameUpdateDataFromPartition(VirtualFileSystem, new PartitionFileSystem(file.AsStorage()), TitleId.ToString("x16"), 0);
+                    var pfs = new PartitionFileSystem();
+                    pfs.Initialize(file.AsStorage()).ThrowIfFailure();
+                    (Nca patchNca, Nca controlNca) = ApplicationLibrary.GetGameUpdateDataFromPartition(VirtualFileSystem, pfs, TitleId.ToString("x16"), 0);
 
                     if (controlNca != null && patchNca != null)
                     {
@@ -184,18 +187,12 @@ namespace Ryujinx.Ava.UI.ViewModels
                     }
                     else
                     {
-                        Dispatcher.UIThread.Post(async () =>
-                        {
-                            await ContentDialogHelper.CreateErrorDialog(LocaleManager.Instance[LocaleKeys.DialogUpdateAddUpdateErrorMessage]);
-                        });
+                        Dispatcher.UIThread.InvokeAsync(() => ContentDialogHelper.CreateErrorDialog(LocaleManager.Instance[LocaleKeys.DialogUpdateAddUpdateErrorMessage]));
                     }
                 }
                 catch (Exception ex)
                 {
-                    Dispatcher.UIThread.Post(async () =>
-                    {
-                        await ContentDialogHelper.CreateErrorDialog(LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogLoadNcaErrorMessage, ex.Message, path));
-                    });
+                    Dispatcher.UIThread.InvokeAsync(() => ContentDialogHelper.CreateErrorDialog(LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogLoadFileErrorMessage, ex.Message, path)));
                 }
             }
         }
@@ -207,7 +204,7 @@ namespace Ryujinx.Ava.UI.ViewModels
             SortUpdates();
         }
 
-        public async void Add()
+        public async Task Add()
         {
             var result = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
             {
@@ -218,9 +215,9 @@ namespace Ryujinx.Ava.UI.ViewModels
                     {
                         Patterns = new[] { "*.nsp" },
                         AppleUniformTypeIdentifiers = new[] { "com.ryujinx.nsp" },
-                        MimeTypes = new[] { "application/x-nx-nsp" }
-                    }
-                }
+                        MimeTypes = new[] { "application/x-nx-nsp" },
+                    },
+                },
             });
 
             foreach (var file in result)

@@ -1,4 +1,3 @@
-﻿using ARMeilleure.Translation;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Configuration.Hid;
 using Ryujinx.Common.Logging;
@@ -20,6 +19,8 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using static SDL2.SDL;
+using AntiAliasing = Ryujinx.Common.Configuration.AntiAliasing;
+using ScalingFilter = Ryujinx.Common.Configuration.ScalingFilter;
 using Switch = Ryujinx.HLE.Switch;
 
 namespace Ryujinx.Headless.SDL2
@@ -28,8 +29,9 @@ namespace Ryujinx.Headless.SDL2
     {
         protected const int DefaultWidth = 1280;
         protected const int DefaultHeight = 720;
-        private const SDL_WindowFlags DefaultFlags = SDL_WindowFlags.SDL_WINDOW_ALLOW_HIGHDPI | SDL_WindowFlags.SDL_WINDOW_RESIZABLE | SDL_WindowFlags.SDL_WINDOW_INPUT_FOCUS | SDL_WindowFlags.SDL_WINDOW_SHOWN;
         private const int TargetFps = 60;
+        private SDL_WindowFlags DefaultFlags = SDL_WindowFlags.SDL_WINDOW_ALLOW_HIGHDPI | SDL_WindowFlags.SDL_WINDOW_RESIZABLE | SDL_WindowFlags.SDL_WINDOW_INPUT_FOCUS | SDL_WindowFlags.SDL_WINDOW_SHOWN;
+        private SDL_WindowFlags FullscreenFlag = 0;
 
         private static readonly ConcurrentQueue<Action> _mainThreadActions = new();
 
@@ -54,7 +56,14 @@ namespace Ryujinx.Headless.SDL2
         public IHostUiTheme HostUiTheme { get; }
         public int Width { get; private set; }
         public int Height { get; private set; }
+        public int DisplayId { get; set; }
         public bool IsFullscreen { get; set; }
+        public bool IsExclusiveFullscreen { get; set; }
+        public int ExclusiveFullscreenWidth { get; set; }
+        public int ExclusiveFullscreenHeight { get; set; }
+        public AntiAliasing AntiAliasing { get; set; }
+        public ScalingFilter ScalingFilter { get; set; }
+        public int ScalingFilterLevel { get; set; }
 
         protected SDL2MouseDriver MouseDriver;
         private readonly InputManager _inputManager;
@@ -71,7 +80,7 @@ namespace Ryujinx.Headless.SDL2
         private bool _isStopped;
         private uint _windowId;
 
-        private string _gpuVendorName;
+        private string _gpuDriverName;
 
         private readonly AspectRatio _aspectRatio;
         private readonly bool _enableMouse;
@@ -158,9 +167,24 @@ namespace Ryujinx.Headless.SDL2
             string titleIdSection = string.IsNullOrWhiteSpace(activeProcess.ProgramIdText) ? string.Empty : $" ({activeProcess.ProgramIdText.ToUpper()})";
             string titleArchSection = activeProcess.Is64Bit ? " (64-bit)" : " (32-bit)";
 
-            SDL_WindowFlags fullscreenFlag = IsFullscreen ? SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP : 0;
+            Width = DefaultWidth;
+            Height = DefaultHeight;
 
-            WindowHandle = SDL_CreateWindow($"Ryujinx {Program.Version}{titleNameSection}{titleVersionSection}{titleIdSection}{titleArchSection}", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, DefaultWidth, DefaultHeight, DefaultFlags | fullscreenFlag | GetWindowFlags());
+            if (IsExclusiveFullscreen)
+            {
+                Width = ExclusiveFullscreenWidth;
+                Height = ExclusiveFullscreenHeight;
+
+                DefaultFlags = SDL_WindowFlags.SDL_WINDOW_ALLOW_HIGHDPI;
+                FullscreenFlag = SDL_WindowFlags.SDL_WINDOW_FULLSCREEN;
+            }
+            else if (IsFullscreen)
+            {
+                DefaultFlags = SDL_WindowFlags.SDL_WINDOW_ALLOW_HIGHDPI;
+                FullscreenFlag = SDL_WindowFlags.SDL_WINDOW_FULLSCREEN_DESKTOP;
+            }
+
+            WindowHandle = SDL_CreateWindow($"Ryujinx {Program.Version}{titleNameSection}{titleVersionSection}{titleIdSection}{titleArchSection}", SDL_WINDOWPOS_CENTERED_DISPLAY(DisplayId), SDL_WINDOWPOS_CENTERED_DISPLAY(DisplayId), Width, Height, DefaultFlags | FullscreenFlag | GetWindowFlags());
 
             if (WindowHandle == IntPtr.Zero)
             {
@@ -175,9 +199,6 @@ namespace Ryujinx.Headless.SDL2
 
             _windowId = SDL_GetWindowID(WindowHandle);
             SDL2Driver.Instance.RegisterWindow(_windowId, HandleWindowEvent);
-
-            Width = DefaultWidth;
-            Height = DefaultHeight;
         }
 
         private void HandleWindowEvent(SDL_Event evnt)
@@ -189,8 +210,8 @@ namespace Ryujinx.Headless.SDL2
                     case SDL_WindowEventID.SDL_WINDOWEVENT_SIZE_CHANGED:
                         // Unlike on Windows, this event fires on macOS when triggering fullscreen mode.
                         // And promptly crashes the process because `Renderer?.window.SetSize` is undefined.
-                        // As we don't need this to fire in either case we can test for isFullscreen.
-                        if (!IsFullscreen)
+                        // As we don't need this to fire in either case we can test for fullscreen.
+                        if (!IsFullscreen && !IsExclusiveFullscreen)
                         {
                             Width = evnt.window.data1;
                             Height = evnt.window.data2;
@@ -220,9 +241,20 @@ namespace Ryujinx.Headless.SDL2
 
         public abstract SDL_WindowFlags GetWindowFlags();
 
-        private string GetGpuVendorName()
+        private string GetGpuDriverName()
         {
-            return Renderer.GetHardwareInfo().GpuVendor;
+            return Renderer.GetHardwareInfo().GpuDriver;
+        }
+
+        private void SetAntiAliasing()
+        {
+            Renderer?.Window.SetAntiAliasing((Graphics.GAL.AntiAliasing)AntiAliasing);
+        }
+
+        private void SetScalingFilter()
+        {
+            Renderer?.Window.SetScalingFilter((Graphics.GAL.ScalingFilter)ScalingFilter);
+            Renderer?.Window.SetScalingFilterLevel(ScalingFilterLevel);
         }
 
         public void Render()
@@ -233,13 +265,16 @@ namespace Ryujinx.Headless.SDL2
 
             InitializeRenderer();
 
-            _gpuVendorName = GetGpuVendorName();
+            SetAntiAliasing();
+
+            SetScalingFilter();
+
+            _gpuDriverName = GetGpuDriverName();
 
             Device.Gpu.Renderer.RunLoop(() =>
             {
                 Device.Gpu.SetGpuThread();
                 Device.Gpu.InitializeShaderCache(_gpuCancellationTokenSource.Token);
-                Translator.IsReadyForTranslation.Set();
 
                 while (_isActive)
                 {
@@ -279,7 +314,7 @@ namespace Ryujinx.Headless.SDL2
                             Device.Configuration.AspectRatio.ToText(),
                             $"Game: {Device.Statistics.GetGameFrameRate():00.00} FPS ({Device.Statistics.GetGameFrameTime():00.00} ms)",
                             $"FIFO: {Device.Statistics.GetFifoPercent():0.00} %",
-                            $"GPU: {_gpuVendorName}"));
+                            $"GPU: {_gpuDriverName}"));
 
                         _ticks = Math.Min(_ticks - _ticksPerFrame, _ticksPerFrame);
                     }

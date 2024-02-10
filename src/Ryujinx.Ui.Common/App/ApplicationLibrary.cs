@@ -8,6 +8,7 @@ using LibHac.Ns;
 using LibHac.Tools.Fs;
 using LibHac.Tools.FsSystem;
 using LibHac.Tools.FsSystem.NcaUtils;
+using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.Utilities;
@@ -105,7 +106,7 @@ namespace Ryujinx.Ui.App.Common
 
                     if (!Directory.Exists(appDir))
                     {
-                        Logger.Warning?.Print(LogClass.Application, $"The \"game_dirs\" section in \"Config.json\" contains an invalid directory: \"{appDir}\"");
+                        Logger.Warning?.Print(LogClass.Application, $"The \"game_dirs\" section in \"{ReleaseInformation.ConfigName}\" contains an invalid directory: \"{appDir}\"");
 
                         continue;
                     }
@@ -136,6 +137,13 @@ namespace Ryujinx.Ui.App.Common
                             if (!fileInfo.Attributes.HasFlag(FileAttributes.Hidden) && extension is ".nsp" or ".pfs0" or ".xci" or ".nca" or ".nro" or ".nso")
                             {
                                 var fullPath = fileInfo.ResolveLinkTarget(true)?.FullName ?? fileInfo.FullName;
+
+                                if (!File.Exists(fullPath))
+                                {
+                                    Logger.Warning?.Print(LogClass.Application, $"Skipping invalid symlink: {fileInfo.FullName}");
+                                    continue;
+                                }
+
                                 applications.Add(fullPath);
                                 numApplicationsFound++;
                             }
@@ -155,7 +163,7 @@ namespace Ryujinx.Ui.App.Common
                         return;
                     }
 
-                    double fileSize = new FileInfo(applicationPath).Length * 0.000000000931;
+                    long fileSize = new FileInfo(applicationPath).Length;
                     string titleName = "Unknown";
                     string titleId = "0000000000000000";
                     string developer = "Unknown";
@@ -174,7 +182,7 @@ namespace Ryujinx.Ui.App.Common
                         {
                             try
                             {
-                                PartitionFileSystem pfs;
+                                IFileSystem pfs;
 
                                 bool isExeFs = false;
 
@@ -186,7 +194,9 @@ namespace Ryujinx.Ui.App.Common
                                 }
                                 else
                                 {
-                                    pfs = new PartitionFileSystem(file.AsStorage());
+                                    var pfsTemp = new PartitionFileSystem();
+                                    pfsTemp.Initialize(file.AsStorage()).ThrowIfFailure();
+                                    pfs = pfsTemp;
 
                                     // If the NSP doesn't have a main NCA, decrement the number of applications found and then continue to the next application.
                                     bool hasMainNca = false;
@@ -423,25 +433,25 @@ namespace Ryujinx.Ui.App.Common
                     {
                         appMetadata.Title = titleName;
 
-                        if (appMetadata.LastPlayedOld == default || appMetadata.LastPlayed.HasValue)
+                        // Only do the migration if time_played has a value and timespan_played hasn't been updated yet.
+                        if (appMetadata.TimePlayedOld != default && appMetadata.TimePlayed == TimeSpan.Zero)
                         {
-                            // Don't do the migration if last_played doesn't exist or last_played_utc already has a value.
-                            return;
+                            appMetadata.TimePlayed = TimeSpan.FromSeconds(appMetadata.TimePlayedOld);
+                            appMetadata.TimePlayedOld = default;
                         }
 
-                        // Migrate from string-based last_played to DateTime-based last_played_utc.
-                        if (DateTime.TryParse(appMetadata.LastPlayedOld, out DateTime lastPlayedOldParsed))
+                        // Only do the migration if last_played has a value and last_played_utc doesn't exist yet.
+                        if (appMetadata.LastPlayedOld != default && !appMetadata.LastPlayed.HasValue)
                         {
-                            Logger.Info?.Print(LogClass.Application, $"last_played found: \"{appMetadata.LastPlayedOld}\", migrating to last_played_utc");
-                            appMetadata.LastPlayed = lastPlayedOldParsed;
+                            // Migrate from string-based last_played to DateTime-based last_played_utc.
+                            if (DateTime.TryParse(appMetadata.LastPlayedOld, out DateTime lastPlayedOldParsed))
+                            {
+                                appMetadata.LastPlayed = lastPlayedOldParsed;
 
-                            // Migration successful: deleting last_played from the metadata file.
-                            appMetadata.LastPlayedOld = default;
-                        }
-                        else
-                        {
-                            // Migration failed: emitting warning but leaving the unparsable value in the metadata file so the user can fix it.
-                            Logger.Warning?.Print(LogClass.Application, $"Last played string \"{appMetadata.LastPlayedOld}\" is invalid for current system culture, skipping (did current culture change?)");
+                                // Migration successful: deleting last_played from the metadata file.
+                                appMetadata.LastPlayedOld = default;
+                            }
+
                         }
                     });
 
@@ -453,12 +463,10 @@ namespace Ryujinx.Ui.App.Common
                         TitleId = titleId,
                         Developer = developer,
                         Version = version,
-                        TimePlayed = ConvertSecondsToFormattedString(appMetadata.TimePlayed),
-                        TimePlayedNum = appMetadata.TimePlayed,
+                        TimePlayed = appMetadata.TimePlayed,
                         LastPlayed = appMetadata.LastPlayed,
-                        FileExtension = Path.GetExtension(applicationPath).ToUpper().Remove(0, 1),
-                        FileSize = (fileSize < 1) ? (fileSize * 1024).ToString("0.##") + " MiB" : fileSize.ToString("0.##") + " GiB",
-                        FileSizeBytes = fileSize,
+                        FileExtension = Path.GetExtension(applicationPath).TrimStart('.').ToUpper(),
+                        FileSize = fileSize,
                         Path = applicationPath,
                         ControlHolder = controlHolder,
                     };
@@ -500,7 +508,7 @@ namespace Ryujinx.Ui.App.Common
             ApplicationCountUpdated?.Invoke(null, e);
         }
 
-        private void GetControlFsAndTitleId(PartitionFileSystem pfs, out IFileSystem controlFs, out string titleId)
+        private void GetControlFsAndTitleId(IFileSystem pfs, out IFileSystem controlFs, out string titleId)
         {
             (_, _, Nca controlNca) = GetGameData(_virtualFileSystem, pfs, 0);
 
@@ -546,7 +554,7 @@ namespace Ryujinx.Ui.App.Common
             return appMetadata;
         }
 
-        public byte[] GetApplicationIcon(string applicationPath)
+        public byte[] GetApplicationIcon(string applicationPath, Language desiredTitleLanguage)
         {
             byte[] applicationIcon = null;
 
@@ -563,7 +571,7 @@ namespace Ryujinx.Ui.App.Common
                     {
                         try
                         {
-                            PartitionFileSystem pfs;
+                            IFileSystem pfs;
 
                             bool isExeFs = false;
 
@@ -575,7 +583,9 @@ namespace Ryujinx.Ui.App.Common
                             }
                             else
                             {
-                                pfs = new PartitionFileSystem(file.AsStorage());
+                                var pfsTemp = new PartitionFileSystem();
+                                pfsTemp.Initialize(file.AsStorage()).ThrowIfFailure();
+                                pfs = pfsTemp;
 
                                 foreach (DirectoryEntryEx fileEntry in pfs.EnumerateEntries("/", "*"))
                                 {
@@ -600,7 +610,7 @@ namespace Ryujinx.Ui.App.Common
                                 {
                                     using var icon = new UniqueRef<IFile>();
 
-                                    controlFs.OpenFile(ref icon.Ref, $"/icon_{_desiredTitleLanguage}.dat".ToU8Span(), OpenMode.Read).ThrowIfFailure();
+                                    controlFs.OpenFile(ref icon.Ref, $"/icon_{desiredTitleLanguage}.dat".ToU8Span(), OpenMode.Read).ThrowIfFailure();
 
                                     using MemoryStream stream = new();
 
@@ -712,31 +722,6 @@ namespace Ryujinx.Ui.App.Common
             return applicationIcon ?? _ncaIcon;
         }
 
-        private static string ConvertSecondsToFormattedString(double seconds)
-        {
-            TimeSpan time = TimeSpan.FromSeconds(seconds);
-
-            string timeString;
-            if (time.Days != 0)
-            {
-                timeString = $"{time.Days}d {time.Hours:D2}h {time.Minutes:D2}m";
-            }
-            else if (time.Hours != 0)
-            {
-                timeString = $"{time.Hours:D2}h {time.Minutes:D2}m";
-            }
-            else if (time.Minutes != 0)
-            {
-                timeString = $"{time.Minutes:D2}m";
-            }
-            else
-            {
-                timeString = "Never";
-            }
-
-            return timeString;
-        }
-
         private void GetGameInformation(ref ApplicationControlProperty controlData, out string titleName, out string titleId, out string publisher, out string version)
         {
             _ = Enum.TryParse(_desiredTitleLanguage.ToString(), out TitleLanguage desiredTitleLanguage);
@@ -827,7 +812,7 @@ namespace Ryujinx.Ui.App.Common
             return false;
         }
 
-        public static (Nca main, Nca patch, Nca control) GetGameData(VirtualFileSystem fileSystem, PartitionFileSystem pfs, int programIndex)
+        public static (Nca main, Nca patch, Nca control) GetGameData(VirtualFileSystem fileSystem, IFileSystem pfs, int programIndex)
         {
             Nca mainNca = null;
             Nca patchNca = null;
@@ -931,7 +916,8 @@ namespace Ryujinx.Ui.App.Common
                     if (File.Exists(updatePath))
                     {
                         FileStream file = new(updatePath, FileMode.Open, FileAccess.Read);
-                        PartitionFileSystem nsp = new(file.AsStorage());
+                        PartitionFileSystem nsp = new();
+                        nsp.Initialize(file.AsStorage()).ThrowIfFailure();
 
                         return GetGameUpdateDataFromPartition(fileSystem, nsp, titleIdBase.ToString("x16"), programIndex);
                     }

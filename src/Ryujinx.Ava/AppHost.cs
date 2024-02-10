@@ -1,9 +1,7 @@
-﻿using ARMeilleure.Translation;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Input;
-using Avalonia.Rendering;
 using Avalonia.Threading;
 using LibHac.Tools.FsSystem;
 using Ryujinx.Audio.Backends.Dummy;
@@ -21,6 +19,7 @@ using Ryujinx.Ava.UI.ViewModels;
 using Ryujinx.Ava.UI.Windows;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
+using Ryujinx.Common.Configuration.Multiplayer;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.SystemInterop;
 using Ryujinx.Graphics.GAL;
@@ -190,7 +189,9 @@ namespace Ryujinx.Ava
             ConfigurationState.Instance.Graphics.ScalingFilterLevel.Event += UpdateScalingFilterLevel;
             ConfigurationState.Instance.Graphics.EnableColorSpacePassthrough.Event += UpdateColorSpacePassthrough;
 
+            ConfigurationState.Instance.System.EnableInternetAccess.Event += UpdateEnableInternetAccessState;
             ConfigurationState.Instance.Multiplayer.LanInterfaceId.Event += UpdateLanInterfaceIdState;
+            ConfigurationState.Instance.Multiplayer.Mode.Event += UpdateMultiplayerModeState;
 
             _gpuCancellationTokenSource = new CancellationTokenSource();
             _gpuDoneEvent = new ManualResetEvent(false);
@@ -344,16 +345,9 @@ namespace Ryujinx.Ava
 
             _viewModel.IsGameRunning = true;
 
-            var activeProcess = Device.Processes.ActiveApplication;
-
-            string titleNameSection = string.IsNullOrWhiteSpace(activeProcess.Name) ? string.Empty : $" {activeProcess.Name}";
-            string titleVersionSection = string.IsNullOrWhiteSpace(activeProcess.DisplayVersion) ? string.Empty : $" v{activeProcess.DisplayVersion}";
-            string titleIdSection = $" ({activeProcess.ProgramIdText.ToUpper()})";
-            string titleArchSection = activeProcess.Is64Bit ? " (64-bit)" : " (32-bit)";
-
             Dispatcher.UIThread.InvokeAsync(() =>
             {
-                _viewModel.Title = $"Ryujinx {Program.Version} -{titleNameSection}{titleVersionSection}{titleIdSection}{titleArchSection}";
+                _viewModel.Title = TitleHelper.ActiveApplicationTitle(Device.Processes.ActiveApplication, Program.Version);
             });
 
             _viewModel.SetUiProgressHandlers(Device);
@@ -407,9 +401,19 @@ namespace Ryujinx.Ava
             });
         }
 
+        private void UpdateEnableInternetAccessState(object sender, ReactiveEventArgs<bool> e)
+        {
+            Device.Configuration.EnableInternetAccess = e.NewValue;
+        }
+
         private void UpdateLanInterfaceIdState(object sender, ReactiveEventArgs<string> e)
         {
             Device.Configuration.MultiplayerLanInterfaceId = e.NewValue;
+        }
+
+        private void UpdateMultiplayerModeState(object sender, ReactiveEventArgs<MultiplayerMode> e)
+        {
+            Device.Configuration.MultiplayerMode = e.NewValue;
         }
 
         public void Stop()
@@ -704,7 +708,7 @@ namespace Ryujinx.Ava
 
             ApplicationLibrary.LoadAndSaveMetaData(Device.Processes.ActiveApplication.ProgramIdText, appMetadata =>
             {
-                appMetadata.LastPlayed = DateTime.UtcNow;
+                appMetadata.UpdatePreGame();
             });
 
             return true;
@@ -715,6 +719,8 @@ namespace Ryujinx.Ava
             Device?.System.TogglePauseEmulation(false);
 
             _viewModel.IsPaused = false;
+            _viewModel.Title = TitleHelper.ActiveApplicationTitle(Device?.Processes.ActiveApplication, Program.Version);
+            Logger.Info?.Print(LogClass.Emulation, "Emulation was resumed");
         }
 
         internal void Pause()
@@ -722,6 +728,8 @@ namespace Ryujinx.Ava
             Device?.System.TogglePauseEmulation(true);
 
             _viewModel.IsPaused = true;
+            _viewModel.Title = TitleHelper.ActiveApplicationTitle(Device?.Processes.ActiveApplication, Program.Version, LocaleManager.Instance[LocaleKeys.Paused]);
+            Logger.Info?.Print(LogClass.Emulation, "Emulation was paused");
         }
 
         private void InitializeSwitchInstance()
@@ -782,7 +790,8 @@ namespace Ryujinx.Ava
                                                      ConfigurationState.Instance.Graphics.AspectRatio,
                                                      ConfigurationState.Instance.System.AudioVolume,
                                                      ConfigurationState.Instance.System.UseHypervisor,
-                                                     ConfigurationState.Instance.Multiplayer.LanInterfaceId.Value);
+                                                     ConfigurationState.Instance.Multiplayer.LanInterfaceId.Value,
+                                                     ConfigurationState.Instance.Multiplayer.Mode);
 
             Device = new Switch(configuration);
         }
@@ -906,7 +915,6 @@ namespace Ryujinx.Ava
             {
                 Device.Gpu.SetGpuThread();
                 Device.Gpu.InitializeShaderCache(_gpuCancellationTokenSource.Token);
-                Translator.IsReadyForTranslation.Set();
 
                 _renderer.Window.ChangeVSyncMode(Device.EnableDeviceVsync);
 
@@ -970,7 +978,7 @@ namespace Ryujinx.Ava
                 ConfigurationState.Instance.Graphics.AspectRatio.Value.ToText(),
                 LocaleManager.Instance[LocaleKeys.Game] + $": {Device.Statistics.GetGameFrameRate():00.00} FPS ({Device.Statistics.GetGameFrameTime():00.00} ms)",
                 $"FIFO: {Device.Statistics.GetFifoPercent():00.00} %",
-                $"GPU: {_renderer.GetHardwareInfo().GpuVendor}"));
+                $"GPU: {_renderer.GetHardwareInfo().GpuDriver}"));
         }
 
         public async Task ShowExitPrompt()
@@ -1078,10 +1086,11 @@ namespace Ryujinx.Ava
                         case KeyboardHotkeyState.ToggleMute:
                             if (Device.IsAudioMuted())
                             {
-                                Device.SetVolume(ConfigurationState.Instance.System.AudioVolume);
+                                Device.SetVolume(_viewModel.VolumeBeforeMute);
                             }
                             else
                             {
+                                _viewModel.VolumeBeforeMute = Device.GetVolume();
                                 Device.SetVolume(0);
                             }
 

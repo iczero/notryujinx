@@ -1,4 +1,4 @@
-﻿using Ryujinx.Graphics.Shader.IntermediateRepresentation;
+using Ryujinx.Graphics.Shader.IntermediateRepresentation;
 using Ryujinx.Graphics.Shader.StructuredIr;
 using Ryujinx.Graphics.Shader.Translation;
 using Spv.Generator;
@@ -38,28 +38,6 @@ namespace Ryujinx.Graphics.Shader.CodeGen.Spirv
 
                 context.AddLocalVariable(spvLocal);
                 context.DeclareLocal(local, spvLocal);
-            }
-        }
-
-        public static void DeclareLocalForArgs(CodeGenContext context, List<StructuredFunction> functions)
-        {
-            for (int funcIndex = 0; funcIndex < functions.Count; funcIndex++)
-            {
-                StructuredFunction function = functions[funcIndex];
-                SpvInstruction[] locals = new SpvInstruction[function.InArguments.Length];
-
-                for (int i = 0; i < function.InArguments.Length; i++)
-                {
-                    var type = function.GetArgumentType(i);
-                    var localPointerType = context.TypePointer(StorageClass.Function, context.GetType(type));
-                    var spvLocal = context.Variable(localPointerType, StorageClass.Function);
-
-                    context.AddLocalVariable(spvLocal);
-
-                    locals[i] = spvLocal;
-                }
-
-                context.DeclareLocalForArgs(funcIndex, locals);
             }
         }
 

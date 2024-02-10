@@ -147,6 +147,7 @@ namespace Ryujinx.Graphics.GAL
         A1B5G5R5Unorm,
         B8G8R8A8Unorm,
         B8G8R8A8Srgb,
+        B10G10R10A2Unorm,
     }
 
     public static class FormatExtensions
@@ -260,6 +261,7 @@ namespace Ryujinx.Graphics.GAL
                 case Format.R10G10B10A2Sint:
                 case Format.R10G10B10A2Uscaled:
                 case Format.R10G10B10A2Sscaled:
+                case Format.B10G10R10A2Unorm:
                     return 4;
 
                 case Format.S8Uint:
@@ -333,6 +335,45 @@ namespace Ryujinx.Graphics.GAL
             }
 
             return 1;
+        }
+
+        /// <summary>
+        /// Checks if the texture format is a depth or depth-stencil format.
+        /// </summary>
+        /// <param name="format">Texture format</param>
+        /// <returns>True if the format is a depth or depth-stencil format, false otherwise</returns>
+        public static bool HasDepth(this Format format)
+        {
+            switch (format)
+            {
+                case Format.D16Unorm:
+                case Format.D24UnormS8Uint:
+                case Format.S8UintD24Unorm:
+                case Format.D32Float:
+                case Format.D32FloatS8Uint:
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Checks if the texture format is a stencil or depth-stencil format.
+        /// </summary>
+        /// <param name="format">Texture format</param>
+        /// <returns>True if the format is a stencil or depth-stencil format, false otherwise</returns>
+        public static bool HasStencil(this Format format)
+        {
+            switch (format)
+            {
+                case Format.D24UnormS8Uint:
+                case Format.S8UintD24Unorm:
+                case Format.D32FloatS8Uint:
+                case Format.S8Uint:
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -412,6 +453,7 @@ namespace Ryujinx.Graphics.GAL
                 case Format.R32G32Uint:
                 case Format.B8G8R8A8Unorm:
                 case Format.B8G8R8A8Srgb:
+                case Format.B10G10R10A2Unorm:
                 case Format.R10G10B10A2Unorm:
                 case Format.R10G10B10A2Uint:
                 case Format.R8G8B8A8Unorm:
@@ -572,6 +614,7 @@ namespace Ryujinx.Graphics.GAL
                 case Format.B5G5R5A1Unorm:
                 case Format.B8G8R8A8Unorm:
                 case Format.B8G8R8A8Srgb:
+                case Format.B10G10R10A2Unorm:
                     return true;
             }
 

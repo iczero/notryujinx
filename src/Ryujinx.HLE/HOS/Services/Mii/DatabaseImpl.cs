@@ -1,4 +1,4 @@
-﻿using LibHac;
+using LibHac;
 using Ryujinx.Cpu;
 using Ryujinx.HLE.HOS.Services.Mii.Types;
 using System;
@@ -290,7 +290,7 @@ namespace Ryujinx.HLE.HOS.Services.Mii
         {
             coreData = new CoreData();
 
-            if (charInfo.IsValid())
+            if (!charInfo.IsValid())
             {
                 return ResultCode.InvalidCharInfo;
             }

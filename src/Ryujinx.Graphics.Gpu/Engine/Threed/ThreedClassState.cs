@@ -1,4 +1,4 @@
-﻿using Ryujinx.Common.Memory;
+using Ryujinx.Common.Memory;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Gpu.Engine.InlineToMemory;
 using Ryujinx.Graphics.Gpu.Engine.Types;
@@ -590,9 +590,12 @@ namespace Ryujinx.Graphics.Gpu.Engine.Threed
     /// </summary>
     struct RtColorMask
     {
-#pragma warning disable CS0649 // Field is never assigned to
         public uint Packed;
-#pragma warning restore CS0649
+
+        public RtColorMask(uint packed)
+        {
+            Packed = packed;
+        }
 
         /// <summary>
         /// Unpacks red channel enable.

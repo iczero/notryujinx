@@ -1,4 +1,4 @@
-﻿using Ryujinx.Memory.Range;
+using Ryujinx.Memory.Range;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -453,6 +453,11 @@ namespace Ryujinx.Memory
         private nuint GetHostAddress(ulong va)
         {
             return _pageTable.Read(va) + (nuint)(va & PageMask);
+        }
+
+        /// <inheritdoc/>
+        public void Reprotect(ulong va, ulong size, MemoryPermission protection)
+        {
         }
 
         /// <inheritdoc/>

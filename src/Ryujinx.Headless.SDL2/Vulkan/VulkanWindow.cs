@@ -1,4 +1,4 @@
-﻿using Ryujinx.Common.Configuration;
+using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
 using Ryujinx.Input.HLE;
 using Ryujinx.SDL2.Common;
@@ -29,8 +29,16 @@ namespace Ryujinx.Headless.SDL2.Vulkan
 
         protected override void InitializeRenderer()
         {
-            Renderer?.Window.SetSize(DefaultWidth, DefaultHeight);
-            MouseDriver.SetClientSize(DefaultWidth, DefaultHeight);
+            if (IsExclusiveFullscreen)
+            {
+                Renderer?.Window.SetSize(ExclusiveFullscreenWidth, ExclusiveFullscreenHeight);
+                MouseDriver.SetClientSize(ExclusiveFullscreenWidth, ExclusiveFullscreenHeight);
+            }
+            else
+            {
+                Renderer?.Window.SetSize(DefaultWidth, DefaultHeight);
+                MouseDriver.SetClientSize(DefaultWidth, DefaultHeight);
+            }
         }
 
         private static void BasicInvoke(Action action)

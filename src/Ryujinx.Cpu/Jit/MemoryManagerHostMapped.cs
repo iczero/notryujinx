@@ -1,4 +1,4 @@
-﻿using ARMeilleure.Memory;
+using ARMeilleure.Memory;
 using Ryujinx.Memory;
 using Ryujinx.Memory.Range;
 using Ryujinx.Memory.Tracking;
@@ -613,6 +613,12 @@ namespace Ryujinx.Cpu.Jit
             ulong vaSpan = (va - startVa + size + PageMask) & ~(ulong)PageMask;
 
             return (int)(vaSpan / PageSize);
+        }
+
+        /// <inheritdoc/>
+        public void Reprotect(ulong va, ulong size, MemoryPermission protection)
+        {
+            // TODO
         }
 
         /// <inheritdoc/>

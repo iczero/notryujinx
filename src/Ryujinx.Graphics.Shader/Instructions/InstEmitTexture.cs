@@ -578,12 +578,7 @@ namespace Ryujinx.Graphics.Shader.Instructions
                 type = SamplerType.Texture2D;
                 flags = TextureFlags.Gather;
 
-                if (tld4sOp.Dc)
-                {
-                    sourcesList.Add(Rb());
-
-                    type |= SamplerType.Shadow;
-                }
+                int depthCompareIndex = sourcesList.Count;
 
                 if (tld4sOp.Aoffi)
                 {
@@ -592,7 +587,16 @@ namespace Ryujinx.Graphics.Shader.Instructions
                     flags |= TextureFlags.Offset;
                 }
 
-                sourcesList.Add(Const((int)tld4sOp.TexComp));
+                if (tld4sOp.Dc)
+                {
+                    sourcesList.Insert(depthCompareIndex, Rb());
+
+                    type |= SamplerType.Shadow;
+                }
+                else
+                {
+                    sourcesList.Add(Const((int)tld4sOp.TexComp));
+                }
             }
             else
             {
@@ -766,7 +770,10 @@ namespace Ryujinx.Graphics.Shader.Instructions
                 flags |= offset == TexOffset.Ptp ? TextureFlags.Offsets : TextureFlags.Offset;
             }
 
-            sourcesList.Add(Const((int)component));
+            if (!hasDepthCompare)
+            {
+                sourcesList.Add(Const((int)component));
+            }
 
             Operand[] sources = sourcesList.ToArray();
             Operand[] dests = new Operand[BitOperations.PopCount((uint)componentMask)];
@@ -1094,7 +1101,14 @@ namespace Ryujinx.Graphics.Shader.Instructions
 
             if (isBindless)
             {
-                type = (componentMask & 4) != 0 ? SamplerType.Texture3D : SamplerType.Texture2D;
+                if (query == TexQuery.TexHeaderTextureType)
+                {
+                    type = SamplerType.Texture2D | SamplerType.Multisample;
+                }
+                else
+                {
+                    type = (componentMask & 4) != 0 ? SamplerType.Texture3D : SamplerType.Texture2D;
+                }
             }
             else
             {
@@ -1102,31 +1116,69 @@ namespace Ryujinx.Graphics.Shader.Instructions
             }
 
             TextureFlags flags = isBindless ? TextureFlags.Bindless : TextureFlags.None;
+            int binding;
 
-            int binding = isBindless ? 0 : context.ResourceManager.GetTextureOrImageBinding(
-                Instruction.TextureSize,
-                type,
-                TextureFormat.Unknown,
-                flags,
-                TextureOperation.DefaultCbufSlot,
-                imm);
-
-            for (int compMask = componentMask, compIndex = 0; compMask != 0; compMask >>= 1, compIndex++)
+            switch (query)
             {
-                if ((compMask & 1) != 0)
-                {
-                    Operand d = GetDest();
+                case TexQuery.TexHeaderDimension:
+                    binding = isBindless ? 0 : context.ResourceManager.GetTextureOrImageBinding(
+                        Instruction.TextureQuerySize,
+                        type,
+                        TextureFormat.Unknown,
+                        flags,
+                        TextureOperation.DefaultCbufSlot,
+                        imm);
 
-                    if (d == null)
+                    for (int compMask = componentMask, compIndex = 0; compMask != 0; compMask >>= 1, compIndex++)
                     {
-                        break;
+                        if ((compMask & 1) != 0)
+                        {
+                            Operand d = GetDest();
+
+                            if (d == null)
+                            {
+                                break;
+                            }
+
+                            context.Copy(d, context.TextureQuerySize(type, flags, binding, compIndex, sources));
+                        }
                     }
+                    break;
 
-                    // TODO: Validate and use query parameter.
-                    Operand res = context.TextureSize(type, flags, binding, compIndex, sources);
+                case TexQuery.TexHeaderTextureType:
+                    binding = isBindless ? 0 : context.ResourceManager.GetTextureOrImageBinding(
+                        Instruction.TextureQuerySamples,
+                        type,
+                        TextureFormat.Unknown,
+                        flags,
+                        TextureOperation.DefaultCbufSlot,
+                        imm);
 
-                    context.Copy(d, res);
-                }
+                    if ((componentMask & 4) != 0)
+                    {
+                        // Skip first 2 components if necessary.
+                        if ((componentMask & 1) != 0)
+                        {
+                            GetDest();
+                        }
+
+                        if ((componentMask & 2) != 0)
+                        {
+                            GetDest();
+                        }
+
+                        Operand d = GetDest();
+
+                        if (d != null)
+                        {
+                            context.Copy(d, context.TextureQuerySamples(type, flags, binding, sources));
+                        }
+                    }
+                    break;
+
+                default:
+                    context.TranslatorContext.GpuAccessor.Log($"Invalid or unsupported query type \"{query}\".");
+                    break;
             }
         }
 

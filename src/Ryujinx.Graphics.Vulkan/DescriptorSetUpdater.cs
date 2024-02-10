@@ -1,4 +1,4 @@
-﻿using Ryujinx.Common.Memory;
+using Ryujinx.Common.Memory;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.Shader;
 using Silk.NET.Vulkan;
@@ -35,6 +35,7 @@ namespace Ryujinx.Graphics.Vulkan
         }
 
         private readonly VulkanRenderer _gd;
+        private readonly Device _device;
         private readonly PipelineBase _pipeline;
         private ShaderCollection _program;
 
@@ -54,10 +55,14 @@ namespace Ryujinx.Graphics.Vulkan
         private readonly BufferView[] _bufferTextures;
         private readonly BufferView[] _bufferImages;
 
+        private readonly DescriptorSetTemplateUpdater _templateUpdater;
+
         private BitMapStruct<Array2<long>> _uniformSet;
         private BitMapStruct<Array2<long>> _storageSet;
         private BitMapStruct<Array2<long>> _uniformMirrored;
         private BitMapStruct<Array2<long>> _storageMirrored;
+
+        private bool _updateDescriptorCacheCbIndex;
 
         [Flags]
         private enum DirtyFlags
@@ -76,9 +81,10 @@ namespace Ryujinx.Graphics.Vulkan
         private readonly TextureView _dummyTexture;
         private readonly SamplerHolder _dummySampler;
 
-        public DescriptorSetUpdater(VulkanRenderer gd, PipelineBase pipeline)
+        public DescriptorSetUpdater(VulkanRenderer gd, Device device, PipelineBase pipeline)
         {
             _gd = gd;
+            _device = device;
             _pipeline = pipeline;
 
             // Some of the bindings counts needs to be multiplied by 2 because we have buffer and
@@ -150,6 +156,8 @@ namespace Ryujinx.Graphics.Vulkan
                 0,
                 0,
                 1f));
+
+            _templateUpdater = new();
         }
 
         public void Initialize()
@@ -218,6 +226,7 @@ namespace Ryujinx.Graphics.Vulkan
         public void SetProgram(ShaderCollection program)
         {
             _program = program;
+            _updateDescriptorCacheCbIndex = true;
             _dirty = DirtyFlags.All;
         }
 
@@ -490,7 +499,13 @@ namespace Ryujinx.Graphics.Vulkan
 
             var dummyBuffer = _dummyBuffer?.GetBuffer();
 
-            var dsc = program.GetNewDescriptorSetCollection(_gd, cbs.CommandBufferIndex, setIndex, out var isNew).Get(cbs);
+            if (_updateDescriptorCacheCbIndex)
+            {
+                _updateDescriptorCacheCbIndex = false;
+                program.UpdateDescriptorCacheCommandBufferIndex(cbs.CommandBufferIndex);
+            }
+
+            var dsc = program.GetNewDescriptorSetCollection(setIndex, out var isNew).Get(cbs);
 
             if (!program.HasMinimalLayout)
             {
@@ -499,6 +514,10 @@ namespace Ryujinx.Graphics.Vulkan
                     Initialize(cbs, setIndex, dsc);
                 }
             }
+
+            DescriptorSetTemplate template = program.Templates[setIndex];
+
+            DescriptorSetTemplateWriter tu = _templateUpdater.Begin(template);
 
             foreach (ResourceBindingSegment segment in bindingSegments)
             {
@@ -522,7 +541,8 @@ namespace Ryujinx.Graphics.Vulkan
                     }
 
                     ReadOnlySpan<DescriptorBufferInfo> uniformBuffers = _uniformBuffers;
-                    dsc.UpdateBuffers(0, binding, uniformBuffers.Slice(binding, count), DescriptorType.UniformBuffer);
+
+                    tu.Push(uniformBuffers.Slice(binding, count));
                 }
                 else if (setIndex == PipelineBase.StorageSetIndex)
                 {
@@ -547,7 +567,8 @@ namespace Ryujinx.Graphics.Vulkan
                     }
 
                     ReadOnlySpan<DescriptorBufferInfo> storageBuffers = _storageBuffers;
-                    dsc.UpdateBuffers(0, binding, storageBuffers.Slice(binding, count), DescriptorType.StorageBuffer);
+
+                    tu.Push(storageBuffers.Slice(binding, count));
                 }
                 else if (setIndex == PipelineBase.TextureSetIndex)
                 {
@@ -573,7 +594,7 @@ namespace Ryujinx.Graphics.Vulkan
                             }
                         }
 
-                        dsc.UpdateImages(0, binding, textures[..count], DescriptorType.CombinedImageSampler);
+                        tu.Push<DescriptorImageInfo>(textures[..count]);
                     }
                     else
                     {
@@ -584,7 +605,7 @@ namespace Ryujinx.Graphics.Vulkan
                             bufferTextures[i] = _bufferTextureRefs[binding + i]?.GetBufferView(cbs, false) ?? default;
                         }
 
-                        dsc.UpdateBufferImages(0, binding, bufferTextures[..count], DescriptorType.UniformTexelBuffer);
+                        tu.Push<BufferView>(bufferTextures[..count]);
                     }
                 }
                 else if (setIndex == PipelineBase.ImageSetIndex)
@@ -598,7 +619,7 @@ namespace Ryujinx.Graphics.Vulkan
                             images[i].ImageView = _imageRefs[binding + i]?.Get(cbs).Value ?? default;
                         }
 
-                        dsc.UpdateImages(0, binding, images[..count], DescriptorType.StorageImage);
+                        tu.Push<DescriptorImageInfo>(images[..count]);
                     }
                     else
                     {
@@ -609,12 +630,13 @@ namespace Ryujinx.Graphics.Vulkan
                             bufferImages[i] = _bufferImageRefs[binding + i]?.GetBufferView(cbs, _bufferImageFormats[binding + i], true) ?? default;
                         }
 
-                        dsc.UpdateBufferImages(0, binding, bufferImages[..count], DescriptorType.StorageTexelBuffer);
+                        tu.Push<BufferView>(bufferImages[..count]);
                     }
                 }
             }
 
             var sets = dsc.GetSets();
+            _templateUpdater.Commit(_gd, _device, sets[0]);
 
             _gd.Api.CmdBindDescriptorSets(cbs.CommandBuffer, pbp, _program.PipelineLayout, (uint)setIndex, 1, sets, 0, ReadOnlySpan<uint>.Empty);
         }
@@ -697,6 +719,7 @@ namespace Ryujinx.Graphics.Vulkan
 
         public void SignalCommandBufferChange()
         {
+            _updateDescriptorCacheCbIndex = true;
             _dirty = DirtyFlags.All;
 
             _uniformSet.Clear();
@@ -726,6 +749,7 @@ namespace Ryujinx.Graphics.Vulkan
             {
                 _dummyTexture.Dispose();
                 _dummySampler.Dispose();
+                _templateUpdater.Dispose();
             }
         }
 

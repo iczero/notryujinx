@@ -1,4 +1,4 @@
-﻿using Ryujinx.Graphics.Shader.CodeGen;
+using Ryujinx.Graphics.Shader.CodeGen;
 using Ryujinx.Graphics.Shader.CodeGen.Glsl;
 using Ryujinx.Graphics.Shader.CodeGen.Spirv;
 using Ryujinx.Graphics.Shader.Decoders;
@@ -329,6 +329,7 @@ namespace Ryujinx.Graphics.Shader.Translation
                 attributeUsage,
                 definitions,
                 resourceManager,
+                Options.TargetLanguage,
                 Options.Flags.HasFlag(TranslationFlags.DebugMode));
 
             int geometryVerticesPerPrimitive = Definitions.OutputTopology switch

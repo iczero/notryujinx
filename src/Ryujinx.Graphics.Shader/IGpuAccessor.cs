@@ -1,4 +1,4 @@
-﻿using Ryujinx.Graphics.Shader.CodeGen;
+using Ryujinx.Graphics.Shader.CodeGen;
 using System;
 
 namespace Ryujinx.Graphics.Shader
@@ -335,6 +335,15 @@ namespace Ryujinx.Graphics.Shader
         /// </summary>
         /// <returns>True if the GPU and driver supports the formats, false otherwise</returns>
         bool QueryHostSupportsSnormBufferTextureFormat()
+        {
+            return true;
+        }
+
+        /// <summary>
+        /// Queries host GPU texture gather with multiple offsets support.
+        /// </summary>
+        /// <returns>True if the GPU and driver supports texture gather offsets, false otherwise</returns>
+        bool QueryHostSupportsTextureGatherOffsets()
         {
             return true;
         }

@@ -54,7 +54,7 @@ namespace Ryujinx.Ava.UI.Controls
         {
             if (sender is MenuItem { DataContext: MainWindowViewModel viewModel })
             {
-                OpenSaveDirectory(viewModel, SaveDataType.Account, userId: new UserId((ulong)viewModel.AccountManager.LastOpenedUser.UserId.High, (ulong)viewModel.AccountManager.LastOpenedUser.UserId.Low));
+                OpenSaveDirectory(viewModel, SaveDataType.Account, new UserId((ulong)viewModel.AccountManager.LastOpenedUser.UserId.High, (ulong)viewModel.AccountManager.LastOpenedUser.UserId.Low));
             }
         }
 
@@ -62,14 +62,14 @@ namespace Ryujinx.Ava.UI.Controls
         {
             var viewModel = (sender as MenuItem)?.DataContext as MainWindowViewModel;
 
-            OpenSaveDirectory(viewModel, SaveDataType.Device, userId: default);
+            OpenSaveDirectory(viewModel, SaveDataType.Device, default);
         }
 
         public void OpenBcatSaveDirectory_Click(object sender, RoutedEventArgs args)
         {
             var viewModel = (sender as MenuItem)?.DataContext as MainWindowViewModel;
 
-            OpenSaveDirectory(viewModel, SaveDataType.Bcat, userId: default);
+            OpenSaveDirectory(viewModel, SaveDataType.Bcat, default);
         }
 
         private static void OpenSaveDirectory(MainWindowViewModel viewModel, SaveDataType saveDataType, UserId userId)
@@ -126,29 +126,13 @@ namespace Ryujinx.Ava.UI.Controls
             }
         }
 
-        public void OpenModsDirectory_Click(object sender, RoutedEventArgs args)
+        public async void OpenModManager_Click(object sender, RoutedEventArgs args)
         {
             var viewModel = (sender as MenuItem)?.DataContext as MainWindowViewModel;
 
             if (viewModel?.SelectedApplication != null)
             {
-                string modsBasePath = ModLoader.GetModsBasePath();
-                string titleModsPath = ModLoader.GetTitleDir(modsBasePath, viewModel.SelectedApplication.TitleId);
-
-                OpenHelper.OpenFolder(titleModsPath);
-            }
-        }
-
-        public void OpenSdModsDirectory_Click(object sender, RoutedEventArgs args)
-        {
-            var viewModel = (sender as MenuItem)?.DataContext as MainWindowViewModel;
-
-            if (viewModel?.SelectedApplication != null)
-            {
-                string sdModsBasePath = ModLoader.GetSdModsBasePath();
-                string titleModsPath = ModLoader.GetTitleDir(sdModsBasePath, viewModel.SelectedApplication.TitleId);
-
-                OpenHelper.OpenFolder(titleModsPath);
+                await ModManagerWindow.Show(ulong.Parse(viewModel.SelectedApplication.TitleId, NumberStyles.HexNumber), viewModel.SelectedApplication.TitleName);
             }
         }
 
@@ -158,11 +142,12 @@ namespace Ryujinx.Ava.UI.Controls
 
             if (viewModel?.SelectedApplication != null)
             {
-                UserResult result = await ContentDialogHelper.CreateConfirmationDialog(LocaleManager.Instance[LocaleKeys.DialogWarning],
-                                                                                       LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogPPTCDeletionMessage, viewModel.SelectedApplication.TitleName),
-                                                                                       LocaleManager.Instance[LocaleKeys.InputDialogYes],
-                                                                                       LocaleManager.Instance[LocaleKeys.InputDialogNo],
-                                                                                       LocaleManager.Instance[LocaleKeys.RyujinxConfirm]);
+                UserResult result = await ContentDialogHelper.CreateConfirmationDialog(
+                    LocaleManager.Instance[LocaleKeys.DialogWarning],
+                    LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogPPTCDeletionMessage, viewModel.SelectedApplication.TitleName),
+                    LocaleManager.Instance[LocaleKeys.InputDialogYes],
+                    LocaleManager.Instance[LocaleKeys.InputDialogNo],
+                    LocaleManager.Instance[LocaleKeys.RyujinxConfirm]);
 
                 if (result == UserResult.Yes)
                 {
@@ -205,11 +190,12 @@ namespace Ryujinx.Ava.UI.Controls
 
             if (viewModel?.SelectedApplication != null)
             {
-                UserResult result = await ContentDialogHelper.CreateConfirmationDialog(LocaleManager.Instance[LocaleKeys.DialogWarning],
-                                                                                       LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogShaderDeletionMessage, viewModel.SelectedApplication.TitleName),
-                                                                                       LocaleManager.Instance[LocaleKeys.InputDialogYes],
-                                                                                       LocaleManager.Instance[LocaleKeys.InputDialogNo],
-                                                                                       LocaleManager.Instance[LocaleKeys.RyujinxConfirm]);
+                UserResult result = await ContentDialogHelper.CreateConfirmationDialog(
+                    LocaleManager.Instance[LocaleKeys.DialogWarning],
+                    LocaleManager.Instance.UpdateAndGetDynamicValue(LocaleKeys.DialogShaderDeletionMessage, viewModel.SelectedApplication.TitleName),
+                    LocaleManager.Instance[LocaleKeys.InputDialogYes],
+                    LocaleManager.Instance[LocaleKeys.InputDialogNo],
+                    LocaleManager.Instance[LocaleKeys.RyujinxConfirm]);
 
                 if (result == UserResult.Yes)
                 {
@@ -335,13 +321,24 @@ namespace Ryujinx.Ava.UI.Controls
             }
         }
 
-        public void RunApplication_Click(object sender, RoutedEventArgs args)
+        public void CreateApplicationShortcut_Click(object sender, RoutedEventArgs args)
         {
             var viewModel = (sender as MenuItem)?.DataContext as MainWindowViewModel;
 
             if (viewModel?.SelectedApplication != null)
             {
-                viewModel.LoadApplication(viewModel.SelectedApplication.Path);
+                ApplicationData selectedApplication = viewModel.SelectedApplication;
+                ShortcutHelper.CreateAppShortcut(selectedApplication.Path, selectedApplication.TitleName, selectedApplication.TitleId, selectedApplication.Icon);
+            }
+        }
+
+        public async void RunApplication_Click(object sender, RoutedEventArgs args)
+        {
+            var viewModel = (sender as MenuItem)?.DataContext as MainWindowViewModel;
+
+            if (viewModel?.SelectedApplication != null)
+            {
+                await viewModel.LoadApplication(viewModel.SelectedApplication.Path);
             }
         }
     }

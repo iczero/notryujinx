@@ -1,4 +1,3 @@
-﻿using ARMeilleure.Translation;
 using Gtk;
 using LibHac.Common;
 using LibHac.Common.Keys;
@@ -13,6 +12,7 @@ using Ryujinx.Audio.Backends.SoundIo;
 using Ryujinx.Audio.Integration;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
+using Ryujinx.Common.Configuration.Multiplayer;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.SystemInterop;
 using Ryujinx.Cpu;
@@ -207,6 +207,9 @@ namespace Ryujinx.Ui
             ConfigurationState.Instance.System.EnableDockedMode.Event += UpdateDockedModeState;
             ConfigurationState.Instance.System.AudioVolume.Event += UpdateAudioVolumeState;
 
+            ConfigurationState.Instance.Multiplayer.Mode.Event += UpdateMultiplayerMode;
+            ConfigurationState.Instance.Multiplayer.LanInterfaceId.Event += UpdateMultiplayerLanInterfaceId;
+
             if (ConfigurationState.Instance.Ui.StartFullscreen)
             {
                 _startFullScreen.Active = true;
@@ -329,6 +332,22 @@ namespace Ryujinx.Ui
             Task.Run(RefreshFirmwareLabel);
 
             InputManager = new InputManager(new GTK3KeyboardDriver(this), new SDL2GamepadDriver());
+        }
+
+        private void UpdateMultiplayerLanInterfaceId(object sender, ReactiveEventArgs<string> args)
+        {
+            if (_emulationContext != null)
+            {
+                _emulationContext.Configuration.MultiplayerLanInterfaceId = args.NewValue;
+            }
+        }
+
+        private void UpdateMultiplayerMode(object sender, ReactiveEventArgs<MultiplayerMode> args)
+        {
+            if (_emulationContext != null)
+            {
+                _emulationContext.Configuration.MultiplayerMode = args.NewValue;
+            }
         }
 
         private void UpdateIgnoreMissingServicesState(object sender, ReactiveEventArgs<bool> args)
@@ -649,7 +668,8 @@ namespace Ryujinx.Ui
                 ConfigurationState.Instance.Graphics.AspectRatio,
                 ConfigurationState.Instance.System.AudioVolume,
                 ConfigurationState.Instance.System.UseHypervisor,
-                ConfigurationState.Instance.Multiplayer.LanInterfaceId.Value);
+                ConfigurationState.Instance.Multiplayer.LanInterfaceId.Value,
+                ConfigurationState.Instance.Multiplayer.Mode);
 
             _emulationContext = new HLE.Switch(configuration);
         }
@@ -910,8 +930,6 @@ namespace Ryujinx.Ui
 
                 _deviceExitStatus.Reset();
 
-                Translator.IsReadyForTranslation.Reset();
-
                 Thread windowThread = new(CreateGameWindow)
                 {
                     Name = "GUI.WindowThread",
@@ -933,7 +951,7 @@ namespace Ryujinx.Ui
 
                 ApplicationLibrary.LoadAndSaveMetaData(_emulationContext.Processes.ActiveApplication.ProgramIdText, appMetadata =>
                 {
-                    appMetadata.LastPlayed = DateTime.UtcNow;
+                    appMetadata.UpdatePreGame();
                 });
             }
         }
@@ -1076,13 +1094,7 @@ namespace Ryujinx.Ui
             {
                 ApplicationLibrary.LoadAndSaveMetaData(titleId, appMetadata =>
                 {
-                    if (appMetadata.LastPlayed.HasValue)
-                    {
-                        double sessionTimePlayed = DateTime.UtcNow.Subtract(appMetadata.LastPlayed.Value).TotalSeconds;
-                        appMetadata.TimePlayed += Math.Round(sessionTimePlayed, MidpointRounding.AwayFromZero);
-                    }
-
-                    appMetadata.LastPlayed = DateTime.UtcNow;
+                    appMetadata.UpdatePostGame();
                 });
             }
         }
@@ -1098,6 +1110,14 @@ namespace Ryujinx.Ui
             Graphics.Gpu.GraphicsConfig.EnableShaderCache = ConfigurationState.Instance.Graphics.EnableShaderCache;
             Graphics.Gpu.GraphicsConfig.EnableTextureRecompression = ConfigurationState.Instance.Graphics.EnableTextureRecompression;
             Graphics.Gpu.GraphicsConfig.EnableMacroHLE = ConfigurationState.Instance.Graphics.EnableMacroHLE;
+        }
+
+        public void UpdateInternetAccess()
+        {
+            if (_gameLoaded)
+            {
+                _emulationContext.Configuration.EnableInternetAccess = ConfigurationState.Instance.System.EnableInternetAccess.Value;
+            }
         }
 
         public static void SaveConfig()
@@ -1148,10 +1168,10 @@ namespace Ryujinx.Ui
                     $"{args.AppData.TitleName}\n{args.AppData.TitleId.ToUpper()}",
                     args.AppData.Developer,
                     args.AppData.Version,
-                    args.AppData.TimePlayed,
+                    args.AppData.TimePlayedString,
                     args.AppData.LastPlayedString,
                     args.AppData.FileExtension,
-                    args.AppData.FileSize,
+                    args.AppData.FileSizeString,
                     args.AppData.Path,
                     args.AppData.ControlHolder);
             });
@@ -1356,7 +1376,12 @@ namespace Ryujinx.Ui
 
         private void OpenLogsFolder_Pressed(object sender, EventArgs args)
         {
-            string logPath = System.IO.Path.Combine(ReleaseInformation.GetBaseApplicationDirectory(), "Logs");
+            string logPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
+
+            if (LoggerModule.LogDirectoryPath != null)
+            {
+                logPath = LoggerModule.LogDirectoryPath;
+            }
 
             new DirectoryInfo(logPath).Create();
 
@@ -1430,6 +1455,8 @@ namespace Ryujinx.Ui
             _pauseEmulation.Sensitive = false;
             _resumeEmulation.Sensitive = true;
             _emulationContext.System.TogglePauseEmulation(true);
+            Title = TitleHelper.ActiveApplicationTitle(_emulationContext.Processes.ActiveApplication, Program.Version, "Paused");
+            Logger.Info?.Print(LogClass.Emulation, "Emulation was paused");
         }
 
         private void ResumeEmulation_Pressed(object sender, EventArgs args)
@@ -1437,6 +1464,8 @@ namespace Ryujinx.Ui
             _pauseEmulation.Sensitive = true;
             _resumeEmulation.Sensitive = false;
             _emulationContext.System.TogglePauseEmulation(false);
+            Title = TitleHelper.ActiveApplicationTitle(_emulationContext.Processes.ActiveApplication, Program.Version);
+            Logger.Info?.Print(LogClass.Emulation, "Emulation was resumed");
         }
 
         public void ActivatePauseMenu()
