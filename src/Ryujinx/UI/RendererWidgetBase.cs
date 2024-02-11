@@ -3,6 +3,7 @@ using Gtk;
 using Ryujinx.Common;
 using Ryujinx.Common.Configuration;
 using Ryujinx.Common.Logging;
+using Ryujinx.Common.Utilities;
 using Ryujinx.Graphics.GAL;
 using Ryujinx.Graphics.GAL.Multithreading;
 using Ryujinx.Graphics.Gpu;
@@ -372,24 +373,6 @@ namespace Ryujinx.UI
             TouchScreenManager.Initialize(device);
         }
 
-        private string SanitizeApplicationName(string applicationName)
-        {
-            StringBuilder sbAppName = new StringBuilder(applicationName);
-
-            HashSet<char> reservedChars = ['<', '>', ':', '"', '/', '\\', '|', '?', '*'];
-            for (char c = (char)0; c <= 31; c++)
-            {
-                reservedChars.Add(c);
-            }
-
-            foreach (char reservedChar in reservedChars)
-            {
-                sbAppName = sbAppName.Replace(reservedChar, '_');
-            }
-
-            return sbAppName.ToString();
-        }
-
         private unsafe void Renderer_ScreenCaptured(object sender, ScreenCaptureImageInfo e)
         {
             if (e.Data.Length > 0 && e.Height > 0 && e.Width > 0)
@@ -399,7 +382,7 @@ namespace Ryujinx.UI
                     lock (this)
                     {
                         string applicationName = Device.Processes.ActiveApplication.Name;
-                        string sanitizedApplicationName = SanitizeApplicationName(applicationName);
+                        string sanitizedApplicationName = FileSystemUtils.SanitizeFileName(applicationName);
 
                         DateTime currentTime = DateTime.Now;
 
