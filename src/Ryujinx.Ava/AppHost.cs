@@ -276,10 +276,10 @@ namespace Ryujinx.Ava
         {
             StringBuilder sbAppName = new StringBuilder(applicationName);
 
-            HashSet<char> reservedChars = new HashSet<char>() { '<', '>', ':', '"', '/', '\\', '|', '?', '*' };
-            for (char ch = (char)0; ch <= 31; ch++)
+            HashSet<char> reservedChars = ['<', '>', ':', '"', '/', '\\', '|', '?', '*'];
+            for (char c = (char)0; c <= 31; c++)
             {
-                reservedChars.Add(ch);
+                reservedChars.Add(c);
             }
 
             foreach (char reservedChar in reservedChars)
