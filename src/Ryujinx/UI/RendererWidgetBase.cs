@@ -383,7 +383,6 @@ namespace Ryujinx.UI
                     {
                         string applicationName = Device.Processes.ActiveApplication.Name;
                         string sanitizedApplicationName = FileSystemUtils.SanitizeFileName(applicationName);
-
                         DateTime currentTime = DateTime.Now;
 
                         string filename = $"{sanitizedApplicationName}_{currentTime.Year}-{currentTime.Month:D2}-{currentTime.Day:D2}_{currentTime.Hour:D2}-{currentTime.Minute:D2}-{currentTime.Second:D2}.png";
