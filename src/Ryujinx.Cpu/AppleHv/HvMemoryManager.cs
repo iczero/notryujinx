@@ -52,6 +52,8 @@ namespace Ryujinx.Cpu.AppleHv
 
         private readonly ulong[] _pageBitmap;
 
+        private readonly Func<ulong, ulong> _getPhysicalAddressCheckedFunc;
+
         public bool Supports4KBPages => true;
 
         public int AddressSpaceBits { get; }
@@ -91,6 +93,7 @@ namespace Ryujinx.Cpu.AppleHv
             AddressSpaceBits = asBits;
 
             _pageBitmap = new ulong[1 << (AddressSpaceBits - (PageBits + PageToPteShift))];
+            _getPhysicalAddressCheckedFunc = GetPhysicalAddressChecked;
             Tracking = new MemoryTracking(this, PageSize, invalidAccessHandler);
         }
 
@@ -291,7 +294,7 @@ namespace Ryujinx.Cpu.AppleHv
                 {
                     int offset = 0;
 
-                    var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, data.Length, PageSize, GetPhysicalAddressChecked);
+                    var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, data.Length, PageSize, _getPhysicalAddressCheckedFunc);
 
                     foreach (var memoryRange in memoryRanges)
                     {
@@ -337,7 +340,7 @@ namespace Ryujinx.Cpu.AppleHv
                 {
                     AssertValidAddressAndSize(va, (ulong)size);
 
-                    var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, size, PageSize, GetPhysicalAddressChecked);
+                    var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, size, PageSize, _getPhysicalAddressCheckedFunc);
 
                     foreach (MemoryRange memoryRange in memoryRanges)
                     {
@@ -635,7 +638,7 @@ namespace Ryujinx.Cpu.AppleHv
 
                 int offset = 0;
 
-                var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, data.Length, PageSize, GetPhysicalAddressChecked);
+                var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, data.Length, PageSize, _getPhysicalAddressCheckedFunc);
 
                 foreach (MemoryRange memoryRange in memoryRanges)
                 {

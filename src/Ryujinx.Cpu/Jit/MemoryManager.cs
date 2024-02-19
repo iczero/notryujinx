@@ -41,6 +41,8 @@ namespace Ryujinx.Cpu.Jit
 
         private readonly MemoryBlock _pageTable;
 
+        private readonly Func<ulong, ulong> _getPhysicalAddressInternalFunc;
+
         /// <summary>
         /// Page table base pointer.
         /// </summary>
@@ -75,6 +77,8 @@ namespace Ryujinx.Cpu.Jit
             AddressSpaceBits = asBits;
             _addressSpaceSize = asSize;
             _pageTable = new MemoryBlock((asSize / PageSize) * PteSize);
+
+            _getPhysicalAddressInternalFunc = GetPhysicalAddressInternal;
 
             Tracking = new MemoryTracking(this, PageSize);
         }
@@ -241,7 +245,7 @@ namespace Ryujinx.Cpu.Jit
                 {
                     int offset = 0;
 
-                    var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, data.Length, PageSize, GetPhysicalAddressInternal);
+                    var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, data.Length, PageSize, _getPhysicalAddressInternalFunc);
 
                     foreach (MemoryRange memoryRange in memoryRanges)
                     {
@@ -287,7 +291,7 @@ namespace Ryujinx.Cpu.Jit
                 {
                     AssertValidAddressAndSize(va, (ulong)size);
 
-                    var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, size, PageSize, GetPhysicalAddressInternal);
+                    var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, size, PageSize, _getPhysicalAddressInternalFunc);
 
                     foreach (MemoryRange memoryRange in memoryRanges)
                     {
@@ -521,7 +525,7 @@ namespace Ryujinx.Cpu.Jit
 
                 int offset = 0;
 
-                var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, data.Length, PageSize, GetPhysicalAddressInternal);
+                var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, data.Length, PageSize, _getPhysicalAddressInternalFunc);
 
                 foreach (MemoryRange memoryRange in memoryRanges)
                 {

@@ -32,6 +32,8 @@ namespace Ryujinx.Memory
         private readonly MemoryBlock _backingMemory;
         private readonly PageTable<nuint> _pageTable;
 
+        private readonly Func<ulong, ulong> _getHostAddressULongFunc;
+
         /// <summary>
         /// Creates a new instance of the memory manager.
         /// </summary>
@@ -52,6 +54,7 @@ namespace Ryujinx.Memory
             _addressSpaceSize = asSize;
             _backingMemory = backingMemory;
             _pageTable = new PageTable<nuint>();
+            _getHostAddressULongFunc = GetHostAddressULong;
         }
 
         /// <inheritdoc/>
@@ -134,7 +137,7 @@ namespace Ryujinx.Memory
             {
                 int offset = 0;
 
-                var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, data.Length, PageSize, GetHostAddressULong);
+                var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, data.Length, PageSize, _getHostAddressULongFunc);
 
                 foreach (MemoryRange memoryRange in memoryRanges)
                 {
@@ -173,7 +176,7 @@ namespace Ryujinx.Memory
 
                 BytesReadOnlySequenceSegment first = null, last = null;
 
-                var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, size, PageSize, GetHostAddressULong);
+                var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, size, PageSize, _getHostAddressULongFunc);
 
                 foreach (MemoryRange memoryRange in memoryRanges)
                 {
@@ -392,7 +395,7 @@ namespace Ryujinx.Memory
 
             int offset = 0;
 
-            var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, data.Length, PageSize, GetHostAddressULong);
+            var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, data.Length, PageSize, _getHostAddressULongFunc);
 
             foreach (MemoryRange memoryRange in memoryRanges)
             {
