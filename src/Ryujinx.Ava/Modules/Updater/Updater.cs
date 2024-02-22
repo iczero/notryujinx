@@ -10,8 +10,8 @@ using Ryujinx.Ava.UI.Helpers;
 using Ryujinx.Common;
 using Ryujinx.Common.Logging;
 using Ryujinx.Common.Utilities;
-using Ryujinx.Ui.Common.Helper;
-using Ryujinx.Ui.Common.Models.Github;
+using Ryujinx.UI.Common.Helper;
+using Ryujinx.UI.Common.Models.Github;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -68,7 +68,8 @@ namespace Ryujinx.Modules
             }
             else if (OperatingSystem.IsLinux())
             {
-                _platformExt = "linux_x64.tar.gz";
+                var arch = RuntimeInformation.OSArchitecture == Architecture.Arm64 ? "arm64" : "x64";
+                _platformExt = $"linux_{arch}.tar.gz";
             }
 
             Version newVersion;
@@ -637,20 +638,6 @@ namespace Ryujinx.Modules
         public static bool CanUpdate(bool showWarnings)
         {
 #if !DISABLE_UPDATER
-            if (RuntimeInformation.OSArchitecture != Architecture.X64 && !OperatingSystem.IsMacOS())
-            {
-                if (showWarnings)
-                {
-                    Dispatcher.UIThread.InvokeAsync(() =>
-                        ContentDialogHelper.CreateWarningDialog(
-                            LocaleManager.Instance[LocaleKeys.DialogUpdaterArchNotSupportedMessage],
-                            LocaleManager.Instance[LocaleKeys.DialogUpdaterArchNotSupportedSubMessage])
-                    );
-                }
-
-                return false;
-            }
-
             if (!NetworkInterface.GetIsNetworkAvailable())
             {
                 if (showWarnings)
@@ -665,7 +652,7 @@ namespace Ryujinx.Modules
                 return false;
             }
 
-            if (Program.Version.Contains("dirty") || !ReleaseInformation.IsValid())
+            if (Program.Version.Contains("dirty") || !ReleaseInformation.IsValid)
             {
                 if (showWarnings)
                 {
@@ -683,7 +670,7 @@ namespace Ryujinx.Modules
 #else
             if (showWarnings)
             {
-                if (ReleaseInformation.IsFlatHubBuild())
+                if (ReleaseInformation.IsFlatHubBuild)
                 {
                     Dispatcher.UIThread.InvokeAsync(() =>
                         ContentDialogHelper.CreateWarningDialog(
