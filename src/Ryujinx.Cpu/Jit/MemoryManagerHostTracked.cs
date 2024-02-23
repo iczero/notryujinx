@@ -522,8 +522,6 @@ namespace Ryujinx.Cpu.Jit
 
         private (MemoryBlock, ulong, ulong) GetMemoryOffsetAndSize(ulong va, ulong size)
         {
-            ulong endVa = va + size;
-
             PrivateRange privateRange = _addressSpace.GetFirstPrivateAllocation(va, size, out ulong nextVa);
 
             if (privateRange.Memory != null)
