@@ -1,8 +1,10 @@
 using ARMeilleure.Memory;
+using Ryujinx.Common.Memory;
 using Ryujinx.Memory;
 using Ryujinx.Memory.Range;
 using Ryujinx.Memory.Tracking;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -39,6 +41,8 @@ namespace Ryujinx.Cpu.Jit
 
         private readonly MemoryBlock _pageTable;
 
+        private readonly Func<ulong, ulong> _getPhysicalAddressInternalFunc;
+
         /// <summary>
         /// Page table base pointer.
         /// </summary>
@@ -73,6 +77,8 @@ namespace Ryujinx.Cpu.Jit
             AddressSpaceBits = asBits;
             _addressSpaceSize = asSize;
             _pageTable = new MemoryBlock((asSize / PageSize) * PteSize);
+
+            _getPhysicalAddressInternalFunc = GetPhysicalAddressInternal;
 
             Tracking = new MemoryTracking(this, PageSize);
         }
@@ -237,26 +243,17 @@ namespace Ryujinx.Cpu.Jit
                 }
                 else
                 {
-                    int offset = 0, size;
+                    int offset = 0;
 
-                    if ((va & PageMask) != 0)
+                    var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, data.Length, PageSize, _getPhysicalAddressInternalFunc);
+
+                    foreach (MemoryRange memoryRange in memoryRanges)
                     {
-                        ulong pa = GetPhysicalAddressInternal(va);
+                        var target = _backingMemory.GetSpan(memoryRange.Address, (int)memoryRange.Size);
 
-                        size = Math.Min(data.Length, PageSize - (int)(va & PageMask));
+                        data.Slice(offset, target.Length).CopyTo(target);
 
-                        data[..size].CopyTo(_backingMemory.GetSpan(pa, size));
-
-                        offset += size;
-                    }
-
-                    for (; offset < data.Length; offset += size)
-                    {
-                        ulong pa = GetPhysicalAddressInternal(va + (ulong)offset);
-
-                        size = Math.Min(data.Length - offset, PageSize);
-
-                        data.Slice(offset, size).CopyTo(_backingMemory.GetSpan(pa, size));
+                        offset += target.Length;
                     }
                 }
             }
@@ -266,6 +263,59 @@ namespace Ryujinx.Cpu.Jit
                 {
                     throw;
                 }
+            }
+        }
+
+        /// <inheritdoc/>
+        public ReadOnlySequence<byte> GetReadOnlySequence(ulong va, int size, bool tracked = false)
+        {
+            if (size == 0)
+            {
+                return ReadOnlySequence<byte>.Empty;
+            }
+
+            if (tracked)
+            {
+                SignalMemoryTracking(va, (ulong)size, false);
+            }
+
+            if (IsContiguousAndMapped(va, size))
+            {
+                return new ReadOnlySequence<byte>(_backingMemory.GetMemory(GetPhysicalAddressInternal(va), size));
+            }
+            else
+            {
+                BytesReadOnlySequenceSegment first = null, last = null;
+
+                try
+                {
+                    AssertValidAddressAndSize(va, (ulong)size);
+
+                    var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, size, PageSize, _getPhysicalAddressInternalFunc);
+
+                    foreach (MemoryRange memoryRange in memoryRanges)
+                    {
+                        Memory<byte> memory = _backingMemory.GetMemory(memoryRange.Address, (int)memoryRange.Size);
+
+                        if (first is null)
+                        {
+                            first = last = new BytesReadOnlySequenceSegment(memory);
+                        }
+                        else
+                        {
+                            last = last.Append(memory);
+                        }
+                    }
+                }
+                catch (InvalidMemoryRegionException)
+                {
+                    if (_invalidAccessHandler == null || !_invalidAccessHandler(va))
+                    {
+                        throw;
+                    }
+                }
+
+                return new ReadOnlySequence<byte>(first, 0, last, (int)(size - last.RunningIndex));
             }
         }
 
@@ -315,11 +365,11 @@ namespace Ryujinx.Cpu.Jit
             }
             else
             {
-                Memory<byte> memory = new byte[size];
+                IMemoryOwner<byte> memoryOwner = ByteMemoryPool.Rent(size);
 
-                GetSpan(va, size).CopyTo(memory.Span);
+                GetSpan(va, size).CopyTo(memoryOwner.Memory.Span);
 
-                return new WritableRegion(this, va, memory, tracked);
+                return new WritableRegion(this, va, memoryOwner, tracked);
             }
         }
 
@@ -473,26 +523,17 @@ namespace Ryujinx.Cpu.Jit
             {
                 AssertValidAddressAndSize(va, (ulong)data.Length);
 
-                int offset = 0, size;
+                int offset = 0;
 
-                if ((va & PageMask) != 0)
+                var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, data.Length, PageSize, _getPhysicalAddressInternalFunc);
+
+                foreach (MemoryRange memoryRange in memoryRanges)
                 {
-                    ulong pa = GetPhysicalAddressInternal(va);
+                    int size = (int)memoryRange.Size;
 
-                    size = Math.Min(data.Length, PageSize - (int)(va & PageMask));
-
-                    _backingMemory.GetSpan(pa, size).CopyTo(data[..size]);
+                    _backingMemory.GetSpan(memoryRange.Address, size).CopyTo(data.Slice(offset, size));
 
                     offset += size;
-                }
-
-                for (; offset < data.Length; offset += size)
-                {
-                    ulong pa = GetPhysicalAddressInternal(va + (ulong)offset);
-
-                    size = Math.Min(data.Length - offset, PageSize);
-
-                    _backingMemory.GetSpan(pa, size).CopyTo(data.Slice(offset, size));
                 }
             }
             catch (InvalidMemoryRegionException)

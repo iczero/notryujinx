@@ -1,8 +1,10 @@
 using ARMeilleure.Memory;
+using Ryujinx.Common.Memory;
 using Ryujinx.Memory;
 using Ryujinx.Memory.Range;
 using Ryujinx.Memory.Tracking;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -50,6 +52,8 @@ namespace Ryujinx.Cpu.AppleHv
 
         private readonly ulong[] _pageBitmap;
 
+        private readonly Func<ulong, ulong> _getPhysicalAddressCheckedFunc;
+
         public bool Supports4KBPages => true;
 
         public int AddressSpaceBits { get; }
@@ -89,6 +93,7 @@ namespace Ryujinx.Cpu.AppleHv
             AddressSpaceBits = asBits;
 
             _pageBitmap = new ulong[1 << (AddressSpaceBits - (PageBits + PageToPteShift))];
+            _getPhysicalAddressCheckedFunc = GetPhysicalAddressChecked;
             Tracking = new MemoryTracking(this, PageSize, invalidAccessHandler);
         }
 
@@ -287,26 +292,17 @@ namespace Ryujinx.Cpu.AppleHv
                 }
                 else
                 {
-                    int offset = 0, size;
+                    int offset = 0;
 
-                    if ((va & PageMask) != 0)
+                    var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, data.Length, PageSize, _getPhysicalAddressCheckedFunc);
+
+                    foreach (var memoryRange in memoryRanges)
                     {
-                        ulong pa = GetPhysicalAddressChecked(va);
+                        var target = _backingMemory.GetSpan(memoryRange.Address, (int)memoryRange.Size);
 
-                        size = Math.Min(data.Length, PageSize - (int)(va & PageMask));
+                        data.Slice(offset, target.Length).CopyTo(target);
 
-                        data[..size].CopyTo(_backingMemory.GetSpan(pa, size));
-
-                        offset += size;
-                    }
-
-                    for (; offset < data.Length; offset += size)
-                    {
-                        ulong pa = GetPhysicalAddressChecked(va + (ulong)offset);
-
-                        size = Math.Min(data.Length - offset, PageSize);
-
-                        data.Slice(offset, size).CopyTo(_backingMemory.GetSpan(pa, size));
+                        offset += target.Length;
                     }
                 }
             }
@@ -316,6 +312,59 @@ namespace Ryujinx.Cpu.AppleHv
                 {
                     throw;
                 }
+            }
+        }
+
+        /// <inheritdoc/>
+        public ReadOnlySequence<byte> GetReadOnlySequence(ulong va, int size, bool tracked = false)
+        {
+            if (size == 0)
+            {
+                return ReadOnlySequence<byte>.Empty;
+            }
+
+            if (tracked)
+            {
+                SignalMemoryTracking(va, (ulong)size, false);
+            }
+
+            if (IsContiguousAndMapped(va, size))
+            {
+                return new ReadOnlySequence<byte>(_backingMemory.GetMemory(GetPhysicalAddressInternal(va), size));
+            }
+            else
+            {
+                BytesReadOnlySequenceSegment first = null, last = null;
+
+                try
+                {
+                    AssertValidAddressAndSize(va, (ulong)size);
+
+                    var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, size, PageSize, _getPhysicalAddressCheckedFunc);
+
+                    foreach (MemoryRange memoryRange in memoryRanges)
+                    {
+                        Memory<byte> memory = _backingMemory.GetMemory(memoryRange.Address, (int)memoryRange.Size);
+
+                        if (first == null)
+                        {
+                            first = last = new BytesReadOnlySequenceSegment(memory);
+                        }
+                        else
+                        {
+                            last = last.Append(memory);
+                        }
+                    }
+                }
+                catch (InvalidMemoryRegionException)
+                {
+                    if (_invalidAccessHandler == null || !_invalidAccessHandler(va))
+                    {
+                        throw;
+                    }
+                }
+
+                return new ReadOnlySequence<byte>(first, 0, last, (int)(size - last.RunningIndex));
             }
         }
 
@@ -365,11 +414,11 @@ namespace Ryujinx.Cpu.AppleHv
             }
             else
             {
-                Memory<byte> memory = new byte[size];
+                IMemoryOwner<byte> memoryOwner = ByteMemoryPool.Rent(size);
 
-                ReadImpl(va, memory.Span);
+                ReadImpl(va, memoryOwner.Memory.Span);
 
-                return new WritableRegion(this, va, memory);
+                return new WritableRegion(this, va, memoryOwner);
             }
         }
 
@@ -587,26 +636,17 @@ namespace Ryujinx.Cpu.AppleHv
             {
                 AssertValidAddressAndSize(va, (ulong)data.Length);
 
-                int offset = 0, size;
+                int offset = 0;
 
-                if ((va & PageMask) != 0)
+                var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, data.Length, PageSize, _getPhysicalAddressCheckedFunc);
+
+                foreach (MemoryRange memoryRange in memoryRanges)
                 {
-                    ulong pa = GetPhysicalAddressChecked(va);
+                    int size = (int)memoryRange.Size;
 
-                    size = Math.Min(data.Length, PageSize - (int)(va & PageMask));
-
-                    _backingMemory.GetSpan(pa, size).CopyTo(data[..size]);
+                    _backingMemory.GetSpan(memoryRange.Address, size).CopyTo(data.Slice(offset, size));
 
                     offset += size;
-                }
-
-                for (; offset < data.Length; offset += size)
-                {
-                    ulong pa = GetPhysicalAddressChecked(va + (ulong)offset);
-
-                    size = Math.Min(data.Length - offset, PageSize);
-
-                    _backingMemory.GetSpan(pa, size).CopyTo(data.Slice(offset, size));
                 }
             }
             catch (InvalidMemoryRegionException)

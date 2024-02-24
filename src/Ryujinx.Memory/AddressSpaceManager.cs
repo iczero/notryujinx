@@ -1,5 +1,7 @@
+using Ryujinx.Common.Memory;
 using Ryujinx.Memory.Range;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -30,6 +32,8 @@ namespace Ryujinx.Memory
         private readonly MemoryBlock _backingMemory;
         private readonly PageTable<nuint> _pageTable;
 
+        private readonly Func<ulong, ulong> _getHostAddressULongFunc;
+
         /// <summary>
         /// Creates a new instance of the memory manager.
         /// </summary>
@@ -50,6 +54,7 @@ namespace Ryujinx.Memory
             _addressSpaceSize = asSize;
             _backingMemory = backingMemory;
             _pageTable = new PageTable<nuint>();
+            _getHostAddressULongFunc = GetHostAddressULong;
         }
 
         /// <inheritdoc/>
@@ -130,22 +135,17 @@ namespace Ryujinx.Memory
             }
             else
             {
-                int offset = 0, size;
+                int offset = 0;
 
-                if ((va & PageMask) != 0)
+                var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, data.Length, PageSize, _getHostAddressULongFunc);
+
+                foreach (MemoryRange memoryRange in memoryRanges)
                 {
-                    size = Math.Min(data.Length, PageSize - (int)(va & PageMask));
+                    var target = GetHostAddressSpanContiguous(memoryRange.Address, (int)memoryRange.Size);
 
-                    data[..size].CopyTo(GetHostSpanContiguous(va, size));
+                    data.Slice(offset, target.Length).CopyTo(target);
 
-                    offset += size;
-                }
-
-                for (; offset < data.Length; offset += size)
-                {
-                    size = Math.Min(data.Length - offset, PageSize);
-
-                    data.Slice(offset, size).CopyTo(GetHostSpanContiguous(va + (ulong)offset, size));
+                    offset += target.Length;
                 }
             }
         }
@@ -156,6 +156,44 @@ namespace Ryujinx.Memory
             Write(va, data);
 
             return true;
+        }
+
+        /// <inheritdoc/>
+        public ReadOnlySequence<byte> GetReadOnlySequence(ulong va, int size, bool tracked = false)
+        {
+            if (size == 0)
+            {
+                return ReadOnlySequence<byte>.Empty;
+            }
+
+            if (IsContiguousAndMapped(va, size))
+            {
+                return new ReadOnlySequence<byte>(GetHostMemoryContiguous(va, size));
+            }
+            else
+            {
+                AssertValidAddressAndSize(va, (ulong)size);
+
+                BytesReadOnlySequenceSegment first = null, last = null;
+
+                var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, size, PageSize, _getHostAddressULongFunc);
+
+                foreach (MemoryRange memoryRange in memoryRanges)
+                {
+                    Memory<byte> memory = GetHostAddressMemoryContiguous(memoryRange.Address, (int)memoryRange.Size);
+
+                    if (first is null)
+                    {
+                        first = last = new BytesReadOnlySequenceSegment(memory);
+                    }
+                    else
+                    {
+                        last = last.Append(memory);
+                    }
+                }
+
+                return new ReadOnlySequence<byte>(first, 0, last, (int)(size - last.RunningIndex));
+            }
         }
 
         /// <inheritdoc/>
@@ -190,15 +228,15 @@ namespace Ryujinx.Memory
 
             if (IsContiguousAndMapped(va, size))
             {
-                return new WritableRegion(null, va, new NativeMemoryManager<byte>((byte*)GetHostAddress(va), size).Memory);
+                return new WritableRegion(null, va, GetHostMemoryContiguous(va, size));
             }
             else
             {
-                Memory<byte> memory = new byte[size];
+                IMemoryOwner<byte> memoryOwner = ByteMemoryPool.Rent(size);
 
-                GetSpan(va, size).CopyTo(memory.Span);
+                GetSpan(va, size).CopyTo(memoryOwner.Memory.Span);
 
-                return new WritableRegion(this, va, memory);
+                return new WritableRegion(this, va, memoryOwner);
             }
         }
 
@@ -355,22 +393,17 @@ namespace Ryujinx.Memory
 
             AssertValidAddressAndSize(va, (ulong)data.Length);
 
-            int offset = 0, size;
+            int offset = 0;
 
-            if ((va & PageMask) != 0)
+            var memoryRanges = new PagedMemoryRangeCoalescingEnumerator(va, data.Length, PageSize, _getHostAddressULongFunc);
+
+            foreach (MemoryRange memoryRange in memoryRanges)
             {
-                size = Math.Min(data.Length, PageSize - (int)(va & PageMask));
+                int size = (int)memoryRange.Size;
 
-                GetHostSpanContiguous(va, size).CopyTo(data[..size]);
+                GetHostAddressSpanContiguous(memoryRange.Address, size).CopyTo(data.Slice(offset, size));
 
                 offset += size;
-            }
-
-            for (; offset < data.Length; offset += size)
-            {
-                size = Math.Min(data.Length - offset, PageSize);
-
-                GetHostSpanContiguous(va + (ulong)offset, size).CopyTo(data.Slice(offset, size));
             }
         }
 
@@ -445,6 +478,11 @@ namespace Ryujinx.Memory
             }
         }
 
+        private unsafe Memory<byte> GetHostMemoryContiguous(ulong va, int size)
+        {
+            return new NativeMemoryManager<byte>((byte*)GetHostAddress(va), size).Memory;
+        }
+
         private unsafe Span<byte> GetHostSpanContiguous(ulong va, int size)
         {
             return new Span<byte>((void*)GetHostAddress(va), size);
@@ -453,6 +491,21 @@ namespace Ryujinx.Memory
         private nuint GetHostAddress(ulong va)
         {
             return _pageTable.Read(va) + (nuint)(va & PageMask);
+        }
+
+        private ulong GetHostAddressULong(ulong va)
+        {
+            return _pageTable.Read(va) + (va & PageMask);
+        }
+
+        private unsafe Span<byte> GetHostAddressSpanContiguous(ulong hostAddress, int size)
+        {
+            return new Span<byte>((void*)hostAddress, size);
+        }
+
+        private unsafe Memory<byte> GetHostAddressMemoryContiguous(ulong hostAddress, int size)
+        {
+            return new NativeMemoryManager<byte>((byte*)hostAddress, size).Memory;
         }
 
         /// <inheritdoc/>
