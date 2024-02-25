@@ -60,7 +60,7 @@ namespace Ryujinx.Cpu.AppleHv
 
         public MemoryTracking Tracking { get; }
 
-        public event Action<ulong, ulong> UnmapEvent;
+        public event Action<ulong, ulong, bool> UnmapEvent;
 
         /// <summary>
         /// Creates a new instance of the Hypervisor memory manager.
@@ -159,11 +159,11 @@ namespace Ryujinx.Cpu.AppleHv
         }
 
         /// <inheritdoc/>
-        public void Unmap(ulong va, ulong size)
+        public void Unmap(ulong va, ulong size, bool clearRejitQueueOnly = false)
         {
             AssertValidAddressAndSize(va, size);
 
-            UnmapEvent?.Invoke(va, size);
+            UnmapEvent?.Invoke(va, size, clearRejitQueueOnly);
             Tracking.Unmap(va, size);
 
             RemoveMapping(va, size);

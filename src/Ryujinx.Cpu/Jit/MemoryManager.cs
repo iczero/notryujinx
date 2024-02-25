@@ -48,7 +48,7 @@ namespace Ryujinx.Cpu.Jit
 
         public MemoryTracking Tracking { get; }
 
-        public event Action<ulong, ulong> UnmapEvent;
+        public event Action<ulong, ulong, bool> UnmapEvent;
 
         /// <summary>
         /// Creates a new instance of the memory manager.
@@ -103,7 +103,7 @@ namespace Ryujinx.Cpu.Jit
         }
 
         /// <inheritdoc/>
-        public void Unmap(ulong va, ulong size)
+        public void Unmap(ulong va, ulong size, bool clearRejitQueueOnly = false)
         {
             // If size is 0, there's nothing to unmap, just exit early.
             if (size == 0)
@@ -113,7 +113,7 @@ namespace Ryujinx.Cpu.Jit
 
             AssertValidAddressAndSize(va, size);
 
-            UnmapEvent?.Invoke(va, size);
+            UnmapEvent?.Invoke(va, size, clearRejitQueueOnly);
             Tracking.Unmap(va, size);
 
             ulong remainingSize = size;

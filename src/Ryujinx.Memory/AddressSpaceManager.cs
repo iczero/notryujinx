@@ -83,7 +83,7 @@ namespace Ryujinx.Memory
         }
 
         /// <inheritdoc/>
-        public void Unmap(ulong va, ulong size)
+        public void Unmap(ulong va, ulong size, bool clearRejitQueueOnly = false)
         {
             AssertValidAddressAndSize(va, size);
 
