@@ -679,7 +679,14 @@ namespace Ryujinx.Graphics.Vulkan
 
         public HardwareInfo GetHardwareInfo()
         {
-            return new HardwareInfo(GpuVendor, GpuRenderer, GpuDriver);
+            var gpuDriver = GpuVendor;
+
+            if (GpuVendor.ToLowerInvariant() != GpuDriver.ToLowerInvariant())
+            {
+                gpuDriver += $" ({GpuDriver})";
+            }
+
+            return new HardwareInfo(GpuVendor, GpuRenderer, gpuDriver);
         }
 
         /// <summary>
