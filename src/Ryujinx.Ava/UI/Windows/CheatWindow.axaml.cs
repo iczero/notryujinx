@@ -3,7 +3,7 @@ using Ryujinx.Ava.Common.Locale;
 using Ryujinx.Ava.UI.Models;
 using Ryujinx.HLE.FileSystem;
 using Ryujinx.HLE.HOS;
-using Ryujinx.Ui.App.Common;
+using Ryujinx.UI.App.Common;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -41,7 +41,7 @@ namespace Ryujinx.Ava.UI.Windows
             InitializeComponent();
 
             string modsBasePath = ModLoader.GetModsBasePath();
-            string titleModsPath = ModLoader.GetTitleDir(modsBasePath, titleId);
+            string titleModsPath = ModLoader.GetApplicationDir(modsBasePath, titleId);
             ulong titleIdValue = ulong.Parse(titleId, NumberStyles.HexNumber);
 
             _enabledCheatsPath = Path.Combine(titleModsPath, "cheats", "enabled.txt");

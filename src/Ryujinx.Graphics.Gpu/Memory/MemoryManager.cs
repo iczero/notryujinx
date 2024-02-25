@@ -40,9 +40,9 @@ namespace Ryujinx.Graphics.Gpu.Memory
         internal PhysicalMemory Physical { get; }
 
         /// <summary>
-        /// Virtual buffer cache.
+        /// Virtual range cache.
         /// </summary>
-        internal VirtualBufferCache VirtualBufferCache { get; }
+        internal VirtualRangeCache VirtualRangeCache { get; }
 
         /// <summary>
         /// Cache of GPU counters.
@@ -56,12 +56,12 @@ namespace Ryujinx.Graphics.Gpu.Memory
         internal MemoryManager(PhysicalMemory physicalMemory)
         {
             Physical = physicalMemory;
-            VirtualBufferCache = new VirtualBufferCache(this);
+            VirtualRangeCache = new VirtualRangeCache(this);
             CounterCache = new CounterCache();
             _pageTable = new ulong[PtLvl0Size][];
             MemoryUnmapped += Physical.TextureCache.MemoryUnmappedHandler;
             MemoryUnmapped += Physical.BufferCache.MemoryUnmappedHandler;
-            MemoryUnmapped += VirtualBufferCache.MemoryUnmappedHandler;
+            MemoryUnmapped += VirtualRangeCache.MemoryUnmappedHandler;
             MemoryUnmapped += CounterCache.MemoryUnmappedHandler;
         }
 
@@ -325,49 +325,6 @@ namespace Ryujinx.Graphics.Gpu.Memory
                     size = Math.Min(data.Length - offset, (int)PageSize);
 
                     writeCallback(pa, data.Slice(offset, size));
-                }
-            }
-        }
-
-        /// <summary>
-        /// Writes data to GPU mapped memory, stopping at the first unmapped page at the memory region, if any.
-        /// </summary>
-        /// <param name="va">GPU virtual address to write the data into</param>
-        /// <param name="data">The data to be written</param>
-        public void WriteMapped(ulong va, ReadOnlySpan<byte> data)
-        {
-            if (IsContiguous(va, data.Length))
-            {
-                Physical.Write(Translate(va), data);
-            }
-            else
-            {
-                int offset = 0, size;
-
-                if ((va & PageMask) != 0)
-                {
-                    ulong pa = Translate(va);
-
-                    size = Math.Min(data.Length, (int)PageSize - (int)(va & PageMask));
-
-                    if (pa != PteUnmapped && Physical.IsMapped(pa))
-                    {
-                        Physical.Write(pa, data[..size]);
-                    }
-
-                    offset += size;
-                }
-
-                for (; offset < data.Length; offset += size)
-                {
-                    ulong pa = Translate(va + (ulong)offset);
-
-                    size = Math.Min(data.Length - offset, (int)PageSize);
-
-                    if (pa != PteUnmapped && Physical.IsMapped(pa))
-                    {
-                        Physical.Write(pa, data.Slice(offset, size));
-                    }
                 }
             }
         }
