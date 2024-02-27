@@ -62,7 +62,7 @@ namespace Ryujinx.Cpu.Jit
         public event Action<ulong, ulong> UnmapEvent;
 
         /// <summary>
-        /// Creates a new instance of the host mapped memory manager.
+        /// Creates a new instance of the host tracked memory manager.
         /// </summary>
         /// <param name="backingMemory">Physical backing memory where virtual memory will be mapped to</param>
         /// <param name="addressSpaceSize">Size of the address space</param>
@@ -439,7 +439,7 @@ namespace Ryujinx.Cpu.Jit
             if (_addressSpace.HasAnyPrivateAllocation(va, (ulong)size, out PrivateRange range))
             {
                 // If we have a private allocation overlapping the range,
-                // this the access is only considered contiguous if it covers the entire range.
+                // then the access is only considered contiguous if it covers the entire range.
 
                 if (range.Memory != null)
                 {
@@ -531,7 +531,7 @@ namespace Ryujinx.Cpu.Jit
 
             ulong physSize = GetContiguousSize(va, Math.Min(size, nextVa - va));
 
-            return new(_backingMemory, GetPhysicalAddressChecked(va), physSize);
+            return (_backingMemory, GetPhysicalAddressChecked(va), physSize);
         }
 
         public IEnumerable<HostMemoryRange> GetHostRegions(ulong va, ulong size)
