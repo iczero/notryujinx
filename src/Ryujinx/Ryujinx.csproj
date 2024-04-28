@@ -18,10 +18,10 @@
   </Target>
 
   <PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">
-    <PublishSingleFile>true</PublishSingleFile>
     <TrimmerSingleWarn>false</TrimmerSingleWarn>
     <PublishTrimmed>true</PublishTrimmed>
-    <TrimMode>partial</TrimMode>
+    <TrimMode>full</TrimMode>
+    <PublishAot>True</PublishAot>
   </PropertyGroup>
 
   <!--
@@ -96,6 +96,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <TargetPath>mime\Ryujinx.xml</TargetPath>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <RdXmlFile Include="rd.xml" />
   </ItemGroup>
 
   <ItemGroup>
