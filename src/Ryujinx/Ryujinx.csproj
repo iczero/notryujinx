@@ -14,6 +14,10 @@
     <Configurations>Debug;Release;DebugAOT;ReleaseAOT</Configurations>
   </PropertyGroup>
 
+  <ItemGroup Condition="$(Configuration.EndsWith('AOT'))">
+    <RdXmlFile Include="rd.xml" />
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="$([MSBuild]::IsOSPlatform('OSX'))">
     <Exec Command="codesign --entitlements '$(ProjectDir)..\..\distribution\macos\entitlements.xml' -f --deep -s $(SigningCertificate) '$(TargetDir)$(TargetName)'" />
   </Target>
@@ -24,6 +28,16 @@
     <PublishTrimmed>true</PublishTrimmed>
     <TrimMode>partial</TrimMode>
   </PropertyGroup>
+  <PropertyGroup Condition="$(Configuration.EndsWith('AOT'))">
+    <PublishAot>true</PublishAot>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+    <TrimmerSingleWarn>false</TrimmerSingleWarn>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <OptimizationPreference>Speed</OptimizationPreference>
+    <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
+    <PublishSingleFile>false</PublishSingleFile>
+    <TrimMode>full</TrimMode>
+  </PropertyGroup>
 
   <!--
     FluentAvalonia, used in the Avalonia UI, requires a workaround for the json serializer used internally when using .NET 8+ System.Text.Json.
@@ -33,12 +47,14 @@
   -->
   <PropertyGroup>
     <JsonSerializerIsReflectionEnabledByDefault>true</JsonSerializerIsReflectionEnabledByDefault>
+    <LangVersion>preview</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Avalonia" />
     <PackageReference Include="Avalonia.Desktop" />
     <PackageReference Include="Avalonia.Diagnostics" Condition="'$(Configuration)'=='Debug'" />
+    <PackageReference Include="Avalonia.Diagnostics" Condition="'$(Configuration)'=='DebugAOT'" />
     <PackageReference Include="Avalonia.Controls.DataGrid" />
     <PackageReference Include="Avalonia.Markup.Xaml.Loader" />
     <PackageReference Include="Avalonia.Svg" />

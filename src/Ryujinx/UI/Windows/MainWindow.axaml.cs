@@ -25,6 +25,7 @@ using Ryujinx.UI.Common.Configuration;
 using Ryujinx.UI.Common.Helper;
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using System.Threading;
 using System.Threading.Tasks;
@@ -465,6 +466,7 @@ namespace Ryujinx.Ava.UI.Windows
             GraphicsConfig.EnableShaderCache          = ConfigurationState.Instance.Graphics.EnableShaderCache;
             GraphicsConfig.EnableTextureRecompression = ConfigurationState.Instance.Graphics.EnableTextureRecompression;
             GraphicsConfig.EnableMacroHLE             = ConfigurationState.Instance.Graphics.EnableMacroHLE;
+            GraphicsConfig.EnableMacroJit             = RuntimeFeature.IsDynamicCodeSupported ? ConfigurationState.Instance.Graphics.EnableMacroHLE : false;
 #pragma warning restore IDE0055
         }
 
