@@ -10,6 +10,7 @@
     <!-- As we already provide GTK3 on Windows via GtkSharp.Dependencies this is redundant. -->
     <SkipGtkInstall>true</SkipGtkInstall>
     <TieredPGO>true</TieredPGO>
+    <Configurations>Debug;Release;DebugAOT;ReleaseAOT</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(RuntimeIdentifier)' != ''">

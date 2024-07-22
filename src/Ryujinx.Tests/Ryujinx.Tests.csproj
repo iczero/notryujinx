@@ -8,7 +8,7 @@
     <TargetOS Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'true'">windows</TargetOS>
     <TargetOS Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::OSX)))' == 'true'">osx</TargetOS>
     <TargetOS Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'true'">linux</TargetOS>
-    <Configurations>Debug;Release</Configurations>
+    <Configurations>Debug;Release;DebugAOT;ReleaseAOT</Configurations>
     <RunSettingsFilePath>$(MSBuildProjectDirectory)\.runsettings</RunSettingsFilePath>
   </PropertyGroup>
 

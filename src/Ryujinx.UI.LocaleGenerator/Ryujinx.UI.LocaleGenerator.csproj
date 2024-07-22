@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <Configurations>Debug;Release;DebugAOT;ReleaseAOT</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
